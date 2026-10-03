@@ -1,0 +1,14 @@
+# Local tooling and assistant workspace metadata
+.tools/
+.agents/
+.codex/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# OS metadata
+.DS_Store
+Thumbs.db
