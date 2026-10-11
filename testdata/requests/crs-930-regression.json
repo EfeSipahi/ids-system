@@ -1,0 +1,349 @@
+[
+  {
+    "name": "CRS 930100-1: Path Traversal Attack (/../) encoded",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "FoobarHeader",
+        "0x5c0x2e.%00/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930100-2: Path Traversal Attack Triple Dot (/.../)",
+    "method": "GET",
+    "uri": "/get?foo=.../.../WINDOWS/win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930100-3: Path Traversal Attack Triple Dot (/.../) encoded: foo=.../.../WINDOWS/win.ini",
+    "method": "GET",
+    "uri": "/get?foo=0x2e.%000x2f0x2e.%00/WINDOWS/win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930100-4: Status Page Test - Path Traversal Attack (<backslash>../), partially encoded",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "FoobarHeader",
+        "0x5c0x2e./"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930110-1: Path Traversal Attack (/../)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "FoobarHeader",
+        "/../../../././..\\ ../../etc/master.passwd"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-2: Path Traversal Attack (/../) query string",
+    "method": "GET",
+    "uri": "/get?arg=../../../etc/passwd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "X-FTW",
+        "This should trip"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-3: Path Traversal Attack (/../) query string",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ]
+    ],
+    "body": "arg=../../../etc/passwd&foo=var",
+    "expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-4: Path Traversal Attack (/../) query string",
+    "method": "GET",
+    "uri": "/get/foo../1234",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "no_expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-5: Path Traversal Attack (/../) query string",
+    "method": "GET",
+    "uri": "/get/foo.../1234",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "no_expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-6: Path Traversal Attack (/../) query string",
+    "method": "GET",
+    "uri": "/get/..foo",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "no_expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-7: Path Traversal Attack (/../) query string.\nNote: apparently, httpd strips dots, ModSecurity never sees them in `REQUEST_URI``\n",
+    "method": "GET",
+    "uri": "/get/..",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "no_expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-8: Path Traversal Attack (..\\) query string",
+    "method": "GET",
+    "uri": "/get?arg=..\\pineapple",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-9: Path Traversal Attack triple dot (.../) query string",
+    "method": "GET",
+    "uri": "/get?foo=.../.../WINDOWS/win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930110
+    ]
+  },
+  {
+    "name": "CRS 930110-12: Path Traversal Attack (;..;) query string",
+    "method": "GET",
+    "uri": "/get?a=..;.\\.;\\.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "X-FTW",
+        "This should trip"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "expect_ids": [
+      930110
+    ]
+  }
+]

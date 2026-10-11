@@ -1,0 +1,75 @@
+[
+  {
+    "name": "CRS 930110-1: traversal in a header",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      ["Host", "localhost"],
+      ["FoobarHeader", "/../../../././..\\ ../../etc/master.passwd"],
+      ["User-Agent", "OWASP CRS test agent"],
+      ["Accept", "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"]
+    ],
+    "expect_ids": [930110]
+  },
+  {
+    "name": "CRS 930110-2: traversal in the query string",
+    "method": "GET",
+    "uri": "/get?arg=../../../etc/passwd",
+    "version": "HTTP/1.1",
+    "headers": [
+      ["Host", "localhost"],
+      ["X-FTW", "This should trip"],
+      ["User-Agent", "OWASP CRS test agent"],
+      ["Accept", "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"]
+    ],
+    "expect_ids": [930110]
+  },
+  {
+    "name": "CRS 930110-3: traversal in a POST body",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      ["Host", "localhost"],
+      ["User-Agent", "OWASP CRS test agent"],
+      ["Accept", "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"],
+      ["Content-Type", "application/x-www-form-urlencoded"]
+    ],
+    "body": "arg=../../../etc/passwd&foo=var",
+    "expect_ids": [930110]
+  },
+  {
+    "name": "CRS 930100-2: triple dot traversal in the query string",
+    "method": "GET",
+    "uri": "/get?foo=.../.../WINDOWS/win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      ["Host", "localhost"],
+      ["User-Agent", "OWASP CRS test agent"],
+      ["Accept", "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"]
+    ],
+    "expect_ids": [930100]
+  },
+  {
+    "name": "normal: search with a repeated parameter",
+    "method": "GET",
+    "uri": "/arama?q=kitap&q=kalem",
+    "headers": [
+      ["Host", "localhost"],
+      ["User-Agent", "Mozilla/5.0"]
+    ],
+    "no_expect_ids": [930100, 930110]
+  },
+  {
+    "name": "normal: login form",
+    "method": "POST",
+    "uri": "/giris",
+    "headers": [
+      ["Host", "localhost"],
+      ["Content-Type", "application/x-www-form-urlencoded"]
+    ],
+    "body": "kullanici=efe&parola=gizli+parola",
+    "no_expect_ids": [930100, 930110]
+  }
+]

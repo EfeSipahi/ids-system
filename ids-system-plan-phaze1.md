@@ -14,7 +14,7 @@ Document role: Primary reference for current architecture decisions, implementat
 2. [Verified existing work](#mevcut)
 3. [Product goals and scope boundaries](#kapsam)
 4. [Architecture, responsibilities, and data flow](#mimari)
-5. [Approved decisions — M01–M20](#kararlar)
+5. [Approved decisions — M01–M21](#kararlar)
 6. [Open decisions — A01–A11](#acik)
 7. [Proposed starting decisions for the first engine](#ilk-motor)
 8. [Session handoff and working rules](#devir)
@@ -31,13 +31,13 @@ Document role: Primary reference for current architecture decisions, implementat
 | Phase 1 | Detect SQLi, XSS carried in HTTP requests, and path traversal attempts; no automatic blocking |
 | Product architecture | Go core; ML development in Python; integration with an existing TLS reverse proxy; rule, ML, and application-profile layers |
 | Rule engine | Our own Go SecLang engine; CRS 4.30.0; initially PL1 within the selected attack groups |
-| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports |
+| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports; Go product code started on 5 October 2026: SecLang parser, common request model, offline JSON input, transformations, operators, and the rule engine exist; rules 930100 and 930110 run on offline examples through the `ids-offline` command. The first offline engine of section 7.4 is complete (see section 7.4) |
 | Not yet implemented | Go product engine, live proxy integration, product profile/decision/logging infrastructure, and a verified ONNX migration |
-| Approved decision count | M01–M20: 20 decisions; implementation status is tracked separately |
+| Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
 | Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions |
-| Next discussion | M21 proposal: prepare rules at startup and keep each request's execution state separate; not yet approved |
+| Next step | To be chosen with the user. Candidates: the remaining PL1 rules of file 930 (`@pmFromFile`), multipart/JSON body parsing, or the first XSS/SQLi rules; see section 11.10 |
 
-**For the next agent:** First verify the current status in this document against the relevant files. Then discuss the first open decision in section 7 with the user. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
+**For the next agent:** First verify the current status in this document against the relevant files. Then continue from the first unfinished step in section 7.4. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
 
 ### 1.1. Meaning of status labels
 
@@ -161,10 +161,10 @@ The detailed TLS policy for the proxy-to-application connection remains open in 
 | Decision mechanism | Produce alert decisions from separate layer results | Scoring policy, thresholds, and missing results — A03/A06 |
 | Recording and presentation | Present findings/decisions while protecting sensitive content | Storage, API/dashboard, access, and retention — A03/A09 |
 
-**Data invariants:** The parsed view does not replace received content; repeated values are preserved. Rule-specific transformations do not alter shared input. CRS per-request variables/scores are handled separately. M21 proposes translating this principle into engine startup and request execution behavior; it is not yet approved. Analysis may use actual sensitive values; persistent records follow M11.
+**Data invariants:** The parsed view does not replace received content; repeated values are preserved. Rule-specific transformations do not alter shared input. CRS per-request variables/scores are handled separately. M21 approves translating this principle into engine startup and request execution behavior. Analysis may use actual sensitive values; persistent records follow M11.
 
 <a id="kararlar"></a>
-## 5. Approved decisions — M01–M20
+## 5. Approved decisions — M01–M21
 
 The following index is for navigation. The detailed rationale, examples, and boundaries are preserved. Each decision's implementation status is tracked separately from its approval.
 
@@ -190,6 +190,7 @@ The following index is for navigation. The detailed rationale, examples, and bou
 | [M18](#m18) | Pin CRS to version 4.30.0 | A11 |
 | [M19](#m19) | SQLi, XSS, and path traversal groups | A11 |
 | [M20](#m20) | Initially PL1 | A11 |
+| [M21](#m21) | Rules prepared at startup; separate per-request execution state | A08, A11 |
 
 <a id="m01"></a>
 ### 5.1. M01 — Architectural principle
@@ -683,6 +684,25 @@ M17's HTTP content scope applies. XML, response bodies, and other deferred conte
 
 This decision concerns CRS rule sensitivity levels only; it does not change the scope of the ML or application-profile layers. Exact active rule IDs and dependencies will be defined separately.
 
+<a id="m21"></a>
+### 5.21. M21 — Rules prepared at startup, separate execution state per request
+
+**Implementation / verification status:** Implemented in `internal/engine` on 11 October 2026: `Load` prepares a read-only `RuleSet`; `Evaluate` creates a separate state for each request. Verified by `TestCRSRequestsDoNotShareState`, which alternates attack and normal requests in sequence and in eight goroutines under `go test -race` (section 11.9).
+
+**Scope and open boundaries:** Shared read-only prepared rules and per-request state; worker counts, parallel execution of layers, and reloading without restart remain open.
+
+**Related decisions:** M15, M16, M18. **Open detail records:** A08, A11.
+
+**Status: Approved on 5 October 2026.**
+
+**Decision:** Rule files are read, validated, and prepared once when the application starts. Every request uses those prepared rules without changing them. Each request's variables (`TX`), matches, and scores belong to its own execution state, which is created for that request and discarded afterwards.
+
+For example, the regex of rule 930110 is compiled once at startup. Request A's match raises the anomaly score in A's state only; request B starts from its own empty state and is unaffected.
+
+**Rationale:** Avoid repeating file reading and regex compilation for every request; prevent concurrent requests from overwriting each other's scores; and make an invalid or unsupported rule stop startup with an explicit report instead of surfacing later during a request (M15).
+
+This decision does not select worker counts, parallel execution of all layers, or hot reloading. Those remain in A08.
+
 <a id="acik"></a>
 ## 6. Open decisions — A01–A11
 
@@ -831,6 +851,8 @@ This decision concerns CRS rule sensitivity levels only; it does not change the 
 
 **Needed when:** First-rule selection and minimum behavior before starting; expand the list and tests incrementally across SQLi/XSS/path traversal.
 
+**Resolved on 5 October 2026 (first engine only):** The first rules are 930100 and 930110, loaded from the original files together with their dependencies: `crs-setup.conf.example`, `REQUEST-901-INITIALIZATION.conf`, the PL gates in `REQUEST-930-APPLICATION-ATTACK-LFI.conf`, and `REQUEST-949-BLOCKING-EVALUATION.conf`. Rules in those files that the first engine does not execute are listed as excluded with a reason; they are not skipped silently. Whether 930120/930130/930140 belong to the path traversal scope, the regex and libinjection library choices, and the reference engine remain open.
+
 ### 6.12. Unselected technologies from the previous draft
 
 | Candidate in the old draft | Current interpretation | Tracking |
@@ -863,22 +885,24 @@ This proposal will be discussed under A07 and A06; its inclusion here does not a
 <a id="ilk-motor"></a>
 ## 7. Proposed starting decisions for the first engine
 
-**Status: Proposed discussion order, not yet finalized as an implementation plan.** The user approved preparing this handoff document; that approval does not automatically approve the four technical choices below.
+**Status on 5 October 2026:** Items 1 and 2 are decided (M21; first rules in A11). Items 3 and 4 were accepted as working proposals for the first engine only, as described in section 7.4; they do not settle A02, A03, or A07 for the product.
 
 | Order | Decision to discuss | Required decision output | Related open topics |
 | --- | --- | --- | --- |
-| 1 | M21 proposal: engine startup and per-request execution arrangement | Boundary between shared prepared rules and per-request working state | A08/A11; consistent with M16 |
+| 1 | M21 (approved): engine startup and per-request execution arrangement | Boundary between shared prepared rules and per-request working state | A08/A11; consistent with M16 |
 | 2 | First real CRS rule/rule set | Exact rule IDs and required SecLang/setup/data-file list | A11 |
 | 3 | Minimum input/output contract | Supported HTTP fields and representation of findings, scores, errors, and incomplete analysis | A02/A03/A09 |
 | 4 | First-engine acceptance criteria | Normal/attack examples, expected behavior, and reference comparison | A07/A11; necessary basic performance limits in A08 |
 
-### 7.1. Next discussion: M21 proposal
+### 7.1. M21 — approved on 5 October 2026
 
-**Not yet approved:** Read, validate, and prepare rules when the application starts. Each request should use those prepared rules, while its variables, matches, and scores belong to its own execution state.
+The decision record is [M21](#m21). The original proposal text is kept below for context.
+
+Read, validate, and prepare rules when the application starts. Each request should use those prepared rules, while its variables, matches, and scores belong to its own execution state.
 
 Rationale: Reduce repeated file reading/preparation per request and prevent concurrent requests' results from mixing. For example, request A's SQLi finding and score increase must not carry over to request B.
 
-M16 already approves preventing transformations from interfering through shared input and separating CRS per-request state. M21 additionally proposes startup preparation and shared rules. This proposal does not select worker counts, parallel execution of all layers, or hot reloading.
+M16 already approves preventing transformations from interfering through shared input and separating CRS per-request state. M21 additionally approves startup preparation and shared rules. It does not select worker counts, parallel execution of all layers, or hot reloading.
 
 ### 7.2. Boundary around the first rule
 
@@ -889,6 +913,26 @@ M16 already approves preventing transformations from interfering through shared 
 These four topics are the proposed minimum decision group for a first working offline rule engine. Technical inspection may uncover further dependencies or obstacles; four approvals do not guarantee that all product decisions are settled. At this stage, the user expects the necessary open choices to be discussed before coding begins.
 
 Example first-engine flow: **prepared HTTP example → selected real CRS rule → finding/score/analysis status**. Proxy/TLS, ML, and profile integration may follow later; they are not removed from the Phase 1 product goal. Subsequent work order will be clarified as the relevant decisions are discussed.
+
+### 7.4. First-engine development order and status
+
+Agreed on 5 October 2026. Working mode: the assistant writes one small package at a time with tests and an explanation; the user reviews before the next step. Standard library only; no third-party dependency.
+
+| Step | Package | Content | Status |
+| --- | --- | --- | --- |
+| 0 | — | `go.mod`, document links, M21 and first-rule records | Done 5 October 2026 |
+| 1 | `internal/seclang` | Parse the original CRS files into a rule syntax tree | Done 5 October 2026; see `go test ./internal/seclang/` |
+| 2 | `internal/httpmodel`, `internal/offline` | Common request (M03/M16) and JSON example input | Done 11 October 2026; see `go test ./internal/httpmodel/ ./internal/offline/` |
+| 3 | `internal/engine/transform` | none, utf8toUnicode, urlDecodeUni, removeNulls, cmdLine | Done 11 October 2026; see `go test ./internal/engine/transform/` |
+| 4 | `internal/engine/operator` | `@rx`, `@eq`, `@lt`, `@ge` | Done 11 October 2026; see `go test ./internal/engine/operator/` |
+| 5 | `internal/engine` | Prepared rule set and per-request execution (M21) | Done 11 October 2026; see `go test ./internal/engine/` |
+| 6 | `internal/result`, `cmd/ids-offline` | Findings, scores, analysis status, masking (M11); CLI | Done 11 October 2026; see `go test ./internal/result/ ./cmd/ids-offline/` |
+
+**Working proposal for input/output (first engine only):** input is a JSON list of requests with `method`, `uri` (raw target), `version`, `headers` as name/value pairs, and `body`; query strings and form-urlencoded bodies are parsed, other bodies are reported as not inspected (M05). Output per request contains analysis status, findings (rule ID, message, severity, tags, matched location), and scores. Matched values are not written to output by default (M11).
+
+**Working proposal for acceptance (first engine only):** the cases in the CRS regression files `930100.yaml` and `930110.yaml` converted to the JSON input, normal requests that must produce no finding, a test that two requests against the same prepared rules do not share scores, and a concurrent run under `go test -race`.
+
+Passing these checks shows that the engine executes two PL1 rules on the chosen examples. It is not CRS compatibility and not a detection-quality result.
 
 <a id="devir"></a>
 ## 8. Session handoff and working rules
@@ -902,7 +946,7 @@ Example first-engine flow: **prepared HTTP example → selected real CRS rule �
 7. Preserve M11's recording privacy and M05's incomplete-analysis principle throughout development. Sensitive fields are not exempt from analysis; raw matches are not automatically written to persistent records.
 8. Once coding begins, implement only the scope agreed with the user. Listing an open topic in this document is not an instruction to build all components at once.
 
-**First task in a new session:** After verifying sections 1–2 and their sources, discuss M21 with the user unless a newer approval exists in the conversation. If the user selects another open topic, continue there instead.
+**First task in a new session:** After verifying sections 1–2 and their sources, continue with the first unfinished step in section 7.4 unless a newer instruction exists in the conversation. If the user selects another open topic, continue there instead.
 
 <a id="kaynaklar"></a>
 ## 9. Source guide and historical documents
@@ -911,7 +955,7 @@ Product documents and CRS sources are in `ids-system`. Links to ML sources point
 
 | Source | Role and interpretation |
 | --- | --- |
-| [This main plan](ids-system-plan-faze1.md) | Current architecture choices and open-decision index; not a substitute for implementation evidence |
+| [This main plan](ids-system-plan-phaze1.md) | Current architecture choices and open-decision index; not a substitute for implementation evidence |
 | [README](../ids-model/README.md) | Python pilot, environment, and results summary; not the full product goal |
 | [Split record](../ids-model/data/processed/http-mini-splits-v1/split_report.json) and [split report](../ids-model/reports/http-veri-ayrimi.md) | Current pilot split; “not yet trained” describes the historical split-preparation stage |
 | [Training record](../ids-model/models/rf-baseline-v1/run.json), [first training report](../ids-model/reports/ilk-random-forest.md), and [pipeline](../ids-model/models/rf-baseline-v1/pipeline.joblib) | Model/preprocessing, parameter, and validation evidence; the test flag describes the training stage |
@@ -921,6 +965,7 @@ Product documents and CRS sources are in `ids-system`. Links to ML sources point
 | Old technology draft (deleted by the user) | Discussion draft; M12–M14 supersede the Python-core/live-Python-service direction. NGINX, SQLite, Compose, and similar proposals were not automatically selected |
 | [Initial ML-stage plan](../ids-model/ids-ilk-asama-plani.md) | Plan for an earlier experimental stage, not the current product implementation sequence |
 | [Go learning and WAF study plan](ids-go-ogrenme-ve-waf-inceleme-plani.md) | Learning resource, not evidence of architecture selection or completed development |
+| [CRS ruleset reference](docs/crs-4.30.0-ruleset.md) | Description of the CRS files, rule counts, and our scope; not evidence of engine support |
 | [CRS 4.30.0 sources](coreruleset-4.30.0) | Local version reference; original rules are preserved. Available sources do not establish full support |
 | [930110 demo](reports/crs-930110-kural-demosu.md) and [PL1/PL2 demo](reports/crs-pl1-pl2-calisma-sirasi.md) | Educational execution walkthroughs. Any statement that PL has not been selected describes the stage before M20 |
 
@@ -976,3 +1021,58 @@ The user installed Go independently; that session verified `go version` output a
 ### 11.4. English documentation — 4 October 2026
 
 The user subsequently requested a short `context.md`, which was created, and then switched the working language to English. This main plan and `context.md` were translated into English. Communication and plans will remain in English until the user requests otherwise. Decision IDs, approval states, technical values, file names, and link targets were preserved; existing anchor IDs were retained for link compatibility. No product code was developed as part of the translation.
+
+### 11.5. Start of product development — 5 October 2026
+
+1. The main plan file was renamed by the user to `ids-system-plan-phaze1.md`; the self-link in section 9 and the link in `context.md` were updated. Mentions of the old name in historical text were left as written.
+2. M21 was approved and recorded; the first-rule subquestion of A11 was resolved for the first engine. Section 7.4 records the development order.
+3. The local CRS copy was compared with the official `v4.30.0` source archive using `diff -rq`; there were no differences. A ruleset reference was written to `docs/crs-4.30.0-ruleset.md`.
+4. The two demo reports linked under `reports/` in sections 2 and 9 are not present in the directory on this date. The links were left unchanged.
+5. Go module `github.com/EfeSipahi/ids-system` was created and the `internal/seclang` parser was implemented with tests against the original CRS files. No rule is executed yet.
+
+### 11.6. Common request and offline input — 11 October 2026
+
+1. `internal/httpmodel` was implemented: received content, parsed view (path, raw query, query and form parameters with raw and decoded forms, repeated values kept), and analysis status (body empty / inspected / not inspected with a reason, plus parsing issues).
+2. `internal/offline` was implemented: a JSON list of example requests with optional `expect_ids` and `no_expect_ids`. A starter file with four CRS regression cases and two normal requests is in `testdata/requests/path-traversal.json`.
+3. Choices made for the first engine only, still open for the product under A02: parameters are percent-decoded once with `+` read as a space; malformed percent sequences are kept as written and reported; only `application/x-www-form-urlencoded` bodies are parsed; no size limits; bodies in example files are text, so raw non-UTF-8 body bytes cannot be expressed yet.
+4. Checked with `go vet ./...` and `go test ./...`. These tests cover parsing only; no detection has been run.
+
+### 11.7. Transformations — 11 October 2026
+
+1. `internal/engine/transform` was implemented: `utf8toUnicode`, `urlDecodeUni`, `removeNulls`, `cmdLine`, and the `none` reset, with a `Resolve` function that rejects any unsupported name.
+2. **Verification method:** the four corresponding C functions of ModSecurity v2 (branch `v2/master`, commit `151074aca78a416764b12ba1221e61a17a6c714d`) were compiled unchanged into a small harness and run on 3,592 inputs (hand-written cases and pseudo-random byte strings). The inputs and outputs are stored in `internal/engine/transform/testdata/modsecurity_v2_vectors.txt`; `TestAgainstModSecurityV2` compares our results with all of them and passes. A 20-second fuzz run found no panic or broken property. The harness itself is not kept in the repository.
+3. **Scope of that verification:** it covers these four functions on inputs without NUL bytes (except `removeNulls`). It is not a comparison of rule results or of a whole engine.
+4. **Known differences from ModSecurity v2, by choice:** no Unicode mapping file in `urlDecodeUni` (so `%u2215` gives byte 0x15, not `/`); `cmdLine` processes the whole value instead of stopping at the first NUL byte; `utf8toUnicode` copies a NUL byte instead of reading it as the start of a two-byte sequence. Reproduced on purpose: `utf8toUnicode` keeps only the first four hex digits of code points above U+FFFF.
+5. **Observed reference disagreement:** Coraza's `utf8toUnicode` writes `%ufffd` for invalid bytes and full hex for large code points; ModSecurity v2 does neither. This package follows ModSecurity v2. Which engine is the reference for the product remains open under A11.
+
+### 11.8. Operators — 11 October 2026
+
+1. `internal/engine/operator` was implemented: `@rx`, `@eq`, `@lt`, `@ge`, and negation with `!`. An operator is prepared once and keeps no per-request data (M21). An unsupported operator or an unusable argument is an error when the operator is prepared.
+2. **Regex library decision for the first engine (A11 subquestion, still open for the product):** Go's standard `regexp` package (RE2 syntax), compiled with `(?s)` to mirror ModSecurity's `PCRE_DOTALL`; Go's `$` already behaves like `PCRE_DOLLAR_ENDONLY`. All `@rx` patterns in the four first-engine files compile.
+3. **Numeric operators** read both sides the way C's `atoi` does, as ModSecurity v2 does (checked in `apache2/re_operators.c`); 21 sample inputs were compared with real `atoi` output. Macro arguments such as `%{tx.inbound_anomaly_score_threshold}` are expanded on every test.
+4. **Verification of `@rx`:** the patterns of 930100 and 930110 were run on 4,708 inputs and compared with results recorded from Python's `re` module in bytes mode (`internal/engine/operator/testdata/rx_930_vectors.txt`); match decision and matched text agree on all of them. Python's engine is not PCRE, so this is an independent check, not a comparison with ModSecurity. A concurrency test passes under `go test -race`.
+5. **Known differences from ModSecurity:** no backreferences or lookaround (such a pattern is rejected at startup); values are read as UTF-8 text rather than single bytes, which can change results for patterns that count or exclude non-ASCII characters; `@rx` patterns containing macros are not supported; numbers beyond 64 bits stop at the 64-bit limits.
+
+### 11.9. Rule engine — 11 October 2026
+
+1. `internal/engine` was implemented. `Load` reads the files named in a configuration, compiles every rule, and fails with a list of all problems unless each rule is either fully supported or excluded with a reason (M15). `Evaluate` runs phase 1 and phase 2 for one request with its own TX variables, scores, and matches (M21). Supported: `skipAfter` with markers, chains, `multiMatch`, `capture`, `setvar`, macro expansion, default actions, count (`&`) and exclusion (`!`) of variables.
+2. **Configuration:** `configs/crs-first-engine.json` loads `crs-setup.conf.example`, 901, 930, and 949 unchanged and excludes 11 rules with reasons: 901320, 901340, 901350, 901360, 901370, 901410, 901450, 930120, 930130, 930140, 930121. Of the 76 rules in those files, 65 are active. The paranoia level is the CRS default of 1; the configuration has no option to change it.
+3. **Variables provided:** `ARGS`, `REQUEST_HEADERS`, `REQUEST_URI_RAW`, `TX`. `FILES` and `XML` are named by 930100 and 930110 but not provided; the startup report lists them per rule as not inspected (M05, M17).
+4. **Acceptance check performed:** the 18 CRS 4.30.0 regression tests of rules 930100 and 930110 were converted to the offline format (`testdata/requests/`, with a README describing the conversion). For the 14 that the engine can inspect, every `expect_ids` rule matches and no `no_expect_ids` rule does. The other 4 carry their payload in an XML body (930100-5, 930110-13) or a multipart body (930110-10, 930110-11); they are not detected, the request status reports the body as not inspected, and a test pins this so a change is noticed. Two normal requests produce no match and score 0.
+5. **Detection only:** `deny` (for example on 949110) is recorded on the match as the rule's action; nothing is blocked.
+6. **Semantics source:** phase order, `skipAfter`, chains, `multiMatch`, `setvar`, and macro expansion were written after reading ModSecurity v2 (`apache2/re.c`, `re_actions.c`, commit `151074aca78a416764b12ba1221e61a17a6c714d`). No request was run through ModSecurity or Coraza, so matched rule IDs are checked against the CRS test expectations only, and **anomaly score values have not been compared with a reference engine**.
+7. **Known differences from ModSecurity v2:**
+   - With `multiMatch`, the value is tested again after a transformation only when the value actually changed. ModSecurity v2 relies on each transformation's own "changed" flag, and its `cmdLine` always reports a change, so v2 tests the final value of 930110 once more. Expected effect, not measured: v2 adds the score of 930110 more often than this engine does (for `/get?arg=../../../etc/passwd` this engine ends at 20).
+   - Regular-expression selectors (`ARGS:/re/`) and `TX` without a variable name are rejected at load time.
+   - Macros are limited to `%{tx.name}`, `%{MATCHED_VAR}`, and `%{MATCHED_VAR_NAME}`; others are rejected at load time.
+8. **What this result is and is not:** the engine executes two PL1 detection rules with their real control rules and agrees with the CRS expectations on 14 examples. It is not CRS compatibility, not a detection-quality measurement, and not a performance measurement.
+
+### 11.10. Output layer and command-line tool — 11 October 2026
+
+1. `internal/result` was implemented. A record holds the request method, the analysis status (M05), the findings (rule ID, severity, message, location, action, tags), and the CRS anomaly score with threshold. A startup report lists active and excluded rules with reasons and the variables that rules name but the engine does not provide.
+2. **M11 as implemented here:** by default a record contains no request content: no URI, no matched value, no `logdata`. A rule message is replaced by a fixed placeholder when its text can carry request content; the engine determines this at load time by following `%{MATCHED_VAR}`, the capture variables `TX.0`–`TX.9`, and any TX variable filled from those. The location (for example `ARGS:arg`) is kept, as M11 describes. The `ShowValues` option adds URI, value, and data for local inspection of test data. Tests check that the default text and JSON output of the tool do not contain the payloads of the example file. This is the masking of the first engine's output only; the product's sensitive-field policy, storage, retention, and access remain open in A09.
+3. **Known limit of that masking:** the location contains the parameter or header *name*, which the sender controls. Names are not masked.
+4. `cmd/ids-offline` was implemented: `-config`, `-requests`, `-json`, `-show-values`. Without `-requests` it prints the startup report. Exit status 0, 1 when an example's `expect_ids`/`no_expect_ids` is not met, 2 when rules or requests cannot be loaded.
+5. A record carries rule-layer findings only. It is not an alert decision (M04, M10).
+6. **State of the first engine (section 7.4):** all seven steps are done. Checked with `go vet ./...`, `go test ./...`, and `go test -race ./...` on 11 October 2026. What it shows and does not show is stated in section 11.9, item 8.
+7. **Open follow-ups noted during the work, not yet discussed:** (a) which engine is the reference, and a comparison of score values with it (A11); (b) the Unicode mapping file for `urlDecodeUni`; (c) multipart and XML/JSON bodies, needed by 4 of the 18 CRS tests of these two rules (A02, M17); (d) whether 930120/930130/930140 belong to the path traversal scope (A11); (e) size limits (A08).

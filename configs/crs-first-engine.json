@@ -1,0 +1,21 @@
+{
+  "files": [
+    "../coreruleset-4.30.0/crs-setup.conf.example",
+    "../coreruleset-4.30.0/rules/REQUEST-901-INITIALIZATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-949-BLOCKING-EVALUATION.conf"
+  ],
+  "exclude": [
+    {"id": 901320, "reason": "Persistent collections (initcol) are not implemented. The rule only acts when tx.enable_default_collections is 1, which is not set."},
+    {"id": 901340, "reason": "Body processor control (ctl, REQBODY_PROCESSOR) is not implemented. The engine decides how to parse a body from its Content-Type."},
+    {"id": 901350, "reason": "Body processor control (ctl, REQBODY_PROCESSOR) is not implemented. The rule only acts when tx.enforce_bodyproc_urlencoded is 1; the default is 0."},
+    {"id": 901360, "reason": "Body processor control (ctl) is not implemented. JSON bodies are not parsed yet."},
+    {"id": 901370, "reason": "Body processor control (ctl) is not implemented. JSON bodies are not parsed yet."},
+    {"id": 901410, "reason": "Sampling is not implemented (UNIQUE_ID, sha1). Rule 901400 skips this rule at the default sampling percentage of 100."},
+    {"id": 901450, "reason": "Sampling is not implemented (ctl). Rule 901400 skips this rule at the default sampling percentage of 100."},
+    {"id": 930120, "reason": "Outside the first engine: needs @pmFromFile, normalizePathWin, cookies and ARGS_NAMES."},
+    {"id": 930130, "reason": "Outside the first engine: needs @pmFromFile, normalizePathWin and REQUEST_FILENAME."},
+    {"id": 930140, "reason": "Outside the first engine: needs @pmFromFile, normalizePathWin and REQUEST_FILENAME."},
+    {"id": 930121, "reason": "Paranoia level 2 rule; needs @pmFromFile and normalizePathWin. At level 1 the gate 930013 skips it."}
+  ]
+}
