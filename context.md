@@ -30,7 +30,7 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/seclang` | Parses CRS rule files into Go values. Six directives are supported; any other is an error |
 | `internal/httpmodel` | The common request (M03, M16): received content, parsed view, analysis status (M05). Reads the query, cookies, and form, JSON, multipart, and XML bodies |
 | `internal/offline` | Reads example requests from JSON, with optional `expect_ids` / `no_expect_ids` |
-| `internal/engine/transform` | 13 transformations. 11 are ports of the ModSecurity v2 functions; `normalizePathWin` and `htmlEntityDecode` follow Coraza (user decision, main plan section 11.15) |
+| `internal/engine/transform` | 13 transformations. 11 are ports of the ModSecurity v2 functions; `normalizePathWin` and `htmlEntityDecode` follow Coraza (user decision, main plan section 11.15); `normalizePathWin` leaves out Coraza's cut at a colon, which could hide a file name |
 | `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@validateByteRange`, `@eq`, `@lt`, `@ge` |
 | `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21) |
 | `internal/result` | Output records: analysis status, findings, score. Request content is left out by default (M11) |
@@ -115,9 +115,8 @@ Proposed order if the user agrees: (1) paranoia-level option and the PL2–PL4 t
 | # | Point | Why it matters |
 | --- | --- | --- |
 | 1 | Merge `rule-layer` into `main` and push | Waiting for the user to ask |
-| 2 | One Coraza behaviour to keep or drop | `normalizePathWin` cuts the last path segment at a colon, as Coraza does, so `ab: boot.ini` becomes `ab`. This could hide a file name from rules 930120 and 930130. The user was told and has not decided |
-| 3 | Speed on long values | 18.5 ms for 9.4 kB. Two candidate improvements are named in the rule-layer plan, section 8.7 |
-| 4 | User review | The user has not read the code. Reading order: [docs/go-learning-plan.md](docs/go-learning-plan.md), then `internal/engine/transaction.go` |
+| 2 | Speed on long values | 18.5 ms for 9.4 kB. Two candidate improvements are named in the rule-layer plan, section 8.7 |
+| 3 | User review | The user has not read the code. Reading order: [docs/go-learning-plan.md](docs/go-learning-plan.md), then `internal/engine/transaction.go` |
 
 ### 3.3. Later layers: not chosen
 

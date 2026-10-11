@@ -149,9 +149,9 @@ func TestNormalizePathWin(t *testing.T) {
 		{"abc..", "abc"},
 		{"a/win.ini..", "a/win.ini"},
 		{"a/win.ini. /b", "a/win.ini/b"},
-		// The name of a data stream is cut off; a drive letter is kept.
-		{"web.config::$DATA", "web.config"},
-		{`C:\boot.ini:x`, "C:/boot.ini"},
+		// Unlike Coraza, nothing is cut at a colon.
+		{"web.config::$DATA", "web.config::$DATA"},
+		{"ab: boot.ini", "ab: boot.ini"},
 		{`a\\\b`, "a/b"},
 		// As in Coraza, a lone slash is doubled.
 		{"/", "//"},
@@ -349,6 +349,9 @@ func compareWithVectors(t *testing.T, file, source string) map[string]int {
 		if !ok {
 			t.Fatalf("line %d: unknown transformation %q", line, fields[0])
 		}
+		if source == "Coraza" && tr.Name == "normalizePathWin" {
+			tr.Apply = corazaNormalizePathWin
+		}
 		in, want := unhex(fields[1]), unhex(fields[2])
 		counts[tr.Name]++
 		if got := tr.Apply(in); got != want {
@@ -405,4 +408,38 @@ func FuzzTransformations(f *testing.F) {
 			t.Errorf("CmdLine is not stable: %q then %q", got, again)
 		}
 	})
+}
+
+// corazaNormalizePathWin is NormalizePathWin with the one step of Coraza
+// that ours leaves out: cutting the last segment at its first colon. The
+// Coraza reference results are compared with this function, which shows
+// that the two differ in that step only.
+func corazaNormalizePathWin(s string) string {
+	if s == "" {
+		return s
+	}
+	clean := cleanPath(strings.ReplaceAll(s, `\`, "/"))
+	return trimSegments(cutDataStream(clean))
+}
+
+// cutDataStream cuts the last segment at its first colon. A drive letter
+// and a slash at the end are set aside first and put back afterwards.
+func cutDataStream(s string) string {
+	drive := ""
+	if len(s) >= 2 && s[1] == ':' && isLetter(s[0]) {
+		drive, s = s[:2], s[2:]
+	}
+	slash := ""
+	if strings.HasSuffix(s, "/") {
+		slash, s = "/", s[:len(s)-1]
+	}
+	last := strings.LastIndexByte(s, '/') + 1
+	if colon := strings.IndexByte(s[last:], ':'); colon >= 0 {
+		s = s[:last+colon]
+	}
+	return drive + s + slash
+}
+
+func isLetter(c byte) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 }

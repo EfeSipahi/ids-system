@@ -358,11 +358,16 @@ Open points this work produced:
 **What was done:**
 
 1. Both functions were rewritten after reading Coraza's source. The change is larger than the two examples, because Coraza's functions are different algorithms, not variants of ModSecurity's.
-2. `normalizePathWin` now also removes dots and spaces at the end of every path segment and cuts a Windows data-stream name (`web.config::$DATA` becomes `web.config`).
+2. `normalizePathWin` now also removes dots and spaces at the end of every path segment.
 3. `htmlEntityDecode` now knows all names of the HTML standard and reads them as a browser does. It uses the entity table of Go's standard `html` package; no dependency was added. Go's own decoder is not used for numbers, because it reads a few broken ones differently from the decoder Coraza uses; the comparison below found that.
 4. The reference results of these two functions were removed from the ModSecurity file and recorded anew from Coraza's code in `internal/engine/transform/testdata/coraza_v3_vectors.txt`. Its header says how.
 
-**What the change gives up:** ModSecurity decodes some things that Coraza and browsers do not, and these are no longer decoded: an entity name in the wrong letter case (`&COLON;`), most names without their semicolon (`&colon`), and of a number above 255 only its low byte. A browser does not read these as the character either. Two results of Coraza's `normalizePathWin` are odd and are reproduced: a path that is only `/` becomes `//`, and a value such as `ab:boot.ini` is cut to `ab`.
+**What the change gives up:** ModSecurity decodes some things that Coraza and browsers do not, and these are no longer decoded: an entity name in the wrong letter case (`&COLON;`), most names without their semicolon (`&colon`), and of a number above 255 only its low byte. A browser does not read these as the character either. One odd result of Coraza's `normalizePathWin` is reproduced because it is harmless: a path that is only `/` becomes `//`.
+
+**Two follow-up decisions, left to the assistant by the user (11 October 2026):**
+
+1. **Entities stay as Coraza and browsers read them.** `&COLON;`, `&colon` without a semicolon, and the low byte of large numbers are not decoded. Reason: a browser does not turn them into the character, so no working attack is hidden, and decoding them would only add matches on harmless text.
+2. **One step of Coraza's `normalizePathWin` is left out:** cutting the last path segment at its first colon (`web.config::$DATA` to `web.config`). Reason: the only CRS rules that use this transformation are 930120, 930121, 930130, and 930140, and all four search for a name anywhere in the value, so they find `web.config` with or without the step. The step can only remove text: `ab: boot.ini` would become `ab` and hide `boot.ini`. The test compares Coraza's recorded results with our function plus that one step, which shows the two differ in nothing else. All checks listed below were repeated after this and gave the same numbers.
 
 **Checked:**
 
