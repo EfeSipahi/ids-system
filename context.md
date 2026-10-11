@@ -75,7 +75,7 @@ Other files:
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: `main` holds the first engine (two rules) and is pushed. The whole rule layer, including the change of two transformations to Coraza's behaviour, is committed on the local branch `rule-layer`. It is **not merged into `main` and not pushed**; the user has not asked for that yet.
+- Git: the whole rule layer, including the change of two transformations to Coraza's behaviour, is on `main` and pushed to GitHub (11 October 2026). The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -114,9 +114,8 @@ Proposed order if the user agrees: (1) paranoia-level option and the PL2–PL4 t
 
 | # | Point | Why it matters |
 | --- | --- | --- |
-| 1 | Merge `rule-layer` into `main` and push | Waiting for the user to ask |
-| 2 | Speed on long values | 18.5 ms for 9.4 kB. Two candidate improvements are named in the rule-layer plan, section 8.7 |
-| 3 | User review | The user has not read the code. Reading order: [docs/go-learning-plan.md](docs/go-learning-plan.md), then `internal/engine/transaction.go` |
+| 1 | Speed on long values | 18.5 ms for 9.4 kB. Two candidate improvements are named in the rule-layer plan, section 8.7 |
+| 2 | User review | The user has not read the code. Reading order: [docs/go-learning-plan.md](docs/go-learning-plan.md), then `internal/engine/transaction.go` |
 
 ### 3.3. Later layers: not chosen
 
