@@ -1,0 +1,637 @@
+[
+  {
+    "name": "CRS 942140-1: SQL Injection Attack: Common DB Names Detected",
+    "method": "GET",
+    "uri": "/get?sql_table=pg_catalog",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-2: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "INFORMATION_SCHEMA",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-3: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "11"
+      ]
+    ],
+    "body": "database%28",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-4: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "db_name%28",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-5: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "11"
+      ]
+    ],
+    "body": "DaTaBasE%28",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-6: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "InFoRmaTioN_ScHemA",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-7: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "DB_NAME%28",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-8: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "6"
+      ]
+    ],
+    "body": "tempdb",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-9: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "4"
+      ]
+    ],
+    "body": "msdb",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-10: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "8"
+      ]
+    ],
+    "body": "mysql.db",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-11: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "17"
+      ]
+    ],
+    "body": "MSysAccessObjects",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-12: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "9"
+      ]
+    ],
+    "body": "Northwind",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-13: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "9"
+      ]
+    ],
+    "body": "northwind",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-14: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "11"
+      ]
+    ],
+    "body": "SCHEMA_NAME",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-15: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "11"
+      ]
+    ],
+    "body": "DATABASE%28",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-16: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "11"
+      ]
+    ],
+    "body": "schema_name",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-17: SQL Injection Attack: Common DB Names Detected",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "information_schema",
+    "expect_ids": [
+      942140
+    ]
+  },
+  {
+    "name": "CRS 942140-18: GHSA: 942140 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "60"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"pg_catalog\"></a></root>",
+    "expect_ids": [
+      942140
+    ]
+  }
+]

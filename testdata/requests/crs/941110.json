@@ -1,0 +1,400 @@
+[
+  {
+    "name": "CRS 941110-1: Test as described in http://www.client9.com/article/five-interesting-injection-attacks/",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "xyz=<script >alert(1);</script>"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-2: Test as described in http://www.client9.com/article/five-interesting-injection-attacks/",
+    "method": "GET",
+    "uri": "/get?x=<script+>alert(1);</script>",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-3: Test as described in http://www.client9.com/article/five-interesting-injection-attacks/",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "&#60;script+&#62;alert(1);&#60;/script&#62;=value"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-4: Test as described in http://www.client9.com/article/five-interesting-injection-attacks/",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Referer",
+        "<script >alert(1);</script>"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-5: XSS in URI / PATH_INFO going undetected - GH issue 1022",
+    "method": "GET",
+    "uri": "/get/foo/bar%3C/script%3E%3Cscript%3Ealert(1)%3C/script%3E/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-6: XSS in payload using %uNNNN",
+    "method": "POST",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "60"
+      ]
+    ],
+    "body": "var=%uff1cscript%u0020%uff1ealert%281%29%uff1c/script%uff1e\n",
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-7: XSS in payload with individual code points urlencoded",
+    "method": "POST",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "var=%ef%bc%9cscript%20%ef%bc%9ealert%281%29%ef%bc%9c/script%ef%bc%9e\n",
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-8: XSS in cookie name using unicode",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Cookie",
+        "＜script ＞alert(1)＜/script＞=value"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-9: XSS in Referer using html entities",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "&lt;script+&gt;alert(1);&lt;/script&gt"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-10: GH issue 1481",
+    "method": "GET",
+    "uri": "/get?%9cscript+%bcalert(1);%bc/script%9e=value",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-11: XSS in Custom HTTP header",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Remote-ip",
+        "<script>alert(1);</script>"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-12: XSS in Custom HTTP header",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Remote-ip",
+        "<script src=//test.com>"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941110
+    ]
+  },
+  {
+    "name": "CRS 941110-13: GHSA: 941110 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "73"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&lt;script &gt;alert(1)\"></a></root>",
+    "expect_ids": [
+      941110
+    ]
+  }
+]

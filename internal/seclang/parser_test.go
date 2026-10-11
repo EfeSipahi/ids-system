@@ -243,25 +243,28 @@ func TestParseSetupRules(t *testing.T) {
 	}
 }
 
-// Every rule file except 999 uses only the five directives the parser
-// knows. The total was counted independently: 627 rules with an id.
+// Every rule file parses. The totals were counted independently: 627 rules
+// with an id, and 55 SecRuleUpdateTargetById lines, all in file 999.
 func TestParseAllRuleFiles(t *testing.T) {
 	files, err := filepath.Glob(filepath.Join(crsDir, "rules", "*.conf"))
 	if err != nil || len(files) != 27 {
 		t.Fatalf("found %d rule files (%v), want 27", len(files), err)
 	}
-	total := 0
+	total, updates := 0, 0
 	seen := map[int]string{}
 	for _, f := range files {
-		if strings.HasSuffix(f, "REQUEST-999-COMMON-EXCEPTIONS-AFTER.conf") {
-			continue
-		}
 		ds, err := ParseFile(f)
 		if err != nil {
 			t.Errorf("%v", err)
 			continue
 		}
 		for _, d := range ds {
+			if d.Kind == KindUpdateTargetByID {
+				updates++
+				if !strings.HasSuffix(f, "REQUEST-999-COMMON-EXCEPTIONS-AFTER.conf") {
+					t.Errorf("%s: target update outside file 999", d.Pos)
+				}
+			}
 			if d.ID == 0 {
 				continue
 			}
@@ -272,21 +275,30 @@ func TestParseAllRuleFiles(t *testing.T) {
 			seen[d.ID] = f
 		}
 	}
-	if total != 627 {
-		t.Errorf("rules with an id = %d, want 627", total)
+	if total != 627 || updates != 55 {
+		t.Errorf("%d rules with an id and %d target updates, want 627 and 55", total, updates)
 	}
 }
 
-func TestUnsupportedDirectiveIsAnError(t *testing.T) {
-	path := filepath.Join(crsDir, "rules", "REQUEST-999-COMMON-EXCEPTIONS-AFTER.conf")
-	_, err := ParseFile(path)
-
-	var perr *Error
-	if !errors.As(err, &perr) {
-		t.Fatalf("error = %v, want *Error", err)
+func TestParseUpdateTargetByID(t *testing.T) {
+	ds := parseCRS(t, "rules/REQUEST-999-COMMON-EXCEPTIONS-AFTER.conf")
+	first := ds[0]
+	wantVars := []Variable{{Collection: "REQUEST_COOKIES", Selector: `^_ga(?:_\w+)?$`, Regex: true, Exclude: true}}
+	if first.Kind != KindUpdateTargetByID || first.TargetID != 932240 || first.ID != 0 || first.Pos.Line != 26 ||
+		!reflect.DeepEqual(first.Variables, wantVars) {
+		t.Errorf("first directive = %+v", first)
 	}
-	if perr.Pos.Line != 26 || !strings.Contains(perr.Msg, "unsupported directive SecRuleUpdateTargetById") {
-		t.Errorf("error = %v", perr)
+
+	for _, src := range []string{
+		`SecRuleUpdateTargetById 942100`,
+		`SecRuleUpdateTargetById 942100 "!ARGS:a" "ARGS:b"`,
+		`SecRuleUpdateTargetById 942100-942200 "!ARGS:a"`,
+		`SecRuleUpdateTargetById abc "!ARGS:a"`,
+		`SecRuleUpdateTargetById 942100 "!ARGS:"`,
+	} {
+		if _, err := Parse("test.conf", strings.NewReader(src)); err == nil {
+			t.Errorf("no error for %s", src)
+		}
 	}
 }
 

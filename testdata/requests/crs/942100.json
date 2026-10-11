@@ -1,0 +1,592 @@
+[
+  {
+    "name": "CRS 942100-1: Simple SQL Injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "17"
+      ]
+    ],
+    "body": "var=1234+OR+1%3D1",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-2: Simple SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "var=-1839%27+or+%271%27%3D%271",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-3: Simple SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "var=-1839%22+or+%221%22%3D%222",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-4: Basic SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "32"
+      ]
+    ],
+    "body": "var=2010-01-01'+sleep(20.to_i)+'",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-5: Simple SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "var=EmptyValue%27+and+526%3D527",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-6: Simple SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "var=foo%27%29+UNION+ALL+select+NULL+--",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-7: Advanced SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "var=foo')waitfor%20delay'5%3a0%3a20'--",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-8: Simple SQL Injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "var=JKGHUKGDI8TDHLFJH72FZLFJSKFH%27+and+sleep%2812%29+--",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-9: Simple SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "var=%2Fpath%2Fto%2Ffile%2Funitests.txt%27%29+UNION+ALL+select+NULL+--",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-10: Advanced SQL Injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "147"
+      ]
+    ],
+    "body": "1'||(select extractvalue(xmltype('<?xml version=\"1.1\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % toyop SYSTEM \"https://coreruleset.org/\">%toyop;",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-11: Simple function call",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "17"
+      ]
+    ],
+    "body": "var=sleep%2820%29",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-12: Advanced SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "57"
+      ]
+    ],
+    "body": "var=unittests%40coreruleset.org%22+sleep%2810.to_i%29+%22",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-13: Advanced injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "42"
+      ]
+    ],
+    "body": "var=\" | type %SystemDrive%\\\\config.ini | \"",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-14: Advanced SQL injection",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "104"
+      ]
+    ],
+    "body": "var=%22unittests%40coreruleset.org%22%27%29%29+and+%28select%2Afrom%28select%28sleep%285%29%29%29x%29+--",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-15: GHSA: 942100 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"1234 OR 1=1\"></a></root>",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-16: Unicode best-fit %uXXXX SQLi: curly apostrophe U+2019 folds to single quote",
+    "method": "GET",
+    "uri": "/?id=%u2019%20OR%201%3D1--%20-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 942100-17: Unicode best-fit %uXXXX SQLi: ' or 'a'='a with every quote as U+2019",
+    "method": "GET",
+    "uri": "/?id=%u2019%20or%20%u2019a%u2019%3d%u2019a",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942100
+    ]
+  }
+]

@@ -1,0 +1,93 @@
+[
+  {
+    "name": "CRS 941280-1: IE XSS Filters",
+    "method": "GET",
+    "uri": "/get?var=%3cBASE%20dsfds%20HREF%20%2f%20%3d",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941280
+    ]
+  },
+  {
+    "name": "CRS 941280-2: XSS test based on portswigger XSS cheatsheet",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Length",
+        "113"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "body": "payload=<a href=abc style=\"width:101%;height:100%;position:absolute;font-size:1000px;\">xss<base href=\"//evil/</a>",
+    "expect_ids": [
+      941280
+    ]
+  },
+  {
+    "name": "CRS 941280-3: GHSA: 941280 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "73"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&lt;BASE dsfds HREF / =\"></a></root>",
+    "expect_ids": [
+      941280
+    ]
+  }
+]

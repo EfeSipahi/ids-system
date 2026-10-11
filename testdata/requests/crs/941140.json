@@ -1,0 +1,434 @@
+[
+  {
+    "name": "CRS 941140-1: XSS vectors making use of javascript uri and tags, e.g., <p style=\"background:url(javascript:alert(1))\">, in ARGS",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "73"
+      ]
+    ],
+    "body": "9411400-1=%3Cp%20style%3D%22background%3Aurl(javascript%3Aalert(1))%22%3E",
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-2: XSS vectors making use of javascript uri and tags, e.g., <p style=\"background:url(javascript:alert(1))\">, in ARGS_NAMES",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "72"
+      ]
+    ],
+    "body": "%3Cp%20style%3D%22background%3Aurl(javascript%3Aalert(1))%22%3E=941140-2",
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-3: XSS vectors making use of javascript uri and tags, e.g., <p style=\"background:url(javascript:alert(1))\">, in COOKIE",
+    "method": "GET",
+    "uri": "/get/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "%3Cp%20style%3D%22background%3Aurl(javascript%3Aalert(1))%22%3E=941140-2"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-4: Status Page Test -  x=x:url(javascript as GET variable",
+    "method": "GET",
+    "uri": "/get/bar?test=x%3Dx%3Aurl%28javascript",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-5: multi-declaration list before payload, e.g. style=color:red;background:url(javascript",
+    "method": "GET",
+    "uri": "/get/bar?test=style%3Dcolor%3Ared%3Bbackground%3Aurl%28javascript%3Aalert%281%29%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-6: two declarations before payload",
+    "method": "GET",
+    "uri": "/get/bar?test=style%3Da%3Ab%3Bc%3Ad%3Bbackground%3Aurl%28javascript%3Aalert%281%29%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-7: declaration value containing colons",
+    "method": "GET",
+    "uri": "/get/bar?test=a%3Dk%3Av%3Aw%3Bm%3Aurl%28javascript%3Aalert%281%29%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-8: case-insensitive URL(JAVASCRIPT",
+    "method": "GET",
+    "uri": "/get/bar?test=STYLE%3DX%3AURL%28JAVASCRIPT",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-9: whitespace removed by t:removeWhitespace",
+    "method": "GET",
+    "uri": "/get/bar?test=style%20%3D%20background%20%3A%20url%20%28%20javascript%20%3A%20alert%281%29%20%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-10: many declarations then payload via User-Agent",
+    "method": "GET",
+    "uri": "/get/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "x=k:v;k:v;k:v;k:v;k:v;k:v;k:v;k:v;z:url(javascript"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-11: benign declarations, no payload",
+    "method": "GET",
+    "uri": "/get/bar?test=style%3Dcolor%3Ared%3Bbackground%3Awhite",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-12: url scheme is not javascript",
+    "method": "GET",
+    "uri": "/get/bar?test=style%3Dbackground%3Aurl%28http%3A%2F%2Fexample.com%2Fx%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-13: regression sample for the bounded declaration value: a long key:value; list with no url(javascript payload must not match (no false positive). On PCRE2 (the engine under test) both the old and new patterns complete quickly, so this is a no-match canary for the unbounded-value shape, not a latency assertion",
+    "method": "GET",
+    "uri": "/get/bar?test=style%3Da%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3Ba%3Ab%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-14: url(javascript without a name= assignment",
+    "method": "GET",
+    "uri": "/get/bar?test=url%28javascript%3Aalert%281%29%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941140
+    ]
+  },
+  {
+    "name": "CRS 941140-15: GHSA: 941140 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "113"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&lt;p style=&quot;background:url(javascript:alert(1))&quot;&gt;\"></a></root>",
+    "expect_ids": [
+      941140
+    ]
+  }
+]

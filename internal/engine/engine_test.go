@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -253,9 +254,15 @@ func TestArgsIncludeTheFormBody(t *testing.T) {
 		t.Errorf("matches = %+v", res.Matches)
 	}
 
+	// The values of a JSON body are arguments too, named by their path.
+	res = rs.Evaluate(post("application/json", `{"user": {"files": ["a", "../etc"]}}`))
+	if len(res.Matches) != 1 || res.Matches[0].VarName != "ARGS:json.user.files.1" {
+		t.Errorf("matches = %+v", res.Matches)
+	}
+
 	// A body that is not parsed gives no ARGS. The request's own status
 	// says so; the engine reports no match.
-	req := post("application/json", `{"arg":"../etc"}`)
+	req := post("text/plain", `arg=../etc`)
 	if got := rs.Evaluate(req).Matches; len(got) != 0 || req.Status.Body != httpmodel.BodyNotInspected {
 		t.Errorf("matches = %+v, body status = %v", got, req.Status.Body)
 	}
@@ -305,12 +312,18 @@ func TestLoadErrors(t *testing.T) {
 		rules []string
 		msgs  []string
 	}{
-		{"action", []string{`SecAction "id:7,phase:1,pass,ctl:ruleEngine=Off"`}, []string{"rulesa.conf:1: rule 7: action ctl is not supported"}},
-		{"operator", []string{`SecRule ARGS "@pmFromFile x.data" "id:7,phase:2"`}, []string{"rule 7: operator @pmFromFile is not supported"}},
+		{"action", []string{`SecAction "id:7,phase:1,pass,initcol:ip=x"`}, []string{"rulesa.conf:1: rule 7: action initcol is not supported"}},
+		{"ctl", []string{`SecAction "id:7,phase:1,pass,ctl:ruleEngine=Off"`}, []string{"rule 7: ctl:ruleEngine=Off: only ctl:ruleRemoveTargetByTag is supported"}},
+		{"ctl without variable", []string{`SecAction "id:7,phase:1,pass,ctl:ruleRemoveTargetByTag=x"`}, []string{"expected TAG;VARIABLE"}},
+		{"operator", []string{`SecRule ARGS "@within a b" "id:7,phase:2"`}, []string{"rule 7: operator @within is not supported"}},
+		{"data file", []string{`SecRule ARGS "@pmFromFile x.data" "id:7,phase:2"`}, []string{"rule 7: @pmFromFile: open ", "x.data"}},
 		{"regex", []string{`SecRule ARGS "@rx (?=a)" "id:7,phase:2"`}, []string{"rule 7: @rx: "}},
 		{"transformation", []string{`SecRule ARGS "@rx a" "id:7,phase:2,t:none,t:sha1"`}, []string{`rule 7: transformation "sha1" is not supported`}},
-		{"variable", []string{`SecRule REQUEST_COOKIES "@rx a" "id:7,phase:2"`}, []string{"rule 7: variable REQUEST_COOKIES is not supported"}},
-		{"regex selector", []string{`SecRule ARGS:/^a/ "@rx a" "id:7,phase:2"`}, []string{"regular expression selectors are not supported"}},
+		{"variable", []string{`SecRule RESPONSE_BODY "@rx a" "id:7,phase:2"`}, []string{"rule 7: variable RESPONSE_BODY is not supported"}},
+		{"regex selector", []string{`SecRule ARGS:/(a/ "@rx a" "id:7,phase:2"`}, []string{"rule 7: variable ARGS:/(a/: error parsing regexp"}},
+		{"regex selector on tx", []string{`SecRule TX:/^a/ "@rx a" "id:7,phase:2"`}, []string{"a regular expression selector on TX is not supported"}},
+		{"selector on single value", []string{`SecRule REQUEST_FILENAME:x "@rx a" "id:7,phase:2"`}, []string{"variable REQUEST_FILENAME takes no selector"}},
+		{"update with unsupported variable", []string{"SecRule ARGS \"@rx a\" \"id:7,phase:2\"\nSecRuleUpdateTargetById 7 \"!GEO:x\""}, []string{"rulesa.conf:2: SecRuleUpdateTargetById 7: variable GEO is not supported"}},
 		{"tx without name", []string{`SecRule TX "@rx a" "id:7,phase:2"`}, []string{"TX without a variable name"}},
 		{"phase", []string{`SecRule ARGS "@rx a" "id:7,phase:4"`}, []string{"rule 7: phase 4 is not supported"}},
 		{"marker", []string{`SecAction "id:7,phase:1,pass,skipAfter:NOWHERE"`}, []string{"rulesa.conf:1: skipAfter names marker NOWHERE"}},
@@ -323,8 +336,8 @@ func TestLoadErrors(t *testing.T) {
 		{"default action", []string{`SecDefaultAction "phase:2,log,pass,ctl:ruleEngine=Off"`}, []string{"SecDefaultAction: action ctl is not supported"}},
 		{"duplicate id in two files", []string{`SecAction "id:7,phase:1,pass"`, `SecAction "id:7,phase:1,pass"`}, []string{"rulesb.conf:1: rule id 7 is already used at", "rulesa.conf:1"}},
 		// Every problem is reported, not only the first.
-		{"several", []string{"SecAction \"id:7,phase:1,pass,ctl:x=y\"\nSecRule ARGS \"@within a\" \"id:8,phase:2,t:md5\""},
-			[]string{"rule 7: action ctl", "rule 8: operator @within", `rule 8: transformation "md5"`}},
+		{"several", []string{"SecAction \"id:7,phase:1,pass,initcol:ip=x\"\nSecRule ARGS \"@within a\" \"id:8,phase:2,t:md5\""},
+			[]string{"rule 7: action initcol", "rule 8: operator @within", `rule 8: transformation "md5"`}},
 		{"syntax", []string{`SecRuleEngine On`}, []string{"rulesa.conf:1: unsupported directive SecRuleEngine"}},
 	}
 	for _, tt := range tests {
@@ -352,8 +365,8 @@ func TestLoadErrors(t *testing.T) {
 func TestExclusions(t *testing.T) {
 	cfg := rulesConfig(t, `
 SecAction "id:1,phase:1,nolog,pass,setvar:tx.one=1"
-SecRule REQUEST_COOKIES "@pmFromFile x.data" "id:2,phase:2,t:sha1,chain"
-    SecRule ARGS "@within a" "ctl:x=y"
+SecRule RESPONSE_BODY "@within a b" "id:2,phase:2,t:sha1,chain"
+    SecRule ARGS "@within a" "initcol:ip=x"
 SecAction "id:3,phase:2,nolog,pass,setvar:tx.three=1"
 `)
 	cfg.Exclude = []Exclusion{{ID: 2, Reason: "not needed here"}}
@@ -385,30 +398,56 @@ SecAction "id:3,phase:2,nolog,pass,setvar:tx.three=1"
 	}
 }
 
-func TestVariablesNotProvided(t *testing.T) {
+func TestFilesAndXMLVariables(t *testing.T) {
 	rs := loadRules(t, `
 SecComponentSignature "TEST/1"
-SecRule ARGS|FILES|XML:/*|XML://@* "@rx a" "id:1,phase:2,log,pass"
-SecRule ARGS|!XML:/* "@rx a" "id:2,phase:2,log,pass"
-SecRule XML:/* "@rx a" "id:3,phase:2,log,pass"
+SecRule FILES "@rx \.\./" "id:1,phase:2,log,pass"
+SecRule FILES_NAMES "@rx ^doc$" "id:2,phase:2,log,pass"
+SecRule ARGS "@rx ^hello$" "id:3,phase:2,log,pass"
+SecRule XML:/* "@rx \.\./" "id:4,phase:2,log,pass"
+SecRule XML://@* "@rx \.\./" "id:5,phase:2,log,pass"
+SecRule ARGS|!XML:/* "@rx zzz" "id:6,phase:2,log,pass"
 `)
-	statuses := rs.Statuses()
-	if got := statuses[0].NotInspected; !reflect.DeepEqual(got, []string{"FILES", "XML"}) {
-		t.Errorf("rule 1 not inspected = %v", got)
-	}
-	// Excluding something that is not provided loses nothing.
-	if got := statuses[1].NotInspected; got != nil {
-		t.Errorf("rule 2 not inspected = %v", got)
-	}
-	if got := rs.NotInspected(); !reflect.DeepEqual(got, []string{"FILES", "XML"}) {
-		t.Errorf("rule set not inspected = %v", got)
-	}
 	if rs.Signature() != "TEST/1" {
 		t.Errorf("signature = %q", rs.Signature())
 	}
-	// Rule 3 has nothing left to test; it is active but can never match.
-	if got := rs.Evaluate(get("/?x=a")).MatchedIDs(); !reflect.DeepEqual(got, []int{1, 2}) {
-		t.Errorf("matched = %v", got)
+	locations := func(req *httpmodel.Request) []string {
+		var out []string
+		for _, m := range rs.Evaluate(req).Matches {
+			out = append(out, fmt.Sprintf("%d %s=%s", m.RuleID, m.VarName, m.Value))
+		}
+		return out
+	}
+	post := func(contentType, body string) *httpmodel.Request {
+		return httpmodel.New(httpmodel.Received{
+			Method:  "POST",
+			Target:  "/upload",
+			Headers: []httpmodel.Header{{Name: "Content-Type", Value: contentType}},
+			Body:    []byte(body),
+		})
+	}
+
+	multipart := "--B\r\nContent-Disposition: form-data; name=\"note\"\r\n\r\nhello\r\n" +
+		"--B\r\nContent-Disposition: form-data; name=\"doc\"; filename=\"../../x.txt\"\r\n\r\nfile content ../ here\r\n--B--\r\n"
+	want := []string{
+		// The file name is inspected with its path; the file content is not.
+		"1 FILES:doc=../../x.txt",
+		"2 FILES_NAMES:doc=doc",
+		"3 ARGS:note=hello",
+	}
+	if got := locations(post("multipart/form-data; boundary=B", multipart)); !reflect.DeepEqual(got, want) {
+		t.Errorf("multipart matches = %q\nwant %q", got, want)
+	}
+
+	xml := `<?xml version="1.0"?><order ref="a/../b"><item>../../etc</item><item>fine</item></order>`
+	want = []string{"4 XML:/*=../../etc", "5 XML://@*=a/../b"}
+	if got := locations(post("application/xml", xml)); !reflect.DeepEqual(got, want) {
+		t.Errorf("xml matches = %q\nwant %q", got, want)
+	}
+
+	// Other XPath expressions are refused when the rules are loaded.
+	if _, err := Load(rulesConfig(t, `SecRule XML:/order/item "@rx a" "id:1,phase:2"`)); err == nil || !strings.Contains(err.Error(), "only XML:/* and XML://@* are supported") {
+		t.Errorf("error = %v", err)
 	}
 }
 
@@ -521,5 +560,158 @@ SecAction "id:4,phase:2,log,pass,msg:'always'"
 	// though the rule before it matched one.
 	if m := res.Matches[3]; m.VarName != "" || m.Value != "" {
 		t.Errorf("SecAction match = %+v", m)
+	}
+}
+
+func TestRequestVariables(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_COOKIES "@rx \.\./" "id:1,phase:2,log,pass"
+SecRule REQUEST_COOKIES_NAMES "@rx ^sess" "id:2,phase:2,log,pass"
+SecRule REQUEST_COOKIES:THEME "@rx ^dark$" "id:3,phase:2,log,pass"
+SecRule ARGS_NAMES "@rx \[" "id:4,phase:2,log,pass"
+SecRule REQUEST_FILENAME "@rx \.env$" "id:5,phase:2,log,pass"
+SecRule REQUEST_BASENAME "@rx ^\.env$" "id:6,phase:2,log,pass"
+SecRule REQUEST_FILENAME "@rx secret" "id:7,phase:2,log,pass"
+SecRule &REQUEST_COOKIES "@eq 3" "id:8,phase:2,log,pass"
+SecRule ARGS_NAMES:user[name] "@rx ." "id:9,phase:2,log,pass"
+`)
+	req := get("/app/config/.env?user[name]=efe&secret=1",
+		httpmodel.Header{Name: "Cookie", Value: "session=abc; theme=dark; path=a/../b"})
+	res := rs.Evaluate(req)
+
+	got := map[int]string{}
+	for _, m := range res.Matches {
+		got[m.RuleID] = m.VarName + "=" + m.Value
+	}
+	want := map[int]string{
+		1: "REQUEST_COOKIES:path=a/../b",
+		2: "REQUEST_COOKIES_NAMES:session=session",
+		3: "REQUEST_COOKIES:theme=dark",
+		4: "ARGS_NAMES:user[name]=user[name]",
+		// The file name is the path without the query string, so the
+		// parameter called "secret" does not make rule 7 match.
+		5: "REQUEST_FILENAME=/app/config/.env",
+		6: "REQUEST_BASENAME=.env",
+		8: "&REQUEST_COOKIES=3",
+		9: "ARGS_NAMES:user[name]=user[name]",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("matches = %v\nwant      %v", got, want)
+	}
+}
+
+func TestRegexSelectors(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_COOKIES:/^_ga/ "@rx ." "id:1,phase:2,log,pass"
+SecRule REQUEST_COOKIES|!REQUEST_COOKIES:/^_GA(?:_\w+)?$/ "@rx evil" "id:2,phase:2,log,pass"
+SecRule &ARGS:/^item\d+$/ "@eq 2" "id:3,phase:2,log,pass"
+SecRule ARGS:/a|b/ "@rx ^1$" "id:4,phase:2,log,pass"
+`)
+	req := get("/?item1=x&item22=y&items=z&b=1&c=1",
+		httpmodel.Header{Name: "Cookie", Value: "_ga=evil; _ga_ABC=evil; _gax=evil; other=fine"})
+	res := rs.Evaluate(req)
+
+	var got []string
+	for _, m := range res.Matches {
+		got = append(got, fmt.Sprintf("%d %s", m.RuleID, m.VarName))
+	}
+	want := []string{
+		"1 REQUEST_COOKIES:_ga", "1 REQUEST_COOKIES:_ga_ABC", "1 REQUEST_COOKIES:_gax",
+		// The exclusion is matched without regard to case and removes
+		// _ga and _ga_ABC, but not _gax.
+		"2 REQUEST_COOKIES:_gax",
+		"3 &ARGS:^item\\d+$",
+		// A "|" inside the selector belongs to the pattern.
+		"4 ARGS:b",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("matches = %q\nwant      %q", got, want)
+	}
+}
+
+func TestUpdateTargetByID(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_COOKIES|ARGS "@rx evil" "id:1,phase:2,log,pass"
+SecRule REQUEST_COOKIES "@rx evil" "id:2,phase:2,log,pass"
+SecRule REQUEST_COOKIES "@rx evil" "id:3,phase:2,log,pass"
+SecRuleUpdateTargetById 1 "!REQUEST_COOKIES:/^_ga/"
+SecRuleUpdateTargetById 1 "!REQUEST_COOKIES:consent|!XML:/*"
+SecRuleUpdateTargetById 2 "REQUEST_HEADERS:X-Extra"
+SecRuleUpdateTargetById 932240 "!REQUEST_COOKIES:/^_ga/"
+SecRuleUpdateTargetById 942100 "!REQUEST_COOKIES:x"
+SecRuleUpdateTargetById 932240 "!REQUEST_COOKIES:y"
+`)
+	req := get("/?q=evil",
+		httpmodel.Header{Name: "Cookie", Value: "_ga=evil; consent=evil; real=evil"},
+		httpmodel.Header{Name: "X-Extra", Value: "evil"})
+	res := rs.Evaluate(req)
+
+	var got []string
+	for _, m := range res.Matches {
+		got = append(got, fmt.Sprintf("%d %s", m.RuleID, m.VarName))
+	}
+	want := []string{
+		// Two cookies were taken out of rule 1; its other variable stays.
+		"1 REQUEST_COOKIES:real", "1 ARGS:q",
+		// Rule 2 got one more place to look.
+		"2 REQUEST_COOKIES:_ga", "2 REQUEST_COOKIES:consent", "2 REQUEST_COOKIES:real", "2 REQUEST_HEADERS:X-Extra",
+		// Rule 3 was not touched.
+		"3 REQUEST_COOKIES:_ga", "3 REQUEST_COOKIES:consent", "3 REQUEST_COOKIES:real",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("matches = %q\nwant      %q", got, want)
+	}
+	// Updates for rules that are not loaded change nothing and are listed.
+	if got := rs.IgnoredTargetUpdates(); !reflect.DeepEqual(got, []int{932240, 942100}) {
+		t.Errorf("ignored updates = %v", got)
+	}
+}
+
+func TestMatchedVars(t *testing.T) {
+	// The second rule tests what the first rule matched, not the whole
+	// request: here, whether a parameter with "select" also has "from".
+	rs := loadRules(t, `
+SecRule ARGS "@rx (?i)select" "id:1,phase:2,log,pass,t:none,t:lowercase,chain"
+    SecRule MATCHED_VARS "@rx from" "t:none"
+SecRule ARGS:q "@rx ." "id:2,phase:2,log,pass,chain"
+    SecRule MATCHED_VARS "@rx ^zzz$"
+SecRule MATCHED_VARS "@rx ." "id:3,phase:2,log,pass"
+`)
+	res := rs.Evaluate(get("/?a=SELECT+1&b=Select+x+from+t&c=from&q=1"))
+	var got []string
+	for _, m := range res.Matches {
+		got = append(got, fmt.Sprintf("%d %s=%s", m.RuleID, m.VarName, m.Value))
+	}
+	// Only b has both words. The value is the one the first rule tested,
+	// so it is in lower case. Rule 3 is no chain: nothing has matched
+	// before it, and what rules 1 and 2 matched is gone.
+	want := []string{"1 MATCHED_VARS:ARGS:b=select x from t"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("matches = %q, want %q", got, want)
+	}
+}
+
+func TestRemoveTargetByTag(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_FILENAME "!@validateByteRange 45-57,65-90,95,97-122" "id:1,phase:1,pass,nolog,ctl:ruleRemoveTargetByTag=skip-plain-path;REQUEST_FILENAME"
+SecRule ARGS|REQUEST_FILENAME "@rx admin" "id:2,phase:2,log,pass,tag:'group-a',tag:'skip-plain-path'"
+SecRule ARGS|REQUEST_FILENAME "@rx admin" "id:3,phase:2,log,pass,tag:'group-a'"
+`)
+	locations := func(target string) []string {
+		var out []string
+		for _, m := range rs.Evaluate(get(target)).Matches {
+			out = append(out, fmt.Sprintf("%d %s", m.RuleID, m.VarName))
+		}
+		return out
+	}
+	// A path of plain characters: rule 1 matches and takes the path away
+	// from the rule with the tag, for this request only.
+	if got, want := locations("/admin/list?q=admin"), []string{"2 ARGS:q", "3 ARGS:q", "3 REQUEST_FILENAME"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("plain path: %q, want %q", got, want)
+	}
+	// A path with other characters: rule 1 does not match, nothing is
+	// removed. The request before left nothing behind.
+	if got, want := locations("/admin/<list>?q=admin"), []string{"2 ARGS:q", "2 REQUEST_FILENAME", "3 ARGS:q", "3 REQUEST_FILENAME"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("other path: %q, want %q", got, want)
 	}
 }

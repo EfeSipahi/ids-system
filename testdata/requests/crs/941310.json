@@ -1,0 +1,466 @@
+[
+  {
+    "name": "CRS 941310-1: Positive test using single byte",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "var=\\xbcscript\\xbealert(\\xa2XSS\\xa2)\\xbc/script\\xbe",
+    "expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-2: Positive test using utf-8",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "75"
+      ]
+    ],
+    "body": "var=\\xc2\\xbcscript\\xc2\\xbealert(\\xc2\\xa2XSS\\xc2\\xa2)\\xc2\\xbc/script\\xc2\\xbe",
+    "expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-3: Positive test using alternate utf-8",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "75"
+      ]
+    ],
+    "body": "var=\\xd0\\xbcscript\\xd0\\xbealert(\\xc2\\xa2XSS\\xc2\\xa2)\\xd0\\xbc/script\\xd0\\xbe",
+    "expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-4: Real world false positive for old rule with Russian utf-8 characters",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "260"
+      ]
+    ],
+    "body": "var=\\xd0\\xb0\\xd0\\xb1\\xd0\\xb2\\xd0\\xb3\\xd0\\xb4\\xd0\\xb5\\xd1\\x91\\xd0\\xb6\\xd0\\xb7\\xd0\\xb8\\xd0\\xb9\\xd0\\xba\\xd0\\xbb\\xd0\\xbc\\xd0\\xbd\\xd0\\xbe\\xd0\\xbf\\xd1\\x80\\xd1\\x81\\xd1\\x82\\xd1\\x83\\xd1\\x84\\xd1\\x85\\xd1\\x86\\xd1\\x87\\xd1\\x88\\xd1\\x89\\xd1\\x8a\\xd1\\x8b\\xd1\\x8d\\xd1\\x8e\\xd1\\x8f",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-5: Real world false positive for old rule with German utf-8 characters",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "var=de_matten & sitzbez\\xc3\\x83\\xc2\\xbcge > fu\\xc3\\x83\\xc2\\x9fmatten_mt",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-6: Negative test for opening tag",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "12"
+      ]
+    ],
+    "body": "var=\\xbc\\xbc",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-7: Negative test for closing tag",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "12"
+      ]
+    ],
+    "body": "var=\\xbe\\xbe",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-8: Negative for missing end tag, opening tag",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "var=\\xd0\\xbcscript\\xd0\\xbealert(\\xc2\\xa2XSS\\xc2\\xa2)\\xd0\\xbc/script\\xd0",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-9: Negative for missing end tag, closing tag",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "var=\\xd0\\xbcscript\\xd0\\xbealert(\\xc2\\xa2XSS\\xc2\\xa2)\\xd0/script\\xd0\\xbe",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-10: Negative using real world Russian example in utf-8",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "252"
+      ]
+    ],
+    "body": "var=\\xd0\\xb0\\xd0\\xb1\\xd0\\xb2\\xd0\\xb3\\xd0\\xb4\\xd0\\xb5\\xd1\\x91\\xd0\\xb6\\xd0\\xb7\\xd0\\xb8\\xd0\\xb9\\xd0\\xba\\xd0\\xbb\\xd0\\xbc\\xd0\\xbd\\xd0\\xbf\\xd1\\x80\\xd1\\x81\\xd1\\x82\\xd1\\x83\\xd1\\x84\\xd1\\x85\\xd1\\x86\\xd1\\x87\\xd1\\x88\\xd1\\x89\\xd1\\x8a\\xd1\\x8b\\xd1\\x8d\\xd1\\x8e\\xd1\\x8f",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-11: Negative using real world Russian example in utf-8, variant",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded; charset=us-ascii"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "252"
+      ]
+    ],
+    "body": "var=\\xd0\\xb0\\xd0\\xb1\\xd0\\xb2\\xd0\\xb3\\xd0\\xb4\\xd0\\xb5\\xd1\\x91\\xd0\\xb6\\xd0\\xb7\\xd0\\xb8\\xd0\\xb9\\xd0\\xba\\xd0\\xbb\\xd0\\xbd\\xd0\\xbe\\xd0\\xbf\\xd1\\x80\\xd1\\x81\\xd1\\x82\\xd1\\x83\\xd1\\x84\\xd1\\x85\\xd1\\x86\\xd1\\x87\\xd1\\x88\\xd1\\x89\\xd1\\x8a\\xd1\\x8b\\xd1\\x8d\\xd1\\x8e\\xd1\\x8f",
+    "no_expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-12: Status Page Test - US-ASCII Malformed Encoding XSS Filter Attack",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "65"
+      ]
+    ],
+    "body": "test=%5Cxbctest%5Cxbetest%28%5Cxa2XSS%5Cxa2%29%5Cxbc%2Ftest%5Cxbe",
+    "expect_ids": [
+      941310
+    ]
+  },
+  {
+    "name": "CRS 941310-13: GHSA: 941310 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "97"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"\\xbcscript\\xbealert(\\xa2XSS\\xa2)\\xbc/script\\xbe\"></a></root>",
+    "expect_ids": [
+      941310
+    ]
+  }
+]

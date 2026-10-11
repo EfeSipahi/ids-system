@@ -1,0 +1,430 @@
+[
+  {
+    "name": "CRS 942240-1: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "%22+WAITFOR+DELAY+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-2: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "%22%3Bwaitfor+delay+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-3: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "%27%3BWAITFOR+DELAY+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-4: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "%27%3B+waitfor+delay+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-5: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "%27+waitfor+delay+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-6: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "%27%3B+WAITFOR+DELAY+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-7: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "%22+WAITFOR+DELAY+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-8: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "%22%3BWAITFOR+DELAY+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-9: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "pay=%22%3Bwaitfor+delay+%27%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-10: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "170"
+      ]
+    ],
+    "body": "pay=ALTER+TABLE+%60mass_mails%60+CHANGE+%60receivers%60+%60receivers%60+ENUM%28%27FACILITIES%27%2C%27APPLICATION_2015%27%2C%27APPLICATION_2016%27%29+CHARACTER+SET+utf8%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-11: Detects MySQL charset switch and MSSQL DoS attempts",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "104"
+      ]
+    ],
+    "body": "ALTER+TABLE+%60tx_v3appointment_domain_model_appointment%60+ADD+%60video%60+TEXT+CHARACTER+SET+latin1%0A",
+    "expect_ids": [
+      942240
+    ]
+  },
+  {
+    "name": "CRS 942240-12: GHSA: 942240 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "74"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"%22+WAITFOR+DELAY+%27%0A\"></a></root>",
+    "expect_ids": [
+      942240
+    ]
+  }
+]

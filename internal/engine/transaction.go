@@ -79,6 +79,14 @@ type transaction struct {
 	matchedVar     string            // %{MATCHED_VAR}
 	matchedVarName string            // %{MATCHED_VAR_NAME}
 	matches        []Match
+
+	// matchedVars is what the rules of the current chain have matched so
+	// far. It is the MATCHED_VARS variable and starts empty for every
+	// chain.
+	matchedVars []namedValue
+	// removedTargets holds the ctl:ruleRemoveTargetByTag actions that ran
+	// in this request.
+	removedTargets []targetRemoval
 }
 
 // Evaluate runs the rules on one request. It does not change the RuleSet or
@@ -113,6 +121,7 @@ func (tx *transaction) runPhase(phase int) {
 // runChain runs a rule and, while each one matches, the rules chained to
 // it. It reports whether the whole chain matched.
 func (tx *transaction) runChain(first *rule) bool {
+	tx.matchedVars = tx.matchedVars[:0]
 	for r := first; r != nil; r = r.next {
 		if !tx.runRule(r, first) {
 			return false
@@ -142,10 +151,11 @@ func (tx *transaction) runRule(r, first *rule) bool {
 		}
 		matched = true
 		tx.matchedVar, tx.matchedVarName = value, name
+		tx.matchedVars = append(tx.matchedVars, namedValue{name: name, value: value})
 		tx.onMatch(r, first, res.Captures)
 	}
 
-	for _, v := range tx.collect(r) {
+	for _, v := range tx.collect(r, first) {
 		value := v.value
 		if r.multiMatch && len(r.transforms) > 0 {
 			// Test the value as received, then again after every
@@ -185,6 +195,7 @@ func (tx *transaction) onMatch(r, first *rule, captures []string) {
 	for _, sv := range r.setvars {
 		tx.setvar(sv)
 	}
+	tx.removedTargets = append(tx.removedTargets, r.removals...)
 
 	if r.next != nil || !first.log {
 		return

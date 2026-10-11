@@ -1,0 +1,808 @@
+[
+  {
+    "name": "CRS 942160-1: SQL Injection Attack: Time-Based Payload Detected via Sleep Function",
+    "method": "GET",
+    "uri": "/get?sql_table=sleep%28534543%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-2: SQL Injection Attack: Time-Based Payload Detected via Sleep Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "12"
+      ]
+    ],
+    "body": "sleEP%283%29",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-3: SQL Injection Attack: Time-Based Payload Detected via Sleep Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "15"
+      ]
+    ],
+    "body": "sleep%285000%29",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-4: SQL Injection Attack: Time-Based Payload Detected via Sleep Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "BENChmARk%282999%2F%2A%2A%2F999%2CMd5%28NoW%28%29",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-5: SQL Injection Attack: Time-Based Payload Detected via Benchmark Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "BEncHMARk%282999999%2CMd5%28NoW%28%27%27%29",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-6: SQL Injection Attack: Time-Based Payload Detected via Benchmark Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "41"
+      ]
+    ],
+    "body": "BENCHMARK%285000000%2CMD5%280x48416166%29",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-7: SQL Injection Attack: Time-Based Payload Detected via Benchmark Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "benchmark(3000000,M%445(4)",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-8: SQL Injection Attack: Time-Based Payload Detected via Benchmark Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "68"
+      ]
+    ],
+    "body": "pay=BENCHMARK%281000000%2C+md5%22+AND+1883%3D1883--+GSCC%28%27%27%29",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-9: SQL Injection Attack: Time-Based Payload Detected via Benchmark Function",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "58"
+      ]
+    ],
+    "body": "pay=BeNChMaRK%281000000%2C+md5+AND+9796%3D4706%28%27%27%29",
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-10: Detect blind SQLi attack in REQUEST_BASENAME. Issue #1904",
+    "method": "GET",
+    "uri": "/get/if(now()=sysdate(),sleep(12),0)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-11: Detect blind SQLi attack in REQUEST_FILENAME. Issue #3779",
+    "method": "GET",
+    "uri": "/get/if(now()=sysdate(),sleep(12),0)/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-12: Detect blind SQLi attack in REQUEST_FILENAME. Issue #3779 - Negative test (invalid benchmark syntax)",
+    "method": "GET",
+    "uri": "/BENChmARk(2999/**/999,Md5(/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-13: Detect blind SQLi attack in REQUEST_FILENAME. Issue #3779",
+    "method": "GET",
+    "uri": "/get/if(now()=sysdate(),sleep(/*comment*/12),0)/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-14: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (20 dIv 3)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%2820%20dIv%203%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-15: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: SeleCT sLeEp (mOD(10,5))",
+    "method": "GET",
+    "uri": "/get?sql_table=SeleCT%20sLeEp%20%28mOD%2810%2C5%29%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-16: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (5 ^ 2)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%285%20%5E%202%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-17: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (3 * 2)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%283%20%2A%202%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-18: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (-3 * -2)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%28-3%20%2A%20-2%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-19: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (10 /6)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%2810%20%2F6%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-20: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep ('10€@#={},~2')",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%28%2710%E2%82%AC%40%23%3D%7B%7D%2C~2%27%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-21: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (\"10\")",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%28%2210%22%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-22: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (10 +6)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%2810%20%2B6%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-23: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (10 -6)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%2810%20-6%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-24: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (10.2)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%2810.2%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-25: SQL Injection Attack: Time-Based Payload Detected via Sleep Function\ndecoded payload: sELecT slEep (20 % 7)",
+    "method": "GET",
+    "uri": "/get?sql_table=sELecT%20slEep%20%2820%20%25%207%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-26: SQL Injection Attack: Time-Based Payload Detected via Sleep Function with comments\ndecoded payload: selEct(/*te\"$%st*/sleep(/*te'e*st2*/10));",
+    "method": "GET",
+    "uri": "/get?sql_table=selEct%28%2F%2Ate%22%24%25st%2A%2Fsleep%28%2F%2Ate%27e%2Ast2%2A%2F10%29%29%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942160
+    ]
+  },
+  {
+    "name": "CRS 942160-27: GHSA: 942160 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"sleep(534543)\"></a></root>",
+    "expect_ids": [
+      942160
+    ]
+  }
+]

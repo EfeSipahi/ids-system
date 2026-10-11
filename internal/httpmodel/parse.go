@@ -15,6 +15,18 @@ func New(rec Received) *Request {
 	r := &Request{Received: rec}
 
 	r.Parsed.Path, r.Parsed.RawQuery, _ = strings.Cut(rec.Target, "?")
+	r.Parsed.Path = withoutOrigin(r.Parsed.Path)
+	var badPath bool
+	r.Parsed.DecodedPath, badPath = decodePercent(r.Parsed.Path, false)
+	if badPath {
+		r.Status.Issues = append(r.Status.Issues, Issue{
+			Part:    "path",
+			Message: "the path contains malformed percent-encoding; it was kept as written",
+		})
+	}
+	for _, header := range r.HeaderValues("Cookie") {
+		r.Parsed.Cookies = append(r.Parsed.Cookies, parseCookies(header)...)
+	}
 
 	var malformed int
 	r.Parsed.Query, malformed = parseParams(r.Parsed.RawQuery, OriginQuery)
@@ -24,8 +36,13 @@ func New(rec Received) *Request {
 	return r
 }
 
+// DefaultBodyLimit is the largest body that is parsed. A larger body is
+// kept as received and reported as not inspected.
+const DefaultBodyLimit = 1 << 20
+
 func (r *Request) parseBody() {
-	if len(r.Received.Body) == 0 {
+	body := r.Received.Body
+	if len(body) == 0 {
 		r.Status.Body = BodyEmpty
 		return
 	}
@@ -43,16 +60,61 @@ func (r *Request) parseBody() {
 		})
 	}
 
-	if mediaType(types[0]) != formContentType {
+	media := mediaType(types[0])
+	r.Status.BodyFormat = bodyFormat(media)
+	if r.Status.BodyFormat == "" {
 		r.Status.Body = BodyNotInspected
-		r.Status.BodyReason = fmt.Sprintf("content type %q is not parsed", mediaType(types[0]))
+		r.Status.BodyReason = fmt.Sprintf("content type %q is not parsed", media)
+		return
+	}
+	if len(body) > DefaultBodyLimit {
+		r.Status.Body = BodyNotInspected
+		r.Status.BodyReason = fmt.Sprintf("the body has %d bytes, more than the limit of %d", len(body), DefaultBodyLimit)
 		return
 	}
 
-	var malformed int
-	r.Parsed.Form, malformed = parseParams(string(r.Received.Body), OriginBody)
-	r.noteMalformed("body", malformed)
+	// Each parser returns an error when it had to stop early. What it
+	// read before that stays in the parsed view.
+	var err error
+	switch r.Status.BodyFormat {
+	case "form":
+		var malformed int
+		r.Parsed.BodyArgs, malformed = parseParams(string(body), OriginBody)
+		r.noteMalformed("body", malformed)
+	case "json":
+		r.Parsed.BodyArgs, err = parseJSON(body)
+	case "multipart":
+		r.Parsed.BodyArgs, r.Parsed.Files, err = parseMultipart(body, types[0])
+	case "xml":
+		r.Parsed.XMLText, r.Parsed.XMLAttributes, err = parseXML(body)
+	}
+	if err != nil {
+		r.Status.Body = BodyPartlyInspected
+		r.Status.BodyReason = fmt.Sprintf("the %s body could not be read to its end: %v", r.Status.BodyFormat, err)
+		return
+	}
 	r.Status.Body = BodyInspected
+}
+
+// bodyFormat chooses a parser from the media type, or returns "" when there
+// is none. The choices follow the rules that CRS and the recommended engine
+// configuration use to pick a body processor.
+func bodyFormat(media string) string {
+	switch {
+	case media == formContentType:
+		return "form"
+	case media == "multipart/form-data":
+		return "multipart"
+	case strings.HasPrefix(media, "application/json"),
+		strings.HasPrefix(media, "application/x-amz-json-1."),
+		strings.HasPrefix(media, "application/") && strings.HasSuffix(media, "+json"):
+		return "json"
+	case strings.HasPrefix(media, "application/xml"),
+		strings.HasPrefix(media, "application/soap+xml"),
+		strings.HasPrefix(media, "text/xml"):
+		return "xml"
+	}
+	return ""
 }
 
 func (r *Request) noteMalformed(part string, count int) {
@@ -106,6 +168,12 @@ func parseParams(raw string, origin Origin) (params []Param, malformed int) {
 // A "%" that is not followed by two hex digits is kept as written and
 // reported through malformed, so nothing an attacker sent is dropped.
 func decodeComponent(s string) (decoded string, malformed bool) {
+	return decodePercent(s, true)
+}
+
+// decodePercent resolves %XX sequences once. With plusIsSpace set, a "+"
+// becomes a space.
+func decodePercent(s string, plusIsSpace bool) (decoded string, malformed bool) {
 	if !strings.ContainsAny(s, "%+") {
 		return s, false
 	}
@@ -114,7 +182,7 @@ func decodeComponent(s string) (decoded string, malformed bool) {
 	for i := 0; i < len(s); i++ {
 		c := s[i]
 		switch {
-		case c == '+':
+		case c == '+' && plusIsSpace:
 			b.WriteByte(' ')
 		case c == '%' && i+2 < len(s) && isHex(s[i+1]) && isHex(s[i+2]):
 			b.WriteByte(unhex(s[i+1])<<4 | unhex(s[i+2]))
@@ -142,4 +210,36 @@ func unhex(c byte) byte {
 	default:
 		return c - 'A' + 10
 	}
+}
+
+// withoutOrigin removes "scheme://host" from the front of a path, for a
+// target written as a full URL.
+func withoutOrigin(path string) string {
+	for _, scheme := range []string{"http://", "https://"} {
+		if len(path) >= len(scheme) && strings.EqualFold(path[:len(scheme)], scheme) {
+			rest := path[len(scheme):]
+			if slash := strings.IndexByte(rest, '/'); slash >= 0 {
+				return rest[slash:]
+			}
+			return "/"
+		}
+	}
+	return path
+}
+
+// parseCookies splits a Cookie header value into its pairs, the way
+// ModSecurity does for version 0 cookies: pairs are separated by ";", white
+// space before a name is dropped, the name ends at the first "=", and a
+// pair without a name is ignored. A name without "=" has an empty value.
+func parseCookies(header string) []Cookie {
+	var cookies []Cookie
+	for _, pair := range strings.Split(header, ";") {
+		pair = strings.TrimLeft(pair, " \t\n\v\f\r")
+		name, value, _ := strings.Cut(pair, "=")
+		if name == "" {
+			continue
+		}
+		cookies = append(cookies, Cookie{Name: name, Value: value})
+	}
+	return cookies
 }

@@ -1,0 +1,150 @@
+[
+  {
+    "name": "CRS 930100-1: Path Traversal Attack (/../) encoded",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "FoobarHeader",
+        "0x5c0x2e.%00/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930100-2: Path Traversal Attack Triple Dot (/.../)",
+    "method": "GET",
+    "uri": "/get?foo=.../.../WINDOWS/win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930100-3: Path Traversal Attack Triple Dot (/.../) encoded: foo=.../.../WINDOWS/win.ini",
+    "method": "GET",
+    "uri": "/get?foo=0x2e.%000x2f0x2e.%00/WINDOWS/win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930100-4: Status Page Test - Path Traversal Attack (<backslash>../), partially encoded",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "FoobarHeader",
+        "0x5c0x2e./"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930100
+    ]
+  },
+  {
+    "name": "CRS 930100-5: GHSA: 930100 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"0x5c0x2e.%00/\"></a></root>",
+    "expect_ids": [
+      930100
+    ]
+  }
+]

@@ -1,17 +1,34 @@
 # Example requests
 
-| File | Content |
+| Path | Content |
 | --- | --- |
 | `path-traversal.json` | Hand-picked starter examples: four CRS cases and two normal requests |
-| `crs-930-regression.json` | The CRS 4.30.0 regression tests of rules 930100 and 930110 that the first engine can inspect |
-| `crs-930-regression-not-yet-supported.json` | The remaining tests of those rules. Their payload is in an XML or multipart body, which the engine does not parse yet. The engine test checks that they are reported as not inspected |
+| `crs/` | The CRS 4.30.0 regression tests of every PL1 rule in files 930, 941 and 942: 51 files, one per rule, 687 tests |
+| `generated/` | 1,300 generated requests without expectations, used to compare our engine with a reference engine: path traversal, file access, and SQLi/XSS variants. Written by the three `tools/generate_*_variants.py` scripts |
 
-The two `crs-930-*` files were converted on 11 October 2026 from
-`coreruleset-4.30.0/tests/regression/tests/REQUEST-930-APPLICATION-ATTACK-LFI/930100.yaml`
-and `930110.yaml`. Method, URI, headers, body and expected rule IDs are
-unchanged, with one addition: when a test has a body and no `Content-Type`
-header, `Content-Type: application/x-www-form-urlencoded` was added, because
-the CRS test runner (go-ftw) adds that header itself before sending.
+`expect_ids` are rules that must match a request; `no_expect_ids` are rules
+that must not.
 
-`expect_ids` are rules that must match; `no_expect_ids` are rules that must
-not.
+## The `crs/` directory
+
+These files are generated. Do not edit them by hand; change the script and
+run it again from the project directory:
+
+```
+python3 tools/convert_crs_tests.py --files 930 941 942
+```
+
+The script reads `coreruleset-4.30.0/tests/regression/tests/` and applies the
+same steps to each request that the CRS test runner (go-ftw) applies before
+it sends one, for example adding a `Content-Type` header to a body that has
+none. The steps are listed at the top of the script.
+
+To see how many tests of each rule the engine passes:
+
+```
+go run ./cmd/ids-offline -requests testdata/requests/crs -summary
+```
+
+All 51 rules are active and all 687 tests pass. A test would count as "not
+inspected" if its expectation were not met and its body could not be read to
+its end.

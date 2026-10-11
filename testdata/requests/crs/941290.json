@@ -1,0 +1,106 @@
+[
+  {
+    "name": "CRS 941290-1: IE XSS Filters",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "var=<applet code%3d\"deuce.class\">&var=whatever",
+    "expect_ids": [
+      941290
+    ]
+  },
+  {
+    "name": "CRS 941290-2: XSS test based on portswigger XSS cheatsheet",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "79"
+      ]
+    ],
+    "body": "payload=%3Capplet+onreadystatechange%3Dalert%281%29%3E%3C%2Fapplet%3E%3C%2Fa%3E",
+    "expect_ids": [
+      941290
+    ]
+  },
+  {
+    "name": "CRS 941290-3: GHSA: 941290 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "93"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&lt;applet code=&quot;deuce.class&quot;&gt;\"></a></root>",
+    "expect_ids": [
+      941290
+    ]
+  }
+]

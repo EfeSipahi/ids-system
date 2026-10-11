@@ -1,0 +1,407 @@
+[
+  {
+    "name": "CRS 930130-1: LFI via URI: /sys",
+    "method": "GET",
+    "uri": "/get/sys/class",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-2: LFI via URI: /proc",
+    "method": "GET",
+    "uri": "/get/proc/interrupts",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-3: True positive test.\nAccessing compressed database dump",
+    "method": "GET",
+    "uri": "/get/backup.sql.zip",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-4: Vite.js /@fs/ path traversal (CVE-2025-30208)",
+    "method": "GET",
+    "uri": "/@fs/etc/passwd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-5: Vite.js /@fs/ path traversal - .env file",
+    "method": "GET",
+    "uri": "/@fs/.env",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-6: Vite.js /@id/ module exploit",
+    "method": "GET",
+    "uri": "/@id/__x00__?import",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-7: Unauthorized attempt to access wp-content/debug.log",
+    "method": "GET",
+    "uri": "/wp-content/debug.log",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-8: Unauthorized attempt to access wp-content/error.log",
+    "method": "GET",
+    "uri": "/wp-content/error.log",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-9: Unauthorized attempt to access wp-content/errors.log",
+    "method": "GET",
+    "uri": "/wp-content/errors.log",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-10: Authorized attempt to access jquery.nivo.slider.pack.js",
+    "method": "GET",
+    "uri": "/jquery.nivo.slider.pack.js",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-11: Authorized attempt to access jquery.history.min.js",
+    "method": "GET",
+    "uri": "/jquery.history.min.js",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-12: Unauthorized attempt to access .aiignore",
+    "method": "GET",
+    "uri": "/.aiignore",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-13: Unauthorized attempt to access .cursorignore",
+    "method": "GET",
+    "uri": "/.cursorignore",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-14: Wazuh: False positive loading light css module matching `/node_modules/`",
+    "method": "GET",
+    "uri": "/node_modules/@osd/ui-framework/dist/kui_light.css",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      930130
+    ]
+  },
+  {
+    "name": "CRS 930130-15: GitLab: loading VSCode Web editor config matching `/perl/`",
+    "method": "GET",
+    "uri": "/assets/webpack/gitlab-web-ide-vscode-workbench-0.0.1-dev-20260106142046/vscode/extensions/perl/syntaxes/perl6.tmLanguage.json",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      930130
+    ]
+  }
+]

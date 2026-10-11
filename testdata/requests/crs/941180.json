@@ -1,0 +1,344 @@
+[
+  {
+    "name": "CRS 941180-1: Node-validator deny list keywords, ARGS",
+    "method": "POST",
+    "uri": "/post/foo",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "941180-1=window.location",
+    "expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-2: Node-validator deny list keywords, ARGS_NAMES",
+    "method": "POST",
+    "uri": "/post/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "document.cookie=941180-2",
+    "expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-3: Node-validator deny list keywords, ARGS_NAMES",
+    "method": "GET",
+    "uri": "/get/baz",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "window.location=941180-3"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-4: Negative test for Node-validator deny list keyword -->, present in stricter sibling 941181, ARGS",
+    "method": "POST",
+    "uri": "/post/foo",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "14"
+      ]
+    ],
+    "body": "941180-4=--%3E",
+    "no_expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-5: XSS with embedded shell execution attempt (batch script)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "221"
+      ]
+    ],
+    "body": "var=%22--%3E%27--%3E%60--%3E%3C%21--%23set+var%3D%22qjr9%22+value%3D%22kjkjg7sdk%22--%3E%3C%21--%23set+var%3D%22fqz7%22+value%3D%22sql4xxaq%22--%3E%3C%21--%23echo+var%3D%22qjr9%22--%3E%3C%21--%23echo+var%3D%22fq4p%22--%3E",
+    "expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-6: Node-validator deny list keywords, ARGS, issue #2512",
+    "method": "POST",
+    "uri": "/post/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "arg=...%28document.domain%29...",
+    "expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-7: We should not trigger on REQUEST_FILENAME without special characters",
+    "method": "GET",
+    "uri": "/get/javascript-manual/document.cookie",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-8: Node-validator deny list keywords",
+    "method": "POST",
+    "uri": "/post/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "foo=document.querySelector%28%22p%22%29.textContent%3D%22XSS%22",
+    "expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-9: Node-validator deny list keywords",
+    "method": "POST",
+    "uri": "/post/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "97"
+      ]
+    ],
+    "body": "foo=document.body.appendChild%28document.createElement%28%22h1%22%29%29.textContent+%3D+%22XSS%22",
+    "expect_ids": [
+      941180
+    ]
+  },
+  {
+    "name": "CRS 941180-10: GHSA: 941180 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "65"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"window.location\"></a></root>",
+    "expect_ids": [
+      941180
+    ]
+  }
+]

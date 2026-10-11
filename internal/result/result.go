@@ -38,10 +38,10 @@ type Startup struct {
 	ActiveRules   int            `json:"active_rules"`
 	ExcludedRules []ExcludedRule `json:"excluded_rules"`
 
-	// VariablesNotProvided are variables that active rules name but the
-	// engine cannot fill. Content that only they would reach is not
-	// inspected.
-	VariablesNotProvided []string `json:"variables_not_provided"`
+	// IgnoredTargetUpdates are rule ids named by SecRuleUpdateTargetById
+	// lines that changed nothing, because the rule is not loaded or is
+	// excluded.
+	IgnoredTargetUpdates []int `json:"ignored_target_updates"`
 }
 
 // ExcludedRule is one rule that is in the loaded files but does not run.
@@ -57,10 +57,10 @@ func NewStartup(rs *engine.RuleSet) Startup {
 	s := Startup{
 		Ruleset:              rs.Signature(),
 		ExcludedRules:        []ExcludedRule{},
-		VariablesNotProvided: rs.NotInspected(),
+		IgnoredTargetUpdates: rs.IgnoredTargetUpdates(),
 	}
-	if s.VariablesNotProvided == nil {
-		s.VariablesNotProvided = []string{}
+	if s.IgnoredTargetUpdates == nil {
+		s.IgnoredTargetUpdates = []int{}
 	}
 	for _, st := range rs.Statuses() {
 		if st.Active {
@@ -94,8 +94,10 @@ type Analysis struct {
 	// Complete is false when part of the request could not be inspected.
 	Complete bool `json:"complete"`
 
-	// Body is "empty", "inspected" or "not inspected".
-	Body       string  `json:"body"`
+	// Body is "empty", "inspected", "partly inspected" or "not inspected".
+	Body string `json:"body"`
+	// BodyFormat is the parser used: "form", "json", "multipart" or "xml".
+	BodyFormat string  `json:"body_format,omitempty"`
 	BodyReason string  `json:"body_reason,omitempty"`
 	Issues     []Issue `json:"issues,omitempty"`
 }
@@ -182,8 +184,9 @@ func NewRecord(req *httpmodel.Request, res *engine.Result, opt Options) Record {
 
 func newAnalysis(req *httpmodel.Request) Analysis {
 	a := Analysis{
-		Complete:   req.Status.Body != httpmodel.BodyNotInspected,
+		Complete:   req.Status.Body.Complete(),
 		Body:       req.Status.Body.String(),
+		BodyFormat: req.Status.BodyFormat,
 		BodyReason: req.Status.BodyReason,
 	}
 	for _, issue := range req.Status.Issues {

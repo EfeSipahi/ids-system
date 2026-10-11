@@ -1,0 +1,142 @@
+[
+  {
+    "name": "CRS 942170-1: Detects SQL benchmark and sleep injection attempts including conditional queries: 'SELECT BENCHMARK(1000000,1+1);'",
+    "method": "GET",
+    "uri": "/get?var=SELECT%20BENCHMARK%281000000%2C1%2B1%29%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942170
+    ]
+  },
+  {
+    "name": "CRS 942170-2: Detects SQL benchmark and sleep injection attempts including conditional queries: '; sleep(0)'",
+    "method": "GET",
+    "uri": "/get?var=%3B%20sleep%280%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942170
+    ]
+  },
+  {
+    "name": "CRS 942170-3: Detects SQL benchmark and sleep injection attempts including conditional queries: negative test",
+    "method": "GET",
+    "uri": "/get?var=I%20sleep%20well%21",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942170
+    ]
+  },
+  {
+    "name": "CRS 942170-4: Status Page Test - SQL injection test with select if(x",
+    "method": "GET",
+    "uri": "/get?test=select+if(x",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942170
+    ]
+  },
+  {
+    "name": "CRS 942170-5: GHSA: 942170 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "80"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"SELECT BENCHMARK(1000000,1+1);\"></a></root>",
+    "expect_ids": [
+      942170
+    ]
+  }
+]

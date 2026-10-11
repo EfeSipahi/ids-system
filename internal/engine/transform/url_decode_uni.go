@@ -5,17 +5,20 @@ import "strings"
 // URLDecodeUni decodes percent-encoding, including the IIS form %uXXXX.
 //
 //	%2f      one byte, 0x2f
-//	%u002f   the low byte of the code, 0x2f; the high byte is ignored
-//	%uff0f   full-width forms ff01 to ff5e map to ASCII: low byte + 0x20
+//	%u2019   a code in the best-fit table becomes the ASCII character that
+//	         looks like it: here the curly apostrophe becomes '
+//	%u1234   any other code gives its low byte, 0x34; the high byte is
+//	         ignored
+//	%uff0f   full-width forms ff01 to ff5e become ASCII
 //	+        a space
 //
 // A "%" that does not start a valid sequence is kept as written. For a
 // broken %u sequence the "u" is kept with it.
 //
-// Difference from ModSecurity: ModSecurity can be configured with a Unicode
-// mapping file (SecUnicodeMapFile) that maps a %uXXXX code to a chosen byte,
-// for example %u2215 (division slash) to "/". No mapping is used here, so
-// %u2215 gives the low byte 0x15.
+// The best-fit table is code page 20127 of ModSecurity's unicode.mapping
+// file, which its recommended configuration loads. Without it an attacker
+// could write a quote or an angle bracket as a look-alike character that a
+// web server turns back into the real one.
 func URLDecodeUni(s string) string {
 	if !strings.ContainsAny(s, "%+") {
 		return s
@@ -36,7 +39,10 @@ func URLDecodeUni(s string) string {
 		case i+1 < len(s) && (s[i+1] == 'u' || s[i+1] == 'U'):
 			if i+5 < len(s) && isHex(s[i+2]) && isHex(s[i+3]) && isHex(s[i+4]) && isHex(s[i+5]) {
 				low := unhex(s[i+4])<<4 | unhex(s[i+5])
-				if low > 0x00 && low < 0x5f && (s[i+2] == 'f' || s[i+2] == 'F') && (s[i+3] == 'f' || s[i+3] == 'F') {
+				code := uint16(unhex(s[i+2]))<<12 | uint16(unhex(s[i+3]))<<8 | uint16(low)
+				if fit, ok := unicodeBestFit[code]; ok {
+					low = fit
+				} else if low > 0x00 && low < 0x5f && (s[i+2] == 'f' || s[i+2] == 'F') && (s[i+3] == 'f' || s[i+3] == 'F') {
 					low += 0x20
 				}
 				b.WriteByte(low)

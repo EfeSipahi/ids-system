@@ -27,6 +27,15 @@ var registry = []Transformation{
 	{Name: "urlDecodeUni", Apply: URLDecodeUni},
 	{Name: "removeNulls", Apply: RemoveNulls},
 	{Name: "cmdLine", Apply: CmdLine},
+	{Name: "normalizePathWin", Apply: NormalizePathWin},
+	{Name: "replaceComments", Apply: ReplaceComments},
+	{Name: "removeCommentsChar", Apply: RemoveCommentsChar},
+	{Name: "removeWhitespace", Apply: RemoveWhitespace},
+	{Name: "compressWhitespace", Apply: CompressWhitespace},
+	{Name: "lowercase", Apply: Lowercase},
+	{Name: "htmlEntityDecode", Apply: HTMLEntityDecode},
+	{Name: "jsDecode", Apply: JSDecode},
+	{Name: "cssDecode", Apply: CSSDecode},
 }
 
 // Lookup finds a transformation by name, without regard to case.

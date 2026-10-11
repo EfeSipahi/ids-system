@@ -1,35 +1,8 @@
 [
   {
-    "name": "CRS 930100-1: Path Traversal Attack (/../) encoded",
+    "name": "CRS 942230-1: conditional SQL injection attempts",
     "method": "GET",
-    "uri": "/get",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "FoobarHeader",
-        "0x5c0x2e.%00/"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "expect_ids": [
-      930100
-    ]
-  },
-  {
-    "name": "CRS 930100-2: Path Traversal Attack Triple Dot (/.../)",
-    "method": "GET",
-    "uri": "/get?foo=.../.../WINDOWS/win.ini",
+    "uri": "/get?var=%29%20like%20%28",
     "version": "HTTP/1.1",
     "headers": [
       [
@@ -43,16 +16,20 @@
       [
         "Accept",
         "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
       ]
     ],
     "expect_ids": [
-      930100
+      942230
     ]
   },
   {
-    "name": "CRS 930100-3: Path Traversal Attack Triple Dot (/.../) encoded: foo=.../.../WINDOWS/win.ini",
+    "name": "CRS 942230-2: conditional SQL injection attempts",
     "method": "GET",
-    "uri": "/get?foo=0x2e.%000x2f0x2e.%00/WINDOWS/win.ini",
+    "uri": "/get?var=%29like%28",
     "version": "HTTP/1.1",
     "headers": [
       [
@@ -66,25 +43,25 @@
       [
         "Accept",
         "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
       ]
     ],
     "expect_ids": [
-      930100
+      942230
     ]
   },
   {
-    "name": "CRS 930100-4: Status Page Test - Path Traversal Attack (<backslash>../), partially encoded",
+    "name": "CRS 942230-3: conditional SQL injection attempts",
     "method": "GET",
-    "uri": "/get",
+    "uri": "/get?var=I%20like%20you%21",
     "version": "HTTP/1.1",
     "headers": [
       [
         "Host",
         "localhost"
-      ],
-      [
-        "FoobarHeader",
-        "0x5c0x2e./"
       ],
       [
         "User-Agent",
@@ -93,25 +70,25 @@
       [
         "Accept",
         "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
       ]
     ],
-    "expect_ids": [
-      930100
+    "no_expect_ids": [
+      942230
     ]
   },
   {
-    "name": "CRS 930110-1: Path Traversal Attack (/../)",
+    "name": "CRS 942230-4: conditional SQL injection attempts",
     "method": "GET",
-    "uri": "/get",
+    "uri": "/get?var=%20case%20when%20condition1%20then%20result1",
     "version": "HTTP/1.1",
     "headers": [
       [
         "Host",
         "localhost"
-      ],
-      [
-        "FoobarHeader",
-        "/../../../././..\\ ../../etc/master.passwd"
       ],
       [
         "User-Agent",
@@ -120,25 +97,25 @@
       [
         "Accept",
         "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
       ]
     ],
     "expect_ids": [
-      930110
+      942230
     ]
   },
   {
-    "name": "CRS 930110-2: Path Traversal Attack (/../) query string",
+    "name": "CRS 942230-5: conditional SQL injection attempts",
     "method": "GET",
-    "uri": "/get?arg=../../../etc/passwd",
+    "uri": "/get?var=having%20pain%21",
     "version": "HTTP/1.1",
     "headers": [
       [
         "Host",
         "localhost"
-      ],
-      [
-        "X-FTW",
-        "This should trip"
       ],
       [
         "User-Agent",
@@ -147,203 +124,235 @@
       [
         "Accept",
         "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
       ]
     ],
-    "expect_ids": [
-      930110
+    "no_expect_ids": [
+      942230
     ]
   },
   {
-    "name": "CRS 930110-3: Path Traversal Attack (/../) query string",
+    "name": "CRS 942230-6: conditional SQL injection attempts",
+    "method": "GET",
+    "uri": "/get?var=SELECT%20x%20GROUP%20BY%20SOMETHING%20HAVING%20COUNT%28Id%29%20%3E%3D%209",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942230
+    ]
+  },
+  {
+    "name": "CRS 942230-7: conditional SQL injection attempts",
+    "method": "GET",
+    "uri": "/get?var=SELECT%20%2A%20FROM%20%60movies%60%20GROUP%20BY%20%60category_id%60%2C%60year_released%60%20HAVING%20%60category_id%60%20%3D%208%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942230
+    ]
+  },
+  {
+    "name": "CRS 942230-8: conditional SQL injection attempts",
+    "method": "GET",
+    "uri": "/get?var=behaving%20badly%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942230
+    ]
+  },
+  {
+    "name": "CRS 942230-9: conditional SQL injection attempts",
+    "method": "GET",
+    "uri": "/get?var=o.havingu%40gmail.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942230
+    ]
+  },
+  {
+    "name": "CRS 942230-10: conditional SQL injection attempts",
+    "method": "GET",
+    "uri": "/get?var=if%282%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942230
+    ]
+  },
+  {
+    "name": "CRS 942230-11: Issue #1914: FP for case",
+    "method": "GET",
+    "uri": "/get?var=Just%20in%20case%20%28abc%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942230
+    ]
+  },
+  {
+    "name": "CRS 942230-12: Issue #2230: FN for case",
+    "method": "GET",
+    "uri": "/get?var=if%281234%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942230
+    ]
+  },
+  {
+    "name": "CRS 942230-13: GHSA: 942230 payload via XML attribute injection (verifies XML://@* coverage)",
     "method": "POST",
     "uri": "/post",
     "version": "HTTP/1.1",
     "headers": [
       [
-        "Host",
-        "localhost"
-      ],
-      [
         "User-Agent",
         "OWASP CRS test agent"
       ],
       [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+        "Host",
+        "localhost"
       ],
       [
         "Content-Type",
-        "application/x-www-form-urlencoded"
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "58"
       ]
     ],
-    "body": "arg=../../../etc/passwd&foo=var",
+    "body": "<?xml version=\"1.0\"?><root><a probe=\") like (\"></a></root>",
     "expect_ids": [
-      930110
-    ]
-  },
-  {
-    "name": "CRS 930110-4: Path Traversal Attack (/../) query string",
-    "method": "GET",
-    "uri": "/get/foo../1234",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "no_expect_ids": [
-      930110
-    ]
-  },
-  {
-    "name": "CRS 930110-5: Path Traversal Attack (/../) query string",
-    "method": "GET",
-    "uri": "/get/foo.../1234",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "no_expect_ids": [
-      930110
-    ]
-  },
-  {
-    "name": "CRS 930110-6: Path Traversal Attack (/../) query string",
-    "method": "GET",
-    "uri": "/get/..foo",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "no_expect_ids": [
-      930110
-    ]
-  },
-  {
-    "name": "CRS 930110-7: Path Traversal Attack (/../) query string.\nNote: apparently, httpd strips dots, ModSecurity never sees them in `REQUEST_URI``\n",
-    "method": "GET",
-    "uri": "/get/..",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "no_expect_ids": [
-      930110
-    ]
-  },
-  {
-    "name": "CRS 930110-8: Path Traversal Attack (..\\) query string",
-    "method": "GET",
-    "uri": "/get?arg=..\\pineapple",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "expect_ids": [
-      930110
-    ]
-  },
-  {
-    "name": "CRS 930110-9: Path Traversal Attack triple dot (.../) query string",
-    "method": "GET",
-    "uri": "/get?foo=.../.../WINDOWS/win.ini",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "expect_ids": [
-      930110
-    ]
-  },
-  {
-    "name": "CRS 930110-12: Path Traversal Attack (;..;) query string",
-    "method": "GET",
-    "uri": "/get?a=..;.\\.;\\.",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "X-FTW",
-        "This should trip"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ]
-    ],
-    "expect_ids": [
-      930110
+      942230
     ]
   }
 ]

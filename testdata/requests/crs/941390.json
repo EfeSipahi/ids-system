@@ -1,0 +1,349 @@
+[
+  {
+    "name": "CRS 941390-1: JavaScript method setInterval(code, 1)",
+    "method": "GET",
+    "uri": "/get?arg=setInterval%28code%2C%201%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-2: JavaScript method: arg=x\";setTimeout(name, 1)//",
+    "method": "GET",
+    "uri": "/get?arg=x%22%3BsetTimeout%28name%2C%201%29%2F%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-3: JavaScript method eval('2 + 2')",
+    "method": "GET",
+    "uri": "/get?arg=eval%28%272%20%2B%202%27%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-4: JavaScript constructor new Function()",
+    "method": "GET",
+    "uri": "/get?arg=new%20Function%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-5: JavaScript call alert",
+    "method": "GET",
+    "uri": "/get?arg=alert%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-6: JavaScript call atob",
+    "method": "GET",
+    "uri": "/get?arg=atob%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-7: JavaScript call btoa",
+    "method": "GET",
+    "uri": "/get?arg=btoa%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-8: JavaScript call prompt",
+    "method": "GET",
+    "uri": "/get?arg=prompt%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.>"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-9: JavaScript call confirm",
+    "method": "GET",
+    "uri": "/get?arg=confirm%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.>"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-10: Known False positive:\nMatching `import (` in `if you’re willing to import (and perhaps wait around`",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.>"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "195"
+      ]
+    ],
+    "body": "fp=If+you%E2%80%99re+looking+for+a+personal+recommendation%2C+if+you%E2%80%99re+willing+to+import+%28and+perhaps+wait+around%2C+as+they+often+sell+out+line+has+been+consistently+excellent+so+far.",
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-11: True Positive:\nDetect import method with curly brackets",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.>"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "65"
+      ]
+    ],
+    "body": "code=import+%7B+sayHi%2C+sayBye+%7D+from+%22.%2Fgreeting.js%22%3B",
+    "expect_ids": [
+      941390
+    ]
+  },
+  {
+    "name": "CRS 941390-12: GHSA: 941390 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "70"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"setInterval(code, 1)\"></a></root>",
+    "expect_ids": [
+      941390
+    ]
+  }
+]

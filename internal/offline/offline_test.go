@@ -34,8 +34,8 @@ func TestLoadFile(t *testing.T) {
 
 	// The form body is parsed and reported as inspected.
 	post := examples[2].Request
-	if post.Status.Body != httpmodel.BodyInspected || len(post.Parsed.Form) != 2 || post.Parsed.Form[0].Value != "../../../etc/passwd" {
-		t.Errorf("status = %+v, form = %+v", post.Status, post.Parsed.Form)
+	if post.Status.Body != httpmodel.BodyInspected || len(post.Parsed.BodyArgs) != 2 || post.Parsed.BodyArgs[0].Value != "../../../etc/passwd" {
+		t.Errorf("status = %+v, form = %+v", post.Status, post.Parsed.BodyArgs)
 	}
 
 	// A missing version gets the default.
@@ -46,7 +46,7 @@ func TestLoadFile(t *testing.T) {
 	if !reflect.DeepEqual(normal.NoExpectIDs, []int{930100, 930110}) {
 		t.Errorf("no_expect_ids = %v", normal.NoExpectIDs)
 	}
-	if got := examples[5].Request.Parsed.Form[1].Value; got != "gizli parola" {
+	if got := examples[5].Request.Parsed.BodyArgs[1].Value; got != "gizli parola" {
 		t.Errorf("parola = %q", got)
 	}
 }

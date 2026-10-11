@@ -1,0 +1,7856 @@
+[
+  {
+    "name": "variant 1 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%2E.?0x5c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 2 (path)",
+    "method": "GET",
+    "uri": "/files/%u002e%252e",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 3 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=o'neil%c0%af",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "file=%e0%80%af.／kitap%uEFC8%u002e.;.%u002f&note=Program+Files"
+  },
+  {
+    "name": "variant 4 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=.?%c0%afETC%u002f%255c．0x2f0x5c.%00..?",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "file=a/%2E?%u2024%u2216..%00/;%2e.%000x5c&note=.."
+  },
+  {
+    "name": "variant 5 (query)",
+    "method": "GET",
+    "uri": "/get?arg=WINDOWS%255cc^mdkitap%2F...%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 6 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%c1%9c...%010x5c0x2e0x2f0x2e%c0%ae%u2215",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 7 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%uF025．．?%5C%ff..%2e%252f%5C%e0%80%af%ff..%00%c1%9c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 8 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u002e.%01%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 9 (query)",
+    "method": "GET",
+    "uri": "/get?arg=a,b;c0x2f%uEFC8.%2E%c0%afc^md",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 10 (query)",
+    "method": "GET",
+    "uri": "/get?arg=100%%uF025passwd%5C.%ff.\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 11 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%252f.%ff.%u2024／.%u2215WINDOWS%255c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "73"
+      ]
+    ],
+    "body": "file=%5C%uff0e%252f.?%ff.%u2024%u20240x5c%ff.%u2216.%c0%ae.?&note=win.ini"
+  },
+  {
+    "name": "variant 12 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "file=%5c%u2024..%01%uF025.%000x2e.&note=c^md"
+  },
+  {
+    "name": "variant 13 (path)",
+    "method": "GET",
+    "uri": "/files/.%3f0x5c.%3f.%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 14 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=\\%u2024..%01%c0%ae%2e%c0%af../",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "file=kitap.%2e%u2215/%ff...%01%c1%9c%252e.%00%u2024/&note=a,b;c"
+  },
+  {
+    "name": "variant 15 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%255c.??.%01.／...WINDOWS/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 16 (path)",
+    "method": "GET",
+    "uri": "/files/...0x5c／0x2e%2f0x5c.%3f.%2E.%00/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 17 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "file=x+y%uF025&note=100%"
+  },
+  {
+    "name": "variant 18 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "file=%e0%80%af%ff.%c0%ae..%00%00/ETC%uEFC8&note=..."
+  },
+  {
+    "name": "variant 19 (query)",
+    "method": "GET",
+    "uri": "/get?arg=／.%c0%ae.0x2e%e0%80%af%zz%u22150x2e%u002e%u002f100%%e0%80%af",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 20 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=a,b;c\\.%01%uff0e/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "file=passwd%u2215&note=o'neil"
+  },
+  {
+    "name": "variant 21 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "o'neil0x2f100%%e0%80%af"
+      ]
+    ]
+  },
+  {
+    "name": "variant 22 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%uff0e%uff0e.%2e%252e0x2f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 23 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/ETCETC"
+      ]
+    ]
+  },
+  {
+    "name": "variant 24 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u002f%252e.?",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 25 (two params)",
+    "method": "GET",
+    "uri": "/get?a=Program+Files&a=c^md%uff0e?;&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 26 (query)",
+    "method": "GET",
+    "uri": "/get?arg=Program+Files%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 27 (query)",
+    "method": "GET",
+    "uri": "/get?arg=..;x+y%c1%9cao'neil/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 28 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "file=/%252e%ff./&note=.."
+  },
+  {
+    "name": "variant 29 (query)",
+    "method": "GET",
+    "uri": "/get?arg=x+y．%2F%2F.%252e%5c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 30 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%zz..%00.%2F%uEFC8%ff..%u2216",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 31 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/WINDOWS"
+      ]
+    ]
+  },
+  {
+    "name": "variant 32 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%2E?.?.?%5ca,b;c%2f100%\\.%00%2E.%c0%ae／&a=%5C.%00.\\&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 33 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "file=%e0%80%af../%252f%u002e%2e..%00&note=.."
+  },
+  {
+    "name": "variant 34 (two params)",
+    "method": "GET",
+    "uri": "/get?a=100%/x+y%5C．%2E%255c%252f.?%uff0e0x2e.%01&a=win.ini.%e0%80%af.%01%2E%c1%9c&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 35 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%ff.．%e0%80%af%uEFC8.?／.%01.%000x2e%2f%ff..",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 36 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "79"
+      ]
+    ],
+    "body": "file=Program+Files.%ff.%c0%af%u2216%u002e.?.%01.%c1%9cProgram+Files%u2216&note="
+  },
+  {
+    "name": "variant 37 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%u2024/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "file=..%5c..x+y%u2215%2e.%01\\&note=say+\"hi\""
+  },
+  {
+    "name": "variant 38 (two params)",
+    "method": "GET",
+    "uri": "/get?a=say+\"hi\"0x2f%252e%2e.?%255c&a=/.%01%2E%ff.%u002e%uEFC8;%2E%c0%ae%00/&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 39 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%zz%5C．%u002e%255c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 40 (path)",
+    "method": "GET",
+    "uri": "/files//%3f%c0%ae%u2215%u002e%uff0e%00/%u002f.%010x5ca%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 41 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "file=Program+Files%zz&note=c^md"
+  },
+  {
+    "name": "variant 42 (query)",
+    "method": "GET",
+    "uri": "/get?arg=say+\"hi\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 43 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=say+\"hi\"\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "file=%u2216...%c0%ae0x2f&note=%zz"
+  },
+  {
+    "name": "variant 44 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/.%00%u002e%u2024／"
+      ]
+    ]
+  },
+  {
+    "name": "variant 45 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "34"
+      ]
+    ],
+    "body": "file=%u2216%u002e%252epasswd&note="
+  },
+  {
+    "name": "variant 46 (query)",
+    "method": "GET",
+    "uri": "/get?arg=0x2f%252e%e0%80%af%5csay+\"hi\".%c0%ae%uff0e／",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 47 (query)",
+    "method": "GET",
+    "uri": "/get?arg=say+\"hi\"%c1%9cWINDOWS／%u2215%u002e.%e0%80%af%2F%u2024.%01．%255c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 48 (query)",
+    "method": "GET",
+    "uri": "/get?arg=/..?;",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 49 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=etc0x5c;?.%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "55"
+      ]
+    ],
+    "body": "file=%252e0x2e/../%252f%ff.%c1%9cetc%u2215&note=win.ini"
+  },
+  {
+    "name": "variant 50 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/x y%255cETC.../%252e%uff0e%ff.%uEFC8"
+      ]
+    ]
+  },
+  {
+    "name": "variant 51 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%c1%9co'neil%5C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 52 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%uEFC8%c0%ae%u002fProgram+Files",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "file=／?.0x5c&note=x+y"
+  },
+  {
+    "name": "variant 53 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%252e%c0%ae%e0%80%afa%252f%u20240x2f..%c0%ae%2E%2F"
+      ]
+    ]
+  },
+  {
+    "name": "variant 54 (two params)",
+    "method": "GET",
+    "uri": "/get?a=etcsay+\"hi\"x+y%uEFC8a&a=x+y%252f．%u2216&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 55 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%255c.%00.%00／&a=100%%00/%5c%2e%uff0e%5c&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 56 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%252e.%00.;%uEFC8.%01?%252e%u2024"
+      ]
+    ]
+  },
+  {
+    "name": "variant 57 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%u2216.??%c0%afETC/%zzWINDOWS"
+      ]
+    ]
+  },
+  {
+    "name": "variant 58 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        ".....%00%255c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 59 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "65"
+      ]
+    ],
+    "body": "file=win.ini%u002f%uF025.%01..%01%2FProgram+Files%u2216&note=100%"
+  },
+  {
+    "name": "variant 60 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%255c.%01%uff0e／0x2e.&a=..%u2216..%2f&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 61 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/WINDOWS%2F.%00%u002e%2f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 62 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "etc%255c%ff.%u2024%2f%uEFC8.?.?%255c%u2215"
+      ]
+    ]
+  },
+  {
+    "name": "variant 63 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%5C.%c0%ae%255c%e0%80%af%252e%uF025",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "file=a%2fProgram+Files%c0%ae?．.%uEFC8&note=c^md"
+  },
+  {
+    "name": "variant 64 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "37"
+      ]
+    ],
+    "body": "file=.%01.%01%5C%2e%u2024%u002f&note="
+  },
+  {
+    "name": "variant 65 (two params)",
+    "method": "GET",
+    "uri": "/get?a=.%01%c0%ae%252e%5C&a=etc%u002f%255c.%2e/çay&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 66 (query)",
+    "method": "GET",
+    "uri": "/get?arg=say+\"hi\"%c1%9c%252f%uff0e%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 67 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=x+y%uff0e%2e.0x2e;%ff.\\．%c0%ae.\\&note=x+y"
+  },
+  {
+    "name": "variant 68 (path)",
+    "method": "GET",
+    "uri": "/files/%2f.%3f.%00%252ec^mdkitap%c1%9c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 69 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%uEFC8%u002e%2E%c0%ae．0x5cProgram+Files%u002f...;%u2216%2E%ff.%u2024.%u2215",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 70 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%u002e?c^md%c0%ae0x2e%2e"
+      ]
+    ]
+  },
+  {
+    "name": "variant 71 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/?%c1%9c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 72 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%u002f%252e%2E%c0%af&a=etc%u2215100%0x2f&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 73 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "／?%2e.?%u2024o'neil%u002f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 74 (query)",
+    "method": "GET",
+    "uri": "/get?arg=kitap%zzkitap;..%01",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 75 (query)",
+    "method": "GET",
+    "uri": "/get?arg=o'neil%00/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 76 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%e0%80%af0x2e%c0%ae%252f%2F..%uF025%zz/...%c1%9c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 77 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/.\\%zz／win.ini100%0x5c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 78 (query)",
+    "method": "GET",
+    "uri": "/get?arg=100%",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 79 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=%ff.%c1%9c／?.%ff.%uF025a%5C&note=say+\"hi\""
+  },
+  {
+    "name": "variant 80 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%u2216.%u002e%uff0e%252e\\"
+      ]
+    ]
+  },
+  {
+    "name": "variant 81 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u2216",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 82 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%252f%2e.%2E%2E／Program+Filesa%u002f\\%c0%ae.%01%00/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 83 (two params)",
+    "method": "GET",
+    "uri": "/get?a=say+\"hi\"\\%e0%80%af%2e%uff0e0x5c??%ff.%00/&a=%2e%uff0e.%01%uff0e%c1%9c／%uff0e%c0%ae%5ca&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 84 (query)",
+    "method": "GET",
+    "uri": "/get?arg=win.iniETC/.%ff.\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 85 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "kitap%2e%u2024"
+      ]
+    ]
+  },
+  {
+    "name": "variant 86 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/.%00?．;a,b;c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 87 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=0x5c.%u2024%u2024%e0%80%afc^md%2Fa;&note=.."
+  },
+  {
+    "name": "variant 88 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%zz%5C%u2024%2e.%00.?%2F?.%01%u2024%2f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 89 (query)",
+    "method": "GET",
+    "uri": "/get?arg=WINDOWS\\%2E;%c0%af．．.o'neil%5C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 90 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%u2216．．%ff.%2E/"
+      ]
+    ]
+  },
+  {
+    "name": "variant 91 (path)",
+    "method": "GET",
+    "uri": "/files/c^md%ff..%3f0x2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 92 (path)",
+    "method": "GET",
+    "uri": "/files/o'neil%5c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 93 (query)",
+    "method": "GET",
+    "uri": "/get?arg=;%uff0e%ff.%ff.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 94 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%ff.0x2e%5c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 95 (query)",
+    "method": "GET",
+    "uri": "/get?arg=100%win.inic^md%2e%u002e%2e",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 96 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%uF025",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 97 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "34"
+      ]
+    ],
+    "body": "file=.%00..%00/&note=Program+Files"
+  },
+  {
+    "name": "variant 98 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%00/.?.%000x2e%252e%uEFC8WINDOWS..0x2e%uff0e%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "65"
+      ]
+    ],
+    "body": "file=%2F%u20240x2e%u002e%2fetcWINDOWS%2f%255c%252e%252e&note=çay"
+  },
+  {
+    "name": "variant 99 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u2216%ff.．",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 100 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%2F.?%2E.%00%00/o'neil%2f&a=%u002e.%u002e/%ff.．%c0%ae%c1%9c.&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 101 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/..??%u002e/etc.%01.%u2216"
+      ]
+    ]
+  },
+  {
+    "name": "variant 102 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "c^md?%uff0e\\%2e%2F"
+      ]
+    ]
+  },
+  {
+    "name": "variant 103 (query)",
+    "method": "GET",
+    "uri": "/get?arg=c^md%uEFC8%u2024%u2215",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 104 (query)",
+    "method": "GET",
+    "uri": "/get?arg=0x2e.．%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 105 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%c0%ae%2E／%u002e%u002e.%00%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "25"
+      ]
+    ],
+    "body": "file=%u2024.?%2f&note=..."
+  },
+  {
+    "name": "variant 106 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "62"
+      ]
+    ],
+    "body": "file=%5c%u20240x2e%252f?%ff.%u002f..%uF025a,b;c0x2f&note=kitap"
+  },
+  {
+    "name": "variant 107 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "file=.?%252e%2e%252f&note=a"
+  },
+  {
+    "name": "variant 108 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "53"
+      ]
+    ],
+    "body": "file=.%2E%u2216%uff0e.%00%uEFC8çay%uF025etc&note=ETC"
+  },
+  {
+    "name": "variant 109 (query)",
+    "method": "GET",
+    "uri": "/get?arg=WINDOWS",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 110 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%252f.?..?%255c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 111 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "file=ETC%e0%80%af%c0%ae%255c0x5c%ff.0x2f&note=%zz"
+  },
+  {
+    "name": "variant 112 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.%00%2e.%01%252e%uF025a..%01.%01/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 113 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "file=%252f%2E.%01%2e%u002f%5c%252e%c0%ae%5Cwin.ini&note=win.ini"
+  },
+  {
+    "name": "variant 114 (query)",
+    "method": "GET",
+    "uri": "/get?arg=Program+FilesETC%252fsay+\"hi\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 115 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%uF025%u2024%252f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 116 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "32"
+      ]
+    ],
+    "body": "file=%c0%af%ff...%u2216a/&note=a"
+  },
+  {
+    "name": "variant 117 (path)",
+    "method": "GET",
+    "uri": "/files/%u2216.\\%2E%u002e.%3f\\%u2024%uF025100%",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 118 (two params)",
+    "method": "GET",
+    "uri": "/get?a=o'neil%5CETC%c0%af%uff0e%u2215&a=%c1%9c.?.%00．．&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 119 (query)",
+    "method": "GET",
+    "uri": "/get?arg=passwd%c0%af",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 120 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "file=0x2f.%2e%e0%80%af.%01%u2024%ff.%5c...&note=a"
+  },
+  {
+    "name": "variant 121 (query)",
+    "method": "GET",
+    "uri": "/get?arg=0x5c%c0%ae%u002e.%00;",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 122 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "／?..%ff.%uF025%zzpasswd%uF025"
+      ]
+    ]
+  },
+  {
+    "name": "variant 123 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "ac^md0x2f."
+      ]
+    ]
+  },
+  {
+    "name": "variant 124 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%00/．?.%000x2ea%5C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 125 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%5C%c0%ae%2e0x2e0x5c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 126 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=0x2e%u002e%u2216/%u2024%2e.%00%c1%9ckitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "40"
+      ]
+    ],
+    "body": "file=say+\"hi\"100%%252f...a,b;c&note=c^md"
+  },
+  {
+    "name": "variant 127 (query)",
+    "method": "GET",
+    "uri": "/get?arg=kitap%252f100%0x5c%u002e.%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 128 (two params)",
+    "method": "GET",
+    "uri": "/get?a=Program+Files%00/%c0%ae..%252e%u2216etc%255c&a=%c0%af.?0x2e%255c%e0%80%af.%01／&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 129 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "file=x+y&note=o'neil"
+  },
+  {
+    "name": "variant 130 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "36"
+      ]
+    ],
+    "body": "file=kitap%u2216..0x2e%00/&note=çay"
+  },
+  {
+    "name": "variant 131 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%u2215.%u20240x5co'neil%c0%af%5c.?．%5c&a=%u002f.%01%2e.%u002e%2F%c1%9c%u002e.%01%u2215c^md%2F.?%c0%ae.%e0%80%af&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 132 (query)",
+    "method": "GET",
+    "uri": "/get?arg=x+y%u002f%uF025%252e.%00.%00%c0%af..%uF025",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 133 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.%2e%c0%ae%2e%u002e%u2216",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 134 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "36"
+      ]
+    ],
+    "body": "file=WINDOWS%5c%uff0e．;&note=a,b;c"
+  },
+  {
+    "name": "variant 135 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "file=Program+Files%uF025.?.%00.?0x2f&note=100%"
+  },
+  {
+    "name": "variant 136 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%c1%9c0x2e.?%uEFC8a0x5c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 137 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=etc%uF025a,b;c...",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "file=say+\"hi\"&note=win.ini"
+  },
+  {
+    "name": "variant 138 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "Program Files"
+      ]
+    ]
+  },
+  {
+    "name": "variant 139 (query)",
+    "method": "GET",
+    "uri": "/get?arg=passwd%u2216",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 140 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=c^mdçay/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "file=%252f..%01;&note=çay"
+  },
+  {
+    "name": "variant 141 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "kitap"
+      ]
+    ]
+  },
+  {
+    "name": "variant 142 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=/%2E/%2f0x2e.%00/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "35"
+      ]
+    ],
+    "body": "file=ETC0x2fpasswd0x5c&note=WINDOWS"
+  },
+  {
+    "name": "variant 143 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%c1%9c%2e?%e0%80%af/0x2e%2e/etc;&a=...%5c%u002e0x2e\\?%2E%252f&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 144 (query)",
+    "method": "GET",
+    "uri": "/get?arg=c^md%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 145 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "35"
+      ]
+    ],
+    "body": "file=kitap%c1%9c&note=Program+Files"
+  },
+  {
+    "name": "variant 146 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "file=kitap.?%c0%ae.0x2f%u002f.?%u002e%2E%252e%252f&note=win.ini"
+  },
+  {
+    "name": "variant 147 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%5c.%c0%ae"
+      ]
+    ]
+  },
+  {
+    "name": "variant 148 (path)",
+    "method": "GET",
+    "uri": "/files/%zzx+y%uF025",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 149 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%2F.%00%c0%ae%2e.%252f%5c%c0%ae%c0%ae%255c%255c%c0%ae?%252e%252e%252e%u002e;"
+      ]
+    ]
+  },
+  {
+    "name": "variant 150 (path)",
+    "method": "GET",
+    "uri": "/files/say+\"hi\"%uF025o'neil",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 151 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "54"
+      ]
+    ],
+    "body": "file=%uEFC8.?%u2215ETC0x5c%252e%u002e..%5C&note=o'neil"
+  },
+  {
+    "name": "variant 152 (path)",
+    "method": "GET",
+    "uri": "/files/%u2024.%00%252f／.%uEFC8.%u002e/..%252f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 153 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "28"
+      ]
+    ],
+    "body": "file=%c0%ae.?%255c&note=100%"
+  },
+  {
+    "name": "variant 154 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "file=o'neil.%c0%af&note=WINDOWS"
+  },
+  {
+    "name": "variant 155 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "0x2e%252e%u2215"
+      ]
+    ]
+  },
+  {
+    "name": "variant 156 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u002e.%5C%u2215.%00.?//%uff0e%u002e%u2024／",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 157 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "passwd%c0%af"
+      ]
+    ]
+  },
+  {
+    "name": "variant 158 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "file=o'neil\\0x2e\\a,b;c%u002f;%2e%2E%uF025&note=100%"
+  },
+  {
+    "name": "variant 159 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "file=x+y%c0%afçay%u2215．..%252e／&note=a"
+  },
+  {
+    "name": "variant 160 (query)",
+    "method": "GET",
+    "uri": "/get?arg=;.?.%2fWINDOWS",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 161 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "file=a,b;c&note=o'neil"
+  },
+  {
+    "name": "variant 162 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "57"
+      ]
+    ],
+    "body": "file=WINDOWS%252f．%uff0e.?%e0%80%afpasswd%252f&note=etc"
+  },
+  {
+    "name": "variant 163 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "50"
+      ]
+    ],
+    "body": "file=%2f0x2e%c0%ae.%01%c0%af/%2E%252e／&note=çay"
+  },
+  {
+    "name": "variant 164 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.%01.?%ff..\\passwd%252f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 165 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.%01.?.%00%5C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 166 (query)",
+    "method": "GET",
+    "uri": "/get?arg=?%uF025/.%00.%00／%2e%c0%ae%2e%uEFC8WINDOWS%uF025",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 167 (path)",
+    "method": "GET",
+    "uri": "/files/\\%2E%c0%ae%252e%2FETC%252fx+y;%c0%af%3f%uff0e",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 168 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "file=win.inia%255c%uff0e?%uff0e%255c%uff0e.?%00/&note=win.ini"
+  },
+  {
+    "name": "variant 169 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%uEFC8.?.%01%2E0x5c%2e.%uff0e0x5c/%252e..%2F"
+      ]
+    ]
+  },
+  {
+    "name": "variant 170 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "file=win.ini0x2f&note=kitap"
+  },
+  {
+    "name": "variant 171 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%u2024%2E0x2ex+y%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "file=win.iniçay%uF025&note=..."
+  },
+  {
+    "name": "variant 172 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "file=..%u2216&note=çay"
+  },
+  {
+    "name": "variant 173 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%c0%ae.?%2E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "53"
+      ]
+    ],
+    "body": "file=%u2215%2F.?%252e./.?.?%ff.%uff0e%5C0x5c&note=%zz"
+  },
+  {
+    "name": "variant 174 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/c^md;..?%u2024x y"
+      ]
+    ]
+  },
+  {
+    "name": "variant 175 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=%e0%80%af%2E%252e%252e.?%c0%ae?%2F&note=etc"
+  },
+  {
+    "name": "variant 176 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/．.%00.Program Filespasswd"
+      ]
+    ]
+  },
+  {
+    "name": "variant 177 (query)",
+    "method": "GET",
+    "uri": "/get?arg=..%zz\\0x5c．%2Fo'neil",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 178 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "50"
+      ]
+    ],
+    "body": "file=.%u002e%e0%80%af%c1%9c0x2e%252e;100%&note=x+y"
+  },
+  {
+    "name": "variant 179 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u002e%5C／.%u002e／%2f.%01.%00%c0%ae/%00/%252e%252e%u002e0x2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 180 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%u002f...%00&a=／%u2024．.&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 181 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/?0x2e%u2215c^md%255c%u2216%uff0e.%00.%252e%uEFC8etc%uF025"
+      ]
+    ]
+  },
+  {
+    "name": "variant 182 (path)",
+    "method": "GET",
+    "uri": "/files/%e0%80%af.%u2215a,b;c%c1%9c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 183 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/.;%uff0e.%000x2fProgram Files"
+      ]
+    ]
+  },
+  {
+    "name": "variant 184 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "file=a,b;c&note=çay"
+  },
+  {
+    "name": "variant 185 (two params)",
+    "method": "GET",
+    "uri": "/get?a=WINDOWS／&a=etco'neil%c0%af.%01.%uff0e&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 186 (query)",
+    "method": "GET",
+    "uri": "/get?arg=..say+\"hi\"100%%5CWINDOWS%u2215",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 187 (query)",
+    "method": "GET",
+    "uri": "/get?arg=o'neil",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 188 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "60"
+      ]
+    ],
+    "body": "file=;.%c0%ae%5C%zz%u2215%c0%ae.%00%2E%2E%uEFC8&note=WINDOWS"
+  },
+  {
+    "name": "variant 189 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "file=%2E%uff0e%2F%252f./&note="
+  },
+  {
+    "name": "variant 190 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%c0%af%2e%2e.?%252f%00/．%u002e%uff0e%u2024%uEFC8"
+      ]
+    ]
+  },
+  {
+    "name": "variant 191 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "file=win.ini%uF025%2e.%01/say+\"hi\"&note=etc"
+  },
+  {
+    "name": "variant 192 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "0x5c.%ff.%u2024/"
+      ]
+    ]
+  },
+  {
+    "name": "variant 193 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "59"
+      ]
+    ],
+    "body": "file=%u002f%u2024%uff0e%2E/Program+Files%u2215x+y&note=c^md"
+  },
+  {
+    "name": "variant 194 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "file=%2f.%2F%zzx+yWINDOWS%2f&note=çay"
+  },
+  {
+    "name": "variant 195 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "file=／.．．%c0%af%u002e.%00.%c0%ae%252e%e0%80%af&note=ETC"
+  },
+  {
+    "name": "variant 196 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "\\.%2E%uEFC8"
+      ]
+    ]
+  },
+  {
+    "name": "variant 197 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        ".%u002e0x5c0x2f%uff0e.0x2fc^md%252f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 198 (query)",
+    "method": "GET",
+    "uri": "/get?arg=100%%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 199 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "50"
+      ]
+    ],
+    "body": "file=%255c%2E.%252e%e0%80%af...&note=Program+Files"
+  },
+  {
+    "name": "variant 200 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%c0%ae/çay100%",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 201 (query)",
+    "method": "GET",
+    "uri": "/get?arg=win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 202 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "／.0x2e%2E%c1%9ckitap%2E.%00.%u002f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 203 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.?%u002e%u2216x+y",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 204 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "o'neil"
+      ]
+    ]
+  },
+  {
+    "name": "variant 205 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%5c.%u2024%u002f%00/%252e%252e%252e/%252f%2e.%00.\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "32"
+      ]
+    ],
+    "body": "file=Program+Files...0x2f&note=a"
+  },
+  {
+    "name": "variant 206 (path)",
+    "method": "GET",
+    "uri": "/files/x+y0x5c%5C%2e%u002e./",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 207 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%uff0e%uF025%252e%5c／.%e0%80%af",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "file=passwd0x2f.%00.／%u2216．%u2024%2E.%01%00/&note=o'neil"
+  },
+  {
+    "name": "variant 208 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%u2215%uff0e%252e%252f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 209 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "ETC0x2f%2F..%00%252f."
+      ]
+    ]
+  },
+  {
+    "name": "variant 210 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "file=c^md&note=win.ini"
+  },
+  {
+    "name": "variant 211 (path)",
+    "method": "GET",
+    "uri": "/files/a,b;c%c0%af%2E%00/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 212 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%5c%2e%c0%ae%2f%uF025%2e&a=o'neil%00/&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 213 (path)",
+    "method": "GET",
+    "uri": "/files/Program+Files%252f.%5cx+y%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 214 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%u002e..%252fkitap%5c%zz"
+      ]
+    ]
+  },
+  {
+    "name": "variant 215 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%c1%9c..%00%00/.%00%ff.;a,b;c0x2f%u2216.%252e.?",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 216 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "say \"hi\";%2E%2e%5c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 217 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "file=%5c%2e%e0%80%af&note=..."
+  },
+  {
+    "name": "variant 218 (query)",
+    "method": "GET",
+    "uri": "/get?arg=0x2f%252e%uff0e%u2216say+\"hi\"%uF025.%u002e./",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 219 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=kitapçay%zz%uF025%uff0e.?%00/&note=win.ini"
+  },
+  {
+    "name": "variant 220 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%2f..%u002e%5C.%01%u2024%2E%c0%af",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "21"
+      ]
+    ],
+    "body": "file=ETC&note=win.ini"
+  },
+  {
+    "name": "variant 221 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/;%2E．%uff0e%255c100%%u2215.%00／..%u002f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 222 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=WINDOWS/\\0x2e%252e%uEFC8o'neil%uF025&note=a"
+  },
+  {
+    "name": "variant 223 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%252f?%2e%c0%ae%255c.??%2F／%2E%u2024%c0%af%2E．",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 224 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%5c.?.%00say+\"hi\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 225 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "Program Files%c0%af"
+      ]
+    ]
+  },
+  {
+    "name": "variant 226 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%5c./0x5c%c0%ae%2e.%01.%01%2F&a=%00/.%01%252e..?／%252f.%01%c0%ae%255c&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 227 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "a%255cpasswd"
+      ]
+    ]
+  },
+  {
+    "name": "variant 228 (two params)",
+    "method": "GET",
+    "uri": "/get?a=\\?．%c1%9c%uEFC8çay%255c%uEFC8%uff0e%u002e%e0%80%af&a=%u002f.%2e.%u002e&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 229 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "37"
+      ]
+    ],
+    "body": "file=win.inisay+\"hi\"／&note=say+\"hi\""
+  },
+  {
+    "name": "variant 230 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%uF025%252e%uff0e%2e%u002f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 231 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%00/%c0%ae.?%252e%ff.a,b;c%c1%9c%c0%ae...",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "file=.%u2024%5C100%%u002e%2E%255c&note=o'neil"
+  },
+  {
+    "name": "variant 232 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "file=çay%uEFC8&note=kitap"
+  },
+  {
+    "name": "variant 233 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/.?%c0%ae%c0%ae.%01%u2215"
+      ]
+    ]
+  },
+  {
+    "name": "variant 234 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%5c0x2e?.%01/%2f.%00%u20240x2e%u002e%c0%afo'neil",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 235 (query)",
+    "method": "GET",
+    "uri": "/get?arg=／?.%00%u002f.%01%u002e.%01%5C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 236 (path)",
+    "method": "GET",
+    "uri": "/files/0x2e%3f%2e%c0%af%5C.%01.%00%uF025.\\Program+Files",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 237 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%5C.%u2024%uff0e?%5C"
+      ]
+    ]
+  },
+  {
+    "name": "variant 238 (query)",
+    "method": "GET",
+    "uri": "/get?arg=win.ini\\...%u2215.%01%u2024\\kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 239 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "Program Files"
+      ]
+    ]
+  },
+  {
+    "name": "variant 240 (query)",
+    "method": "GET",
+    "uri": "/get?arg=çay%252f%252e.?0x2e%5c%u002e.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 241 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/ETC%2f.%ff.%uF025.%uff0e"
+      ]
+    ]
+  },
+  {
+    "name": "variant 242 (query)",
+    "method": "GET",
+    "uri": "/get?arg=o'neil",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 243 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%2f%ff.%u2024%2fx y%e0%80%af%2E%uff0e%2E%5C0x2f.?0x2e.%uEFC8"
+      ]
+    ]
+  },
+  {
+    "name": "variant 244 (query)",
+    "method": "GET",
+    "uri": "/get?arg=/.0x2e%uEFC8%252f%c0%ae.%01.%ff.／.%000x2e/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 245 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%2F%c0%ae%255c.%00%ff.%2e%2E%00/%u2024.%2e.%00.?"
+      ]
+    ]
+  },
+  {
+    "name": "variant 246 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%u002f%252e.%01%252fWINDOWS&a=a,b;c%uF025o'neil&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 247 (query)",
+    "method": "GET",
+    "uri": "/get?arg=...say+\"hi\"0x2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 248 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%zz／%u2024?.／Program Files%2F"
+      ]
+    ]
+  },
+  {
+    "name": "variant 249 (query)",
+    "method": "GET",
+    "uri": "/get?arg=x+y%255c%c0%af%ff.%c1%9c?%c0%ae%2E/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 250 (two params)",
+    "method": "GET",
+    "uri": "/get?a=o'neil/%zz／kitap\\0x2e%255c&a=%c1%9c.%00%2e%u002e%2e%uF025/%u2024.?%2e%e0%80%af&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 251 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=;%ff.%u2024%u2024/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "file=win.ini/win.ini&note=ETC"
+  },
+  {
+    "name": "variant 252 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u22150x2e.%01%e0%80%af%2F%u2024.%2e\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 253 (two params)",
+    "method": "GET",
+    "uri": "/get?a=passwd／%c0%ae.?．.?／&a=%5c%u002e.?%252e%ff.&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 254 (path)",
+    "method": "GET",
+    "uri": "/files/x+y%e0%80%af..%5c%3f．%2E.%01\\etc;",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 255 (path)",
+    "method": "GET",
+    "uri": "/files/%2F.%01..%c0%af%uff0e.%5C;%3f%u002e.%00/．.%c1%9c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 256 (two params)",
+    "method": "GET",
+    "uri": "/get?a=etc%c0%ae%c0%ae.%c0%ae／%zz／%252e%252f&a=%ff.?/%u2215%uff0e．%ff.%5C&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 257 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%255c.%u002e．%c1%9c%00/.%u2215..%5ca",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 258 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.%u2024%uff0e．\\%252e0x5c%e0%80%af%c0%ae%ff.%u2024%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 259 (query)",
+    "method": "GET",
+    "uri": "/get?arg=\\.%u2024%ff./",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 260 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%2f..?..%e0%80%af.%01%2e../...%e0%80%af"
+      ]
+    ]
+  },
+  {
+    "name": "variant 261 (two params)",
+    "method": "GET",
+    "uri": "/get?a=say+\"hi\".%01.%e0%80%af&a=say+\"hi\"&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 262 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/.%01?%u2215%c0%af.?%u2024\\"
+      ]
+    ]
+  },
+  {
+    "name": "variant 263 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%uF025%uff0e%uff0e...%u2216",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 264 (two params)",
+    "method": "GET",
+    "uri": "/get?a=win.ini..0x2e%uF025&a=...%e0%80%af/%2e.?%ff.\\&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 265 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "0x2f.?o'neil"
+      ]
+    ]
+  },
+  {
+    "name": "variant 266 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "40"
+      ]
+    ],
+    "body": "file=;0x2e%u002e\\\\?%u2216/.?.%01/&note=a"
+  },
+  {
+    "name": "variant 267 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "çayetc%c1%9c%u002e0x2e%2e/"
+      ]
+    ]
+  },
+  {
+    "name": "variant 268 (two params)",
+    "method": "GET",
+    "uri": "/get?a=/．.%uEFC8&a=win.ini／&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 269 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=kitap%2f/%2E%uff0e%2e%ff.%zz／win.ini%252f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "file=c^md%5C&note=say+\"hi\""
+  },
+  {
+    "name": "variant 270 (two params)",
+    "method": "GET",
+    "uri": "/get?a=kitap&a=0x2e%2Fpasswd%e0%80%af%2f?%uff0e%2E&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 271 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/100%"
+      ]
+    ]
+  },
+  {
+    "name": "variant 272 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%uF025%c0%ae..%01Program+Files;.%00／%u002f0x2e%ff.%c0%af",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 273 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=Program+Filesçay%c1%9c%c1%9c.%00%u002e.%00x+y%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "file=%u22150x2e0x2f.%01%ff..%01%u002f%zz;o'neil&note=etc"
+  },
+  {
+    "name": "variant 274 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%c0%af%u2024.%255cc^md\\%2e%c0%ae%2e%c1%9c&a=..%00.%01%uff0e%u2024&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 275 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "36"
+      ]
+    ],
+    "body": "file=...%252fetc%c1%9c%zz&note=a,b;c"
+  },
+  {
+    "name": "variant 276 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=?%c0%ae.0x2fWINDOWS0x2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "file=WINDOWS..／&note=o'neil"
+  },
+  {
+    "name": "variant 277 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%2F%2e.%00",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 278 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%ff.%2e%5C%uff0e.%01%uff0e\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "55"
+      ]
+    ],
+    "body": "file=\\.%01%ff.%uF025passwd\\／.%ff.．%ff.%255c&note=.."
+  },
+  {
+    "name": "variant 279 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "72"
+      ]
+    ],
+    "body": "file=%2F%ff..%01.?.?%5c%c1%9c.%00%2e%ff.%e0%80%afProgram+Files&note=100%"
+  },
+  {
+    "name": "variant 280 (path)",
+    "method": "GET",
+    "uri": "/files/%3f%uF025Program+Files",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 281 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u2215%252e0x2e／.%00.?0x2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 282 (query)",
+    "method": "GET",
+    "uri": "/get?arg=c^md",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 283 (query)",
+    "method": "GET",
+    "uri": "/get?arg=aa,b;c%ff.%uF025çay",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 284 (path)",
+    "method": "GET",
+    "uri": "/files/%255c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 285 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "100%%00/..%00%252e%c1%9c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 286 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "28"
+      ]
+    ],
+    "body": "file=...%e0%80%af&note=a,b;c"
+  },
+  {
+    "name": "variant 287 (query)",
+    "method": "GET",
+    "uri": "/get?arg=..%255csay+\"hi\"%5c%c0%ae%c0%af%2e%2E/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 288 (query)",
+    "method": "GET",
+    "uri": "/get?arg=ETC%u2215passwd%c0%afkitap%2F...%u2215",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 289 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "file=%u2024.%uff0e?/&note=WINDOWS"
+  },
+  {
+    "name": "variant 290 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%c0%ae%c0%ae/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 291 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "68"
+      ]
+    ],
+    "body": "file=%255c%c0%ae.?0x5c%e0%80%af?;.%252e%252e%5C/0x2e%u2024&note=çay"
+  },
+  {
+    "name": "variant 292 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.?%c0%af%252f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 293 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=x+y%e0%80%af.%252e%c0%ae%252e．%ff..%01%2f%c1%9c%252e%252e;",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "36"
+      ]
+    ],
+    "body": "file=x+y／%5c%u002e..0x2f&note=c^md"
+  },
+  {
+    "name": "variant 294 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "file=passwd&note=.."
+  },
+  {
+    "name": "variant 295 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%u2216%2e．/&a=．%uff0e%ff.%e0%80%af&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 296 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "file=?.%00/&note=a"
+  },
+  {
+    "name": "variant 297 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "0x2f%2E\\%u002f.%01%252e%uEFC8a"
+      ]
+    ]
+  },
+  {
+    "name": "variant 298 (query)",
+    "method": "GET",
+    "uri": "/get?arg=o'neil0x5c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 299 (path)",
+    "method": "GET",
+    "uri": "/files/a,b;c%255c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 300 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%uff0e.%00.%2E%00/%uff0e%ff.ETC%255c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 301 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%5C.?%2e／;．.%01%255c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "26"
+      ]
+    ],
+    "body": "file=win.ini&note=say+\"hi\""
+  },
+  {
+    "name": "variant 302 (query)",
+    "method": "GET",
+    "uri": "/get?arg=...;%u002e.%e0%80%af%u2216.%00%u002e%u002f100%;",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 303 (query)",
+    "method": "GET",
+    "uri": "/get?arg=/%uff0e/%2f.%01%2E%2F?.0x2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 304 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        ".%252e%5Cx y／%2F%uff0e\\.?．"
+      ]
+    ]
+  },
+  {
+    "name": "variant 305 (two params)",
+    "method": "GET",
+    "uri": "/get?a=?.0x2f0x5c..;%u002f0x2e.%c1%9c&a=%2E．.%01%5C0x5c.%00.%01．%uF025%255c0x2e.%00.%252f&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 306 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%255c?%c0%ae0x5c%00/.．%u002e/c^md"
+      ]
+    ]
+  },
+  {
+    "name": "variant 307 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "file=%u2216%uff0e%ff../etca,b;c&note=say+\"hi\""
+  },
+  {
+    "name": "variant 308 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=..100%a,b;c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "file=0x2e.%00.;win.ini/.%01.%00%00/a&note=a"
+  },
+  {
+    "name": "variant 309 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "file=.%01%u002e.%uff0e%u002f&note=kitap"
+  },
+  {
+    "name": "variant 310 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "file=%5C%252e.%uff0e./çayetc%2F%5C.%00%uff0e%uEFC8&note=o'neil"
+  },
+  {
+    "name": "variant 311 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=100%%5c.%c0%ae./%5C.?/win.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "file=çay&note=a"
+  },
+  {
+    "name": "variant 312 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        ".?%c1%9c%c1%9c.%2e%c0%ae%252f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 313 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%255c0x2e.%01%2Fsay \"hi\"%255c?0x2e"
+      ]
+    ]
+  },
+  {
+    "name": "variant 314 (two params)",
+    "method": "GET",
+    "uri": "/get?a=..0x5c%252e%2E..%01%u2215c^md0x5c&a=%zzo'neil%uEFC8çay%5ca&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 315 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%uEFC8%u2024..%00"
+      ]
+    ]
+  },
+  {
+    "name": "variant 316 (query)",
+    "method": "GET",
+    "uri": "/get?arg=?.%00%u002e",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 317 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "/%ff.%2E0x2e0x2f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 318 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/0x2e../%2e%2e%2E"
+      ]
+    ]
+  },
+  {
+    "name": "variant 319 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%c1%9c.%2E./çay%uF025"
+      ]
+    ]
+  },
+  {
+    "name": "variant 320 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "...%uF025%c1%9c%2E%2E.%00%ff.\\"
+      ]
+    ]
+  },
+  {
+    "name": "variant 321 (query)",
+    "method": "GET",
+    "uri": "/get?arg=...%u2215win.ini\\%2E.?%uff0e%5c．%ff..%01?0x5c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 322 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%255c%2e..%c0%ae%252e.%00%252e%u2024/a,b;c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 323 (two params)",
+    "method": "GET",
+    "uri": "/get?a=kitappasswd&a=%uEFC8%2E0x2e．&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 324 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=etc%zz%u2215",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "file=\\.%00%uff0e/%zz%5C.?./&note=o'neil"
+  },
+  {
+    "name": "variant 325 (two params)",
+    "method": "GET",
+    "uri": "/get?a=/.%2e%c0%af%zz&a=%2e.%ff./.%01%2e0x5cETC%u2216.%01.%252f&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 326 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%00/%2E.?%uff0e%c0%ae/"
+      ]
+    ]
+  },
+  {
+    "name": "variant 327 (two params)",
+    "method": "GET",
+    "uri": "/get?a=o'neil0x5c&a=Program+Files%u2216&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 328 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.%00%u002e%ff..%01%u2216",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 329 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%00/%ff..%u002e%u2216%zz%5C%uff0e%252e%u2215%252f.%2E.?",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 330 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=．",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=win.inic^md/.0x2e%252f%5c??%c0%af&note=c^md"
+  },
+  {
+    "name": "variant 331 (two params)",
+    "method": "GET",
+    "uri": "/get?a=...kitap&a=%255c%uff0e.%u2024/%u002f%2E．%uEFC8&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 332 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "36"
+      ]
+    ],
+    "body": "file=.0x2e.%00%00/0x2e.?.%00&note=.."
+  },
+  {
+    "name": "variant 333 (query)",
+    "method": "GET",
+    "uri": "/get?arg=çayc^md%00/.%00%252e%e0%80%af",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 334 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%e0%80%af?",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 335 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%2F%c0%ae．%252fsay+\"hi\"%252fsay+\"hi\"%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "file=%255c.?%uff0e．%c0%af%252e%c0%afwin.ini/%2E.?0x5c&note=.."
+  },
+  {
+    "name": "variant 336 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        ".%01%255c"
+      ]
+    ]
+  },
+  {
+    "name": "variant 337 (path)",
+    "method": "GET",
+    "uri": "/files/passwd%uff0e%c0%ae%2E/100%",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 338 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u002e;0x5c．%2E.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 339 (query)",
+    "method": "GET",
+    "uri": "/get?arg=...;%c0%af.%01.%u2215/%uff0e%c0%ae.?0x2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 340 (query)",
+    "method": "GET",
+    "uri": "/get?arg=0x2e%u2024%c0%af..%01%uF025...?",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 341 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/．..%5C%5c..%00%uff0e%252e%5C"
+      ]
+    ]
+  },
+  {
+    "name": "variant 342 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%2E%uff0e..%00%2f%zz"
+      ]
+    ]
+  },
+  {
+    "name": "variant 343 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "36"
+      ]
+    ],
+    "body": "file=100%o'neil0x2fa,b;cetc&note=x+y"
+  },
+  {
+    "name": "variant 344 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        ".?%00/o'neil%5C"
+      ]
+    ]
+  },
+  {
+    "name": "variant 345 (path)",
+    "method": "GET",
+    "uri": "/files/%3f.%01%00/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 346 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/%c0%af．?%c0%ae%255c.%01%u002e．%u2215win.ini"
+      ]
+    ]
+  },
+  {
+    "name": "variant 347 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%252e%u2215WINDOWSa%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 348 (query)",
+    "method": "GET",
+    "uri": "/get?arg=çay%zz;a.%01..?/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 349 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "file=%uF0250x2e%ff.%ff.%uff0e/&note=etc"
+  },
+  {
+    "name": "variant 350 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "file=%5c．%ff.%c0%ae%uF025win.iniWINDOWS%u2215&note=say+\"hi\""
+  },
+  {
+    "name": "variant 351 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%u2216.%01..%c1%9c.%c0%ae%u002e%uEFC8%u002e%252e.?&a=0x2e.?/çay&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 352 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=.%01.%01?.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "47"
+      ]
+    ],
+    "body": "file=\\%2Epasswd%u002f%5C0x2e0x2e.%01/&note=100%"
+  },
+  {
+    "name": "variant 353 (query)",
+    "method": "GET",
+    "uri": "/get?arg=say+\"hi\"%uEFC8.%u002e/%252f.%01.%uEFC8ETC%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 354 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "file=%2f.%u2215&note=say+\"hi\""
+  },
+  {
+    "name": "variant 355 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "file=%u2215.%010x2e&note=kitap"
+  },
+  {
+    "name": "variant 356 (path)",
+    "method": "GET",
+    "uri": "/files/%255c..%c0%ae%u2215.%c0%ae%2F%u2215%u002e%3f%u2216.%c0%ae%u2215",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 357 (two params)",
+    "method": "GET",
+    "uri": "/get?a=Program+Files／%2E.%c0%afx+y/o'neil%c0%af&a=...c^md..%00Program+Files&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 358 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%2F.?%c0%ae.;100%Program+Files&a=／%ff../%ff.?.%u002f&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 359 (query)",
+    "method": "GET",
+    "uri": "/get?arg=/.%ff.．%ff.%5c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 360 (path)",
+    "method": "GET",
+    "uri": "/files/0x2e%2e.%c0%ae\\...\\/%uff0e0x2e.%u2216%u002e%uff0e",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 361 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "48"
+      ]
+    ],
+    "body": "file=／..%2e.0x5c%00/．．%c0%ae0x2e&note=100%"
+  },
+  {
+    "name": "variant 362 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "file=%c1%9c%c0%ae．.%2e%uF025Program+Files&note="
+  },
+  {
+    "name": "variant 363 (query)",
+    "method": "GET",
+    "uri": "/get?arg=..%uF025a%252f%c1%9c%ff..%000x5c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 364 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=win.ini%c0%af%u002e%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "file=.?%c0%ae..%uff0e/%2e%2e%c0%ae./&note=..."
+  },
+  {
+    "name": "variant 365 (query)",
+    "method": "GET",
+    "uri": "/get?arg=say+\"hi\"／akitapa",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 366 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u002f..%5C100%.%u002e.%00.%u2215a,b;c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 367 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "file=0x2e%ff..%uF025.0x2e%uEFC8&note=say+\"hi\""
+  },
+  {
+    "name": "variant 368 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%255c%u2024.%2F%2F..%00.%00%u002f%u2216%252e%252e/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 369 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%u2024%2E.%2f%252f%u002e.?.%00çay;%u2024..%252f"
+      ]
+    ]
+  },
+  {
+    "name": "variant 370 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "file=%zz／etc%2f&note=say+\"hi\""
+  },
+  {
+    "name": "variant 371 (query)",
+    "method": "GET",
+    "uri": "/get?arg=/．%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 372 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "68"
+      ]
+    ],
+    "body": "file=c^md/%c0%ae.%00.%00%2E%c1%9c／%u002e.%01%c0%ae%u002f&note=100%"
+  },
+  {
+    "name": "variant 373 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "etcProgram Files%00/100%%c1%9cwin.ini%2F"
+      ]
+    ]
+  },
+  {
+    "name": "variant 374 (query)",
+    "method": "GET",
+    "uri": "/get?arg=.?%2E0x2faa,b;c/%255c%u2024%u002e.%00%u2024%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 375 (query)",
+    "method": "GET",
+    "uri": "/get?arg=c^md%e0%80%af?.%00%c0%ae.%00%00/c^md%252f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 376 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "60"
+      ]
+    ],
+    "body": "file=/%c0%ae.?.?%255c%c1%9c?.%u002f／%u2024%5c&note=win.ini"
+  },
+  {
+    "name": "variant 377 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%c0%af0x2e0x2e/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 378 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%2E%u002e%ff.%252e%00/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 379 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u2215?0x2e\\%u2215..%01.\\%2F．%2e?%uF025",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 380 (query)",
+    "method": "GET",
+    "uri": "/get?arg=／%ff..%252e%00/．%252e;%2F..",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 381 (two params)",
+    "method": "GET",
+    "uri": "/get?a=%u2024%00/WINDOWS/win.inia,b;c／&a=..%5cProgram+Files&b=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 382 (query)",
+    "method": "GET",
+    "uri": "/get?arg=?%u002e%u002f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 383 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "file=%u002e.%00%u2216&note=.."
+  },
+  {
+    "name": "variant 384 (path)",
+    "method": "GET",
+    "uri": "/files/\\0x2e.%3f.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 385 (query)",
+    "method": "GET",
+    "uri": "/get?arg=say+\"hi\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 386 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "file=..／%255c..%252e/...%c1%9c%252e.%u002e%5c&note=..."
+  },
+  {
+    "name": "variant 387 (path)",
+    "method": "GET",
+    "uri": "/files/etc%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 388 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "file=．%252e.%2E/&note=win.ini"
+  },
+  {
+    "name": "variant 389 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=0x2e%5csay+\"hi\"%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "37"
+      ]
+    ],
+    "body": "file=%uF0250x2e%2E..0x2f&note=win.ini"
+  },
+  {
+    "name": "variant 390 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "file=／%ff.．%5c&note="
+  },
+  {
+    "name": "variant 391 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%2e.%01%uEFC8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 392 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "/..çay100%/çay"
+      ]
+    ]
+  },
+  {
+    "name": "variant 393 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=%2E%c0%ae．0x5c0x5c.%252e%255c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "50"
+      ]
+    ],
+    "body": "file=0x2f.%u002e%u2024%252e%252fo'neil0x5c.&note=a"
+  },
+  {
+    "name": "variant 394 (form)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "62"
+      ]
+    ],
+    "body": "file=a0x2f%ff.．%u002e%u2216..%u002e%2e.?%u002e/&note=win.ini"
+  },
+  {
+    "name": "variant 395 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%u2215.%01.%01%2F100%kitap．.%u002e%2e/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "variant 396 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=win.ini0x2fWINDOWS%uF025ETC／",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "25"
+      ]
+    ],
+    "body": "file=%u2024..／&note=%zz"
+  },
+  {
+    "name": "variant 397 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Path",
+        "%u002e/"
+      ]
+    ]
+  },
+  {
+    "name": "variant 398 (referer)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Referer",
+        "http://localhost/o'neil%c0%af"
+      ]
+    ]
+  },
+  {
+    "name": "variant 399 (mixed)",
+    "method": "POST",
+    "uri": "/post?q=say+\"hi\"／100%%2e%ff./%u2024",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "file=o'neil/0x5c%uff0e%c1%9c%c0%ae.%010x2f&note=c^md"
+  },
+  {
+    "name": "variant 400 (query)",
+    "method": "GET",
+    "uri": "/get?arg=%2e\\WINDOWS%252e.say+\"hi\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  }
+]

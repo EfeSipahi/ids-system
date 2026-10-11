@@ -36,7 +36,7 @@ type Origin int
 
 const (
 	OriginQuery Origin = iota + 1 // the query string of the target
-	OriginBody                    // a form-urlencoded body
+	OriginBody                    // the request body
 )
 
 func (o Origin) String() string {
@@ -62,17 +62,52 @@ type Param struct {
 	Origin Origin
 }
 
+// Cookie is one name=value pair of a Cookie header. Cookie values are not
+// percent-decoded; they are kept as sent.
+type Cookie struct {
+	Name  string
+	Value string
+}
+
 // Parsed is the view of the request after splitting and decoding.
 type Parsed struct {
 	// Path and RawQuery are the two halves of Received.Target, split at
-	// the first "?". Both are still percent-encoded.
+	// the first "?". Both are still percent-encoded. When the target is a
+	// full URL, as a proxy request has it, Path starts after the host.
 	Path     string
 	RawQuery string
 
-	// Query and Form keep every pair in the order received. A name that
-	// appears twice gives two entries.
-	Query []Param
-	Form  []Param
+	// DecodedPath is Path with its percent-encoding resolved once. A "+"
+	// stays a plus sign, because only in a query does it mean a space.
+	DecodedPath string
+
+	// Cookies holds the pairs of every Cookie header, in order.
+	Cookies []Cookie
+
+	// Query and BodyArgs keep every pair in the order received. A name
+	// that appears twice gives two entries.
+	//
+	// BodyArgs holds what the body parser found: the fields of a form, the
+	// values of a JSON document (named by their path, such as
+	// "json.user.name" or "json.items.0"), or the text fields of a
+	// multipart body.
+	Query    []Param
+	BodyArgs []Param
+
+	// Files lists the files of a multipart body. Only their names are
+	// kept; file contents are not read.
+	Files []File
+
+	// XMLText holds the text between the tags of an XML body, one entry
+	// per piece, and XMLAttributes the values of all attributes.
+	XMLText       []string
+	XMLAttributes []string
+}
+
+// File is one uploaded file of a multipart body.
+type File struct {
+	Field string // the name of the form field
+	Name  string // the file name as the client sent it, with any path
 }
 
 // BodyState says how far the body was inspected.
@@ -81,12 +116,21 @@ type BodyState int
 const (
 	// BodyEmpty: the request has no body. Nothing is missing.
 	BodyEmpty BodyState = iota + 1
-	// BodyInspected: the body was parsed into Parsed.Form.
+	// BodyInspected: the whole body was parsed.
 	BodyInspected
 	// BodyNotInspected: there is a body, but it was not parsed into
 	// fields. Status.BodyReason says why.
 	BodyNotInspected
+	// BodyPartlyInspected: parsing stopped before the end of the body.
+	// What was read up to that point is in Parsed; the rest was not
+	// inspected. Status.BodyReason says why.
+	BodyPartlyInspected
 )
+
+// Complete reports whether the whole body was inspected, or there was none.
+func (b BodyState) Complete() bool {
+	return b == BodyEmpty || b == BodyInspected
+}
 
 func (b BodyState) String() string {
 	switch b {
@@ -96,6 +140,8 @@ func (b BodyState) String() string {
 		return "inspected"
 	case BodyNotInspected:
 		return "not inspected"
+	case BodyPartlyInspected:
+		return "partly inspected"
 	}
 	return "unknown"
 }
@@ -109,7 +155,11 @@ type Issue struct {
 // Status records the coverage of the parsed view. "Not inspected" is not an
 // attack signal; it only means a clean result does not cover that part.
 type Status struct {
-	Body       BodyState
+	Body BodyState
+	// BodyFormat is the parser that was chosen from the Content-Type:
+	// "form", "json", "multipart" or "xml". It is empty when there is no
+	// body or no parser for it.
+	BodyFormat string
 	BodyReason string
 	Issues     []Issue
 }
@@ -133,9 +183,9 @@ func (r *Request) HeaderValues(name string) []string {
 	return values
 }
 
-// Args returns the query parameters followed by the form parameters.
+// Args returns the query parameters followed by the body parameters.
 func (r *Request) Args() []Param {
-	args := make([]Param, 0, len(r.Parsed.Query)+len(r.Parsed.Form))
+	args := make([]Param, 0, len(r.Parsed.Query)+len(r.Parsed.BodyArgs))
 	args = append(args, r.Parsed.Query...)
-	return append(args, r.Parsed.Form...)
+	return append(args, r.Parsed.BodyArgs...)
 }

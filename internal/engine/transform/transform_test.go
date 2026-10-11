@@ -46,6 +46,10 @@ func TestURLDecodeUni(t *testing.T) {
 		{"%u002e%U002E%u002f", "../"},
 		{"%u2215", "\x15"},
 		{"%u1234", "\x34"},
+		// Codes in the best-fit table become the ASCII look-alike.
+		{"%u2019 OR 1=1", "' OR 1=1"},
+		{"%u00abscript%u00bb", "<script>"},
+		{"%u00e9", "e"},
 		// Full-width forms ff01 to ff5e get 0x20 added.
 		{"%uff0e%uFF0E%uff0f", "../"},
 		{"%uff01", "!"},
@@ -126,8 +130,81 @@ func TestCmdLine(t *testing.T) {
 	})
 }
 
+func TestNormalizePathWin(t *testing.T) {
+	runCases(t, "NormalizePathWin", NormalizePathWin, []testCase{
+		{"", ""},
+		{"/etc/passwd", "/etc/passwd"},
+		{`C:\Windows\.\System32\..\win.ini`, "C:/Windows/win.ini"},
+		{"/etc//./passwd", "/etc/passwd"},
+		{"/a/b/../../c", "/c"},
+		{"a/./b", "a/b"},
+		{"a/b/", "a/b/"},
+		{"/app/x/../.env", "/app/.env"},
+		// A path cannot climb above its start.
+		{"../../etc/passwd", "../../etc/passwd"},
+		{"/../etc", "/etc"},
+		{"a/../../b", "../b"},
+		// Windows ignores dots and spaces at the end of a file name, so
+		// they are removed. ModSecurity removes the whole segment here.
+		{"abc..", "abc"},
+		{"a/win.ini..", "a/win.ini"},
+		{"a/win.ini. /b", "a/win.ini/b"},
+		// The name of a data stream is cut off; a drive letter is kept.
+		{"web.config::$DATA", "web.config"},
+		{`C:\boot.ini:x`, "C:/boot.ini"},
+		{`a\\\b`, "a/b"},
+		// As in Coraza, a lone slash is doubled.
+		{"/", "//"},
+	})
+}
+
+// One readable example or two for each of the transformations that the
+// SQL injection and XSS rules use. The thorough check is the comparison
+// with the two reference files further down.
+func TestSQLiAndXSSTransformations(t *testing.T) {
+	runCases(t, "ReplaceComments", ReplaceComments, []testCase{
+		{"UNION/**/SELECT", "UNION SELECT"},
+		{"a/* never closed", "a "},
+		{"a */ b", "a */ b"},
+	})
+	runCases(t, "RemoveCommentsChar", RemoveCommentsChar, []testCase{
+		{"1/*x*/OR--1#", "1xOR1"},
+		{"<!--a-->", "a"},
+	})
+	runCases(t, "RemoveWhitespace", RemoveWhitespace, []testCase{
+		{" j a\tv\na\xa0 ", "java"},
+	})
+	runCases(t, "CompressWhitespace", CompressWhitespace, []testCase{
+		{"a \t\n b\tc ", "a b c "},
+	})
+	runCases(t, "Lowercase", Lowercase, []testCase{
+		{"SeLeCT É", "select É"},
+	})
+	runCases(t, "JSDecode", JSDecode, []testCase{
+		{`\x3cscript\x3e`, "<script>"},
+		{`\u003c\uff1c\74`, "<<<"},
+		{`a\'b\n`, "a'b\n"},
+		{`end\`, `end\`},
+	})
+	runCases(t, "CSSDecode", CSSDecode, []testCase{
+		{`ja\76 ascript`, "javascript"},
+		{`\6a\00006a\ff4a`, "jjj"},
+		{`a\\b\`, `a\b`},
+	})
+	runCases(t, "HTMLEntityDecode", HTMLEntityDecode, []testCase{
+		{"&lt;script&gt;", "<script>"},
+		{"javascript&colon;alert&#40;1&#x29", "javascript:alert(1)"},
+		// lt is one of the old names that count without a semicolon,
+		// even directly before letters. ModSecurity leaves this alone.
+		{"&LTscript&GT", "<script>"},
+		// Names are case-sensitive, and most need their semicolon.
+		{"&COLON; &colon &unknown; & &#", "&COLON; &colon &unknown; & &#"},
+		{"&#233;", "é"},
+	})
+}
+
 func TestLookupAndResolve(t *testing.T) {
-	for _, name := range []string{"utf8toUnicode", "URLDECODEUNI", "removenulls", "cmdLine"} {
+	for _, name := range []string{"utf8toUnicode", "URLDECODEUNI", "removenulls", "cmdLine", "normalizePathWin"} {
 		if _, ok := Lookup(name); !ok {
 			t.Errorf("Lookup(%q) failed", name)
 		}
@@ -135,7 +212,7 @@ func TestLookupAndResolve(t *testing.T) {
 	if tr, _ := Lookup("urldecodeuni"); tr.Name != "urlDecodeUni" {
 		t.Errorf("canonical name = %q", tr.Name)
 	}
-	for _, name := range []string{"", "none", "sha1", "lowercase"} {
+	for _, name := range []string{"", "none", "sha1", "md5"} {
 		if _, ok := Lookup(name); ok {
 			t.Errorf("Lookup(%q) succeeded", name)
 		}
@@ -203,11 +280,43 @@ func TestRule930110Chain(t *testing.T) {
 	}
 }
 
-// TestAgainstModSecurityV2 compares every transformation with results
+// followCoraza names the transformations that are compared with Coraza. All
+// others are compared with ModSecurity v2.
+var followCoraza = map[string]bool{"normalizePathWin": true, "htmlEntityDecode": true}
+
+// TestAgainstModSecurityV2 compares the transformations with results
 // recorded from the ModSecurity v2 C code. The header of the data file says
 // how it was produced.
 func TestAgainstModSecurityV2(t *testing.T) {
-	f, err := os.Open("testdata/modsecurity_v2_vectors.txt")
+	counts := compareWithVectors(t, "testdata/modsecurity_v2_vectors.txt", "ModSecurity")
+	for _, tr := range registry {
+		if want := !followCoraza[tr.Name]; want && counts[tr.Name] < 800 {
+			t.Errorf("only %d reference cases for %s", counts[tr.Name], tr.Name)
+		} else if !want && counts[tr.Name] > 0 {
+			t.Errorf("%s follows Coraza but has ModSecurity reference cases", tr.Name)
+		}
+	}
+}
+
+// TestAgainstCorazaV3 does the same for the two transformations that follow
+// Coraza, with results recorded from Coraza's Go code.
+func TestAgainstCorazaV3(t *testing.T) {
+	counts := compareWithVectors(t, "testdata/coraza_v3_vectors.txt", "Coraza")
+	if len(counts) != len(followCoraza) {
+		t.Errorf("reference cases for %d transformations, want %d", len(counts), len(followCoraza))
+	}
+	for name := range followCoraza {
+		if counts[name] < 800 {
+			t.Errorf("only %d reference cases for %s", counts[name], name)
+		}
+	}
+}
+
+// compareWithVectors runs every case of a reference file and returns the
+// number of cases per transformation.
+func compareWithVectors(t *testing.T, file, source string) map[string]int {
+	t.Helper()
+	f, err := os.Open(file)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -245,7 +354,7 @@ func TestAgainstModSecurityV2(t *testing.T) {
 		if got := tr.Apply(in); got != want {
 			failures++
 			if failures <= 20 {
-				t.Errorf("line %d: %s(%q) = %q, ModSecurity gives %q", line, tr.Name, in, got, want)
+				t.Errorf("line %d: %s(%q) = %q, %s gives %q", line, tr.Name, in, got, source, want)
 			}
 		}
 	}
@@ -255,11 +364,7 @@ func TestAgainstModSecurityV2(t *testing.T) {
 	if failures > 20 {
 		t.Errorf("%d more differences not shown", failures-20)
 	}
-	for _, tr := range registry {
-		if counts[tr.Name] < 800 {
-			t.Errorf("only %d reference cases for %s", counts[tr.Name], tr.Name)
-		}
-	}
+	return counts
 }
 
 // FuzzTransformations checks properties that must hold for any input,
@@ -278,6 +383,13 @@ func FuzzTransformations(f *testing.F) {
 		}
 		if got := UTF8ToUnicode(s); len(got) < len(s) {
 			t.Errorf("UTF8ToUnicode(%q) = %q is shorter than its input", s, got)
+		}
+		// One more byte is possible: a lone slash is doubled.
+		if got := NormalizePathWin(s); len(got) > len(s)+1 || strings.Contains(got, `\`) {
+			t.Errorf("NormalizePathWin(%q) = %q", s, got)
+		}
+		if got := HTMLEntityDecode(s); !strings.Contains(s, "&") && got != s {
+			t.Errorf("HTMLEntityDecode(%q) = %q, but the input has no ampersand", s, got)
 		}
 		got := CmdLine(s)
 		if strings.ContainsAny(got, "\"'\\^,;\t\r\n") || strings.Contains(got, "  ") || strings.Contains(got, " /") || strings.Contains(got, " (") || len(got) > len(s) {

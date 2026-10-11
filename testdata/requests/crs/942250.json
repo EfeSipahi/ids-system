@@ -1,0 +1,61 @@
+[
+  {
+    "name": "CRS 942250-1: Find EXECUTE IMMEDIATE injection",
+    "method": "GET",
+    "uri": "/get?var=EXECUTE%20IMMEDIATE%20%22",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942250
+    ]
+  },
+  {
+    "name": "CRS 942250-2: GHSA: 942250 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "74"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"EXECUTE IMMEDIATE &quot;\"></a></root>",
+    "expect_ids": [
+      942250
+    ]
+  }
+]

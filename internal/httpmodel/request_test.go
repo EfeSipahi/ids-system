@@ -12,6 +12,9 @@ func TestNewSplitsTargetAndKeepsItRaw(t *testing.T) {
 	if r.Received.Target != "/a%2Fb/c?q=merhaba%20dunya&x=1?2" {
 		t.Errorf("received target was changed: %q", r.Received.Target)
 	}
+	if r.Parsed.DecodedPath != "/a/b/c" {
+		t.Errorf("decoded path = %q", r.Parsed.DecodedPath)
+	}
 	if r.Parsed.Path != "/a%2Fb/c" || r.Parsed.RawQuery != "q=merhaba%20dunya&x=1?2" {
 		t.Errorf("path = %q, raw query = %q", r.Parsed.Path, r.Parsed.RawQuery)
 	}
@@ -112,8 +115,8 @@ func TestFormBodyIsParsed(t *testing.T) {
 		{Name: "foo", Value: "var", RawName: "foo", RawValue: "var", Origin: OriginBody},
 		{Name: "foo", Value: "two", RawName: "foo", RawValue: "two", Origin: OriginBody},
 	}
-	if !reflect.DeepEqual(r.Parsed.Form, want) {
-		t.Errorf("form = %+v\nwant   %+v", r.Parsed.Form, want)
+	if !reflect.DeepEqual(r.Parsed.BodyArgs, want) {
+		t.Errorf("form = %+v\nwant   %+v", r.Parsed.BodyArgs, want)
 	}
 	if string(r.Received.Body) != "arg=..%2F..%2Fetc%2Fpasswd&foo=var&foo=two" {
 		t.Errorf("received body was changed: %q", r.Received.Body)
@@ -137,8 +140,8 @@ func TestBodyNotInspected(t *testing.T) {
 		headers []Header
 		reason  string
 	}{
-		{"json", []Header{{"Content-Type", "application/json"}}, `content type "application/json" is not parsed`},
-		{"multipart", []Header{{"Content-Type", "multipart/form-data; boundary=x"}}, `content type "multipart/form-data" is not parsed`},
+		{"plain text", []Header{{"Content-Type", "text/plain; charset=utf-8"}}, `content type "text/plain" is not parsed`},
+		{"binary", []Header{{"Content-Type", "application/octet-stream"}}, `content type "application/octet-stream" is not parsed`},
 		{"no content type", nil, "no Content-Type header"},
 	}
 	for _, tt := range tests {
@@ -148,8 +151,8 @@ func TestBodyNotInspected(t *testing.T) {
 			if r.Status.Body != BodyNotInspected || !strings.Contains(r.Status.BodyReason, tt.reason) {
 				t.Errorf("status = %+v, want not inspected with reason containing %q", r.Status, tt.reason)
 			}
-			if len(r.Parsed.Form) != 0 {
-				t.Errorf("form = %+v, want none", r.Parsed.Form)
+			if len(r.Parsed.BodyArgs) != 0 {
+				t.Errorf("form = %+v, want none", r.Parsed.BodyArgs)
 			}
 			if len(r.Parsed.Query) != 1 || r.Parsed.Query[0].Value != "../x" {
 				t.Errorf("query = %+v, want it parsed anyway", r.Parsed.Query)
@@ -194,10 +197,285 @@ func TestTwoContentTypeHeaders(t *testing.T) {
 		Headers: []Header{{"Content-Type", "application/x-www-form-urlencoded"}, {"Content-Type", "application/json"}},
 		Body:    []byte("a=1"),
 	})
-	if r.Status.Body != BodyInspected || len(r.Parsed.Form) != 1 {
-		t.Errorf("status = %+v, form = %+v", r.Status, r.Parsed.Form)
+	if r.Status.Body != BodyInspected || len(r.Parsed.BodyArgs) != 1 {
+		t.Errorf("status = %+v, form = %+v", r.Status, r.Parsed.BodyArgs)
 	}
 	if len(r.Status.Issues) != 1 || r.Status.Issues[0].Part != "headers" {
 		t.Errorf("issues = %+v", r.Status.Issues)
+	}
+}
+
+func TestCookies(t *testing.T) {
+	r := New(Received{
+		Method: "GET",
+		Target: "/",
+		Headers: []Header{
+			{"Cookie", "session=abc123; theme=dark;  path=/../x; flag; =orphan; a=b=c; enc=%2e%2e"},
+			{"cookie", "second=1"},
+		},
+	})
+	want := []Cookie{
+		{"session", "abc123"},
+		{"theme", "dark"},
+		{"path", "/../x"},
+		{"flag", ""},
+		// "=orphan" has no name and is ignored.
+		{"a", "b=c"},
+		// Cookie values are not decoded.
+		{"enc", "%2e%2e"},
+		{"second", "1"},
+	}
+	if !reflect.DeepEqual(r.Parsed.Cookies, want) {
+		t.Errorf("cookies = %+v\nwant      %+v", r.Parsed.Cookies, want)
+	}
+	if got := New(Received{Method: "GET", Target: "/"}).Parsed.Cookies; got != nil {
+		t.Errorf("cookies without a header = %+v", got)
+	}
+}
+
+func TestPathOfFullURL(t *testing.T) {
+	tests := []struct{ target, path, query string }{
+		{"/a/b?x=1", "/a/b", "x=1"},
+		{"http://example.com/a/b?x=1", "/a/b", "x=1"},
+		{"HTTPS://example.com:8443/a", "/a", ""},
+		{"http://example.com", "/", ""},
+		{"*", "*", ""},
+		{"/redirect/http://other/", "/redirect/http://other/", ""},
+	}
+	for _, tt := range tests {
+		r := New(Received{Method: "GET", Target: tt.target})
+		if r.Parsed.Path != tt.path || r.Parsed.RawQuery != tt.query {
+			t.Errorf("%s: path %q, query %q; want %q, %q", tt.target, r.Parsed.Path, r.Parsed.RawQuery, tt.path, tt.query)
+		}
+		if r.Received.Target != tt.target {
+			t.Errorf("%s: the received target was changed", tt.target)
+		}
+	}
+}
+
+func bodyRequest(contentType, body string) *Request {
+	return New(Received{Method: "POST", Target: "/", Headers: []Header{{"Content-Type", contentType}}, Body: []byte(body)})
+}
+
+func namesAndValues(params []Param) []string {
+	var out []string
+	for _, p := range params {
+		out = append(out, p.Name+"="+p.Value)
+	}
+	return out
+}
+
+func TestJSONBody(t *testing.T) {
+	r := bodyRequest("application/json; charset=utf-8", `{
+		"user": {"name": "efe", "roles": ["admin", "dev"]},
+		"count": 3, "price": 1.50, "big": 12345678901234567890,
+		"ok": true, "none": null,
+		"path": "..\/..\/etc\u002fpasswd",
+		"a": 1, "a": 2,
+		"empty": {}, "list": [[1], []]
+	}`)
+	want := []string{
+		"json.user.name=efe", "json.user.roles.0=admin", "json.user.roles.1=dev",
+		// Numbers keep the text they were written with.
+		"json.count=3", "json.price=1.50", "json.big=12345678901234567890",
+		"json.ok=true", "json.none=",
+		// Escapes in strings are resolved.
+		"json.path=../../etc/passwd",
+		// A key that appears twice gives two values.
+		"json.a=1", "json.a=2",
+		"json.list.0.0=1",
+	}
+	if got := namesAndValues(r.Parsed.BodyArgs); !reflect.DeepEqual(got, want) {
+		t.Errorf("arguments = %q\nwant        %q", got, want)
+	}
+	if r.Status.Body != BodyInspected || r.Status.BodyFormat != "json" || r.Parsed.BodyArgs[0].Origin != OriginBody {
+		t.Errorf("status = %+v", r.Status)
+	}
+
+	// A document that is only one value.
+	if got := namesAndValues(bodyRequest("application/json", `"../x"`).Parsed.BodyArgs); !reflect.DeepEqual(got, []string{"json=../x"}) {
+		t.Errorf("arguments = %q", got)
+	}
+
+	for _, contentType := range []string{"application/vnd.api+json", "application/x-amz-json-1.1", "APPLICATION/JSON"} {
+		if r := bodyRequest(contentType, `{"a":"b"}`); r.Status.BodyFormat != "json" || len(r.Parsed.BodyArgs) != 1 {
+			t.Errorf("%s: status = %+v", contentType, r.Status)
+		}
+	}
+}
+
+// A JSON document that breaks off or is not valid is read as far as it
+// goes. The values before the fault are inspected and the status says that
+// the rest was not.
+func TestBrokenJSONBody(t *testing.T) {
+	tests := []struct {
+		body string
+		want []string
+	}{
+		{`{"a": "../x", "b": `, []string{"json.a=../x"}},
+		{`{"a": "../x", 'b': 1}`, []string{"json.a=../x"}},
+		{`{"a": "../x"} trailing`, []string{"json.a=../x"}},
+		{`{"a": "../x"}{"b": 1}`, []string{"json.a=../x"}},
+		{`not json`, nil},
+		{strings.Repeat("[", 100) + strings.Repeat("]", 100), nil},
+	}
+	for _, tt := range tests {
+		r := bodyRequest("application/json", tt.body)
+		if got := namesAndValues(r.Parsed.BodyArgs); !reflect.DeepEqual(got, tt.want) {
+			t.Errorf("%.30s: arguments = %q, want %q", tt.body, got, tt.want)
+		}
+		if r.Status.Body != BodyPartlyInspected || !strings.Contains(r.Status.BodyReason, "the json body could not be read to its end") {
+			t.Errorf("%.30s: status = %+v", tt.body, r.Status)
+		}
+		if r.Status.Body.Complete() {
+			t.Errorf("%.30s: a partly inspected body counts as complete", tt.body)
+		}
+	}
+}
+
+func TestMultipartBody(t *testing.T) {
+	body := "--XyZ\r\n" +
+		"Content-Disposition: form-data; name=\"title\"\r\n\r\n" +
+		"line one\r\nline two\r\n" +
+		"--XyZ\r\n" +
+		"Content-Disposition: form-data; name=\"upload\"; filename=\"..\\\\..\\\\boot.ini\"\r\n" +
+		"Content-Type: text/plain\r\n\r\n" +
+		"the content of the file, which is not read: ../../etc\r\n" +
+		"--XyZ\r\n" +
+		"Content-Disposition: form-data; name=\"title\"\r\n\r\n" +
+		"again\r\n" +
+		"--XyZ\r\n" +
+		"Content-Disposition: form-data; name=\"empty\"; filename=\"\"\r\n\r\n\r\n" +
+		"--XyZ--\r\n"
+	r := bodyRequest("multipart/form-data; boundary=XyZ", body)
+
+	if got, want := namesAndValues(r.Parsed.BodyArgs), []string{"title=line one\r\nline two", "title=again"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("arguments = %q, want %q", got, want)
+	}
+	// The file name keeps its path; Go's own helper would cut it off.
+	wantFiles := []File{{Field: "upload", Name: `..\..\boot.ini`}, {Field: "empty", Name: ""}}
+	if !reflect.DeepEqual(r.Parsed.Files, wantFiles) {
+		t.Errorf("files = %+v, want %+v", r.Parsed.Files, wantFiles)
+	}
+	if r.Status.Body != BodyInspected || r.Status.BodyFormat != "multipart" {
+		t.Errorf("status = %+v", r.Status)
+	}
+
+	broken := []struct{ contentType, body, reason string }{
+		{"multipart/form-data", body, "names no boundary"},
+		{"multipart/form-data; boundary=XyZ", body[:len(body)-60], "could not be read to its end"},
+		{"multipart/form-data; boundary=XyZ", "--XyZ\r\nContent-Disposition: form-data; name=\"a\r\n\r\nx\r\n--XyZ--\r\n", "Content-Disposition"},
+	}
+	for _, tt := range broken {
+		r := bodyRequest(tt.contentType, tt.body)
+		if r.Status.Body != BodyPartlyInspected || !strings.Contains(r.Status.BodyReason, tt.reason) {
+			t.Errorf("%s: status = %+v, want partly inspected with %q", tt.contentType, r.Status, tt.reason)
+		}
+	}
+	// What came before the break is kept.
+	if r := bodyRequest("multipart/form-data; boundary=XyZ", body[:len(body)-60]); len(r.Parsed.BodyArgs) < 1 || r.Parsed.BodyArgs[0].Name != "title" {
+		t.Errorf("arguments before the break = %+v", r.Parsed.BodyArgs)
+	}
+}
+
+func TestXMLBody(t *testing.T) {
+	r := bodyRequest("text/xml", `<?xml version="1.0" encoding="UTF-8"?>
+<order id="42" path="../../etc">
+  <item note="a &amp; b">  first &lt;b&gt;  </item>
+  <item><![CDATA[../../raw <data>]]></item>
+  <empty/>
+  <!-- a comment is not content -->
+</order>`)
+	if want := []string{"first <b>", "../../raw <data>"}; !reflect.DeepEqual(r.Parsed.XMLText, want) {
+		t.Errorf("text = %q, want %q", r.Parsed.XMLText, want)
+	}
+	if want := []string{"42", "../../etc", "a & b"}; !reflect.DeepEqual(r.Parsed.XMLAttributes, want) {
+		t.Errorf("attributes = %q, want %q", r.Parsed.XMLAttributes, want)
+	}
+	if r.Status.Body != BodyInspected || r.Status.BodyFormat != "xml" || r.Parsed.BodyArgs != nil {
+		t.Errorf("status = %+v, arguments = %+v", r.Status, r.Parsed.BodyArgs)
+	}
+	for _, contentType := range []string{"application/xml", "application/soap+xml; charset=utf-8"} {
+		if r := bodyRequest(contentType, `<a>x</a>`); r.Status.BodyFormat != "xml" || len(r.Parsed.XMLText) != 1 {
+			t.Errorf("%s: status = %+v", contentType, r.Status)
+		}
+	}
+
+	// An entity that would pull in a file is not resolved: the document
+	// cannot make the reader open anything.
+	r = bodyRequest("application/xml", `<!DOCTYPE a [<!ENTITY x SYSTEM "file:///etc/passwd">]><a>&x; after</a>`)
+	for _, piece := range r.Parsed.XMLText {
+		if strings.Contains(piece, "root:") {
+			t.Errorf("an external entity was loaded: %q", piece)
+		}
+	}
+
+	r = bodyRequest("application/xml", `<a>before</a><b attr="x">unclosed <c`)
+	if r.Status.Body != BodyPartlyInspected || len(r.Parsed.XMLText) == 0 || r.Parsed.XMLText[0] != "before" {
+		t.Errorf("status = %+v, text = %q", r.Status, r.Parsed.XMLText)
+	}
+	r = bodyRequest("application/xml", `<?xml version="1.0" encoding="ISO-8859-1"?><a>x</a>`)
+	if r.Status.Body != BodyPartlyInspected || !strings.Contains(r.Status.BodyReason, "ISO-8859-1") {
+		t.Errorf("status = %+v", r.Status)
+	}
+}
+
+func TestBodyOverTheLimit(t *testing.T) {
+	big := "a=" + strings.Repeat("x", DefaultBodyLimit)
+	r := bodyRequest("application/x-www-form-urlencoded", big)
+	if r.Status.Body != BodyNotInspected || !strings.Contains(r.Status.BodyReason, "more than the limit") || r.Parsed.BodyArgs != nil {
+		t.Errorf("status = %+v", r.Status)
+	}
+	if len(r.Received.Body) != len(big) {
+		t.Error("the received body was cut")
+	}
+	// Exactly at the limit is still parsed.
+	r = bodyRequest("application/x-www-form-urlencoded", big[:DefaultBodyLimit])
+	if r.Status.Body != BodyInspected || len(r.Parsed.BodyArgs) != 1 {
+		t.Errorf("status = %+v", r.Status)
+	}
+}
+
+// The body parsers read what an attacker sends. No input may make them
+// panic. Without -fuzz the seeds run as an ordinary test.
+func FuzzBodyParsers(f *testing.F) {
+	f.Add(`{"a": ["b", {"c": null}]}`, "B")
+	f.Add("--B\r\nContent-Disposition: form-data; name=\"a\"; filename=\"x\"\r\n\r\ny\r\n--B--", "B")
+	f.Add(`<a b="c">d<e/></a>`, "x")
+	f.Add("[[[[", "")
+	f.Fuzz(func(t *testing.T, body, boundary string) {
+		for _, contentType := range []string{"application/json", "application/xml", "multipart/form-data; boundary=" + boundary, "application/x-www-form-urlencoded"} {
+			r := bodyRequest(contentType, body)
+			if body != "" && r.Status.Body == BodyEmpty {
+				t.Errorf("%s: a body of %d bytes is reported as empty", contentType, len(body))
+			}
+			if r.Status.Body == BodyPartlyInspected && r.Status.BodyReason == "" {
+				t.Errorf("%s: partly inspected without a reason", contentType)
+			}
+		}
+	})
+}
+
+func TestDecodedPath(t *testing.T) {
+	tests := []struct {
+		target  string
+		decoded string
+		issue   bool
+	}{
+		{"/a/b", "/a/b", false},
+		{"/bar%3Cscript%3E", "/bar<script>", false},
+		// A plus sign in a path is a plus sign.
+		{"/a+b%20c?q=a+b", "/a+b c", false},
+		{"/a%252fb", "/a%2fb", false},
+		{"/100%/x%zz", "/100%/x%zz", true},
+	}
+	for _, tt := range tests {
+		r := New(Received{Method: "GET", Target: tt.target})
+		if r.Parsed.DecodedPath != tt.decoded {
+			t.Errorf("%s: decoded path = %q, want %q", tt.target, r.Parsed.DecodedPath, tt.decoded)
+		}
+		if got := len(r.Status.Issues) == 1 && r.Status.Issues[0].Part == "path"; got != tt.issue {
+			t.Errorf("%s: issues = %+v", tt.target, r.Status.Issues)
+		}
 	}
 }

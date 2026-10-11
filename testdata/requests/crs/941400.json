@@ -1,0 +1,223 @@
+[
+  {
+    "name": "CRS 941400-1: JavaScript function without parentheses",
+    "method": "GET",
+    "uri": "/get?xss=%5B%5D.sort.call%60%24%7Balert%7D1337%60",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941400
+    ]
+  },
+  {
+    "name": "CRS 941400-2: JavaScript function without parentheses",
+    "method": "GET",
+    "uri": "/get?xss=%5B%20%20%5D%20.%20sort%20.%20call%20%60%20%24%7B%20alert%20%7D%201337%20%60",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941400
+    ]
+  },
+  {
+    "name": "CRS 941400-3: JavaScript function without parentheses",
+    "method": "GET",
+    "uri": "/get?xss=%5B%20%20%5D%20.%20%2F%2A%2A%2F%20sort%20.%20call%20%60%20%24%7B%20alert%20%7D%201337%20%60",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941400
+    ]
+  },
+  {
+    "name": "CRS 941400-4: JavaScript function without parentheses",
+    "method": "GET",
+    "uri": "/get?xss=%5B%5D.map.call%60%24%7Beval%7D%5C%5Cu%7B61%7Dlert%5Cx281337%5Cx29%60",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941400
+    ]
+  },
+  {
+    "name": "CRS 941400-5: JavaScript function without parentheses",
+    "method": "GET",
+    "uri": "/get?xss=%5B%201234%20%5D.%20map%20.%20call%60%24%7Beval%7D%2F%2A%20asd%20%2A%2F%5C%5Cu%7B61%7Dlert%5Cx281337%5Cx29%60",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941400
+    ]
+  },
+  {
+    "name": "CRS 941400-6: JavaScript function without parentheses",
+    "method": "GET",
+    "uri": "/get?xss=Reflect.apply.call%60%24%7Bnavigation.navigate%7D%24%7Bnavigation%7D%24%7B%5Bname%5D%7D%60",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941400
+    ]
+  },
+  {
+    "name": "CRS 941400-7: Status Page Test - JavaScript minimal test with Reflect.sort.call``",
+    "method": "GET",
+    "uri": "/get?test=Reflect.sort.call%60%60",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941400
+    ]
+  },
+  {
+    "name": "CRS 941400-8: GHSA: 941400 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "86"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"[].sort.call`$&#x7B;alert&#x7D;1337`\"></a></root>",
+    "expect_ids": [
+      941400
+    ]
+  }
+]

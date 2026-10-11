@@ -3,7 +3,8 @@ package engine
 import (
 	"errors"
 	"fmt"
-	"sort"
+	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -24,11 +25,11 @@ func Load(cfg Config) (*RuleSet, error) {
 	}
 	c := &compiler{
 		rs:        &RuleSet{},
+		byID:      map[int]*rule{},
 		excluded:  map[int]string{},
 		ids:       map[int]seclang.Position{},
 		markers:   map[string]bool{},
 		defaults:  map[int]defaults{},
-		missing:   map[string]bool{},
 		usedExcl:  map[int]bool{},
 		skipSites: map[string]seclang.Position{},
 	}
@@ -59,10 +60,6 @@ func Load(cfg Config) (*RuleSet, error) {
 	}
 
 	c.markSensitiveTexts()
-	for name := range c.missing {
-		c.rs.uninspected = append(c.rs.uninspected, name)
-	}
-	sort.Strings(c.rs.uninspected)
 	return c.rs, nil
 }
 
@@ -98,6 +95,7 @@ type compiler struct {
 	rs    *RuleSet
 	errs  []error
 	rules []*rule // the first rule of every active chain
+	byID  map[int]*rule
 
 	excluded  map[int]string // rule id -> reason, from the configuration
 	usedExcl  map[int]bool
@@ -105,7 +103,6 @@ type compiler struct {
 	markers   map[string]bool
 	skipSites map[string]seclang.Position // marker -> a rule that jumps to it
 	defaults  map[int]defaults            // phase -> SecDefaultAction in force
-	missing   map[string]bool             // variables named but not provided
 }
 
 // defaults is what a SecDefaultAction gives to the rules of its phase.
@@ -135,6 +132,9 @@ func (c *compiler) addFile(directives []seclang.Directive) {
 		case seclang.KindDefaultAction:
 			c.addDefaults(d)
 
+		case seclang.KindUpdateTargetByID:
+			c.updateTargets(d)
+
 		case seclang.KindRule, seclang.KindAction:
 			// A chain is the starter and the chained rules after it.
 			end := i + 1
@@ -143,6 +143,32 @@ func (c *compiler) addFile(directives []seclang.Directive) {
 			}
 			c.addRule(directives[i:end])
 			i = end - 1
+		}
+	}
+}
+
+// updateTargets applies a SecRuleUpdateTargetById: its variables are added
+// to the variable list of a rule that was loaded before it. CRS uses this
+// to stop rules from looking at cookies known to be harmless.
+//
+// An update for a rule that is not active is not an error, because the CRS
+// file of updates names rules of many files. It is recorded so the startup
+// report can show it.
+func (c *compiler) updateTargets(d seclang.Directive) {
+	r, ok := c.byID[d.TargetID]
+	if !ok {
+		c.rs.ignoredUpdates = append(c.rs.ignoredUpdates, d.TargetID)
+		return
+	}
+	for _, v := range d.Variables {
+		t, err := compileTarget(v)
+		switch {
+		case err != nil:
+			c.errorf(d.Pos, "SecRuleUpdateTargetById %d: %v", d.TargetID, err)
+		case v.Exclude:
+			r.excludes = append(r.excludes, t)
+		default:
+			r.targets = append(r.targets, t)
 		}
 	}
 }
@@ -195,9 +221,8 @@ func (c *compiler) addRule(chain []seclang.Directive) {
 
 	before := len(c.errs)
 	var head, tail *rule
-	notInspected := map[string]bool{}
 	for i, d := range chain {
-		r := c.compileOne(d, first, i > 0, notInspected)
+		r := c.compileOne(d, first, i > 0)
 		if head == nil {
 			head = r
 		} else {
@@ -209,15 +234,11 @@ func (c *compiler) addRule(chain []seclang.Directive) {
 		return
 	}
 
-	for name := range notInspected {
-		status.NotInspected = append(status.NotInspected, name)
-		c.missing[name] = true
-	}
-	sort.Strings(status.NotInspected)
 	status.Active = true
 	c.rs.statuses = append(c.rs.statuses, status)
 	c.rs.phases[head.phase] = append(c.rs.phases[head.phase], item{rule: head})
 	c.rules = append(c.rules, head)
+	c.byID[head.id] = head
 	if head.skipAfter != "" {
 		c.skipSites[head.skipAfter] = head.pos
 	}
@@ -234,7 +255,7 @@ func phaseOf(d seclang.Directive) int {
 
 // compileOne compiles one directive of a chain. Problems are added to
 // c.errs with the position of the directive and the id of the chain.
-func (c *compiler) compileOne(d, first seclang.Directive, chained bool, notInspected map[string]bool) *rule {
+func (c *compiler) compileOne(d, first seclang.Directive, chained bool) *rule {
 	fail := func(format string, args ...any) {
 		c.errorf(d.Pos, "rule %d: %s", first.ID, fmt.Sprintf(format, args...))
 	}
@@ -250,9 +271,9 @@ func (c *compiler) compileOne(d, first seclang.Directive, chained bool, notInspe
 	if d.Kind == seclang.KindAction {
 		r.always = true
 	} else {
-		c.compileTargets(d, r, notInspected, fail)
+		c.compileTargets(d, r, fail)
 
-		op, err := operator.New(d.Operator.Name, d.Operator.Argument, d.Operator.Negated)
+		op, err := operator.New(d.Operator.Name, d.Operator.Argument, d.Operator.Negated, filepath.Dir(d.Pos.File))
 		if err != nil {
 			fail("%v", err)
 		}
@@ -293,6 +314,12 @@ func (c *compiler) compileOne(d, first seclang.Directive, chained bool, notInspe
 		case "block":
 			// block means "do what SecDefaultAction says".
 			r.action = def.action
+		case "ctl":
+			removal, err := parseCtl(a.Value)
+			if err != nil {
+				fail("ctl:%s: %v", a.Value, err)
+			}
+			r.removals = append(r.removals, removal)
 		case "skipafter":
 			r.skipAfter = a.Value
 		case "msg":
@@ -327,14 +354,10 @@ var allowedInChain = map[string]bool{
 	"t": true, "setvar": true, "capture": true, "multimatch": true, "chain": true,
 }
 
-func (c *compiler) compileTargets(d seclang.Directive, r *rule, notInspected map[string]bool, fail func(string, ...any)) {
+func (c *compiler) compileTargets(d seclang.Directive, r *rule, fail func(string, ...any)) {
 	for _, v := range d.Variables {
 		t, err := compileTarget(v)
 		switch {
-		case errors.Is(err, errNotProvided):
-			if !v.Exclude {
-				notInspected[v.Collection] = true
-			}
 		case err != nil:
 			fail("%v", err)
 		case v.Exclude && v.Count:
@@ -345,6 +368,32 @@ func (c *compiler) compileTargets(d seclang.Directive, r *rule, notInspected map
 			r.targets = append(r.targets, t)
 		}
 	}
+}
+
+// parseCtl compiles a ctl action. One form is supported:
+//
+//	ctl:ruleRemoveTargetByTag=TAG;VARIABLE
+//
+// TAG is a regular expression matched against the tags of every rule.
+func parseCtl(s string) (targetRemoval, error) {
+	name, value, _ := strings.Cut(s, "=")
+	if !strings.EqualFold(name, "ruleRemoveTargetByTag") {
+		return targetRemoval{}, errors.New("only ctl:ruleRemoveTargetByTag is supported")
+	}
+	tag, variable, ok := strings.Cut(value, ";")
+	if !ok || tag == "" || variable == "" {
+		return targetRemoval{}, errors.New("expected TAG;VARIABLE")
+	}
+	tagRe, err := regexp.Compile(tag)
+	if err != nil {
+		return targetRemoval{}, err
+	}
+	collection, selector, _ := strings.Cut(variable, ":")
+	t, err := compileTarget(seclang.Variable{Collection: strings.ToUpper(collection), Selector: selector})
+	if err != nil {
+		return targetRemoval{}, err
+	}
+	return targetRemoval{tag: tagRe, target: t}, nil
 }
 
 // parseSetvar compiles the value of a setvar action:

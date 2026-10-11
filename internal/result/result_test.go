@@ -30,12 +30,12 @@ SecComponentSignature "TEST/1"
 SecAction "id:1,phase:1,nolog,pass,setvar:tx.inbound_anomaly_score_threshold=5,setvar:tx.blocking_inbound_anomaly_score=0,setvar:tx.lfi_score=0,setvar:tx.xss_score=0"
 SecRule ARGS|XML:/* "@rx (\.\./)+" "id:2,phase:2,log,pass,capture,severity:'CRITICAL',tag:'attack-lfi',msg:'Traversal in %{MATCHED_VAR_NAME}',logdata:'Matched Data: %{TX.0}',setvar:tx.lfi_score=+5,setvar:tx.blocking_inbound_anomaly_score=+5"
 SecRule ARGS "@rx secret" "id:3,phase:2,log,deny,msg:'Saw %{MATCHED_VAR}'"
-SecRule REQUEST_COOKIES "@rx a" "id:4,phase:2,log,pass"
+SecRule RESPONSE_BODY "@rx a" "id:4,phase:2,log,pass"
 `
 
 func record(t *testing.T, req *httpmodel.Request, opt Options) Record {
 	t.Helper()
-	rs := loadRules(t, testRules, engine.Exclusion{ID: 4, Reason: "cookies are not provided"})
+	rs := loadRules(t, testRules, engine.Exclusion{ID: 4, Reason: "responses are not inspected"})
 	return NewRecord(req, rs.Evaluate(req), opt)
 }
 
@@ -121,12 +121,17 @@ func TestAnalysis(t *testing.T) {
 		{
 			"form body",
 			httpmodel.Received{Method: "POST", Target: "/", Headers: []httpmodel.Header{{Name: "Content-Type", Value: "application/x-www-form-urlencoded"}}, Body: []byte("a=1")},
-			Analysis{Complete: true, Body: "inspected"},
+			Analysis{Complete: true, Body: "inspected", BodyFormat: "form"},
 		},
 		{
-			"json body",
-			httpmodel.Received{Method: "POST", Target: "/", Headers: []httpmodel.Header{{Name: "Content-Type", Value: "application/json"}}, Body: []byte(`{"a":"../../x"}`)},
-			Analysis{Complete: false, Body: "not inspected", BodyReason: `content type "application/json" is not parsed`},
+			"text body",
+			httpmodel.Received{Method: "POST", Target: "/", Headers: []httpmodel.Header{{Name: "Content-Type", Value: "text/plain"}}, Body: []byte(`file=../../x`)},
+			Analysis{Complete: false, Body: "not inspected", BodyReason: `content type "text/plain" is not parsed`},
+		},
+		{
+			"broken json body",
+			httpmodel.Received{Method: "POST", Target: "/", Headers: []httpmodel.Header{{Name: "Content-Type", Value: "application/json"}}, Body: []byte(`{"a": "b", `)},
+			Analysis{Complete: false, Body: "partly inspected", BodyFormat: "json", BodyReason: "the json body could not be read to its end: the document ends early"},
 		},
 		{
 			"malformed encoding",
@@ -151,13 +156,13 @@ func TestAnalysis(t *testing.T) {
 }
 
 func TestStartup(t *testing.T) {
-	rs := loadRules(t, testRules, engine.Exclusion{ID: 4, Reason: "cookies are not provided"})
+	rs := loadRules(t, testRules, engine.Exclusion{ID: 4, Reason: "responses are not inspected"})
 	got := NewStartup(rs)
 	want := Startup{
 		Ruleset:              "TEST/1",
 		ActiveRules:          3,
-		ExcludedRules:        []ExcludedRule{{ID: 4, File: "rules.conf", Line: 6, Reason: "cookies are not provided"}},
-		VariablesNotProvided: []string{"XML"},
+		ExcludedRules:        []ExcludedRule{{ID: 4, File: "rules.conf", Line: 6, Reason: "responses are not inspected"}},
+		IgnoredTargetUpdates: []int{},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("startup = %+v\nwant      %+v", got, want)
@@ -165,7 +170,7 @@ func TestStartup(t *testing.T) {
 
 	// Empty lists are written as [] and not as null.
 	out, _ := json.Marshal(NewStartup(loadRules(t, `SecAction "id:1,phase:1,nolog,pass"`)))
-	if string(out) != `{"ruleset":"","active_rules":1,"excluded_rules":[],"variables_not_provided":[]}` {
+	if string(out) != `{"ruleset":"","active_rules":1,"excluded_rules":[],"ignored_target_updates":[]}` {
 		t.Errorf("startup JSON = %s", out)
 	}
 }

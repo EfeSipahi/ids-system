@@ -1,0 +1,286 @@
+[
+  {
+    "name": "CRS 942540-1: Positive test for single quotes",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "email=admin%40juice-sh.op';",
+    "expect_ids": [
+      942540
+    ]
+  },
+  {
+    "name": "CRS 942540-2: Positive test for double quotes",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "email=admin%40juice-sh.op\";",
+    "expect_ids": [
+      942540
+    ]
+  },
+  {
+    "name": "CRS 942540-3: Positive test for backticks",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "email=admin%40juice-sh.op`;",
+    "expect_ids": [
+      942540
+    ]
+  },
+  {
+    "name": "CRS 942540-4: False positive test CSV balanced single quotes",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "email=%27foo%27%3B%27bar%27%3B%27def%27",
+    "no_expect_ids": [
+      942540
+    ]
+  },
+  {
+    "name": "CRS 942540-5: False positive test balanced backticks",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "email=%60foo%60%3B%60bar%60%3B%60def%60",
+    "no_expect_ids": [
+      942540
+    ]
+  },
+  {
+    "name": "CRS 942540-6: False positive test (markdown) mixed and balanced quotes",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "238"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"document\"; filename=\"document.md\"\r\nContent-Type: text/markdown\r\n\r\n# Foo\r\nmy name is 'foo'; and I work on CRS.\r\n# Bar\r\nmy name is \"bar\"; and I work on CRS.\r\n----------397236876--\r\n",
+    "no_expect_ids": [
+      942540
+    ]
+  },
+  {
+    "name": "CRS 942540-7: Test for bypass with comment",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "55"
+      ]
+    ],
+    "body": "email=root%40example.com%27%2F%2A%20comment%20%2A%2F%3B",
+    "expect_ids": [
+      942540
+    ]
+  },
+  {
+    "name": "CRS 942540-8: GHSA: 942540 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"admin@juice-sh.op';\"></a></root>",
+    "expect_ids": [
+      942540
+    ]
+  }
+]

@@ -130,6 +130,23 @@ func parseDirective(text string) (Directive, error) {
 		}
 		d.Text = args[0]
 
+	case "secruleupdatetargetbyid":
+		d.Kind = KindUpdateTargetByID
+		if len(args) == 3 {
+			return d, errors.New("SecRuleUpdateTargetById with a replaced target is not supported")
+		}
+		if len(args) != 2 {
+			return d, fmt.Errorf("SecRuleUpdateTargetById takes a rule id and a variable list, found %d arguments", len(args))
+		}
+		id, err := strconv.Atoi(args[0])
+		if err != nil || id <= 0 {
+			return d, fmt.Errorf("SecRuleUpdateTargetById: rule id must be one positive number, found %q", args[0])
+		}
+		d.TargetID = id
+		if d.Variables, err = parseVariables(args[1]); err != nil {
+			return d, fmt.Errorf("SecRuleUpdateTargetById variables: %w", err)
+		}
+
 	default:
 		return d, fmt.Errorf("unsupported directive %s", name)
 	}

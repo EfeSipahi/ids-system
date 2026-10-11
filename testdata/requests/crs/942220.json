@@ -1,0 +1,124 @@
+[
+  {
+    "name": "CRS 942220-1: Integer overflow taken from skipfish",
+    "method": "GET",
+    "uri": "/get?string_to_convert=4294967296",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942220
+    ]
+  },
+  {
+    "name": "CRS 942220-2: PHP strtod infinite loop",
+    "method": "GET",
+    "uri": "/get?i=2.2250738585072011e-308",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942220
+    ]
+  },
+  {
+    "name": "CRS 942220-3: PHP strtod infinite loop\n4RI-250413",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "35"
+      ]
+    ],
+    "body": "{ \"2.2250738585072011e-308\":\"foo\" }",
+    "expect_ids": [
+      942220
+    ]
+  },
+  {
+    "name": "CRS 942220-4: GHSA: 942220 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "60"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"4294967296\"></a></root>",
+    "expect_ids": [
+      942220
+    ]
+  }
+]

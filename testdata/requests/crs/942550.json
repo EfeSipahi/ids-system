@@ -1,0 +1,1483 @@
+[
+  {
+    "name": "CRS 942550-1: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}'::jsonb <@ '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "105"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-2: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}'::jsonb <@ '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-3: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}'::jsonb <@ '{\"a\":1, \"b\":2}'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "94"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-4: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}'::jsonb <@ '{\"a\":1, \"b\":2}'",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-5: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}' <@ '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "94"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-6: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}' <@ '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-7: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}'::json <@ '{\"a\":1, \"b\":2}'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "93"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajson%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-8: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}'::json <@ '{\"a\":1, \"b\":2}'",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajson%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-9: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}' <@ '{\"a\":1, \"b\":2}'::json",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "93"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajson",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-10: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}' <@ '{\"a\":1, \"b\":2}'::json",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%20%3C%40%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajson",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-11: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}'::jsonb @> '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "105"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%40%3E%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-12: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}'::jsonb @> '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%40%3E%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-13: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}'::jsonb < '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "102"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3C%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-14: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}'::jsonb < '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3C%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-15: JSON in SQL (ARGS)\ndecoded payload: OR '{\"b\":2}'::jsonb > '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "102"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3E%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-16: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"b\":2}'::jsonb > '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22b%22%3A2%7D%27%3A%3Ajsonb%20%3E%20%27%7B%22a%22%3A1%2C%20%22b%22%3A2%7D%27%3A%3Ajsonb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-17: JSON in SQL (ARGS)\ndecoded payload: OR '{\"a\":2,\"c\":[4,5,{\"f\":7}]}' -> '$.c[2].f' = '7'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "115"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22a%22%3A2%2C%22c%22%3A%5B4%2C5%2C%7B%22f%22%3A7%7D%5D%7D%27%20-%3E%20%27%24.c%5B2%5D.f%27%20%3D%207",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-18: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"a\":2,\"c\":[4,5,{\"f\":7}]}' -> '$.c[2].f' = '7'",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22a%22%3A2%2C%22c%22%3A%5B4%2C5%2C%7B%22f%22%3A7%7D%5D%7D%27%20-%3E%20%27%24.c%5B2%5D.f%27%20%3D%207",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-19: JSON in SQL (ARGS)\ndecoded payload: OR json_extract('{\"id\": 14, \"name\": \"Aztalan\"}', '$.name') = 'Aztalan'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "131"
+      ]
+    ],
+    "body": "id=OR%20json_extract%28%27%7B%22id%22%3A%2014%2C%20%22name%22%3A%20%22Aztalan%22%7D%27%2C%20%27%24.name%27%29%20%3D%20%27Aztalan%27",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-20: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR json_extract('{\"id\": 14, \"name\": \"Aztalan\"}', '$.name') = 'Aztalan'",
+    "method": "GET",
+    "uri": "/get/OR%20json_extract%28%27%7B%22id%22%3A%2014%2C%20%22name%22%3A%20%22Aztalan%22%7D%27%2C%20%27%24.name%27%29%20%3D%20%27Aztalan%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-21: JSON in SQL (ARGS)\ndecoded payload: blah/\"}' and data @> '{\"a\":\"a\"}' union select ASCII(s.token) from unnset(string_to_array((select cookie from cookie limit 1 ),NULL)) s(token)--/state",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "234"
+      ]
+    ],
+    "body": "id=blah/%22%7D%27%20and%20data%20%40%3E%20%27%7B%22a%22%3A%22a%22%7D%27%20union%20select%20ASCII%28s.token%29%20from%20unnset%28string_to_array%28%28select%20cookie%20from%20cookie%20limit%201%20%29%2CNULL%29%29%20s%28token%29--/state",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-22: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: blah/\"}' and data @> '{\"a\":\"a\"}' union select ASCII(s.token) from unnset(string_to_array((select cookie from cookie limit 1 ),NULL)) s(token)--/state",
+    "method": "GET",
+    "uri": "/get/blah/%22%7D%27%20and%20data%20%40%3E%20%27%7B%22a%22%3A%22a%22%7D%27%20union%20select%20ASCII%28s.token%29%20from%20unnset%28string_to_array%28%28select%20cookie%20from%20cookie%20limit%201%20%29%2CNULL%29%29%20s%28token%29--/state",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-23: JSON in SQL (ARGS)\ndecoded payload: OR '{\"a\":\"b\"}' ? 'a'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "53"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22a%22%3A%22b%22%7D%27%20%3F%20%27a%27",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-24: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"a\":\"b\"}' ? 'a'",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22a%22%3A%22b%22%7D%27%20%3F%20%27a%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-25: JSON in SQL (ARGS)\ndecoded payload: OR '[1,2]' ? '1'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "41"
+      ]
+    ],
+    "body": "id=OR%20%27%5B1%2C2%5D%27%20%3F%20%271%27",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-26: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '[1,2]' ? '1'",
+    "method": "GET",
+    "uri": "/get/OR%20%27%5B1%2C2%5D%27%20%3F%20%271%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-27: JSON in SQL (ARGS)\ndecoded payload: OR '{\"name\":\"asd\"}' ?| array['a','name']",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "85"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22name%22%3A%22asd%22%7D%27%20%3F%7C%20array%5B%27a%27%2C%27name%27%5D",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-28: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"name\":\"asd\"}' ?| array['a','name']",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22name%22%3A%22asd%22%7D%27%20%3F%7C%20array%5B%27a%27%2C%27name%27%5D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-29: JSON in SQL (ARGS)\ndecoded payload: OR '{\"name\":\"asd\"}' ?& array['a','name']",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "85"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22name%22%3A%22asd%22%7D%27%20%3F%26%20array%5B%27a%27%2C%27name%27%5D",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-30: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"name\":\"asd\"}' ?& array['a','name']",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22name%22%3A%22asd%22%7D%27%20%3F%26%20array%5B%27a%27%2C%27name%27%5D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-31: JSON in SQL (ARGS)\ndecoded payload: OR '[1,2,3]'::json ->> 2='3'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "id=OR%20%27%5B1%2C2%2C3%5D%27%3A%3Ajson%20-%3E%3E%202%3D%273%27",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-32: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '[1,2,3]'::json ->> 2='3'",
+    "method": "GET",
+    "uri": "/get/OR%20%27%5B1%2C2%2C3%5D%27%3A%3Ajson%20-%3E%3E%202%3D%273%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-33: JSON in SQL (ARGS)\ndecoded payload: OR '{\"a\":1}'::jsonb #> '{a,b}' ? 'c'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "87"
+      ]
+    ],
+    "body": "id=OR%20%27%7B%22a%22%3A1%7D%27%3A%3Ajsonb%20%23%3E%20%27%7Ba%2Cb%7D%27%20%3F%20%27c%27",
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-34: JSON in SQL (REQUEST_FILENAME)\ndecoded payload: OR '{\"a\":1}'::jsonb #> '{a,b}' ? 'c'",
+    "method": "GET",
+    "uri": "/get/OR%20%27%7B%22a%22%3A1%7D%27%3A%3Ajsonb%20%23%3E%20%27%7Ba%2Cb%7D%27%20%3F%20%27c%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-35: SQL Comment in payload\ndecoded payload: OR '{\"a\":1}'::jsonb #> /* Some * comment */'{a,b}' ? 'c'",
+    "method": "GET",
+    "uri": "/get?q=OR%20%27%7B%22a%22%3A1%7D%27%3A%3Ajsonb%20%23%3E%20%2F%2A%20Some%20%2A%20comment%20%2A%2F%27%7Ba%2Cb%7D%27%20%3F%20%27c%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-36: SQL Comment in payload\ndecoded payload: '{\"a\": {\"b\": [\"foo\",\"bar\"]}}'::json #>> '{a,b,1}'",
+    "method": "GET",
+    "uri": "/get?q='%7B%22a%22%3A%20%7B%22b%22%3A%20%5B%22foo%22%2C%22bar%22%5D%7D%7D'%3A%3Ajson%20%23%3E%3E%20'%7Ba%2Cb%2C1%7D'",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-37: SQL Comment in payload\ndecoded payload: '[\"a\", {\"b\":1}]'::jsonb #- '{1,b}'",
+    "method": "GET",
+    "uri": "/get?q='%5B%22a%22%2C%20%7B%22b%22%3A1%7D%5D'%3A%3Ajsonb%20%23-%20'%7B1%2Cb%7D'",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-38: False Positive: Matching ? in natural english\ndecoded payload: how was your day today?",
+    "method": "GET",
+    "uri": "/get?q=how%20was%20your%20day%20today?",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-39: PostgreSQL\ndecoded payload: '{\"b\":2}'::jsonb @ '{\"a\":1, \"b\":2}'::jsonb",
+    "method": "GET",
+    "uri": "/get?q='%7B%22b%22:2%7D'::jsonb%20@%20'%7B%22a%22:1,%20%22b%22:2%7D'::jsonb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-40: SQLite\ndecoded payload: '{\"a\":2,\"c\":[4,5,{\"f\":7}]}' < '$.c[2].f' = 7",
+    "method": "GET",
+    "uri": "/get?q='%7B%22a%22:2,%22c%22:%5B4,5,%7B%22f%22:7%7D%5D%7D'%20%3C%20'$.c%5B2%5D.f'%20=%207",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-41: SQLite\ndecoded payload: '{\"a\":2,\"c\":[4,5,{\"f\":7}]}' > '$.c[2].f' = 7",
+    "method": "GET",
+    "uri": "/get?q='%7B%22a%22:2,%22c%22:%5B4,5,%7B%22f%22:7%7D%5D%7D'%20%3E%20'$.c%5B2%5D.f'%20=%207",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-42: MySQL\ndecoded payload: SELECT id FROM users WHERE id=JsoN_EXTraCT/**/(/**/'  {\"a\":1}  '/**/,/**/' $.a '/**/);",
+    "method": "GET",
+    "uri": "/get?q=SELECT%20id%20FROM%20users%20WHERE%20id=JsoN_EXTraCT/**/(/**/'%20%20%7B%22a%22:1%7D%20%20'/**/,/**/'%20$.a%20'/**/);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-43: False Positive: Matching orphan operator\ndecoded payload: I Love you <3",
+    "method": "GET",
+    "uri": "/get?gift_message=%20I%20Love%20you%20%3C3",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-44: False Positive: Matching -> sequence\ndecoded payload: Find your solution here -> link",
+    "method": "GET",
+    "uri": "/get?message=Find%20your%20solution%20here%20-%3E%20link",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-45: JSON in SQL (ARGS)\ndecoded payload: '{\"a\":[1,2,3,4,5]}'::jsonb @? '$.a[*]'",
+    "method": "GET",
+    "uri": "/get/payload='%7B%22a%22%3A%5B1%2C2%2C3%2C4%2C5%5D%7D'%3A%3Ajsonb%20%40%3F%20'%24.a%5B*%5D'",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-46: JSON in SQL (ARGS)\ndecoded payload: '{\"a\":[1,2,3,4,5]}'::jsonb @@ '$.a[*]'",
+    "method": "GET",
+    "uri": "/get/payload='%7B%22a%22%3A%5B1%2C2%2C3%2C4%2C5%5D%7D'%3A%3Ajsonb%20%40%40%20'%24.a%5B*%5D'",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-47: JSON in SQL (ARGS)\ndecoded payload: '[\"a\", \"b\"]'::jsonb - 1",
+    "method": "GET",
+    "uri": "/get/payload='%5B%22a%22%2C%20%22b%22%5D'%3A%3Ajsonb%20-%201",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-48: JSON in SQL (ARGS)\ndecoded payload: '[1, 2]'::jsonb || '3'::jsonb",
+    "method": "GET",
+    "uri": "/get/payload='%5B1%2C%202%5D'%3A%3Ajsonb%20%7C%7C%20'3'%3A%3Ajsonb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942550
+    ]
+  },
+  {
+    "name": "CRS 942550-49: GHSA: 942550 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "149"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"OR '&#x7B;&quot;b&quot;:2&#x7D;'::jsonb &lt;@ '&#x7B;&quot;a&quot;:1, &quot;b&quot;:2&#x7D;'::jsonb\"></a></root>",
+    "expect_ids": [
+      942550
+    ]
+  }
+]

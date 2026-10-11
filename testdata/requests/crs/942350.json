@@ -1,0 +1,277 @@
+[
+  {
+    "name": "CRS 942350-1: MySQL UDF injection and other data/structure manipulation",
+    "method": "GET",
+    "uri": "/get?var=%3bINSERT%20INTO%20table%20%28col%29%20VALUES",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-2: Fix for FP reported in GitHub issue 1587",
+    "method": "GET",
+    "uri": "/get?var=%3Binsertion_424242",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-3: MySQL create function injection",
+    "method": "GET",
+    "uri": "/get?var=CREATE+FUNCTION+hello+%28s+CHAR%2820%29%29+RETURNS+CHAR%2850%29+DETERMINISTIC+RETURN+CONCAT%28%27Hello%2C+%27%2Cs%2C%27%21%27%29%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-4: Status Page Test - MySQL injection with ;truncate[xx",
+    "method": "GET",
+    "uri": "/get?test=;truncate[xx",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-5: Status Page Test - MySQL injection with REPLACE",
+    "method": "GET",
+    "uri": "/get?test=;RePLAcE%2F%2Atest%2A%2Ftest%2F%2Atest%2A%2F%28id%2C%20name%29%20VALUES%20%281%2C%20%27test%27%29%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-6: Status Page Test - MySQL injection with DROP TABLE",
+    "method": "GET",
+    "uri": "/get?test=;DROP%2F%2Atest%2A%2FTABLE+test%3B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-7: MySQL insert function injection with comment",
+    "method": "GET",
+    "uri": "/get?test=1%3BINSERT%20%2F%2Atest%2A%2FINTO%20category%28id%29%20VALUES%20%283%29--%20-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-8: MySQL insert function injection with comment",
+    "method": "GET",
+    "uri": "/get?test=mod(1,2)%3BINSERT%20%2F%2Atest%2A%2FINTO%20category%28id%29%20VALUES%20%283%29--%20-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-9: MySQL insert function injection with comment evasion - cannot be catched by this rule - see 942500",
+    "method": "GET",
+    "uri": "/get?test=%2F%2A%27%3BINSERT%20INTO%20category%28id%29%20VALUES%20%283%29--%20-%2A%2F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942350
+    ]
+  },
+  {
+    "name": "CRS 942350-10: GHSA: 942350 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "81"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\";INSERT INTO table (col) VALUES\"></a></root>",
+    "expect_ids": [
+      942350
+    ]
+  }
+]

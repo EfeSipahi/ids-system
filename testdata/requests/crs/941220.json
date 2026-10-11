@@ -1,0 +1,106 @@
+[
+  {
+    "name": "CRS 941220-1: IE XSS Filters",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "101"
+      ]
+    ],
+    "body": "var=v%26newline;b%26tab;s%26newline;c%26newline;r%26tab;i%26tab;p%26newline;t%26colon;:&var2=whatever",
+    "expect_ids": [
+      941220
+    ]
+  },
+  {
+    "name": "CRS 941220-2: XSS test based on portswigger XSS cheatsheet",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "payload=<a href=\"vbscript:MsgBox+1\">XSS</a>",
+    "expect_ids": [
+      941220
+    ]
+  },
+  {
+    "name": "CRS 941220-3: GHSA: 941220 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "149"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"v&amp;newline;b&amp;tab;s&amp;newline;c&amp;newline;r&amp;tab;i&amp;tab;p&amp;newline;t&amp;colon;:\"></a></root>",
+    "expect_ids": [
+      941220
+    ]
+  }
+]

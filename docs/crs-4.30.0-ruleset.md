@@ -4,7 +4,7 @@ Created: 5 October 2026
 Source directory: [`coreruleset-4.30.0/`](../coreruleset-4.30.0)
 Related decisions: M15, M17, M18, M19, M20, M21 in the [main plan](../ids-system-plan-phaze1.md)
 
-**Reading rule:** This document describes what is in the CRS files. It does not describe what our engine supports. No engine exists yet.
+**Reading rule:** This document describes what is in the CRS files. It does not describe what our engine supports; for that see [context.md](../context.md). Sections 6.2 and 7 were written before the engine existed: since 11 October 2026 all 51 PL1 rules of files 930, 941, and 942 run.
 
 ## 1. What this directory is
 

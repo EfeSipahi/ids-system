@@ -20,6 +20,7 @@ const (
 	KindMarker                             // SecMarker
 	KindDefaultAction                      // SecDefaultAction
 	KindComponentSignature                 // SecComponentSignature
+	KindUpdateTargetByID                   // SecRuleUpdateTargetById
 )
 
 func (k Kind) String() string {
@@ -34,6 +35,8 @@ func (k Kind) String() string {
 		return "SecDefaultAction"
 	case KindComponentSignature:
 		return "SecComponentSignature"
+	case KindUpdateTargetByID:
+		return "SecRuleUpdateTargetById"
 	}
 	return fmt.Sprintf("Kind(%d)", int(k))
 }
@@ -55,12 +58,17 @@ func (p Position) String() string {
 //	SecDefaultAction       Actions
 //	SecMarker              Text (the marker name)
 //	SecComponentSignature  Text (the signature)
+//	SecRuleUpdateTargetById  TargetID, Variables
 type Directive struct {
 	Kind Kind
 	Pos  Position
 
 	// ID is the value of the id action, or 0 when the directive has none.
 	ID int
+
+	// TargetID is the id of the rule that a SecRuleUpdateTargetById
+	// changes. Its Variables are added to that rule's variable list.
+	TargetID int
 
 	Variables []Variable
 	Operator  Operator

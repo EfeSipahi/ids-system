@@ -31,11 +31,11 @@ Document role: Primary reference for current architecture decisions, implementat
 | Phase 1 | Detect SQLi, XSS carried in HTTP requests, and path traversal attempts; no automatic blocking |
 | Product architecture | Go core; ML development in Python; integration with an existing TLS reverse proxy; rule, ML, and application-profile layers |
 | Rule engine | Our own Go SecLang engine; CRS 4.30.0; initially PL1 within the selected attack groups |
-| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports; Go product code started on 5 October 2026: SecLang parser, common request model, offline JSON input, transformations, operators, and the rule engine exist; rules 930100 and 930110 run on offline examples through the `ids-offline` command. The first offline engine of section 7.4 is complete (see section 7.4) |
-| Not yet implemented | Go product engine, live proxy integration, product profile/decision/logging infrastructure, and a verified ONNX migration |
+| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs all 51 PL1 rules of CRS files 930, 941, and 942 on offline requests through the `ids-offline` command (sections 11.9–11.14) |
+| Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the profile layer, the decision mechanism, and persistent records |
 | Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
 | Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions |
-| Next step | To be chosen with the user. Candidates: the remaining PL1 rules of file 930 (`@pmFromFile`), multipart/JSON body parsing, or the first XSS/SQLi rules; see section 11.10 |
+| Next step | To be chosen with the user. The rule-layer plan is finished; its open points are in section 11.14 |
 
 **For the next agent:** First verify the current status in this document against the relevant files. Then continue from the first unfinished step in section 7.4. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
 
@@ -116,7 +116,7 @@ This section is based on reading existing files. While editing this document, we
 
 Broad support for different HTTP request structures is a goal. M17 defines the content types and body formats for the initial release. Detailed method behavior, HTTP versions, size limits, and parsing details will be decided separately. The proxy's ability to forward a request and the IDS's ability to analyze its content will be assessed separately. This goal does not imply that all HTTP content is already supported.
 
-The complete content-type table is in [M17](#m17): form-urlencoded, nested JSON, multipart text fields/file names/metadata, and plain text are within the initial product scope. Multipart file contents, structured XML, compressed-body decompression, WebSocket messages, and response bodies are deferred. The first engine's narrower starting scope will be chosen separately and must not be presented as implementing the full product scope.
+The complete content-type table is in [M17](#m17): form-urlencoded, nested JSON, multipart text fields/file names/metadata, plain text, and (since the amendment of 11 October 2026) the text and attribute values of XML are within the initial product scope. Multipart file contents, compressed-body decompression, WebSocket messages, and response bodies are deferred. The first engine's narrower starting scope will be chosen separately and must not be presented as implementing the full product scope.
 
 <a id="mimari"></a>
 ## 4. Architecture, responsibilities, and data flow
@@ -522,7 +522,7 @@ These three decisions supersede the earlier Python-core and separate live Python
 <a id="m15"></a>
 ### 5.15. M15 — Our own CRS-supporting rule engine
 
-**Implementation / verification status:** The engine has not been developed; compatibility has not been verified.
+**Implementation / verification status:** Implemented for the Phase 1 rule scope on 11 October 2026: 179 of the 186 rules in the seven loaded CRS files are active, the 7 others are excluded with reasons, and loading fails on anything unsupported. Verified by the 687 CRS regression tests of the 51 PL1 rules and by comparison with Coraza (section 11.14). This is not full CRS compatibility.
 
 **Scope and open boundaries:** Coraza is not the product engine; exact supported behavior and libraries remain open.
 
@@ -581,13 +581,15 @@ This decision does not require every layer to finish all parsing in a single pas
 <a id="m17"></a>
 ### 5.17. M17 — Phase 1 HTTP content scope
 
-**Implementation / verification status:** The product scope is not implemented; the pilot extractor has narrower coverage.
+**Implementation / verification status:** Implemented in the rule layer on 11 October 2026 for path, query, headers, cookies, form-urlencoded, JSON, multipart text fields and file names, and XML text and attributes. `text/plain` bodies are not yet read as text and are reported as not inspected. The ML pilot extractor has narrower coverage.
 
 **Scope and open boundaries:** Content types are defined; parser behavior and limits remain open.
 
 **Related decisions:** M03, M05, M16. **Open detail records:** A02, A08, A11.
 
-**Status: Approved; support is not yet implemented.**
+**Status: Approved; amended on 11 October 2026 for XML. Form-urlencoded bodies are implemented; the rest is not.**
+
+**Amendment of 11 October 2026:** XML moved from deferred to inspected, in a minimal form. Reasons recorded when the user decided it: 49 of the 687 CRS regression tests of the PL1 rules in scope carry their payload in an XML body; those rules address XML only as "all text" (`XML:/*`) and "all attribute values" (`XML://@*`), which needs no XPath engine; Go's standard XML reader does not load external entities; and leaving XML unread gives a simple way around the rules. An XML body that cannot be read is reported as not inspected (M05).
 
 **Decision:** The initial release's inspection scope will be:
 
@@ -600,7 +602,7 @@ This decision does not require every layer to finish all parsing in a single pas
 | `multipart/form-data` | Inspect text fields, file names, and file metadata |
 | File contents within multipart | Do not analyze in the first release; report as outside scope |
 | `text/plain` | Inspect as text without splitting into structured fields |
-| XML | Defer structured XML support |
+| XML | Inspect the text and attribute values of XML bodies (amended 11 October 2026; originally deferred). XPath beyond "all text" and "all attributes", DTD processing, and schemas stay deferred |
 | Compressed request bodies | Defer decompression; undecoded bodies are not considered inspected |
 | WebSocket messages and response bodies | Outside the initial release scope |
 
@@ -636,7 +638,7 @@ Reference: [OWASP CRS v4.30.0 release](https://github.com/coreruleset/corerulese
 <a id="m19"></a>
 ### 5.19. M19 — Initial rule groups and expansion direction
 
-**Implementation / verification status:** Sources exist; engine support for selected rules does not.
+**Implementation / verification status:** Implemented on 11 October 2026: all PL1 rules of files 930 (5), 941 (26), and 942 (20) run. The user decided that all five PL1 rules of file 930 are in scope (section 11.13).
 
 **Scope and open boundaries:** Groups 942, 941, and the path traversal subset of 930; exact IDs remain open.
 
@@ -665,7 +667,7 @@ M17's HTTP content scope applies. XML, response bodies, and other deferred conte
 <a id="m20"></a>
 ### 5.20. M20 — Initially PL1, with expansion to higher levels
 
-**Implementation / verification status:** PL1 decision approved; execution support not verified.
+**Implementation / verification status:** Implemented on 11 October 2026. The level is the CRS default of 1; the PL2–PL4 rules of the loaded files are compiled and skipped by the CRS gates. The configuration has no option to change the level, so point 1 of this decision (an explicit error for an unsupported level) has nothing to act on yet.
 
 **Scope and open boundaries:** PL1 within selected groups; PL2–PL4 will be considered as development progresses.
 
@@ -1076,3 +1078,85 @@ The user subsequently requested a short `context.md`, which was created, and the
 5. A record carries rule-layer findings only. It is not an alert decision (M04, M10).
 6. **State of the first engine (section 7.4):** all seven steps are done. Checked with `go vet ./...`, `go test ./...`, and `go test -race ./...` on 11 October 2026. What it shows and does not show is stated in section 11.9, item 8.
 7. **Open follow-ups noted during the work, not yet discussed:** (a) which engine is the reference, and a comparison of score values with it (A11); (b) the Unicode mapping file for `urlDecodeUni`; (c) multipart and XML/JSON bodies, needed by 4 of the 18 CRS tests of these two rules (A02, M17); (d) whether 930120/930130/930140 belong to the path traversal scope (A11); (e) size limits (A08).
+
+### 11.11. Rule-layer development plan and its stage 1 — 11 October 2026
+
+1. A development plan for the rule layer was written at the user's request: [docs/development-plan-rule-layer.md](docs/development-plan-rule-layer.md). It has eight stages and six decisions for the user (D1–D6). Progress is tracked in section 8 of that document, not here.
+2. The user started stage 1 without changing the stage order. The plan's other stages and decisions D1–D4 are not approved by that; each stage waits for its decision.
+3. Stage 1 (test harness) is done: a converter for CRS regression tests, the converted tests of all 51 PL1 rules (687 tests), and a per-rule summary in `ids-offline`. Baseline: 130 passed, 495 failed, 62 not inspected; the two active rules have no failed test.
+4. Findings recorded in that plan: every `@rx` pattern of files 930, 941, and 942 compiles with Go's `regexp`; five patterns in file 942 name bytes above 0x7F and need a matching decision; of the 687 tests, 49 use an XML body, 15 JSON, and 3 multipart.
+
+### 11.12. Reference engine and comparison — 11 October 2026
+
+1. **A11 subquestion decided by the user:** the reference engine for comparisons is Coraza (v3.8.1 at this date). It is not a dependency of the IDS module: a separate module under `tools/coraza-reference/` runs it and writes a reference file that the tests read. M15 is unchanged; Coraza is not the product engine.
+2. **Comparison performed:** 1,026 requests (6 starter examples, the converted CRS tests whose body our engine can read, and 400 generated traversal variants; 138 of them with a match). Matched rules of file 930 and rule 949110, the place and number of each match, and the total score are identical on 1,022. On the other 4, both engines find the same rules and Coraza counts one more match of 930110.
+3. **Cause of those 4:** the `utf8toUnicode` difference already recorded in section 11.7, item 5. The values contain invalid UTF-8; Coraza rewrites the invalid byte, the value changes, and `multiMatch` tests it again. Our engine keeps the ModSecurity v2 behaviour.
+4. **Update to section 11.9, items 6 and 7:** anomaly scores have now been compared with a reference engine, Coraza, and agree. Coraza re-tests a `multiMatch` value only when it changed, as our engine does. The expectation that ModSecurity v2 scores 930110 higher remains a reading of its source; no ModSecurity run has been made.
+5. **Scope of this verification:** rules 930100, 930110, and 949110 with the four files of the first-engine configuration. Requests with XML, JSON, or multipart bodies were not compared.
+
+### 11.13. Decisions for the rule-layer plan — 11 October 2026
+
+The user decided the open points of [docs/development-plan-rule-layer.md](docs/development-plan-rule-layer.md) together, so that stages 3 to 8 can be worked through in a row:
+
+1. **libinjection (A11):** `@detectSQLi` and `@detectXSS` use the Go port `github.com/corazawaf/libinjection-go`. It becomes the first dependency of the IDS module. M15 allows underlying libraries to be chosen rather than written.
+2. **XML (M17):** amended; see the M17 record.
+3. **Scope of file 930 (M19, A11):** all five PL1 rules are in scope, as "path traversal and file access": 930100, 930110, 930120, 930130, 930140.
+4. **Who writes the code:** the assistant writes all of it; the user reviews afterwards.
+5. **Rhythm:** stages 3 to 8 in a row with a report after each; stop only when a new decision is needed or a result looks wrong.
+6. Earlier the same day: Coraza as reference engine (section 11.12), and a Python script as test converter.
+
+### 11.14. Rule layer complete for the Phase 1 scope — 11 October 2026
+
+The rule-layer plan ([docs/development-plan-rule-layer.md](docs/development-plan-rule-layer.md)) was worked through in one day after the user made its decisions (section 11.13). Details and numbers are in section 8 of that plan; this is the summary.
+
+1. **What runs:** the unmodified CRS 4.30.0 files `crs-setup`, 901, 930, 941, 942, 949, and 999. 179 of their 186 rules are active. The 51 PL1 detection rules for path traversal and file access, XSS, and SQL injection all run.
+2. **Acceptance:** all 687 CRS regression tests of those 51 rules pass.
+3. **Reference comparison:** 1,989 requests compared with Coraza v3.8.1; rules, match places, match counts, and scores are identical on 1,985; 4 differ in match count for a known reason; 4 more are left out as known differences with written reasons; none is unexplained.
+4. **Transformations:** 13, each compared with the ModSecurity v2 C function (11,827 recorded results).
+5. **Request content read:** path, query, headers, cookies, form, JSON, multipart, XML (M17 as amended).
+6. **Dependencies:** the IDS module has one, `github.com/corazawaf/libinjection-go`. Coraza is used only by the separate helper module that produces the reference file.
+7. **Pilot records:** of the 1,000 CSIC records, 0 of 500 normal and 80 of 500 anomalous were flagged. Neither number is a rate for real traffic; see the plan, section 8.7.
+8. **Speed:** about 0.4–0.7 ms per ordinary request on one core; 18.5 ms for a request with a 9.4 kB field.
+
+**Subquestions of open records that are now settled for the rule layer:**
+
+- A02: representation of query, form, cookie, JSON, multipart, and XML content; a first body limit of 1 MiB.
+- A03: the rule layer's result (matches with location, scores, analysis status).
+- A11: rule scope, load order, SecLang features needed, regex library (Go `regexp` with a byte mode), libinjection library, reference engine, use of the CRS regression tests.
+
+**Open points this work produced, not yet discussed with the user:**
+
+1. Where ModSecurity v2 and Coraza differ, which to follow. In `normalizePathWin` (a path segment ending in two dots) and `htmlEntityDecode` (an entity without semicolon followed by letters), the ModSecurity behaviour we follow sees less than Coraza does. **Decided on 11 October 2026: follow Coraza in these two; see section 11.15.**
+2. Speed on long values (A08).
+3. No request has been run through ModSecurity itself.
+4. `text/plain` bodies (M17) are not read yet.
+5. Evaluation data and success criteria (A07) are untouched; the layers after the rule layer have not started.
+
+### 11.15. Two transformations changed to Coraza's behaviour — 11 October 2026
+
+**Decision (user, 11 October 2026):** `normalizePathWin` and `htmlEntityDecode` follow Coraza, not ModSecurity v2. Reason: in both, the ModSecurity behaviour left a disguise in place that Coraza removes, so a rule could be avoided.
+
+| Function | Input | Before (ModSecurity v2) | Now (Coraza v3.8.1) |
+| --- | --- | --- | --- |
+| `normalizePathWin` | `a/win.ini..` | `a` (the segment is removed) | `a/win.ini` |
+| `htmlEntityDecode` | `&LTscript` | unchanged | `<script` |
+
+**What was done:**
+
+1. Both functions were rewritten after reading Coraza's source. The change is larger than the two examples, because Coraza's functions are different algorithms, not variants of ModSecurity's.
+2. `normalizePathWin` now also removes dots and spaces at the end of every path segment and cuts a Windows data-stream name (`web.config::$DATA` becomes `web.config`).
+3. `htmlEntityDecode` now knows all names of the HTML standard and reads them as a browser does. It uses the entity table of Go's standard `html` package; no dependency was added. Go's own decoder is not used for numbers, because it reads a few broken ones differently from the decoder Coraza uses; the comparison below found that.
+4. The reference results of these two functions were removed from the ModSecurity file and recorded anew from Coraza's code in `internal/engine/transform/testdata/coraza_v3_vectors.txt`. Its header says how.
+
+**What the change gives up:** ModSecurity decodes some things that Coraza and browsers do not, and these are no longer decoded: an entity name in the wrong letter case (`&COLON;`), most names without their semicolon (`&colon`), and of a number above 255 only its low byte. A browser does not read these as the character either. Two results of Coraza's `normalizePathWin` are odd and are reproduced: a path that is only `/` becomes `//`, and a value such as `ab:boot.ini` is cut to `ab`.
+
+**Checked:**
+
+1. Both functions agree with 2,517 results recorded from Coraza's code (1,276 and 1,241), and with about 92,000 further random inputs in a one-time run.
+2. The other 11 transformations still agree with their 10,008 ModSecurity results.
+3. Comparison with Coraza on whole requests: all 1,993 requests compared, 1,281 with a match, 0 differences. The list of known differences is now empty. 4 requests with invalid UTF-8 still differ in match count only (`utf8toUnicode`, unchanged).
+4. All 687 CRS regression tests pass.
+5. Pilot records unchanged: 0 of 500 normal and 80 of 500 anomalous flagged.
+6. `go vet`, `go test`, and `go test -race` pass for all eight packages; 20 seconds of fuzzing found nothing.
+
+Not committed.

@@ -1,0 +1,7350 @@
+[
+  {
+    "name": "file access variant 1 (arg name)",
+    "method": "GET",
+    "uri": "/download?etc/kibana=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 2 (path)",
+    "method": "GET",
+    "uri": "/CONFIG-DEV.ASP",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 3 (path)",
+    "method": "GET",
+    "uri": "/proc/9",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 4 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=%2eclawdbot%2f"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 5 (arg name)",
+    "method": "GET",
+    "uri": "/download?.dbus//=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 6 (path)",
+    "method": "GET",
+    "uri": "/etc/x/../thunderbird",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 7 (query)",
+    "method": "GET",
+    "uri": "/download?file=.sql.r05",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 8 (query)",
+    "method": "GET",
+    "uri": "/download?file=kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 9 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=SECRETS.YAML"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 10 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "17"
+      ]
+    ],
+    "body": "name=.aider/&ok=1"
+  },
+  {
+    "name": "file access variant 11 (query)",
+    "method": "GET",
+    "uri": "/download?file=/composer.lock",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 12 (query)",
+    "method": "GET",
+    "uri": "/download?file=.tor\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 13 (query)",
+    "method": "GET",
+    "uri": "/download?file=passwords",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 14 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".windsurf/./=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 15 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.n8n//"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 16 (query)",
+    "method": "GET",
+    "uri": "/download?file=.TOR/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 17 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=squirrelmail//www"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 18 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.m2//"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 19 (path)",
+    "method": "GET",
+    "uri": "/.fabric/x/../",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 20 (query)",
+    "method": "GET",
+    "uri": "/download?file=%2evimrc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 21 (path)",
+    "method": "GET",
+    "uri": "/%2ea0proj%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 22 (query)",
+    "method": "GET",
+    "uri": "/download?file=config_dev.rb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 23 (path end)",
+    "method": "GET",
+    "uri": "/static/config.json?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 24 (path)",
+    "method": "GET",
+    "uri": "/environment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 25 (path)",
+    "method": "GET",
+    "uri": "/%2esql%2elha",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 26 (path)",
+    "method": "GET",
+    "uri": "/.WINDSURF/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 27 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.sql.lha"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 28 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "15"
+      ]
+    ],
+    "body": "name=kitap&ok=1"
+  },
+  {
+    "name": "file access variant 29 (path)",
+    "method": "GET",
+    "uri": "/etc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 30 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc\\kibana"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 31 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "passwords=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 32 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.zshenv"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 33 (query)",
+    "method": "GET",
+    "uri": "/download?file=opt//tomcat",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 34 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc/logcheck"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 35 (path)",
+    "method": "GET",
+    "uri": "/etc//cron.d",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 36 (path end)",
+    "method": "GET",
+    "uri": "/static/proc\\9?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 37 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "index%2ehtml"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 38 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".continue/x/../=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 39 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.cursor/"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 40 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "name=.htpasswd&ok=1"
+  },
+  {
+    "name": "file access variant 41 (query)",
+    "method": "GET",
+    "uri": "/download?file=config_prod%2epl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 42 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "name=config_prod.pl&ok=1"
+  },
+  {
+    "name": "file access variant 43 (arg name)",
+    "method": "GET",
+    "uri": "/download?etc/x/../glvnd=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 44 (path)",
+    "method": "GET",
+    "uri": "/etc/glvnd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 45 (query)",
+    "method": "GET",
+    "uri": "/download?file=sys/fs",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 46 (query)",
+    "method": "GET",
+    "uri": "/download?file=config-dev.pl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 47 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc/printcap"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 48 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "17"
+      ]
+    ],
+    "body": "name=.aider/&ok=1"
+  },
+  {
+    "name": "file access variant 49 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=%2en8n%2f"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 50 (arg name)",
+    "method": "GET",
+    "uri": "/download?sys/./fs=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 51 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=etc/kibana"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 52 (path end)",
+    "method": "GET",
+    "uri": "/static/%2eclaude%2f?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 53 (query)",
+    "method": "GET",
+    "uri": "/download?file=proc/filesystems",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 54 (path)",
+    "method": "GET",
+    "uri": "/report.pdf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 55 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=etc/cron.d"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 56 (query)",
+    "method": "GET",
+    "uri": "/download?file=squirrelmail\\www",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 57 (query)",
+    "method": "GET",
+    "uri": "/download?file=.terraform.lock.hcl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 58 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc//glvnd"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 59 (path end)",
+    "method": "GET",
+    "uri": "/static/proc/./4?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 60 (query)",
+    "method": "GET",
+    "uri": "/download?file=PROC/4",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 61 (arg name)",
+    "method": "GET",
+    "uri": "/download?etc\\cron.d=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 62 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc%2fgitlab"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 63 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "kustomization.yml=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 64 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.FBCINDEX"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 65 (arg name)",
+    "method": "GET",
+    "uri": "/download?%2eofflineimaprc=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 66 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=a/b/c"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 67 (arg name)",
+    "method": "GET",
+    "uri": "/download?.offlineimaprc=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 68 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "21"
+      ]
+    ],
+    "body": "name=config.toml&ok=1"
+  },
+  {
+    "name": "file access variant 69 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "%2esql%2elha=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 70 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "kitap=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 71 (query)",
+    "method": "GET",
+    "uri": "/download?file=images/logo.png",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 72 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "name=.sql.001&ok=1"
+  },
+  {
+    "name": "file access variant 73 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=config-prod.xml"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 74 (arg name)",
+    "method": "GET",
+    "uri": "/download?webpack.config.js=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 75 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "28"
+      ]
+    ],
+    "body": "name=etc\\newsyslog.conf&ok=1"
+  },
+  {
+    "name": "file access variant 76 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "proc/pressure=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 77 (path end)",
+    "method": "GET",
+    "uri": "/static/opt//tomcat?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 78 (query)",
+    "method": "GET",
+    "uri": "/download?file=.cpanplus//",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 79 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc/thunderbird"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 80 (query)",
+    "method": "GET",
+    "uri": "/download?file=/composer.lock",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 81 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc%2fkibana",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 82 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "wp-config_"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 83 (query)",
+    "method": "GET",
+    "uri": "/download?file=.fbcindex",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 84 (path end)",
+    "method": "GET",
+    "uri": "/static/.ROO/?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 85 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=config_dev.py"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 86 (path)",
+    "method": "GET",
+    "uri": "/etc/printcap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 87 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".sql.lha=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 88 (arg name)",
+    "method": "GET",
+    "uri": "/download?.OFFLINEIMAPRC=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 89 (arg name)",
+    "method": "GET",
+    "uri": "/download?.warp/=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 90 (query)",
+    "method": "GET",
+    "uri": "/download?file=kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 91 (arg name)",
+    "method": "GET",
+    "uri": "/download?config.dev.pl=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 92 (path)",
+    "method": "GET",
+    "uri": "/%2ezeroclaw%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 93 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".N8N/=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 94 (arg name)",
+    "method": "GET",
+    "uri": "/download?.VIMRC=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 95 (arg name)",
+    "method": "GET",
+    "uri": "/download?.sql.r05=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 96 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        ".zshrc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 97 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "wp-config_"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 98 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "name=.roo//&ok=1"
+  },
+  {
+    "name": "file access variant 99 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.CLAWDBOT/"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 100 (path end)",
+    "method": "GET",
+    "uri": "/static/CONFIG.SAMPLE.PL?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 101 (arg name)",
+    "method": "GET",
+    "uri": "/download?.zshenv=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 102 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "config_sample.ini=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 103 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 104 (query)",
+    "method": "GET",
+    "uri": "/download?file=.zeroclaw/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 105 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=etc/printcap"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 106 (query)",
+    "method": "GET",
+    "uri": "/download?file=.perl_repl_history",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 107 (path)",
+    "method": "GET",
+    "uri": "/.sql.r05",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 108 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config-prod%2ephp"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 109 (query)",
+    "method": "GET",
+    "uri": "/download?file=wp-config_",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 110 (path)",
+    "method": "GET",
+    "uri": "/\\sites\\default\\settings.php",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 111 (path end)",
+    "method": "GET",
+    "uri": "/static/PERL/BIN?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 112 (query)",
+    "method": "GET",
+    "uri": "/download?file=.sql.001",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 113 (path)",
+    "method": "GET",
+    "uri": "/environment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 114 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=kitap"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 115 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        ".dockerignore"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 116 (query)",
+    "method": "GET",
+    "uri": "/download?file=webpack.config.js",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 117 (query)",
+    "method": "GET",
+    "uri": "/download?file=kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 118 (query)",
+    "method": "GET",
+    "uri": "/download?file=.VIMRC",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 119 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "name=.zshrc&ok=1"
+  },
+  {
+    "name": "file access variant 120 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "name=.sql.r05&ok=1"
+  },
+  {
+    "name": "file access variant 121 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=webpack.config.js"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 122 (path)",
+    "method": "GET",
+    "uri": "/.sql.r06",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 123 (query)",
+    "method": "GET",
+    "uri": "/download?file=.irb_history",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 124 (path end)",
+    "method": "GET",
+    "uri": "/static/index%2ehtml?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 125 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 126 (path)",
+    "method": "GET",
+    "uri": "/%2eterraform%2elock%2ehcl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 127 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config%2etoml"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 128 (query)",
+    "method": "GET",
+    "uri": "/download?file=squirrelmail/x/../www",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 129 (path)",
+    "method": "GET",
+    "uri": "/%2eqwen_code",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 130 (arg name)",
+    "method": "GET",
+    "uri": "/download?.oci/=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 131 (path end)",
+    "method": "GET",
+    "uri": "/static/config-prod.py?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 132 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config_prod.pl"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 133 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.sql.lha"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 134 (arg name)",
+    "method": "GET",
+    "uri": "/download?config-prod.py=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 135 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.sql.r05"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 136 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "INDEX.HTML=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 137 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "15"
+      ]
+    ],
+    "body": "name=.roo/&ok=1"
+  },
+  {
+    "name": "file access variant 138 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=etc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 139 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "a//b//c"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 140 (query)",
+    "method": "GET",
+    "uri": "/download?file=proc/execdomains",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 141 (query)",
+    "method": "GET",
+    "uri": "/download?file=.ROVODEV/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 142 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "name=.fabric//&ok=1"
+  },
+  {
+    "name": "file access variant 143 (path end)",
+    "method": "GET",
+    "uri": "/static/.fabric/./?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 144 (path)",
+    "method": "GET",
+    "uri": "/.a0proj/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 145 (query)",
+    "method": "GET",
+    "uri": "/download?file=.m2/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 146 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "index.html=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 147 (query)",
+    "method": "GET",
+    "uri": "/download?file=squirrelmail/www",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 148 (path)",
+    "method": "GET",
+    "uri": "/.plandex/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 149 (query)",
+    "method": "GET",
+    "uri": "/download?file=.rubocop.yml",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 150 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "proc\\4"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 151 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "secrets.yaml"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 152 (path)",
+    "method": "GET",
+    "uri": "/.qwen_code",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 153 (arg name)",
+    "method": "GET",
+    "uri": "/download?config-prod.py=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 154 (path)",
+    "method": "GET",
+    "uri": "/%2eaider%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 155 (arg name)",
+    "method": "GET",
+    "uri": "/download?.TOR/=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 156 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "name=a%2fb%2fc&ok=1"
+  },
+  {
+    "name": "file access variant 157 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=apache/log"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 158 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "name=passwords&ok=1"
+  },
+  {
+    "name": "file access variant 159 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".openclaw/./=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 160 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "name=.htpasswd&ok=1"
+  },
+  {
+    "name": "file access variant 161 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.sql.arj"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 162 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "name=.zshrc&ok=1"
+  },
+  {
+    "name": "file access variant 163 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc/x/../kibana",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 164 (path end)",
+    "method": "GET",
+    "uri": "/static/images\\logo.png?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 165 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "%2eroo%2f"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 166 (arg name)",
+    "method": "GET",
+    "uri": "/download?.fabric/=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 167 (arg name)",
+    "method": "GET",
+    "uri": "/download?.kiro/=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 168 (path)",
+    "method": "GET",
+    "uri": "/images\\logo.png",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 169 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "ETC/GLVND=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 170 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "name=%2econtinue%2f&ok=1"
+  },
+  {
+    "name": "file access variant 171 (query)",
+    "method": "GET",
+    "uri": "/download?file=config-dev%2epl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 172 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "mysql/my.ini"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 173 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "passwords"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 174 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "name=kustomization.yml&ok=1"
+  },
+  {
+    "name": "file access variant 175 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "%2eperl_repl_history"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 176 (query)",
+    "method": "GET",
+    "uri": "/download?file=.hg\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 177 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc/newt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 178 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "25"
+      ]
+    ],
+    "body": "name=config-prod.xml&ok=1"
+  },
+  {
+    "name": "file access variant 179 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc//thunderbird",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 180 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "name=.pnpm-store\\&ok=1"
+  },
+  {
+    "name": "file access variant 181 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        ".SVN/"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 182 (path end)",
+    "method": "GET",
+    "uri": "/static/etc%2fprintcap?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 183 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc/x/../glvnd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 184 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.ftpconfig"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 185 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "name=config-dev.txt&ok=1"
+  },
+  {
+    "name": "file access variant 186 (arg name)",
+    "method": "GET",
+    "uri": "/download?report.pdf=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 187 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "secrets.yaml=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 188 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "etc=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 189 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "name=mysql/./my.ini&ok=1"
+  },
+  {
+    "name": "file access variant 190 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "name=.WINDSURF/&ok=1"
+  },
+  {
+    "name": "file access variant 191 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "25"
+      ]
+    ],
+    "body": "name=config-prod.php&ok=1"
+  },
+  {
+    "name": "file access variant 192 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "name=report.pdf&ok=1"
+  },
+  {
+    "name": "file access variant 193 (path)",
+    "method": "GET",
+    "uri": "/.rovodev/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 194 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config.json"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 195 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".trustclaw/=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 196 (path)",
+    "method": "GET",
+    "uri": "/.offlineimaprc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 197 (arg name)",
+    "method": "GET",
+    "uri": "/download?.curlrc=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 198 (query)",
+    "method": "GET",
+    "uri": "/download?file=environment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 199 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".zshenv=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 200 (path)",
+    "method": "GET",
+    "uri": "/squirrelmail%2fwww",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 201 (query)",
+    "method": "GET",
+    "uri": "/download?file=%2ecpanplus%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 202 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=etc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 203 (path)",
+    "method": "GET",
+    "uri": "/.continue\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 204 (path)",
+    "method": "GET",
+    "uri": "/etc\\newt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 205 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".curlrc=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 206 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.openclaw\\"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 207 (arg name)",
+    "method": "GET",
+    "uri": "/download?.fabric/=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 208 (arg name)",
+    "method": "GET",
+    "uri": "/download?.hg\\=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 209 (arg name)",
+    "method": "GET",
+    "uri": "/download?.fabric/x/../=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 210 (query)",
+    "method": "GET",
+    "uri": "/download?file=.HTPASSWD",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 211 (query)",
+    "method": "GET",
+    "uri": "/download?file=index.html",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 212 (path)",
+    "method": "GET",
+    "uri": "/etc/gitlab",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 213 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "name=.dockerignore&ok=1"
+  },
+  {
+    "name": "file access variant 214 (path)",
+    "method": "GET",
+    "uri": "/.perl_repl_history",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 215 (path)",
+    "method": "GET",
+    "uri": "/etc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 216 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc/x/../qemu",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 217 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "name=config-prod.py&ok=1"
+  },
+  {
+    "name": "file access variant 218 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last="
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 219 (path)",
+    "method": "GET",
+    "uri": "/mysql/x/../my.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 220 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        ".sql.001"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 221 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "CONFIG-TEST.RB"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 222 (path end)",
+    "method": "GET",
+    "uri": "/static/config_sample.pl?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 223 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=config-test.rb"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 224 (query)",
+    "method": "GET",
+    "uri": "/download?file=images/logo.png",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 225 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "proc%2fpressure=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 226 (query)",
+    "method": "GET",
+    "uri": "/download?file=.aider\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 227 (path end)",
+    "method": "GET",
+    "uri": "/static/.fabric/?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 228 (query)",
+    "method": "GET",
+    "uri": "/download?file=webpack.config.js",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 229 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "REPORT.PDF"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 230 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "ENVIRONMENT=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 231 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc/x/../newt"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 232 (arg name)",
+    "method": "GET",
+    "uri": "/download?kustomization.yml=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 233 (arg name)",
+    "method": "GET",
+    "uri": "/download?%2eashrc=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 234 (arg name)",
+    "method": "GET",
+    "uri": "/download?=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 235 (arg name)",
+    "method": "GET",
+    "uri": "/download?etc//newsyslog.conf=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 236 (path end)",
+    "method": "GET",
+    "uri": "/static/config.json?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 237 (path)",
+    "method": "GET",
+    "uri": "/.junie/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 238 (path)",
+    "method": "GET",
+    "uri": "/report%2epdf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 239 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc\\cron.d"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 240 (arg name)",
+    "method": "GET",
+    "uri": "/download?environment=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 241 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "report.pdf"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 242 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 243 (path end)",
+    "method": "GET",
+    "uri": "/static/kitap?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 244 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "name=&ok=1"
+  },
+  {
+    "name": "file access variant 245 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.openclaw/"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 246 (path)",
+    "method": "GET",
+    "uri": "/config_dev.rb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 247 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "name=proc/4&ok=1"
+  },
+  {
+    "name": "file access variant 248 (arg name)",
+    "method": "GET",
+    "uri": "/download?%2eviminfo=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 249 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc/x/../qemu",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 250 (arg name)",
+    "method": "GET",
+    "uri": "/download?.oci/=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 251 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "name=.gemini/./&ok=1"
+  },
+  {
+    "name": "file access variant 252 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "config_sample.ini=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 253 (path)",
+    "method": "GET",
+    "uri": "/KITAP",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 254 (path)",
+    "method": "GET",
+    "uri": "/kustomization.yml",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 255 (path)",
+    "method": "GET",
+    "uri": "/squirrelmail/www",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 256 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".kiro\\=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 257 (path)",
+    "method": "GET",
+    "uri": "/etc//printcap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 258 (arg name)",
+    "method": "GET",
+    "uri": "/download?config_prod.pl=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 259 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config-dev%2etxt"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 260 (query)",
+    "method": "GET",
+    "uri": "/download?file=images/logo.png",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 261 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "15"
+      ]
+    ],
+    "body": "name=.oci/&ok=1"
+  },
+  {
+    "name": "file access variant 262 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc//mplayer",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 263 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "name=config-prod.py&ok=1"
+  },
+  {
+    "name": "file access variant 264 (path)",
+    "method": "GET",
+    "uri": "/.zshenv",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 265 (path)",
+    "method": "GET",
+    "uri": "/perl/x/../bin",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 266 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "name=etc\\printcap&ok=1"
+  },
+  {
+    "name": "file access variant 267 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "ENVIRONMENT"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 268 (path)",
+    "method": "GET",
+    "uri": "/.zeroclaw/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 269 (query)",
+    "method": "GET",
+    "uri": "/download?file=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 270 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.hg\\"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 271 (path end)",
+    "method": "GET",
+    "uri": "/static/passwords?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 272 (query)",
+    "method": "GET",
+    "uri": "/download?file=%2eqwen_code",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 273 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "etc\\cron.d=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 274 (path end)",
+    "method": "GET",
+    "uri": "/static/report.pdf?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 275 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config-prod.py"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 276 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "name=.windsurf/&ok=1"
+  },
+  {
+    "name": "file access variant 277 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".warp/./=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 278 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "15"
+      ]
+    ],
+    "body": "name=.oci/&ok=1"
+  },
+  {
+    "name": "file access variant 279 (path)",
+    "method": "GET",
+    "uri": "/.vimrc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 280 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".cache\\notify-osd.log=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 281 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "28"
+      ]
+    ],
+    "body": "name=proc%2ffilesystems&ok=1"
+  },
+  {
+    "name": "file access variant 282 (path end)",
+    "method": "GET",
+    "uri": "/static/.hg\\?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 283 (arg name)",
+    "method": "GET",
+    "uri": "/download?proc//pressure=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 284 (path end)",
+    "method": "GET",
+    "uri": "/static/index.html?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 285 (query)",
+    "method": "GET",
+    "uri": "/download?file=/./sites/./default/./settings.php",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 286 (path)",
+    "method": "GET",
+    "uri": "/ETC",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 287 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.KIRO/"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 288 (path)",
+    "method": "GET",
+    "uri": "/.oci\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 289 (query)",
+    "method": "GET",
+    "uri": "/download?file=proc/x/../pressure",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 290 (path)",
+    "method": "GET",
+    "uri": "/index.html",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 291 (path)",
+    "method": "GET",
+    "uri": "/config_sample.ini",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 292 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=environment"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 293 (query)",
+    "method": "GET",
+    "uri": "/download?file=.opencode/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 294 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "25"
+      ]
+    ],
+    "body": "name=CONFIG-PROD.INI&ok=1"
+  },
+  {
+    "name": "file access variant 295 (arg name)",
+    "method": "GET",
+    "uri": "/download?.sql.r05=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 296 (query)",
+    "method": "GET",
+    "uri": "/download?file=.n8n/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 297 (path)",
+    "method": "GET",
+    "uri": "/OPT/TOMCAT",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 298 (query)",
+    "method": "GET",
+    "uri": "/download?file=config-dev.pl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 299 (query)",
+    "method": "GET",
+    "uri": "/download?file=.sql.r06",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 300 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=proc/4"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 301 (query)",
+    "method": "GET",
+    "uri": "/download?file=.continue/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 302 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "apache/x/../log=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 303 (query)",
+    "method": "GET",
+    "uri": "/download?file=images/logo.png",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 304 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "25"
+      ]
+    ],
+    "body": "name=.zeroclaw/x/../&ok=1"
+  },
+  {
+    "name": "file access variant 305 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.vimrc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 306 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=a\\b\\c"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 307 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc/glvnd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 308 (arg name)",
+    "method": "GET",
+    "uri": "/download?.QWEN_CODE=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 309 (query)",
+    "method": "GET",
+    "uri": "/download?file=config-prod.php",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 310 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        ".ashrc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 311 (query)",
+    "method": "GET",
+    "uri": "/download?file=.svn/./",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 312 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.cache/./notify-osd.log"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 313 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=/SITES/DEFAULT/SETTINGS.PHP"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 314 (path end)",
+    "method": "GET",
+    "uri": "/static/.zshenv?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 315 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc\\qemu",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 316 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.sql.arj"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 317 (query)",
+    "method": "GET",
+    "uri": "/download?file=.curlrc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 318 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.htdigest"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 319 (path)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 320 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.ftpconfig"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 321 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=%2em2%2f"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 322 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".trustclaw/=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 323 (arg name)",
+    "method": "GET",
+    "uri": "/download?secrets.yaml=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 324 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config-prod.xml"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 325 (path)",
+    "method": "GET",
+    "uri": "/.sql.arj",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 326 (path)",
+    "method": "GET",
+    "uri": "/.sql.r06",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 327 (arg name)",
+    "method": "GET",
+    "uri": "/download?etc\\cron.d=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 328 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "name=.sql.001&ok=1"
+  },
+  {
+    "name": "file access variant 329 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "name=etc/./kibana&ok=1"
+  },
+  {
+    "name": "file access variant 330 (arg name)",
+    "method": "GET",
+    "uri": "/download?config-sample.asp=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 331 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "name=.crush&ok=1"
+  },
+  {
+    "name": "file access variant 332 (path end)",
+    "method": "GET",
+    "uri": "/static/?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 333 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.junie/x/../"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 334 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "name=.a0proj/./&ok=1"
+  },
+  {
+    "name": "file access variant 335 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=etc"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 336 (path)",
+    "method": "GET",
+    "uri": "/.rovodev//",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 337 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "name=ETC/GLVND&ok=1"
+  },
+  {
+    "name": "file access variant 338 (query)",
+    "method": "GET",
+    "uri": "/download?file=.fbcindex",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 339 (path)",
+    "method": "GET",
+    "uri": "/.hg/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 340 (path)",
+    "method": "GET",
+    "uri": "/report.pdf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 341 (path end)",
+    "method": "GET",
+    "uri": "/static/config_dev.rb?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 342 (arg name)",
+    "method": "GET",
+    "uri": "/download?sys/fs=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 343 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "15"
+      ]
+    ],
+    "body": "name=kitap&ok=1"
+  },
+  {
+    "name": "file access variant 344 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.fabric//"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 345 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "etc\\glvnd"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 346 (path)",
+    "method": "GET",
+    "uri": "/config-dev%2epl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 347 (query)",
+    "method": "GET",
+    "uri": "/download?file=.curlrc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 348 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".ftpconfig=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 349 (query)",
+    "method": "GET",
+    "uri": "/download?file=proc/x/../4",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 350 (query)",
+    "method": "GET",
+    "uri": "/download?file=index.html",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 351 (path)",
+    "method": "GET",
+    "uri": "/config_dev.rb",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 352 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".roo/=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 353 (query)",
+    "method": "GET",
+    "uri": "/download?file=.PNPM-STORE/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 354 (path)",
+    "method": "GET",
+    "uri": "/.viminfo",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 355 (arg name)",
+    "method": "GET",
+    "uri": "/download?config_sample%2epl=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 356 (query)",
+    "method": "GET",
+    "uri": "/download?file=config.dev.pl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 357 (query)",
+    "method": "GET",
+    "uri": "/download?file=config-prod%2ephp",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 358 (path)",
+    "method": "GET",
+    "uri": "/environment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 359 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=images/./logo.png"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 360 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "name=squirrelmail/x/../www&ok=1"
+  },
+  {
+    "name": "file access variant 361 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "name=.plandex/x/../&ok=1"
+  },
+  {
+    "name": "file access variant 362 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=proc/filesystems"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 363 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "proc/9"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 364 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "config-prod.php"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 365 (path)",
+    "method": "GET",
+    "uri": "/.dbus\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 366 (path)",
+    "method": "GET",
+    "uri": "/config_prod.pl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 367 (query)",
+    "method": "GET",
+    "uri": "/download?file=secrets.yaml",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 368 (query)",
+    "method": "GET",
+    "uri": "/download?file=.aider/x/../",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 369 (query)",
+    "method": "GET",
+    "uri": "/download?file=etc/newsyslog.conf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 370 (path)",
+    "method": "GET",
+    "uri": "/OPT/TOMCAT",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 371 (query)",
+    "method": "GET",
+    "uri": "/download?file=proc/filesystems",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 372 (arg name)",
+    "method": "GET",
+    "uri": "/download?perl%2fbin=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 373 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=images/logo.png"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 374 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "perl/bin=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 375 (path)",
+    "method": "GET",
+    "uri": "/.htdigest",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 376 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".trustclaw/=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 377 (form)",
+    "method": "POST",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "name=.viminfo&ok=1"
+  },
+  {
+    "name": "file access variant 378 (query)",
+    "method": "GET",
+    "uri": "/download?file=%2epnpm-store%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 379 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "kitap"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 380 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "%2ewindsurf%2f=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 381 (header)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "X-Original-File",
+        "proc/pressure"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 382 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "mysql%2fmy%2eini=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 383 (query)",
+    "method": "GET",
+    "uri": "/download?file=.dbus//",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 384 (path)",
+    "method": "GET",
+    "uri": "/passwords",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 385 (query)",
+    "method": "GET",
+    "uri": "/download?file=kitap",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 386 (query)",
+    "method": "GET",
+    "uri": "/download?file=.zed\\",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 387 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=index.html"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 388 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=/./sites/./default/./settings.php"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 389 (arg name)",
+    "method": "GET",
+    "uri": "/download?.ftpconfig=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 390 (query)",
+    "method": "GET",
+    "uri": "/download?file=secrets.yaml",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 391 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=PASSWORDS"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 392 (path end)",
+    "method": "GET",
+    "uri": "/static/a/b/c?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 393 (cookie name)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        ".htpasswd=1; theme=dark"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 394 (path)",
+    "method": "GET",
+    "uri": "/PASSWORDS",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 395 (path end)",
+    "method": "GET",
+    "uri": "/static/config_sample.pl?v=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 396 (query)",
+    "method": "GET",
+    "uri": "/download?file=proc/1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 397 (arg name)",
+    "method": "GET",
+    "uri": "/download?.zshenv=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 398 (query)",
+    "method": "GET",
+    "uri": "/download?file=%2em2%2f",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 399 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=config_dev.rb"
+      ]
+    ]
+  },
+  {
+    "name": "file access variant 400 (cookie)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "variant test"
+      ],
+      [
+        "Cookie",
+        "session=abc; last=.perl_repl_history"
+      ]
+    ]
+  }
+]

@@ -34,53 +34,54 @@ type Operator interface {
 
 type constructor func(argument string) (Operator, error)
 
-var registry = []struct {
-	name string
-	new  constructor
-}{
-	{"rx", newRx},
-	{"eq", func(arg string) (Operator, error) {
-		return newNumeric(arg, func(l, r int64) bool { return l == r }), nil
-	}},
-	{"lt", func(arg string) (Operator, error) {
-		return newNumeric(arg, func(l, r int64) bool { return l < r }), nil
-	}},
-	{"ge", func(arg string) (Operator, error) {
-		return newNumeric(arg, func(l, r int64) bool { return l >= r }), nil
-	}},
+// constructors returns the operators by lower-case name. dir is the
+// directory that data files are looked up in.
+func constructors(dir string) map[string]constructor {
+	numeric := func(compare func(left, right int64) bool) constructor {
+		return func(argument string) (Operator, error) { return newNumeric(argument, compare), nil }
+	}
+	return map[string]constructor{
+		"rx":                newRx,
+		"eq":                numeric(func(l, r int64) bool { return l == r }),
+		"lt":                numeric(func(l, r int64) bool { return l < r }),
+		"ge":                numeric(func(l, r int64) bool { return l >= r }),
+		"pm":                newPm,
+		"pmfromfile":        newPmFromFile(dir),
+		"contains":          newContains,
+		"validatebyterange": newByteRange,
+		"streq":             newStreq,
+		"detectsqli":        func(string) (Operator, error) { return detectSQLi{}, nil },
+		"detectxss":         func(string) (Operator, error) { return detectXSS{}, nil },
+	}
 }
 
 // Supported reports whether an operator called name is implemented. Names
 // are compared without regard to case.
 func Supported(name string) bool {
-	for _, entry := range registry {
-		if strings.EqualFold(entry.name, name) {
-			return true
-		}
-	}
-	return false
+	_, ok := constructors("")[strings.ToLower(name)]
+	return ok
 }
 
 // New prepares the operator @name with its argument. With negated set, the
-// result is the opposite test, as written with "!@name".
+// result is the opposite test, as written with "!@name". dir is the
+// directory of the rule file; an operator that reads a data file looks for
+// it there.
 //
 // An operator that is not implemented, or an argument the operator cannot
 // use, is an error. The caller reports it when the rules are loaded.
-func New(name, argument string, negated bool) (Operator, error) {
-	for _, entry := range registry {
-		if !strings.EqualFold(entry.name, name) {
-			continue
-		}
-		op, err := entry.new(argument)
-		if err != nil {
-			return nil, fmt.Errorf("@%s: %w", entry.name, err)
-		}
-		if negated {
-			op = not{op}
-		}
-		return op, nil
+func New(name, argument string, negated bool, dir string) (Operator, error) {
+	build, ok := constructors(dir)[strings.ToLower(name)]
+	if !ok {
+		return nil, fmt.Errorf("operator @%s is not supported", name)
 	}
-	return nil, fmt.Errorf("operator @%s is not supported", name)
+	op, err := build(argument)
+	if err != nil {
+		return nil, fmt.Errorf("@%s: %w", name, err)
+	}
+	if negated {
+		op = not{op}
+	}
+	return op, nil
 }
 
 // not inverts another operator. A negated test has nothing to capture.

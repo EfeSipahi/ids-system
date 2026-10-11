@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"sync"
@@ -54,15 +55,17 @@ func TestCRSStartupReport(t *testing.T) {
 	if rs.Signature() != "OWASP_CRS/4.30.0" {
 		t.Errorf("signature = %q", rs.Signature())
 	}
-	if got := rs.NotInspected(); !reflect.DeepEqual(got, []string{"FILES", "XML"}) {
-		t.Errorf("not inspected = %v", got)
-	}
 
-	// 1 rule in crs-setup, 33 in 901, 14 in 930 and 28 in 949: every one
-	// has a status.
+	// 1 rule in crs-setup, 33 in 901, 14 in 930, 42 in 941, 68 in 942 and
+	// 28 in 949: every one has a status.
 	statuses := rs.Statuses()
-	if len(statuses) != 76 {
-		t.Errorf("%d statuses, want 76", len(statuses))
+	if len(statuses) != 186 {
+		t.Errorf("%d statuses, want 186", len(statuses))
+	}
+	// File 999 holds one update for a rule of file 932, which is not
+	// loaded.
+	if got := rs.IgnoredTargetUpdates(); !reflect.DeepEqual(got, []int{932240}) {
+		t.Errorf("ignored target updates = %v", got)
 	}
 	var excluded []int
 	byID := map[int]RuleStatus{}
@@ -75,52 +78,67 @@ func TestCRSStartupReport(t *testing.T) {
 			}
 		}
 	}
-	want := []int{901320, 901340, 901350, 901360, 901370, 901410, 901450, 930120, 930130, 930140, 930121}
+	want := []int{901320, 901340, 901350, 901360, 901370, 901410, 901450}
 	if !reflect.DeepEqual(excluded, want) {
 		t.Errorf("excluded = %v\nwant       %v", excluded, want)
 	}
 
 	for _, id := range []int{930100, 930110} {
 		s := byID[id]
-		if !s.Active || s.Phase != 2 || !reflect.DeepEqual(s.NotInspected, []string{"FILES", "XML"}) {
+		if !s.Active || s.Phase != 2 {
 			t.Errorf("status of %d = %+v", id, s)
 		}
 	}
-	if s := byID[949110]; !s.Active || s.NotInspected != nil {
+	// The other PL1 rules of file 930, and its one PL2 rule, which the
+	// gate skips at level 1.
+	for id, phase := range map[int]int{930120: 2, 930130: 1, 930140: 1, 930121: 1} {
+		if s := byID[id]; !s.Active || s.Phase != phase {
+			t.Errorf("status of %d = %+v", id, s)
+		}
+	}
+	if s := byID[949110]; !s.Active {
 		t.Errorf("status of 949110 = %+v", s)
 	}
 }
 
-// Taking a rule off the exclusion list must stop the engine from starting,
-// with a message that names the rule and what it lacks.
+// A rule file with rules the engine cannot run must stop it from starting,
+// with a message that names each rule and what it lacks. The file used here
+// inspects responses, which is outside Phase 1.
 func TestCRSUnsupportedRuleStopsLoading(t *testing.T) {
 	cfg, err := LoadConfig(firstEngineConfig)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var kept []Exclusion
-	for _, ex := range cfg.Exclude {
-		if ex.ID != 930120 {
-			kept = append(kept, ex)
-		}
-	}
-	cfg.Exclude = kept
+	cfg.Files = append(cfg.Files, "../../coreruleset-4.30.0/rules/RESPONSE-950-DATA-LEAKAGES.conf")
 
 	_, err = Load(cfg)
 	if err == nil {
-		t.Fatal("Load succeeded with rule 930120 active")
+		t.Fatal("Load succeeded with a response rule file")
 	}
 	for _, msg := range []string{
-		"REQUEST-930-APPLICATION-ATTACK-LFI.conf:104: rule 930120: operator @pmFromFile is not supported",
-		`rule 930120: transformation "normalizePathWin" is not supported`,
-		"rule 930120: variable REQUEST_COOKIES is not supported",
+		"RESPONSE-950-DATA-LEAKAGES.conf:",
+		"rule 950130: phase 4 is not supported",
+		"rule 950130: variable RESPONSE_BODY is not supported",
 	} {
 		if !strings.Contains(err.Error(), msg) {
 			t.Errorf("error does not contain %q:\n%v", msg, err)
 		}
 	}
-	if strings.Contains(err.Error(), "rule 930110") {
+	if strings.Contains(err.Error(), "rule 930") {
 		t.Errorf("error mentions a supported rule:\n%v", err)
+	}
+
+	// Taking a rule off the exclusion list has the same effect.
+	cfg, _ = LoadConfig(firstEngineConfig)
+	var kept []Exclusion
+	for _, ex := range cfg.Exclude {
+		if ex.ID != 901340 {
+			kept = append(kept, ex)
+		}
+	}
+	cfg.Exclude = kept
+	if _, err := Load(cfg); err == nil || !strings.Contains(err.Error(), "REQUEST-901-INITIALIZATION.conf:375: rule 901340: variable REQBODY_PROCESSOR is not supported") {
+		t.Errorf("error = %v", err)
 	}
 }
 
@@ -170,6 +188,9 @@ func TestCRSTraversalInQuery(t *testing.T) {
 		// separator, so in the argument it finds "../" at once.
 		{930110, "REQUEST_URI_RAW", "Matched Data: /../ found within REQUEST_URI_RAW: /get?arg=../../../etc/passwd"},
 		{930110, "ARGS:arg", "Matched Data: ../ found within ARGS:arg: ../../../etc/passwd"},
+		// 930120 looks for the names of system files. It does not look
+		// at the raw URI, only at parameters and cookies.
+		{930120, "ARGS:arg", "Matched Data: etc/passwd found within ARGS:arg: ../../../etc/passwd"},
 		{949110, "TX:BLOCKING_INBOUND_ANOMALY_SCORE", ""},
 	}
 	if !reflect.DeepEqual(got, want) {
@@ -182,87 +203,88 @@ func TestCRSTraversalInQuery(t *testing.T) {
 		t.Errorf("first match = %+v", first)
 	}
 
-	// Four matches of 5 points each. Rule 949110 compares the total with
+	// Five matches of 5 points each. Rule 949110 compares the total with
 	// the threshold of 5. Its deny is recorded, not carried out.
-	last := res.Matches[4]
-	if last.Message != "Inbound Anomaly Score Exceeded (Total Score: 20)" || last.Action != "deny" || last.Value != "20" {
+	last := res.Matches[5]
+	if last.Message != "Inbound Anomaly Score Exceeded (Total Score: 25)" || last.Action != "deny" || last.Value != "25" {
 		t.Errorf("949110 match = %+v", last)
 	}
 	wantVars(t, res, map[string]string{
-		"inbound_anomaly_score_pl1":       "20",
-		"lfi_score":                       "20",
-		"blocking_inbound_anomaly_score":  "20",
-		"detection_inbound_anomaly_score": "20",
+		"inbound_anomaly_score_pl1":       "25",
+		"lfi_score":                       "25",
+		"blocking_inbound_anomaly_score":  "25",
+		"detection_inbound_anomaly_score": "25",
 		"inbound_anomaly_score_pl2":       "0",
 	})
-	if res.Score("lfi_score") != 20 || res.Score("no_such_variable") != 0 {
+	if res.Score("lfi_score") != 25 || res.Score("no_such_variable") != 0 {
 		t.Errorf("Score gave %d and %d", res.Score("lfi_score"), res.Score("no_such_variable"))
 	}
 }
 
-// The acceptance check of the first engine: the expectations in the example
-// files, which for the crs-930 file come from the CRS regression tests.
-func TestCRSExamples(t *testing.T) {
+// The hand-picked starter examples.
+func TestCRSStarterExamples(t *testing.T) {
 	rs := loadCRS(t)
-	for _, file := range []string{"path-traversal.json", "crs-930-regression.json"} {
-		examples := loadExamples(t, file)
-		expected, forbidden := 0, 0
-		for _, ex := range examples {
-			t.Run(ex.Name, func(t *testing.T) {
-				if ex.Request.Status.Body == httpmodel.BodyNotInspected {
-					t.Fatalf("the body is not inspected: %s", ex.Request.Status.BodyReason)
-				}
-				res := rs.Evaluate(ex.Request)
-				ids := res.MatchedIDs()
-				for _, id := range ex.ExpectIDs {
-					expected++
-					if !contains(ids, id) {
-						t.Errorf("rule %d did not match; matched: %v", id, ids)
-					}
-				}
-				for _, id := range ex.NoExpectIDs {
-					forbidden++
-					if contains(ids, id) {
-						t.Errorf("rule %d matched but must not; matches: %+v", id, res.Matches)
-					}
-				}
-				// A detection always reaches the threshold, and a
-				// request with no detection has no score.
-				detected := contains(ids, 930100) || contains(ids, 930110)
-				if detected != contains(ids, 949110) || detected != (res.Score("inbound_anomaly_score_pl1") >= 5) {
-					t.Errorf("matched %v with score %d", ids, res.Score("inbound_anomaly_score_pl1"))
-				}
-			})
-		}
-		if expected == 0 || forbidden == 0 {
-			t.Errorf("%s: %d expected and %d forbidden ids were checked", file, expected, forbidden)
-		}
+	for _, ex := range loadExamples(t, "path-traversal.json") {
+		t.Run(ex.Name, func(t *testing.T) {
+			checkExample(t, rs, ex)
+		})
 	}
 }
 
-// These CRS regression tests carry their payload in an XML or multipart
-// body. The engine does not parse those yet, so it cannot find the payload.
-// The test pins that down: the request must say that its body was not
-// inspected, and the day one of these starts matching, this test fails and
-// the case moves to the supported file.
-func TestCRSExamplesNotYetSupported(t *testing.T) {
+// The acceptance check: the CRS regression tests of every PL1 rule in scope,
+// converted by tools/convert_crs_tests.py. Each request must be read
+// completely, every rule a test expects must match, and no rule it forbids
+// may match.
+func TestCRSRegression(t *testing.T) {
 	rs := loadCRS(t)
-	examples := loadExamples(t, "crs-930-regression-not-yet-supported.json")
-	if len(examples) != 4 {
-		t.Fatalf("%d examples, want 4", len(examples))
+	files, err := filepath.Glob("../../testdata/requests/crs/*.json")
+	if err != nil || len(files) != 51 {
+		t.Fatalf("found %d test files (%v), want 51", len(files), err)
 	}
-	for _, ex := range examples {
-		t.Run(ex.Name, func(t *testing.T) {
-			if ex.Request.Status.Body != httpmodel.BodyNotInspected || ex.Request.Status.BodyReason == "" {
-				t.Errorf("body status = %+v, want not inspected with a reason", ex.Request.Status)
-			}
-			ids := rs.Evaluate(ex.Request).MatchedIDs()
-			for _, id := range ex.ExpectIDs {
-				if contains(ids, id) {
-					t.Errorf("rule %d matches now: move this example to crs-930-regression.json", id)
+	total := 0
+	for _, file := range files {
+		for _, ex := range loadExamples(t, "crs/"+filepath.Base(file)) {
+			total++
+			t.Run(ex.Name, func(t *testing.T) {
+				if !ex.Request.Status.Body.Complete() {
+					t.Fatalf("the body was not read completely: %s", ex.Request.Status.BodyReason)
 				}
-			}
-		})
+				checkExample(t, rs, ex)
+			})
+		}
+	}
+	if total != 687 {
+		t.Errorf("%d tests, want 687", total)
+	}
+}
+
+// checkExample runs one example and compares the matched rules with what
+// the example expects.
+func checkExample(t *testing.T, rs *RuleSet, ex offline.Example) {
+	t.Helper()
+	res := rs.Evaluate(ex.Request)
+	ids := res.MatchedIDs()
+	for _, id := range ex.ExpectIDs {
+		if !contains(ids, id) {
+			t.Errorf("rule %d did not match; matched: %v", id, ids)
+		}
+	}
+	for _, id := range ex.NoExpectIDs {
+		if contains(ids, id) {
+			t.Errorf("rule %d matched but must not; matches: %+v", id, res.Matches)
+		}
+	}
+	// A detection always reaches the threshold, and a request with no
+	// detection has no score.
+	detected := false
+	for _, id := range ids {
+		switch id / 1000 {
+		case 930, 941, 942:
+			detected = true
+		}
+	}
+	if detected != contains(ids, 949110) || detected != (res.Score("inbound_anomaly_score_pl1") >= 5) {
+		t.Errorf("matched %v with score %d", ids, res.Score("inbound_anomaly_score_pl1"))
 	}
 }
 
@@ -277,7 +299,7 @@ func TestCRSRequestsDoNotShareState(t *testing.T) {
 	summary := func(res *Result) string {
 		return fmt.Sprintf("%v pl1=%s lfi=%s total=%s", res.MatchedIDs(), res.Variables["inbound_anomaly_score_pl1"], res.Variables["lfi_score"], res.Variables["blocking_inbound_anomaly_score"])
 	}
-	const wantAttack = "[930100 930110 949110] pl1=20 lfi=20 total=20"
+	const wantAttack = "[930100 930110 930120 949110] pl1=25 lfi=25 total=25"
 	const wantNormal = "[] pl1=0 lfi=0 total=0"
 
 	for i := 0; i < 3; i++ {

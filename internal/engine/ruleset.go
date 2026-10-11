@@ -14,6 +14,8 @@
 package engine
 
 import (
+	"regexp"
+
 	"github.com/EfeSipahi/ids-system/internal/engine/operator"
 	"github.com/EfeSipahi/ids-system/internal/engine/transform"
 	"github.com/EfeSipahi/ids-system/internal/seclang"
@@ -31,9 +33,12 @@ type RuleSet struct {
 	// phase and every marker.
 	phases [phaseRequestBody + 1][]item
 
-	statuses    []RuleStatus
-	signature   string
-	uninspected []string
+	statuses  []RuleStatus
+	signature string
+
+	// ignoredUpdates are the rule ids of SecRuleUpdateTargetById lines
+	// whose rule is not active, one entry per line.
+	ignoredUpdates []int
 }
 
 // item is one step of a phase: a rule to run, or a marker to jump to.
@@ -60,6 +65,7 @@ type rule struct {
 	multiMatch bool
 	capture    bool
 	setvars    []setvar
+	removals   []targetRemoval
 
 	next *rule
 
@@ -85,6 +91,14 @@ type setvar struct {
 	value    template
 }
 
+// targetRemoval is a compiled ctl:ruleRemoveTargetByTag=TAG;VARIABLE action.
+// When its rule matches, every rule with a tag that fits stops looking at
+// the variable for the rest of the request.
+type targetRemoval struct {
+	tag    *regexp.Regexp
+	target target
+}
+
 // RuleStatus says what the engine does with one rule of the loaded files.
 type RuleStatus struct {
 	ID    int
@@ -95,10 +109,6 @@ type RuleStatus struct {
 	// given in the configuration for leaving it out.
 	Active bool
 	Reason string
-
-	// NotInspected lists variables the rule names that the engine cannot
-	// provide. The rule runs on its other variables.
-	NotInspected []string
 }
 
 // Statuses returns one entry for every rule with an id in the loaded files,
@@ -113,9 +123,17 @@ func (rs *RuleSet) Signature() string {
 	return rs.signature
 }
 
-// NotInspected returns the variables that active rules name but the engine
-// cannot provide, such as XML. A request with no match is clean only for
-// what was inspected (M05).
-func (rs *RuleSet) NotInspected() []string {
-	return append([]string(nil), rs.uninspected...)
+// IgnoredTargetUpdates returns the rule ids named by SecRuleUpdateTargetById
+// lines that changed nothing, because the rule is not loaded or is
+// excluded. Each id is listed once, in the order first seen.
+func (rs *RuleSet) IgnoredTargetUpdates() []int {
+	var ids []int
+	seen := map[int]bool{}
+	for _, id := range rs.ignoredUpdates {
+		if !seen[id] {
+			seen[id] = true
+			ids = append(ids, id)
+		}
+	}
+	return ids
 }
