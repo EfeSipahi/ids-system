@@ -66,14 +66,13 @@ Other files:
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: the work above is committed on branch `first-offline-engine`. It is not merged into `main` and not pushed.
+- Git: the work above is on `main` and pushed to the private GitHub repository `EfeSipahi/ids-system` (11 October 2026).
 
 ## 3. What we are going to do
 
 ### 3.1. Before more code
 
 1. **User review.** The user has not yet read the code of steps 1 to 6. Reading order: the files listed in [docs/go-learning-plan.md](docs/go-learning-plan.md), then `internal/engine/transaction.go`.
-2. **Merge.** Merge `first-offline-engine` into `main` and push, when the user decides.
 
 ### 3.2. Next development step: not chosen yet
 
