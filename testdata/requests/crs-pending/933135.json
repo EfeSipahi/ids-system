@@ -1,0 +1,421 @@
+[
+  {
+    "name": "CRS 933135-1: ${'ff'}",
+    "method": "GET",
+    "uri": "/get?foo=%24%7B%27ff%27%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-2: $ {'fdf'}",
+    "method": "GET",
+    "uri": "/get?foo=%24%20%7B%27fdf%27%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-3: $              {$a}",
+    "method": "GET",
+    "uri": "/get?foo=%24%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%24a%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-4: $ {'_VAR'.'IABLE_NAME'}",
+    "method": "GET",
+    "uri": "/get?foo=%24%20%7B%27_VAR%27.%27IABLE_NAME%27%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-5: $              {         $a}",
+    "method": "GET",
+    "uri": "/get?foo=%24%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%20%20%20%20%20%20%20%20%20%24a%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-6: $     {   CONSTANT   }",
+    "method": "GET",
+    "uri": "/get?foo=%24%20%20%20%20%20%7B%20%20%20CONSTANT%20%20%20%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-7: ${}",
+    "method": "GET",
+    "uri": "/get?foo=%24%7B%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-8: $ { }",
+    "method": "GET",
+    "uri": "/get?foo=%24%20%7B%20%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-9: ${a}",
+    "method": "GET",
+    "uri": "/get?foo=%24%7Ba%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933135
+    ]
+  },
+  {
+    "name": "CRS 933135-10: GHSA: 933135 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"$&#x7B;'ff'&#x7D;\"></a></root>",
+    "expect_ids": [
+      933135
+    ]
+  }
+]

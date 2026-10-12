@@ -1,0 +1,88 @@
+[
+  {
+    "name": "CRS 932330-1: Unix shell history invocation: relative position",
+    "method": "GET",
+    "uri": "/get?rce=!-1!-2",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932330
+    ]
+  },
+  {
+    "name": "CRS 932330-2: GHSA: 932330 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"!-1!-2\"></a></root>",
+    "expect_ids": [
+      932330
+    ]
+  },
+  {
+    "name": "CRS 932330-3: Detect RCE in last path segment\nPayload: !-1!-2",
+    "method": "GET",
+    "uri": "/path/with/!-1!-2",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932330
+    ]
+  }
+]

@@ -1,0 +1,260 @@
+[
+  {
+    "name": "CRS 932190-1: Match wild card evasion in 'cat+/et*/*wd' (cat /etc/passwd)",
+    "method": "GET",
+    "uri": "/get?id=cat%2B%2Fet*%2F*wd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932190
+    ]
+  },
+  {
+    "name": "CRS 932190-2: Match wild card evasion in 'cat+/ET*/*WD' (cat /etc/passwd)",
+    "method": "GET",
+    "uri": "/get?id=cat%2B%2FET*%2F*WD",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932190
+    ]
+  },
+  {
+    "name": "CRS 932190-3: Match wild card evasion in '/???/?s' (/bin/ls)",
+    "method": "GET",
+    "uri": "/get?id=%2F%3F%3F%3F%2F%3Fs",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932190
+    ]
+  },
+  {
+    "name": "CRS 932190-4: No FP in 'Does the * shine bright?'",
+    "method": "GET",
+    "uri": "/get?id=Does%20the%20%2A%20shine%20bright%3F",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932190
+    ]
+  },
+  {
+    "name": "CRS 932190-5: Handle single quote evasion mixed with wild card evasion (cat /etc/passwd)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "{\"foo\" : \";+cat+/e't'*/pa'?s'wd\"}",
+    "expect_ids": [
+      932190
+    ]
+  },
+  {
+    "name": "CRS 932190-6: Handle backslash evasion mixed with wild card evasion (cat /etc/passwd)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "37"
+      ]
+    ],
+    "body": "{\"foo\" : \";+cat+/e\\\\t\\\\*/pa\\\\?s\\\\wd\"}",
+    "expect_ids": [
+      932190
+    ]
+  },
+  {
+    "name": "CRS 932190-7: Detect /???/??t (/bin/cat)",
+    "method": "GET",
+    "uri": "/get?vuln=%2F%3F%3F%3F%2F%3F%3Ft",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932190
+    ]
+  },
+  {
+    "name": "CRS 932190-8: Detect /???/b??h (/bin/bash)",
+    "method": "GET",
+    "uri": "/get?vuln=%2F%3F%3F%3F%2Fb%3F%3Fh",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932190
+    ]
+  }
+]

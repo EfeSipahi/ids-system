@@ -1,0 +1,183 @@
+[
+  {
+    "name": "CRS 934170-1: SSRF - data: scheme test - IN2OZO3N coverage",
+    "method": "GET",
+    "uri": "/get?ssrf=data:text/plain;base64,SSBsb3ZlIFBIUAo=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934170
+    ]
+  },
+  {
+    "name": "CRS 934170-2: Negative test - data:// should not match",
+    "method": "GET",
+    "uri": "/get?ssrf=data://text/plain;base64,SSBsb3ZlIFBIUAo=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934170
+    ]
+  },
+  {
+    "name": "CRS 934170-3: Status Page Test - SSRF - data: scheme test - simple trigger, isolated test",
+    "method": "GET",
+    "uri": "/get?ssrf=data:text/plain",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934170
+    ]
+  },
+  {
+    "name": "CRS 934170-4: Status Page Test - SSRF - data: scheme test - simple trigger, isolated test\n4RI-250413",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "27"
+      ]
+    ],
+    "body": "{ \"data:text/plain\":\"foo\" }",
+    "expect_ids": [
+      934170
+    ]
+  },
+  {
+    "name": "CRS 934170-5: GHSA: 934170 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "89"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"data:text/plain;base64,SSBsb3ZlIFBIUAo=\"></a></root>",
+    "expect_ids": [
+      934170
+    ]
+  }
+]

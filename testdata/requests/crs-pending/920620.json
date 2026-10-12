@@ -1,0 +1,33 @@
+[
+  {
+    "name": "CRS 920620-1: Multiple Content-Type request headers.\nOn httpd, the two headers will be concatenated into a single header.\nThus, this rule will not trigger on httpd.",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ]
+    ],
+    "no_expect_ids": [
+      920620
+    ]
+  }
+]

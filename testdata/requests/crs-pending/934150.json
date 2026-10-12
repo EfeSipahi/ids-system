@@ -1,0 +1,61 @@
+[
+  {
+    "name": "CRS 934150-1: Ruby injection test",
+    "method": "GET",
+    "uri": "/get?x=Process.spawn(%22id%22)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934150
+    ]
+  },
+  {
+    "name": "CRS 934150-2: GHSA: 934150 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "79"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"Process.spawn(&quot;id&quot;)\"></a></root>",
+    "expect_ids": [
+      934150
+    ]
+  }
+]

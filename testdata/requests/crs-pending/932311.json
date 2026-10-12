@@ -1,0 +1,488 @@
+[
+  {
+    "name": "CRS 932311-1: IMAP CREATE/DELETE/EXAMINE/SELECT/SUBSCRIBE/UNSUBSCRIBE Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aa001%20EXAMINE%20INBOX",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-2: IMAP CREATE/DELETE/EXAMINE/SELECT/SUBSCRIBE/UNSUBSCRIBE Command Injection true negative test",
+    "method": "GET",
+    "uri": "/get?text=We%examine%20this%20mail%20from%20Mars",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-injection-header",
+        "CREATE:1"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-3: IMAP COPY Command Injection positive test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "textarea=%0d%0aa002%20copy%202%3A4%20MEETING\n",
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-4: IMAP COPY Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "84"
+      ]
+    ],
+    "body": "textarea=Just%20to%20remind%20you%20that%20I%20need%20to%20copy%20those%20documents\n",
+    "no_expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-5: IMAP LIST Command Injection positive test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "54"
+      ]
+    ],
+    "body": "textarea=%0d%0aA1%20list%20%22INBOX%2F%22%20%22%2A%22\n",
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-6: IMAP LIST Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "textarea=We%20need%20the%20list%20%22ASAP%22\n",
+    "no_expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-7: IMAP STORE Command Injection positive test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "59"
+      ]
+    ],
+    "body": "textarea=%0d%0ad%20store%202%20%2BFLAGS%20%28%5CDeleted%29\n",
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-8: IMAP STORE Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "textarea=%0aLet%27s%20go%20to%20the%20store%20%28sale%20time%21%29\n",
+    "no_expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-9: IMAP SEARCH Command Injection positive test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "87"
+      ]
+    ],
+    "body": "textarea=%0d%0aA282%20SEARCH%20FLAGGED%20SINCE%201-Feb-1994%20NOT%20FROM%20%22Smith%22\n",
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-10: IMAP SEARCH with CHARSET Command Injection positive test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "85"
+      ]
+    ],
+    "body": "textarea=%0d%0aZ001%20SEARCH%20CHARSET%20WINDOWS-1252%20DELETED%20SINCE%201-Feb-1994\n",
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-11: IMAP SEARCH using TEXT Command Injection positive test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "72"
+      ]
+    ],
+    "body": "textarea=%0d%0aA283%20SEARCH%20TEXT%20%22string%20not%20in%20mailbox%22\n",
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-12: IMAP SEARCH using CHARSET and range Command Injection positive test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "64"
+      ]
+    ],
+    "body": "textarea=%0d%0aA284%20SEARCH%20CHARSET%20UTF-8%20TEXT%20%7B6%7D\n",
+    "expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-13: IMAP SEARCH Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "202"
+      ]
+    ],
+    "body": "textarea=In%20all%20search%20keys%20that%20use%20strings%2C%20a%20message%20matches%20the%20key%20if%20the%20string%20is%20a%20substring%20of%20the%20field.%20%20The%20matching%20is%20case-insensitive.\n",
+    "no_expect_ids": [
+      932311
+    ]
+  },
+  {
+    "name": "CRS 932311-14: GHSA: 932311 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "78"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&#13;&#10;a001 EXAMINE INBOX\"></a></root>",
+    "expect_ids": [
+      932311
+    ]
+  }
+]

@@ -1,0 +1,1131 @@
+[
+  {
+    "name": "CRS 920650-1: DELETE method override in query string",
+    "method": "POST",
+    "uri": "/api/resource?_method=DELETE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-2: PUT method override in query string",
+    "method": "POST",
+    "uri": "/api/resource?_method=PUT",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-3: PATCH method override in query string",
+    "method": "POST",
+    "uri": "/api/resource?_method=PATCH",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-4: OPTIONS method override in query string",
+    "method": "POST",
+    "uri": "/api/resource?_method=OPTIONS",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-5: TRACE method override in query string",
+    "method": "POST",
+    "uri": "/api/resource?_method=TRACE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-6: CONNECT method override in query string",
+    "method": "POST",
+    "uri": "/api/resource?_method=CONNECT",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-7: HEAD method override in query string",
+    "method": "POST",
+    "uri": "/api/resource?_method=HEAD",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-8: Lowercase delete method override",
+    "method": "POST",
+    "uri": "/api/resource?_method=delete",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-9: Mixed case Delete method override",
+    "method": "POST",
+    "uri": "/api/resource?_method=Delete",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-10: DELETE method override in POST body",
+    "method": "POST",
+    "uri": "/api/resource",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "21"
+      ]
+    ],
+    "body": "_method=DELETE&id=123",
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-11: PUT method override in POST body",
+    "method": "POST",
+    "uri": "/api/resource",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "21"
+      ]
+    ],
+    "body": "_method=PUT&name=test",
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-12: POST method override via GET request (CSRF bypass)",
+    "method": "GET",
+    "uri": "/transfer?amount=1000&_method=POST",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-13: PROPFIND WebDAV method override",
+    "method": "POST",
+    "uri": "/webdav/file?_method=PROPFIND",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-14: PROPPATCH WebDAV method override",
+    "method": "POST",
+    "uri": "/webdav/file?_method=PROPPATCH",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-15: MKCOL WebDAV method override",
+    "method": "POST",
+    "uri": "/webdav/folder?_method=MKCOL",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-16: GET method override (3 chars - minimum)",
+    "method": "POST",
+    "uri": "/api/resource?_method=GET",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-17: PUT method override (3 chars)",
+    "method": "GET",
+    "uri": "/api/resource?_method=PUT",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-18: ABCDEFGHIJ method override (10 chars - maximum)",
+    "method": "POST",
+    "uri": "/api/resource?_method=ABCDEFGHIJ",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-19: Negative - 2 character value (too short)",
+    "method": "POST",
+    "uri": "/api/resource?_method=AB",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-20: Negative - 1 character value (too short)",
+    "method": "POST",
+    "uri": "/api/resource?_method=X",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-21: Negative - 11 character value (too long)",
+    "method": "POST",
+    "uri": "/api/resource?_method=ABCDEFGHIJK",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-22: Negative - UNSUBSCRIBE (11 chars - too long)",
+    "method": "POST",
+    "uri": "/api/resource?_method=UNSUBSCRIBE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-23: Negative - Contains digit",
+    "method": "POST",
+    "uri": "/api/resource?_method=DELETE1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-24: Negative - Contains hyphen",
+    "method": "POST",
+    "uri": "/api/resource?_method=X-DELETE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-25: Negative - Contains underscore",
+    "method": "POST",
+    "uri": "/api/resource?_method=DO_DELETE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-26: Negative - Contains space",
+    "method": "POST",
+    "uri": "/api/resource",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "15"
+      ]
+    ],
+    "body": "_method=DEL+ETE",
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-27: Negative - Empty _method value",
+    "method": "POST",
+    "uri": "/api/resource?_method=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-28: Negative - method parameter (not _method)",
+    "method": "POST",
+    "uri": "/api/resource?method=DELETE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-29: Negative - http_method parameter",
+    "method": "POST",
+    "uri": "/api/resource?http_method=DELETE",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-30: Negative - Normal GET request",
+    "method": "GET",
+    "uri": "/api/users/123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-31: Negative - Normal POST request",
+    "method": "POST",
+    "uri": "/api/users",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "34"
+      ]
+    ],
+    "body": "name=test&email=test%40example.com",
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-32: Negative - Numeric value",
+    "method": "POST",
+    "uri": "/api/resource?_method=12345",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-33: Negative - Mixed alphanumeric",
+    "method": "POST",
+    "uri": "/api/resource?_method=abc123def",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-34: Edge case - _method with URL-encoded value",
+    "method": "POST",
+    "uri": "/api/resource?_method=%44%45%4C%45%54%45",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-35: DELETE method with other parameters",
+    "method": "POST",
+    "uri": "/api/resource?id=123&_method=DELETE&confirm=true",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      920650
+    ]
+  },
+  {
+    "name": "CRS 920650-36: Logging out of GitLab, HTTP override method is same as actual request method.\nThis is usually harmless since no method is actually being overwritten.",
+    "method": "POST",
+    "uri": "/users/sign_out",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "41"
+      ]
+    ],
+    "body": "_method=post&authenticity_token=something",
+    "no_expect_ids": [
+      920650
+    ]
+  }
+]

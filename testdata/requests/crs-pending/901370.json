@@ -1,0 +1,470 @@
+[
+  {
+    "name": "CRS 901370-1: Positive test: application/ld+json is allowed by the default configuration",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/ld+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-2: Positive test: application/vnd.api+json is allowed by the default configuration",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/vnd.api+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-3: Positive test: application/csp-report+json is allowed by the default configuration (distinct from the bare application/csp-report type removed in #4365)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/csp-report+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-4: Positive test: application/cloudevents+json is allowed by the default configuration, now that the JSON body processor is forced for it (ref.: 9EA-241022, coreruleset/coreruleset#3905)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/cloudevents+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-5: Positive test: the bare application/csp-report type (no +json suffix) must stay blocked (ref.: #4362, #4365)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/csp-report"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-6: Positive test: a lookalike content type that doesn't actually end in +json is NOT allowed",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/vnd.api+jsonx"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-7: Positive test: JSON body processor is actually forced, a SQLi payload nested in the JSON body is detected (ref.: coreruleset/coreruleset#4775)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/vnd.api+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "21"
+      ]
+    ],
+    "body": "{\"var\":\"1234 OR 1=1\"}",
+    "expect_ids": [
+      942100
+    ]
+  },
+  {
+    "name": "CRS 901370-8: Positive test: a mixed-case content type (Application/Vnd.API+JSON) is still allowed, t:lowercase applies before capture (ref.: coreruleset/coreruleset#4775)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "Application/Vnd.API+JSON"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-9: Positive test: application/foo_bar+json is allowed, underscore is a legal RFC 6838 restricted-name-chars character",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/foo_bar+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-10: Positive test: application/foo!bar+json is allowed, \"!\" is a legal RFC 6838 restricted-name-chars character",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/foo!bar+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-11: Positive test: application/a@b+json is NOT allowed, \"@\" is not a legal RFC 6838 restricted-name-chars character",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/a@b+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-12: Positive test: application/vc+ld+json is allowed, \"+\" is a legal RFC 6838 restricted-name-chars character inside the subtype",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/vc+ld+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "{\"foo\":\"bar\"}",
+    "no_expect_ids": [
+      920420
+    ]
+  },
+  {
+    "name": "CRS 901370-13: Positive test: JSON body processor is forced for application/vc+ld+json, a SQLi payload nested in the JSON body is detected",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/vc+ld+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "21"
+      ]
+    ],
+    "body": "{\"var\":\"1234 OR 1=1\"}",
+    "expect_ids": [
+      942100
+    ]
+  }
+]

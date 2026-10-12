@@ -1,0 +1,86 @@
+[
+  {
+    "name": "CRS 920171-1",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Transfer-Encoding",
+        "chunked"
+      ],
+      [
+        "User-Agent",
+        "ModSecurity CRS 3 Tests"
+      ]
+    ],
+    "body": "Hi CRS",
+    "no_expect_ids": [
+      920171
+    ]
+  },
+  {
+    "name": "CRS 920171-2",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Transfer-Encoding",
+        "chunked"
+      ],
+      [
+        "User-Agent",
+        "ModSecurity CRS 3 Tests"
+      ]
+    ],
+    "body": "Hi CRS",
+    "expect_ids": [
+      920171
+    ]
+  },
+  {
+    "name": "CRS 920171-3",
+    "method": "HEAD",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Transfer-Encoding",
+        "chunked"
+      ],
+      [
+        "User-Agent",
+        "ModSecurity CRS 3 Tests"
+      ]
+    ],
+    "body": "Hi CRS",
+    "expect_ids": [
+      920171
+    ]
+  }
+]

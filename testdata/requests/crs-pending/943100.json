@@ -1,0 +1,128 @@
+[
+  {
+    "name": "CRS 943100-1: Session Fixation Attack (943100) from old modsec regressions",
+    "method": "GET",
+    "uri": "/get/foo.php?bar=blah<script>document.cookie=\"sessionid=1234;%20domain=.example.dom\";</script>",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate"
+      ],
+      [
+        "Accept-Language",
+        "zh-sg"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "Referer",
+        "http"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943100
+    ]
+  },
+  {
+    "name": "CRS 943100-2: Status Page Test - Possible Session Fixation Attack: Part of Setting Cookie Values in ARG",
+    "method": "GET",
+    "uri": "/get/foo.php?test=.cookie;expires=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate"
+      ],
+      [
+        "Accept-Language",
+        "zh-sg"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "Referer",
+        "http"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943100
+    ]
+  },
+  {
+    "name": "CRS 943100-3: GHSA: 943100 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "147"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"blah&lt;script&gt;document.cookie=&quot;sessionid=1234; domain=.example.dom&quot;;&lt;/script&gt;\"></a></root>",
+    "expect_ids": [
+      943100
+    ]
+  }
+]

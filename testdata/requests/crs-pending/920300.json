@@ -1,0 +1,114 @@
+[
+  {
+    "name": "CRS 920300-1: Request Missing an Accept Header (920300) from old modsec regressions",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920300
+    ]
+  },
+  {
+    "name": "CRS 920300-2: OPTIONS request: exempt from requiring an Accept request header",
+    "method": "OPTIONS",
+    "uri": "*",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920300
+    ]
+  },
+  {
+    "name": "CRS 920300-3: CONNECT request: exempt from requiring an Accept request header",
+    "method": "CONNECT",
+    "uri": "www.coreruleset.org:80",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Proxy-Connection",
+        "Keep-Alive"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920300
+    ]
+  },
+  {
+    "name": "CRS 920300-4: User-Agent containing AppleWebKit: exempt from requiring an Accept request header",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent; AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920300
+    ]
+  }
+]

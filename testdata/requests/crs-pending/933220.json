@@ -1,0 +1,633 @@
+[
+  {
+    "name": "CRS 933220-1: Should block: sess_ pattern via X-Filename",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "sess_d8ew88tqmabdcokhumchy8htqm"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-2: Should block: sess_ pattern with Unix path via X_Filename",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X_Filename",
+        "/tmp/sess_abc123def456ghi789jkl"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-3: Should block: sess_ pattern with Windows path via X-File-Name",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-File-Name",
+        "C:\\temp\\sess_malicious12345678901"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-4: Should block: sess_ pattern via X.Filename",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X.Filename",
+        "sess_1234567890abcdefghij"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-5: Should block: sess_ pattern via multipart upload",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "263"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"file\"; filename=\"sess_d8ew88tqmabdcokhumchy8htqm\"\r\nContent-Type: text/plain\r\n\r\n_|O:32:\"Monolog\\Handler\\SyslogUdpHandler\":1:{S:6:\"socket\";O:29:\"Monolog\\Handler\\BufferHandler\":7:{}}\r\n----------397236876--\r\n",
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-6: Should block: sess_ with hyphens in session ID",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "sess_abc-123-def-456-ghij"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-7: Should block: sess_ pattern with nested path",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-File-Name",
+        "/var/lib/php/sessions/sess_attackervector1234567890"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-8: Should pass: normal filename",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "document.pdf"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-9: Should pass: sess_ in middle of filename",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "my_sess_data.txt"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-10: Should pass: session as part of word",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "session_report.txt"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-11: Should pass: sess_ with too short session ID",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "sess_short"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-12: Should pass: file with .sess extension",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "mydata.sess"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-13: Should pass: no file upload",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-14: Should block: sess_ with maximum length session ID (64 chars)",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "sess_abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwx"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-15: Should block: sess_ with minimum length session ID (20 chars)",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "sess_12345678901234567890"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-16: Should block: sess_ via multipart with path",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "206"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"custom_attributes[vat_id]\"; filename=\"/tmp/sess_d8ew88tqmabdcokhumchy8htqm\"\r\nContent-Type: text/plain\r\n\r\nmalicious payload\r\n----------397236876--\r\n",
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-17: Should pass: multipart upload with safe filename",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "161"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"file\"; filename=\"safe_document.txt\"\r\nContent-Type: text/plain\r\n\r\nsafe content\r\n----------397236876--\r\n",
+    "no_expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-18: Should block: sess_ with commas in session ID (6-bit encoding)",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "sess_abc123,def456,ghi789jkl"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-19: Should block: sess_ with uppercase letters (verify lowercase transformation)",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "sess_ABC123def456ghi789jkl"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  },
+  {
+    "name": "CRS 933220-20: Should block: SESS_ uppercase prefix (verify lowercase transformation)",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "SESS_abc123def456ghi789jkl"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933220
+    ]
+  }
+]

@@ -1,0 +1,276 @@
+[
+  {
+    "name": "CRS 922130-1: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x0E character at the first position.\n--boundary\n\\x0EContent-Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "186"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ]
+    ],
+    "body": "--boundary\r\n\u000eContent-Disposition: form-data; name=\"file\"; filename=\"1.php\"\r\nContent-Disposition: form-data; name=\"post\"\r\n\r\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\r\n--boundary--",
+    "expect_log": "Multipart parsing error: Multipart: Invalid part header \\(contains invalid character\\)|\\[id \"922130\"\\].*\\[msg \"Multipart header contains characters outside of valid range\"\\]"
+  },
+  {
+    "name": "CRS 922130-2: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x0E character at the last position.\n--boundary\nContent-Disposition\\x0E: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "186"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ]
+    ],
+    "body": "--boundary\r\nContent-Disposition\u000e: form-data; name=\"file\"; filename=\"1.php\"\r\nContent-Disposition: form-data; name=\"post\"\r\n\r\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\r\n--boundary--",
+    "expect_log": "Multipart parsing error: Multipart: Invalid part header \\(contains invalid character\\)|\\[id \"922130\"\\].*\\[msg \"Multipart header contains characters outside of valid range\"\\]"
+  },
+  {
+    "name": "CRS 922130-3: Negative test: no special character in multipart header",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "145"
+      ]
+    ],
+    "body": "--boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"1.php\"\r\n\r\n<?php var_dump(file_get_contents(\"/etc/passwd\")); ?>\r\n--boundary--\r\n",
+    "no_expect_log": "Multipart parsing error: Multipart: Invalid part header \\(contains invalid character\\)|\\[id \"922130\"\\].*\\[msg \"Multipart header contains characters outside of valid range\"\\]"
+  },
+  {
+    "name": "CRS 922130-4: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x20 character, the last invalid character before the valid range.\n--boundary\nContent-\\x20Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "186"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ]
+    ],
+    "body": "--boundary\r\nContent- Disposition: form-data; name=\"file\"; filename=\"1.php\"\r\nContent-Disposition: form-data; name=\"post\"\r\n\r\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\r\n--boundary--",
+    "expect_log": "Multipart parsing error: Multipart: Invalid part header \\(contains invalid character\\)|\\[id \"922130\"\\].*\\[msg \"Multipart header contains characters outside of valid range\"\\]"
+  },
+  {
+    "name": "CRS 922130-5: Negative test: no character from outside of range in multipart header; '!' is allowed (!, the first character in the range of valid characters))",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "146"
+      ]
+    ],
+    "body": "--boundary\r\nContent-!Disposition: form-data; name=\"file\"; filename=\"1.php\"\r\n\r\n<?php var_dump(file_get_contents(\"/etc/passwd\")); ?>\r\n--boundary--\r\n",
+    "no_expect_log": "Multipart parsing error: Multipart: Invalid part header \\(contains invalid character\\)|\\[id \"922130\"\\].*\\[msg \"Multipart header contains characters outside of valid range\"\\]"
+  },
+  {
+    "name": "CRS 922130-6: Negative test: no character from outside of range in multipart header; '~' is allowed (~, the last valid character in the range of valid characters)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "190"
+      ]
+    ],
+    "body": "--boundary\r\nContent~Disposition: form-data; name=\"file\"; filename=\"1.php\"\r\nContent-Disposition: form-data; name=\"post\"\r\n\r\n<?php var_dump(file_get_contents(\"/etc/passwd\")); ?>\r\n--boundary--\r\n",
+    "no_expect_log": "Multipart parsing error: Multipart: Invalid part header \\(contains invalid character\\)|\\[id \"922130\"\\].*\\[msg \"Multipart header contains characters outside of valid range\"\\]"
+  },
+  {
+    "name": "CRS 922130-7: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x7F character, the first invalid character after the valid range.\n--boundary\nContent\\x7F-Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "186"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ]
+    ],
+    "body": "--boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"1.php\"\r\nContent-Disposition: form-data; name=\"post\"\r\n\r\n<?php var_dump(file_get_contents(\"/etc/passwd\"));\r\n--boundary--",
+    "expect_log": "Multipart parsing error: Multipart: Invalid part header \\(contains invalid character\\)|\\[id \"922130\"\\].*\\[msg \"Multipart header contains characters outside of valid range\"\\]"
+  },
+  {
+    "name": "CRS 922130-8: Negative test - do not match when there are no multipart headers.",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary123"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "--boundary123\r\ntest\r\n--boundary123\r\nyet another test\r\n--boundary123--\r\n",
+    "no_expect_ids": [
+      922130
+    ]
+  }
+]

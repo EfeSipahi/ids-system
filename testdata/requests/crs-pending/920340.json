@@ -1,0 +1,93 @@
+[
+  {
+    "name": "CRS 920340-1: Standard POST request with \"Content-Length\" header and no \"Content-Type\" header",
+    "method": "POST",
+    "uri": "/pineapple",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Length",
+        "4"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "body": "test",
+    "expect_ids": [
+      920340
+    ]
+  },
+  {
+    "name": "CRS 920340-2: Standard POST request with both \"Content-Length\" and \"Content-Type\" headers",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Length",
+        "2"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "body": "{}",
+    "no_expect_ids": [
+      920340
+    ]
+  },
+  {
+    "name": "CRS 920340-3: Standard GET request (negative test)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920340
+    ]
+  }
+]

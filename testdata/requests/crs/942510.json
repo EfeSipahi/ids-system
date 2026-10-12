@@ -1,0 +1,88 @@
+[
+  {
+    "name": "CRS 942510-1: SQLi bypass detected: backticks",
+    "method": "GET",
+    "uri": "/get?`bla`",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942510
+    ]
+  },
+  {
+    "name": "CRS 942510-2: SQLi bypass detected: backticks",
+    "method": "GET",
+    "uri": "/get?'bla'",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942510
+    ]
+  },
+  {
+    "name": "CRS 942510-3: GHSA: 942510 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "55"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"`bla`\"></a></root>",
+    "expect_ids": [
+      942510
+    ]
+  }
+]

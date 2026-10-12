@@ -1,0 +1,529 @@
+[
+  {
+    "name": "CRS 921422-1: Bypass targeting recommended rules (rule 200000)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"application/json\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-2: Bypass targeting recommended rules (rule 200006)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"application/vnd.mycompany.myapp.customer-v2+json\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-3: Bypass targeting recommended rules (rule 200001)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"text/xml\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-4: Bypass targeting recommended rules (rule 200001)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"application/xml\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-5: Bypass targeting recommended rules (rule 200001)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"multipart/related\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-6: Bypass targeting recommended rules (rule 200001)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"text/html\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-7: Bypass targeting recommended rules (rule 200001)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"image/jpeg\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-8: Bypass targeting recommended rules (rule 200001)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded;boundary=\"foobar/foobar\""
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-9: Negative test for 921422-1",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-10: Negative test for 921422-2",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/vnd.mycompany.myapp.customer-v2+json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-11: Negative test for 921422-3",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "text/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-12: Negative test for 921422-4",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-13: Negative test for 921422-5",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/soap+xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-14: Negative test for 921422-6",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "text/html"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-15: Negative test for rule 921422-7",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "text/html; charset=UTF-8"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-16: Negative test for rule 921422-8",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=something"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  },
+  {
+    "name": "CRS 921422-17: Negative test for rule 921422-9",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----webkitformboundary12w4lszoxn26vnd"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      921422
+    ]
+  }
+]

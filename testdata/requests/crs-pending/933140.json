@@ -1,0 +1,74 @@
+[
+  {
+    "name": "CRS 933140-1: PHP Injection Attack: I/O Stream",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cache-Control",
+        "no-cache, no-store, must-revalidate"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "var=php%3A%2F%2Fstdout",
+    "expect_ids": [
+      933140
+    ]
+  },
+  {
+    "name": "CRS 933140-2: GHSA: 933140 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "62"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"php://stdout\"></a></root>",
+    "expect_ids": [
+      933140
+    ]
+  }
+]

@@ -1,0 +1,70 @@
+[
+  {
+    "name": "CRS 942530-1: Detects SQL query termination with ';",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "email=admin%40juice-sh.op%27%3B&password=foo",
+    "expect_ids": [
+      942530
+    ]
+  },
+  {
+    "name": "CRS 942530-2: GHSA: 942530 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "69"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"admin@juice-sh.op';\"></a></root>",
+    "expect_ids": [
+      942530
+    ]
+  }
+]

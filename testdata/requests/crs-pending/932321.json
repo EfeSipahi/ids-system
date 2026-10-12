@@ -1,0 +1,223 @@
+[
+  {
+    "name": "CRS 932321-1: POP3 QUIT/STAT/NOOP/RSET/CAPA Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aQUIT",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932321
+    ]
+  },
+  {
+    "name": "CRS 932321-2: POP3 QUIT Command Injection negative test",
+    "method": "GET",
+    "uri": "/get?text=Don't%20quit",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932321
+    ]
+  },
+  {
+    "name": "CRS 932321-3: POP3 CAPA Command Injection negative test 2",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "50"
+      ]
+    ],
+    "body": "textarea=we%20do%20not%20have%20that%20capability\n",
+    "no_expect_ids": [
+      932321
+    ]
+  },
+  {
+    "name": "CRS 932321-4: POP3 STAT Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "textarea=Hi%20lestat!\n",
+    "no_expect_ids": [
+      932321
+    ]
+  },
+  {
+    "name": "CRS 932321-5: POP3 NOOP Command injection negative test",
+    "method": "GET",
+    "uri": "/get?attackme=%0aSeriously%2C%20noop",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932321
+    ]
+  },
+  {
+    "name": "CRS 932321-6: POP3 RSET Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "textarea=Someone%20bought%20this%20nice%20lerset\n",
+    "no_expect_ids": [
+      932321
+    ]
+  },
+  {
+    "name": "CRS 932321-7: GHSA: 932321 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&#13;&#10;A1 QUIT\"></a></root>",
+    "expect_ids": [
+      932321
+    ]
+  }
+]

@@ -8,9 +8,14 @@
 //
 // Usage, from this directory:
 //
-//	go run . -config ../../configs/crs-first-engine.json \
+//	go run -tags coraza.rule.no_regex_multiline . \
+//	    -config ../../configs/crs-first-engine.json \
 //	    -requests ../../testdata/requests/crs \
 //	    -out ../../testdata/reference/coraza-first-engine.json
+//
+// The build tag turns off Coraza's habit of adding the multi-line flag to
+// every pattern, which ModSecurity does not do; see the README next to the
+// reference files. -paranoia-level chooses the CRS level, 1 by default.
 //
 // The program loads the same rule files as our engine, in the same order,
 // with the rule engine in detection-only mode. Of the rules our
@@ -55,6 +60,8 @@ type example struct {
 // reference is the output file.
 type reference struct {
 	Engine string `json:"engine"`
+	// ParanoiaLevel is the CRS paranoia level the rules ran at.
+	ParanoiaLevel int `json:"paranoia_level"`
 	// RemovedRules are the rules taken out so that both engines run the
 	// same detection rules.
 	RemovedRules []int `json:"removed_rules"`
@@ -117,6 +124,7 @@ func run() error {
 	configPath := flag.String("config", "", "our engine configuration `file`")
 	requestsPath := flag.String("requests", "", "example `file` or directory; may be given as a comma-separated list")
 	outPath := flag.String("out", "", "reference `file` to write")
+	level := flag.Int("paranoia-level", 1, "CRS paranoia `level`, 1 to 4")
 	flag.Parse()
 	if *configPath == "" || *requestsPath == "" || *outPath == "" {
 		return fmt.Errorf("-config, -requests and -out are all required")
@@ -127,7 +135,10 @@ func run() error {
 		return err
 	}
 
-	ref := reference{Engine: "coraza " + corazaVersion(), RemovedRules: []int{}, SkippedTargetUpdates: []int{}, Results: []result{}}
+	if *level < 1 || *level > 4 {
+		return fmt.Errorf("paranoia level %d is not 1 to 4", *level)
+	}
+	ref := reference{Engine: "coraza " + corazaVersion(), ParanoiaLevel: *level, RemovedRules: []int{}, SkippedTargetUpdates: []int{}, Results: []result{}}
 
 	// Coraza refuses a SecRuleUpdateTargetById line whose rule is not
 	// loaded; our engine ignores such a line and reports it. To load the
@@ -150,7 +161,10 @@ func run() error {
 		}
 	}
 
-	wafConfig := coraza.NewWAFConfig().WithDirectives(engineSetup)
+	// The level is set the way crs-setup.conf.example describes: with rule
+	// 900000, before the CRS files.
+	setLevel := fmt.Sprintf("SecAction \"id:900000,phase:1,pass,t:none,nolog,setvar:tx.blocking_paranoia_level=%d\"\n", *level)
+	wafConfig := coraza.NewWAFConfig().WithDirectives(engineSetup + setLevel)
 	for _, file := range files {
 		text, err := os.ReadFile(file)
 		if err != nil {

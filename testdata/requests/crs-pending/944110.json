@@ -1,0 +1,818 @@
+[
+  {
+    "name": "CRS 944110-1: Argument test includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "17"
+      ]
+    ],
+    "body": "test=java.Runtime",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-2: Argument test includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "test=java.ProcessBuilder",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-3: Argument name includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "17"
+      ]
+    ],
+    "body": "java.Runtime=test",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-4: Argument name includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "java.ProcessBuilder=test",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-5: Cookie test includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Cookie",
+        "test=java.Runtime"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "test=value",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-6: Cookie test includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Cookie",
+        "test=java.ProcessBuilder"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "test=value",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-7: Cookie name includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Cookie",
+        "java.Runtime=test"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "test=value",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-8: Cookie name includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Cookie",
+        "java.ProcessBuilder=test"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "test=value",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-9: Request header test includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "test",
+        "java.Runtime"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "test=value",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-10: Request header test includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "test",
+        "java.ProcessBuilder"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "test=value",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-11: XML element includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "99"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><java.Runtime attribute_name=\"attribute_value\">value</java.Runtime></xml>",
+    "no_expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-12: XML attribute name includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "95"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><element java.Runtime=\"attribute_value\">element_value</element></xml>",
+    "no_expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-13: XML attribute value includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "124"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><element attribute_name=\"java.lang.string\" attribute2_name=\"Runtime\">element_value</element></xml>",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-14: XML element value includes keywords java. and Runtime",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "96"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><element attribute_name=\"attribute_value\">java.Runtime</element></xml>",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-15: XML element includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "113"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><java.ProcessBuilder attribute_name=\"attribute_value\">value</java.ProcessBuilder></xml>",
+    "no_expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-16: XML attribute name includes keyworda java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "102"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><element java.ProcessBuilder=\"attribute_value\">element_value</element></xml>",
+    "no_expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-17: XML attribute value includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "131"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><element attribute_name=\"java.lang.string\" attribute_name2=\"ProcessBuilder\">element_value</element></xml>",
+    "expect_ids": [
+      944110
+    ]
+  },
+  {
+    "name": "CRS 944110-18: XML element value includes keywords java. and ProcessBuilder",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "103"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><xml><element attribute_name=\"attribute_value\">java.ProcessBuilder</element></xml>",
+    "expect_ids": [
+      944110
+    ]
+  }
+]

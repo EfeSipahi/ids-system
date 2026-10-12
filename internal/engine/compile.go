@@ -24,7 +24,12 @@ func Load(cfg Config) (*RuleSet, error) {
 		return nil, err
 	}
 	c := &compiler{
-		rs:        &RuleSet{},
+		rs: &RuleSet{
+			level: cfg.Level(),
+			// What CRS's own setup rule 900000 does: it sets the blocking
+			// level, and rule 901 derives the detection level from it.
+			initial: map[string]string{"blocking_paranoia_level": strconv.Itoa(cfg.Level())},
+		},
 		byID:      map[int]*rule{},
 		excluded:  map[int]string{},
 		ids:       map[int]seclang.Position{},
@@ -211,7 +216,7 @@ func (c *compiler) addRule(chain []seclang.Directive) {
 	}
 	c.ids[first.ID] = first.Pos
 
-	status := RuleStatus{ID: first.ID, Pos: first.Pos, Phase: phaseOf(first)}
+	status := RuleStatus{ID: first.ID, Pos: first.Pos, Phase: phaseOf(first), ParanoiaLevel: levelOf(first)}
 	if reason, ok := c.excluded[first.ID]; ok {
 		c.usedExcl[first.ID] = true
 		status.Reason = reason
@@ -245,6 +250,17 @@ func (c *compiler) addRule(chain []seclang.Directive) {
 }
 
 // phaseOf returns the phase a rule names. ModSecurity's default is 2.
+// levelOf returns N of the tag "paranoia-level/N", or 0 without such a tag.
+func levelOf(d seclang.Directive) int {
+	for _, tag := range d.ActionValues("tag") {
+		if level, ok := strings.CutPrefix(tag, "paranoia-level/"); ok {
+			n, _ := strconv.Atoi(level)
+			return n
+		}
+	}
+	return 0
+}
+
 func phaseOf(d seclang.Directive) int {
 	if values := d.ActionValues("phase"); len(values) > 0 {
 		n, _ := strconv.Atoi(values[len(values)-1])

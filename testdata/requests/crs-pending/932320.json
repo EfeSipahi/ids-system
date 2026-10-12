@@ -1,0 +1,403 @@
+[
+  {
+    "name": "CRS 932320-1: POP3 RETR/DELE Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aRETR%20123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-2: POP3 RETR Command Injection negative test",
+    "method": "GET",
+    "uri": "/get?text=Let%20me%20retrieve%2010%20of%20those",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-3: POP3 DELE Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "37"
+      ]
+    ],
+    "body": "textarea=We%20should%20delete%20nine\n",
+    "no_expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-4: POP3 LIST Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0alist%203",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-5: POP3 LIST Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "textarea=This%20text%20is%20a%20way%20of%20list%203%20things\n",
+    "no_expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-6: POP3 TOP Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aTOP%201%202",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-7: POP3 TOP Command Injection true negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "textarea=These%20are%20top%10%20rules\n",
+    "no_expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-8: POP3 AUTH Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aAUTH%20corerulest%20dGhpc2lzIWF0ZXN0cGFzc3dvcmQ=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-9: POP3 AUTH Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "textarea=Hey%2C%20sent%20me%20those%20auth%20codes%20please!\n",
+    "no_expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-10: POP3 APOP Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aAPOP%20corerulest%207d0a3bd8e5b2abcfb3e256633c23b891",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-11: POP3 APOP Command Injection negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "32"
+      ]
+    ],
+    "body": "textarea=Look%2C%20apop%20star!\n",
+    "no_expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-12: GHSA: 932320 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "68"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&#13;&#10;RETR 123\"></a></root>",
+    "expect_ids": [
+      932320
+    ]
+  },
+  {
+    "name": "CRS 932320-13: Detect RCE in last path segment\nPayload: \\r\\nTOP 1 2",
+    "method": "GET",
+    "uri": "/path/with/%0d%0aTOP%201%202",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932320
+    ]
+  }
+]

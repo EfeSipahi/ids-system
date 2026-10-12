@@ -1,0 +1,71 @@
+[
+  {
+    "name": "CRS 920290-2",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "%00"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920290
+    ]
+  },
+  {
+    "name": "CRS 920290-3",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920290
+    ]
+  },
+  {
+    "name": "CRS 920290-4: Status Page Test - test for empty host header",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Host",
+        ""
+      ]
+    ],
+    "expect_ids": [
+      920290
+    ]
+  }
+]

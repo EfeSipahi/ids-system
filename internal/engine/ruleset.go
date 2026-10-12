@@ -36,6 +36,11 @@ type RuleSet struct {
 	statuses  []RuleStatus
 	signature string
 
+	// initial holds the TX variables every request starts with. They are
+	// the settings of the configuration, such as the paranoia level.
+	initial map[string]string
+	level   int
+
 	// ignoredUpdates are the rule ids of SecRuleUpdateTargetById lines
 	// whose rule is not active, one entry per line.
 	ignoredUpdates []int
@@ -105,6 +110,12 @@ type RuleStatus struct {
 	Pos   seclang.Position
 	Phase int
 
+	// ParanoiaLevel is the CRS level the rule belongs to, read from its
+	// tag "paranoia-level/N". It is 0 for a rule without that tag, such as
+	// a setup or scoring rule. A rule runs when the configured level is at
+	// least its own; the CRS files decide that with their own gate rules.
+	ParanoiaLevel int
+
 	// Active is true when the rule runs. Otherwise Reason is the reason
 	// given in the configuration for leaving it out.
 	Active bool
@@ -121,6 +132,11 @@ func (rs *RuleSet) Statuses() []RuleStatus {
 // "OWASP_CRS/4.30.0", or "" if the files have none.
 func (rs *RuleSet) Signature() string {
 	return rs.signature
+}
+
+// ParanoiaLevel returns the CRS paranoia level the rules run at.
+func (rs *RuleSet) ParanoiaLevel() int {
+	return rs.level
 }
 
 // IgnoredTargetUpdates returns the rule ids named by SecRuleUpdateTargetById

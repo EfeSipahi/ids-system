@@ -1,0 +1,416 @@
+[
+  {
+    "name": "CRS 934210-1: True positive Y4H-260326\nNested ORM traversal + operator in a JSON body key",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "119"
+      ]
+    ],
+    "body": "{\"created_by__departments__employees__user__username__startswith\":\"p\",\"created_by__departments__employees__user__id\":1}",
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-2: True positive - query string filter username__startswith",
+    "method": "GET",
+    "uri": "/get?username__startswith=p",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-3: True positive - auth bypass via __isnull operator in JSON key",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "25"
+      ]
+    ],
+    "body": "{\"password__isnull\":true}",
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-4: True positive - numeric comparison operator __gte in query string",
+    "method": "GET",
+    "uri": "/get?balance__gte=1000",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-5: Negative test - plain JSON keys without ORM operators",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "{\"username\":\"p\",\"id\":1}",
+    "no_expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-6: Negative test - operator string appears in a VALUE, not a key\n(the rule targets ARGS_NAMES only, so this must not match)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "{\"comment\":\"use field__startswith for filtering\"}",
+    "no_expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-7: Negative test - single-underscore field name that merely ends in\nan operator-like token (no `__` separator)",
+    "method": "GET",
+    "uri": "/get?opt_in=1&domain=example.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-8: True positive - JSON body sent with a non-JSON Content-Type\n(ModSecurity does not parse it into ARGS, caught via REQUEST_BODY)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "28"
+      ]
+    ],
+    "body": "{\"username__startswith\":\"p\"}",
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-9: Negative test - operator string at the end of a VALUE (followed by\na closing quote, not a colon) must not match in REQUEST_BODY",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "{\"note\":\"please filter by name__startswith\"}",
+    "no_expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-10: True positive - case-insensitive lookup __istartswith",
+    "method": "GET",
+    "uri": "/get?username__istartswith=p",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-11: True positive - case-insensitive lookup __iendswith",
+    "method": "GET",
+    "uri": "/get?email__iendswith=example.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-12: True positive - JSONField __has_key lookup in query string",
+    "method": "GET",
+    "uri": "/get?data__has_key=is_admin",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934210
+    ]
+  },
+  {
+    "name": "CRS 934210-13: True positive - JSONField __contained_by lookup in JSON body key",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "40"
+      ]
+    ],
+    "body": "{\"roles__contained_by\":[\"admin\",\"user\"]}",
+    "expect_ids": [
+      934210
+    ]
+  }
+]

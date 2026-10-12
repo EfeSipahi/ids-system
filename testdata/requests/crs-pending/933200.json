@@ -1,0 +1,304 @@
+[
+  {
+    "name": "CRS 933200-1: Positive test: PHP Injection Attack - Wrapper scheme detected (phar://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=phar://phpinfo.zip/phpinfo.txt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-2: Positive test: PHP Injection Attack - Wrapper scheme detected (compress.bzip2://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=compress.bzip2://file.bz2",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-3: Positive test: PHP Injection Attack - Wrapper scheme detected (compress.zlib://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=compress.zlib://http://www.example.com/some_file.gz",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-4: Positive test: PHP Injection Attack - Wrapper scheme detected (zip://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=zip://archive.zip",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-5: Negative test: PHP Injection Attack - Non-existent wrapper scheme (lz77://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=lz77://some_file.lz",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-6: Positive test: PHP Injection Attack - Wrapper scheme detected (ssh2.shell://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=ssh2.shell://user:password@example.com:22/xterm",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-7: Positive test: PHP Injection Attack - Wrapper scheme detected (ssh2.exec://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=ssh2.exec://user:password@example.com:22/usr/local/bin/kubectl",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-8: Positive test: PHP Injection Attack - Wrapper scheme detected (ssh2.tunnel://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=ssh2.tunnel://user:password@example.com:22/10.0.0.1:25",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-9: Positive test: PHP Injection Attack - Wrapper scheme detected (ssh2.sftp://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=ssh2.sftp://user:password@example.com:22/path/to/filename",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-10: Positive test: PHP Injection Attack - Wrapper scheme detected (ssh2.scp://)",
+    "method": "GET",
+    "uri": "/get/test.php?file=ssh2.scp://user:password@example.com:22/path/to/filename",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933200
+    ]
+  },
+  {
+    "name": "CRS 933200-11: GHSA: 933200 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "80"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"phar://phpinfo.zip/phpinfo.txt\"></a></root>",
+    "expect_ids": [
+      933200
+    ]
+  }
+]

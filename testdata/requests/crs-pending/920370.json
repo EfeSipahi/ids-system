@@ -1,0 +1,45 @@
+[
+  {
+    "name": "CRS 920370-1: Argument value too long (920370) from old modsec regressions",
+    "method": "GET",
+    "uri": "/?foo=11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920370
+    ]
+  }
+]

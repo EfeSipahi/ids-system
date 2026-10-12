@@ -1,0 +1,377 @@
+[
+  {
+    "name": "CRS 932300-1: SMTP MAIL FROM Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aMAIL%20FROM%3A%3Ca%40b.com%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-2: SMTP MAIL FROM Command Injection true negative test",
+    "method": "GET",
+    "uri": "/get?text=We%20received%20this%20mail%20from%20Mars",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-3: SMTP Command Injection negative test 2",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "156"
+      ]
+    ],
+    "body": "textarea=Hello%21%20We%20finally%20received%20this%20mail%20from%3A%3Ctest%40coreruleset.org%3E%2C%20which%20means%20that%20we%20can%20do%20this%20finally.\n",
+    "no_expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-4: SMTP EHLO Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aEHLO%20test.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-5: SMTP Command EHLO Injection negative test using ehlo typo in text",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "144"
+      ]
+    ],
+    "body": "textarea=Hello%21%20This%20text%20introduces%20a%20typo%20when%20saying%20%22hello%22%20so%20we%20say%20ehlo%3A%20coreruleset.org%20to%20all%21\n",
+    "no_expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-6: SMTP RCPT TO Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aRCPT%20TO%3A%3CPostmaster%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-7: SMTP RCPT TO Command Injection true negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "148"
+      ]
+    ],
+    "body": "textarea=Hello%21%20This%20text%20introduces%20a%20typo%20when%20saying%20%22receipt%20to%22%20so%20we%20say%20rcpt%20to%3A%20%3Ccoreruleset.org%3E\n",
+    "no_expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-8: SMTP VRFY TO Command injection positive test",
+    "method": "GET",
+    "uri": "/get?attackme=%0d%0aRCPT%20TO%3A%3CPostmaster%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-9: SMTP Command Injection Full SMTP dialog negative test",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "746"
+      ]
+    ],
+    "body": "textarea=S%3A%20220%20foo.com%20Simple%20Mail%20Transfer%20Service%20Ready%0AC%3A%20EHLO%20bar.com%0AS%3A%20250-foo.com%20greets%20bar.com%0AS%3A%20250-8BITMIME%0AS%3A%20250-SIZE%0AS%3A%20250-DSN%0AS%3A%20250%20HELP%0AC%3A%20MAIL%20FROM%3A%3CSmith%40bar.com%3E%0AS%3A%20250%20OK%0AC%3A%20RCPT%20TO%3A%3CJones%40foo.com%3E%0AS%3A%20250%20OK%0AC%3A%20RCPT%20TO%3A%3CGreen%40foo.com%3E%0AS%3A%20550%20No%20such%20user%20here%0AC%3A%20RCPT%20TO%3A%3CBrown%40foo.com%3E%0AS%3A%20250%20OK%0AC%3A%20DATA%0AS%3A%20354%20Start%20mail%20input%3B%20end%20with%20%3CCRLF%3E.%3CCRLF%3E%0AC%3A%20Blah%20blah%20blah...%0AC%3A%20...etc.%20etc.%20etc.%0AC%3A%20.%0AS%3A%20250%20OK%0AC%3A%20QUIT%0AS%3A%20221%20foo.com%20Service%20closing%20transmission%20channel\n",
+    "no_expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-10: Make sure that log contains matched payload.\nWithout the `capture` action, the log data would include the last\nvalue of `TX.0`. While writing this test, the previous value of `TX.0`\nwas always `user-agent` (set by rule 920451).\nNote that the previous value of `TX.0` depends on the payload of this test.",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "50"
+      ]
+    ],
+    "body": "textarea=%0D%0AMAIL%20FROM%3A%3CSmith%40bar.com%3E",
+    "expect_ids": [
+      932300
+    ],
+    "expect_log": "Matched Data:.*MAIL FROM:<Smith@bar.com> found within ARGS:textarea:.*MAIL FROM:<Smith@bar.com>"
+  },
+  {
+    "name": "CRS 932300-11: GHSA: 932300 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "85"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&#13;&#10;MAIL FROM:&lt;a@b.com&gt;\"></a></root>",
+    "expect_ids": [
+      932300
+    ]
+  },
+  {
+    "name": "CRS 932300-12: Detect RCE in last path segment\nPayload: \\r\\rEHLO test.com",
+    "method": "GET",
+    "uri": "/path/with/%0d%0aEHLO%20test.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932300
+    ]
+  }
+]

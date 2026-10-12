@@ -1,0 +1,213 @@
+[
+  {
+    "name": "CRS 933111-1: PHP Injection Attack: PHP Script File Upload Found",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundaryoRWIb3busvBrbttO"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "221"
+      ]
+    ],
+    "body": "------WebKitFormBoundaryoRWIb3busvBrbttO\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.php.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n<?php @eval($_POST[\"hacker\"]); ?>\r\n\r\n------WebKitFormBoundaryoRWIb3busvBrbttO--\r\n",
+    "expect_ids": [
+      933111
+    ]
+  },
+  {
+    "name": "CRS 933111-2: PHP Injection Attack: PHP Script File Upload Found",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundaryoRWIb3busvBrbttO"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "239"
+      ]
+    ],
+    "body": "------WebKitFormBoundaryoRWIb3busvBrbttO\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.php7.gif\"\r\nContent-Type: image/gif\r\n\r\n<?php @eval(base64_decode($_COOKIE[\"payload\"])); ?>\r\n\r\n------WebKitFormBoundaryoRWIb3busvBrbttO--\r\n",
+    "expect_ids": [
+      933111
+    ]
+  },
+  {
+    "name": "CRS 933111-3: PHP Injection Attack: PHP Script File Upload Found",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundaryoRWIb3busvBrbttO"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "239"
+      ]
+    ],
+    "body": "------WebKitFormBoundaryoRWIb3busvBrbttO\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test.phar.png\"\r\nContent-Type: image/png\r\n\r\n<?php @eval(base64_decode($_COOKIE[\"payload\"])); ?>\r\n\r\n------WebKitFormBoundaryoRWIb3busvBrbttO--\r\n",
+    "expect_ids": [
+      933111
+    ]
+  },
+  {
+    "name": "CRS 933111-4: PHP .php.jpg upload with whitespace before extension via multipart",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundaryoRWIb3busvBrbttO"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "204"
+      ]
+    ],
+    "body": "------WebKitFormBoundaryoRWIb3busvBrbttO\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test. php.jpg\"\r\nContent-Type: image/jpeg\r\n\r\nplease block me\r\n\r\n------WebKitFormBoundaryoRWIb3busvBrbttO--\r\n",
+    "expect_ids": [
+      933111
+    ]
+  },
+  {
+    "name": "CRS 933111-5: PHP .phar.png upload with trailing whitespace before second extension via header",
+    "method": "GET",
+    "uri": "/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "X-Filename",
+        "test.phar .png"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933111
+    ]
+  },
+  {
+    "name": "CRS 933111-6: PHP .php5.gif upload with whitespace before extension via multipart",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundaryoRWIb3busvBrbttO"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "204"
+      ]
+    ],
+    "body": "------WebKitFormBoundaryoRWIb3busvBrbttO\r\nContent-Disposition: form-data; name=\"file\"; filename=\"test. php5.gif\"\r\nContent-Type: image/gif\r\n\r\nplease block me\r\n\r\n------WebKitFormBoundaryoRWIb3busvBrbttO--\r\n",
+    "expect_ids": [
+      933111
+    ]
+  }
+]

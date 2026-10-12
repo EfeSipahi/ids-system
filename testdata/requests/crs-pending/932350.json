@@ -1,0 +1,459 @@
+[
+  {
+    "name": "CRS 932350-1: Block execution of `id` command\n`id` is a very common parameter name so we only block at PL-3",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "4"
+      ]
+    ],
+    "body": "id=4",
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-2: Block execution of `id` command\n`id` is a very common parameter name so we only block at PL-3",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "id"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-3: Block execution of `id` command\n`id` is a very common parameter name so we only block at PL-3",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "id"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-4: RCE ;top with html entities two digit decimal of 59 (;)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "arg=%26%2359%3B+;top",
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-5: RCE ;top with html entities two digit decimal of 59 (;)\n4RI-250413",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "{ \";top\":\"foo\" }",
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-6: GHSA: 932350 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"id\"></a></root>",
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-7: Block execution of `id` command in single quote\n`id` is a very common parameter name so we only block at PL-3",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "code=%27id%27",
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-8: Block execution of `id` command in quotes\n`id` is a very common parameter name so we only block at PL-3",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "code=%22id%22",
+    "expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-9: Don't match on non-command word quotes",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "arg=%3B%22aaaaaaaaaaaaaaaa%22",
+    "no_expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-10: Don't match on non-command word in single quote",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "arg=%3B%27aaaaaaaaaaaaaaaa%27",
+    "no_expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-11: Don't match on natural english sentences in quotes\n;\"The quick brown fox jumped over the lazy dog\"",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "71"
+      ]
+    ],
+    "body": "arg=;%22The%20quick%20brown%20fox%20jumped%20over%20the%20lazy%20dog%22",
+    "no_expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-12: Don't match on natural english sentences in single quote\n;'The quick brown fox jumped over the lazy dog'",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "arg=;'The%20quick%20brown%20fox%20jumped%20over%20the%20lazy%20dog'",
+    "no_expect_ids": [
+      932350
+    ]
+  },
+  {
+    "name": "CRS 932350-13: Detect RCE in last path segment\nPayload: ;id",
+    "method": "GET",
+    "uri": "/path/with/%3Bid",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932350
+    ]
+  }
+]

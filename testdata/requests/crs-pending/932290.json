@@ -1,0 +1,245 @@
+[
+  {
+    "name": "CRS 932290-1: Bash Quote evasion - 'i'fconfig",
+    "method": "GET",
+    "uri": "/get?932290-1=%27i%27fconfig",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-2: Bash Quote Evasion - 'wh'oami",
+    "method": "GET",
+    "uri": "/get?932290-2=%27wh%27oami",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-3: Bash Quote Evasion - 'i'p a",
+    "method": "GET",
+    "uri": "/get?932290-3=%27i%27p%20a",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-4: Bash Quote Evasion(single quotes) - 'c'url localhost",
+    "method": "GET",
+    "uri": "/get?932290-4=%27c%27url%20localhost",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-5: Bash Quote Evasion(double quotes) - \"w\"get localhost",
+    "method": "GET",
+    "uri": "/get?932290-5=%22w%22get%20localhost",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-6: Known False Positive - ''that's the joke''.jpeg",
+    "method": "GET",
+    "uri": "/get?test=%27%27that%27s%20the%20joke%27%27.jpeg",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-7: Known False Positive - O'keefe's",
+    "method": "GET",
+    "uri": "/get?test=O%27keefe%27s",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-8: Known False Positive - Size: 8\"x11\"",
+    "method": "GET",
+    "uri": "/get?test=Size%3A%208%22x11%22",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  },
+  {
+    "name": "CRS 932290-9: Known False Positive - That's two \"O\"s in goose",
+    "method": "GET",
+    "uri": "/get?test=That%27s%20two%20%22O%22s%20in%20goose",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932290
+    ]
+  }
+]

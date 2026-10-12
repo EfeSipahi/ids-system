@@ -1,0 +1,219 @@
+[
+  {
+    "name": "CRS 920521-1: Allowed Accept-Encoding: gzip, deflate, br",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920521
+    ]
+  },
+  {
+    "name": "CRS 920521-2: Allowed Accept-Encoding: gzip,deflate,identity",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip,deflate,identity"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920521
+    ]
+  },
+  {
+    "name": "CRS 920521-3: Allowed Accept-Encoding: compress;q=0.5, gzip;q=1.0",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept-Encoding",
+        "compress;q=0.5, gzip;q=1.0"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920521
+    ]
+  },
+  {
+    "name": "CRS 920521-4: Allowed Accept-Encoding: gzip;q=1.0, identity; q=0.5, *;q=0",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip;q=1.0, identity; q=0.5, *;q=0"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920521
+    ]
+  },
+  {
+    "name": "CRS 920521-5: Allowed Accept-Encoding: gzip;q=1.0, identity; q=0.5, *;q=0",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip;q=1.0, identity; q=0.5, *;q=0"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920521
+    ]
+  },
+  {
+    "name": "CRS 920521-6: Allowed empty Accept-Encoding",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept-Encoding",
+        ""
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920521
+    ]
+  },
+  {
+    "name": "CRS 920521-7: Not allowed Accept-Encoding: foobar",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept-Encoding",
+        "foobar"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920521
+    ]
+  }
+]

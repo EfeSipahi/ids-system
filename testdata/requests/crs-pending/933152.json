@@ -1,0 +1,259 @@
+[
+  {
+    "name": "CRS 933152-1: pmf + chain",
+    "method": "GET",
+    "uri": "/get/pg_enter_pipeline_mode%20%28",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-2: pmf + chain",
+    "method": "GET",
+    "uri": "/get?ldap_get_entries%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-3: non-dangerous PHP functions, removed to reduce FP",
+    "method": "GET",
+    "uri": "/get?foo=filemtime%28%24foo%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-4: pmf + chain",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "odbc_connection_string_should_quote%28",
+    "expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-5: No parenthesis after keyword",
+    "method": "GET",
+    "uri": "/get?foo=mb_stristr",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-6: rule should not trigger when there are other words before parenthesis (`openlog` should not be matched)",
+    "method": "GET",
+    "uri": "/get?a=openlogfile(foo)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-7: snippets of Eng words (like prev) should not be matched, requiring regex match with word boundaries (e.g. 933160)",
+    "method": "GET",
+    "uri": "/get?a=preview",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-8: snippets of Eng words (like exp) should not be matched, requiring regex match with word boundaries (e.g. 933160)",
+    "method": "GET",
+    "uri": "/get?a=exploration",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933152
+    ]
+  },
+  {
+    "name": "CRS 933152-9: GHSA: 933152 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "74"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"pg_enter_pipeline_mode (\"></a></root>",
+    "expect_ids": [
+      933152
+    ]
+  }
+]

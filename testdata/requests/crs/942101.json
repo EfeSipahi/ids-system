@@ -1,0 +1,343 @@
+[
+  {
+    "name": "CRS 942101-1: Simple SQL Injection",
+    "method": "POST",
+    "uri": "/post/1234%20OR%201=1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-2: Basic SQL injection",
+    "method": "POST",
+    "uri": "/post/2010-01-01'+sleep(20.to_i)+'",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-3: Simple SQL injection",
+    "method": "POST",
+    "uri": "/post/EmptyValue'%20and%20526=527",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-4: Advanced SQL injection",
+    "method": "POST",
+    "uri": "/post/foo')waitfor%20delay'5%3a0%3a20'--",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-5: Simple function call",
+    "method": "POST",
+    "uri": "/post/sleep(20)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-6: Advanced SQL injection",
+    "method": "POST",
+    "uri": "/post/unittests@coreruleset.org\"%20sleep(10.to_i)%20\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-7: SQL Injection at the last segment of the path (request_basename detection)",
+    "method": "POST",
+    "uri": "/post/foo/24'union+all+select+1,2,3+from+aa",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-8: SQL Injection inside the path (request_filename detection)",
+    "method": "POST",
+    "uri": "/post/foo/24'union+all+select+1,2,3+from+aa/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-9: SQL Injection inside the path with comment block (request_filename detection)",
+    "method": "POST",
+    "uri": "/post/%2A/%2A/2+union+all/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-10: Negative test with incomplete SQL command inside the path",
+    "method": "POST",
+    "uri": "/post/foo/9'union+all/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      942101
+    ]
+  },
+  {
+    "name": "CRS 942101-11: Negative test with complete SQL command inside the path, but without comma",
+    "method": "POST",
+    "uri": "/post/foo/24+union+all+select+1,2,3+from+aa/bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ]
+    ],
+    "no_expect_ids": [
+      942101
+    ]
+  }
+]

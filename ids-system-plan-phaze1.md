@@ -638,6 +638,8 @@ Reference: [OWASP CRS v4.30.0 release](https://github.com/coreruleset/corerulese
 <a id="m19"></a>
 ### 5.19. M19 — Initial rule groups and expansion direction
 
+**Amended on 12 October 2026 (K6, section 11.16):** all request attack groups are in scope; work in progress.
+
 **Implementation / verification status:** Implemented on 11 October 2026: all PL1 rules of files 930 (5), 941 (26), and 942 (20) run. The user decided that all five PL1 rules of file 930 are in scope (section 11.13).
 
 **Scope and open boundaries:** Groups 942, 941, and the path traversal subset of 930; exact IDs remain open.
@@ -667,7 +669,9 @@ M17's HTTP content scope applies. XML, response bodies, and other deferred conte
 <a id="m20"></a>
 ### 5.20. M20 — Initially PL1, with expansion to higher levels
 
-**Implementation / verification status:** Implemented on 11 October 2026. The level is the CRS default of 1; the PL2–PL4 rules of the loaded files are compiled and skipped by the CRS gates. The configuration has no option to change the level, so point 1 of this decision (an explicit error for an unsupported level) has nothing to act on yet.
+**Amended on 12 October 2026 (K7, section 11.16):** all four levels are supported and chosen with `paranoia_level` in the configuration; the default is 1 and any other value than 1 to 4 is an error at startup. Implemented for files 913, 930, 941, and 942.
+
+**Implementation / verification status (before the amendment):** Implemented on 11 October 2026. The level is the CRS default of 1; the PL2–PL4 rules of the loaded files are compiled and skipped by the CRS gates. The configuration has no option to change the level, so point 1 of this decision (an explicit error for an unsupported level) has nothing to act on yet.
 
 **Scope and open boundaries:** PL1 within selected groups; PL2–PL4 will be considered as development progresses.
 
@@ -1165,3 +1169,27 @@ The rule-layer plan ([docs/development-plan-rule-layer.md](docs/development-plan
 6. `go vet`, `go test`, and `go test -race` pass for all eight packages; 20 seconds of fuzzing found nothing.
 
 Not committed.
+
+### 11.16. Decision to finish the rule part first, and plan A — 12 October 2026
+
+**Decisions (user, 12 October 2026).** The user decided to finish the rule part before any other layer and accepted the assistant's recommendations K1–K11:
+
+| # | Decision |
+| --- | --- |
+| K1 | The rule part is finished before proxy and TLS integration |
+| K2 | The ML model is improved in the separate project and transferred later |
+| K3 | The decision mechanism waits until a second layer exists |
+| K4 | Prevention comes after the rule part and the other parts (as already planned) |
+| K5 | Other protocols come after the whole HTTP part (as already planned) |
+| K6 | All request attack groups of CRS are supported, not only SQLi, XSS, and path traversal. **This amends M19** |
+| K7 | All four paranoia levels are supported, chosen in the configuration, with PL1 as the default. **This amends M20** |
+| K8 | Response rules (CRS files 950–980) wait for the proxy decision (A01), because they need a copy of each response. M17 is unchanged |
+| K9 | Records and alerts come after the rule part, before the proxy |
+| K10 | Hand-written profiles come after records |
+| K11 | Working rhythm for the rule work. Changed by the user on the same day to: one plan at a time, stop after each |
+
+The work is described in [docs/development-plan-all-request-rules.md](docs/development-plan-all-request-rules.md): six plans, A to F, with the goal that all 5,073 convertible request-side CRS tests pass.
+
+**Plan A, done on 12 October 2026:** the paranoia-level option, rule file 913, and the tests of files 913, 930, 941, and 942 at all levels. 1,388 of 1,388 tests pass at level 4; the levels switch rules on and off as CRS intends; results agree with Coraza on 2,694 requests at level 1 and at level 4. Details are in the progress section of that plan.
+
+**Status of M19 and M20 after this:** the text of sections 5.19 and 5.20 is the original decision. K6 and K7 extend them. Implemented so far: files 913, 930, 941, and 942 at paranoia levels 1 to 4.

@@ -1,0 +1,412 @@
+[
+  {
+    "name": "CRS 942370-1: [\\\"'`]\\s*?\\*.+or\\W*?[\\\"'`]\\d\n[\\\"'`]\\s*?\\*.+xor\\W*?[\\\"'`]\\d\n[\\\"'`]\\s*?\\*.+div\\W*?[\\\"'`]\\d\n[\\\"'`]\\s*?\\*.+like\\W*?[\\\"'`]\\d\n[\\\"'`]\\s*?\\*.+between\\W*?[\\\"'`]\\d\n[\\\"'`]\\s*?\\*.+and\\W*?[\\\"'`]\\d",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "var=%27+%2A+from+%3D+1+or+%279",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-2: [\\\"'`]\\s*?\\*.+id\\W*?[\\\"'`]\\d",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "30"
+      ]
+    ],
+    "body": "var=%27+%2A+from+%3D+1+id+%279",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-3: [^\\w\\s?]+\\s*?[^\\w\\s]+\\s*?[\\\"'`\"]",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "var=%27+%3D+%23+%27",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-4: [^\\w\\s]+\\s*?[\\W\\d].*?#",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "23"
+      ]
+    ],
+    "body": "var=%27+%3F+%23+%3D+%23",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-5: [^\\w\\s]+\\s*?[\\W\\d].*?--",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "21"
+      ]
+    ],
+    "body": "var=%27%3F+%23+%3D+--",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-6: [\\\"'`]\\s*?or\\s[^\\d]+[\\w-]+.*?\\d\n[\\\"'`]\\s*?xor\\s[^\\d]+[\\w-]+.*?\\d\n[\\\"'`]\\s*?div\\s[^\\d]+[\\w-]+.*?\\d\n[\\\"'`]\\s*?like\\s[^\\d]+[\\w-]+.*?\\d\n[\\\"'`]\\s*?between\\s[^\\d]+[\\w-]+.*?\\d\n[\\\"'`]\\s*?and\\s[^\\d]+[\\w-]+.*?\\d",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "var=%27+or+homer+9",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-7: \\^[\\\"'`]",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "10"
+      ]
+    ],
+    "body": "var=%5E%27",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-8: [\\\"'`].*?\\*\\s*?\\d",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "var=%22%60+%2A+12344",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-9: [()\\*<>%+-][\\w-]+[^\\w\\s]+[\\\"'`][^,]",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "20"
+      ]
+    ],
+    "body": "var=%3Efoo%23%23%27.",
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-10",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "1\"and json_search (json_array(password),0b11000010110110001101100,\"t_______________\")#"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-11: encode(lo_get(16400),'base64')::int",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "encode(lo_get(16400),'base64')::int"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942370
+    ]
+  },
+  {
+    "name": "CRS 942370-12: GHSA: 942370 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "68"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"' * from = 1 or '9\"></a></root>",
+    "expect_ids": [
+      942370
+    ]
+  }
+]

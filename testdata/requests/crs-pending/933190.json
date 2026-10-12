@@ -1,0 +1,74 @@
+[
+  {
+    "name": "CRS 933190-1: PHP Injection Attack: PHP Closing Tag Found",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cache-Control",
+        "no-cache, no-store, must-revalidate"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "file_test=<?php%20@eval($_POST[\"hacker\"]);%20?>&submit=1",
+    "expect_ids": [
+      933190
+    ]
+  },
+  {
+    "name": "CRS 933190-2: GHSA: 933190 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "99"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&lt;?php @eval($_POST[&quot;hacker&quot;]); ?&gt;\"></a></root>",
+    "expect_ids": [
+      933190
+    ]
+  }
+]

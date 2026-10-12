@@ -1,0 +1,74 @@
+[
+  {
+    "name": "CRS 922120-1: Positive test: utf-7 is not in allowed charsets",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "169"
+      ]
+    ],
+    "body": "--boundary\r\nContent-Disposition: form-data; name=\"flavors\"\r\nContent-Transfer-Encoding: 8bit\r\nContent-Type: text/plain; charset=utf-7\r\n\r\nPineapple. Pizza.\r\n--boundary--\r\n",
+    "expect_ids": [
+      922120
+    ]
+  },
+  {
+    "name": "CRS 922120-2: Negative test: no content-transfer-encoding header should be good",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "173"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"negative\"\r\nContent-Type: text/plain\r\n\r\nThis should be good as there is no content-transfer-encoding header.\r\n--boundary--\r\n",
+    "no_expect_ids": [
+      922120
+    ]
+  }
+]

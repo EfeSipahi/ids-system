@@ -1,0 +1,596 @@
+[
+  {
+    "name": "CRS 932390-1: classic fork bomb with colon function name",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "cmd=%3A%28%29%7B+%3A%7C%3A%26+%7D%3B%3A",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-2: fork bomb with single letter function name",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "cmd=f%28%29%7B+f%7Cf%26+%7D%3Bf",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-3: fork bomb with word function name and spaces",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "45"
+      ]
+    ],
+    "body": "cmd=test%28%29+%7B+test+%7C+test+%26+%7D+test",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-4: fork bomb with dot function name (bash source builtin)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "cmd=.%28%29%7B+.%7C.%26+%7D%3B.",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-5: fork bomb with no spaces (compact form)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "37"
+      ]
+    ],
+    "body": "cmd=%3A%28%29%7B%3A%7C%3A%26%7D%3B%3A",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-6: fork bomb in query string via GET",
+    "method": "GET",
+    "uri": "/get?cmd=%3A%28%29%7B+%3A%7C%3A%26+%7D%3B%3A",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-7: fork bomb preceded by command separator",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "cmd=%3B+test%28%29+%7B+test+%7C+test+%26+%7D+test",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-8: fork bomb with longer function name",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "cmd=myfunc%28%29%7B+myfunc%7Cmyfunc%26+%7D%3Bmyfunc",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-9: fork bomb in Referer header",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        ":(){ :|:& };:"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-10: fork bomb in User-Agent header",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "f(){ f|f& };f"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-11: fork bomb with background only, no pipe",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "cmd=f%28%29%7B+f+%26+f%3B+%7D%3Bf",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-12: fork bomb with explicit recursive calls using pipe",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "cmd=f%28%29%7B+f%28%29+%7C+f%28%29%3B+%7D%3B+f",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-13: fork bomb with explicit recursive calls using background",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "cmd=f%28%29%7B+f%28%29+%26+f%28%29%3B+%7D%3B+f",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-14: negative test - normal parentheses in value",
+    "method": "GET",
+    "uri": "/get?q=hello+world+(test)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-15: negative test - normal function-like syntax without pipe and background",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "code=myfunction%28%29%7B+echo+hello+%7D",
+    "no_expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-16: negative test - normal URL with colon",
+    "method": "GET",
+    "uri": "/get?url=http%3A%2F%2Fexample.com%3A8080%2Fpath",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-17: GHSA: 932390 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "77"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\":()&#x7B; :|:&amp; &#x7D;;:\"></a></root>",
+    "expect_ids": [
+      932390
+    ]
+  },
+  {
+    "name": "CRS 932390-18: Detect RCE in last path segment\nPayload: :(){+:|:&+};",
+    "method": "GET",
+    "uri": "/path/with/%3A%28%29%7B+%3A%7C%3A%26+%7D%3B%3A",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932390
+    ]
+  }
+]

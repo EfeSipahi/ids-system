@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/EfeSipahi/ids-system/internal/engine/operator"
@@ -50,6 +51,27 @@ type Result struct {
 	Variables map[string]string
 }
 
+// LogLine returns the match as one line of text, in the bracket form of a
+// ModSecurity log line:
+//
+//	[id "930110"] [msg "Path Traversal Attack (/../)"] [data "Matched Data: ..."]
+//
+// The CRS regression tests that look at log text are written for that
+// form. The line can contain content of the request, so it is for tests and
+// not for records.
+func (m Match) LogLine() string {
+	return fmt.Sprintf("[id %q] [msg %q] [data %q]", strconv.Itoa(m.RuleID), m.Message, m.Data)
+}
+
+// LogLines returns the log line of every match.
+func (r *Result) LogLines() []string {
+	lines := make([]string, len(r.Matches))
+	for i, m := range r.Matches {
+		lines[i] = m.LogLine()
+	}
+	return lines
+}
+
 // MatchedIDs returns the ids of the rules in Matches, each once, in the
 // order of their first match.
 func (r *Result) MatchedIDs() []int {
@@ -92,7 +114,10 @@ type transaction struct {
 // Evaluate runs the rules on one request. It does not change the RuleSet or
 // the request, and it may be called from many goroutines at once.
 func (rs *RuleSet) Evaluate(req *httpmodel.Request) *Result {
-	tx := &transaction{rs: rs, req: req, vars: map[string]string{}}
+	tx := &transaction{rs: rs, req: req, vars: make(map[string]string, len(rs.initial))}
+	for name, value := range rs.initial {
+		tx.vars[name] = value
+	}
 	tx.runPhase(phaseRequestHeaders)
 	tx.runPhase(phaseRequestBody)
 	return &Result{Matches: tx.matches, Variables: tx.vars}

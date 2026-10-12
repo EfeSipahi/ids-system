@@ -28,7 +28,7 @@ func TestTextOutput(t *testing.T) {
 		t.Fatalf("exit %d, stderr %q", code, errOut)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, 179 active, 7 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 188 active, 7 excluded",
 		"Target updates for 1 rules that are not active were ignored",
 		"[2] CRS 930110-2: traversal in the query string",
 		"930110  CRITICAL  ARGS:arg ",
@@ -120,7 +120,7 @@ func TestJSONOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &doc); err != nil {
 		t.Fatalf("output is not JSON: %v\n%s", err, out)
 	}
-	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 179 || len(doc.Startup.ExcludedRules) != 7 || doc.Startup.ExcludedRules[6].ID != 901450 {
+	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 188 || len(doc.Startup.ExcludedRules) != 7 || doc.Startup.ExcludedRules[6].ID != 901450 {
 		t.Errorf("startup = %+v", doc.Startup)
 	}
 	if len(doc.Requests) != 6 {
@@ -144,7 +144,7 @@ func TestStartupOnly(t *testing.T) {
 		t.Fatalf("exit %d", code)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, 179 active, 7 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 188 active, 7 excluded",
 		"excluded 901340 (REQUEST-901-INITIALIZATION.conf:375): Body processor control",
 		"excluded 901450 (REQUEST-901-INITIALIZATION.conf:517): Sampling is not implemented",
 	} {
@@ -191,6 +191,31 @@ func TestExpectationNotMet(t *testing.T) {
 	}
 }
 
+// An expectation can also be a pattern for the log text of a match.
+func TestLogExpectations(t *testing.T) {
+	requests := write(t, "r.json", `[
+		{"name": "finds it", "method": "GET", "uri": "/?q=../../x", "expect_log": "\\[id \"930110\"\\].*found within ARGS:q"},
+		{"name": "does not find it", "method": "GET", "uri": "/?q=kitap", "expect_log": "found within ARGS:q"},
+		{"name": "finds what it must not", "method": "GET", "uri": "/?q=../../x", "no_expect_log": "Path Traversal"}
+	]`)
+	code, out, _ := runTool(t, "-config", config, "-requests", requests)
+	if code != 1 {
+		t.Errorf("exit %d, want 1", code)
+	}
+	for _, want := range []string{
+		`expectation: NOT MET, no log line has "found within ARGS:q"`,
+		`expectation: NOT MET, a log line has "Path Traversal"`,
+		"3 requests, 2 with an expectation that was not met",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("output does not contain %q:\n%s", want, out)
+		}
+	}
+	if strings.Count(out, "expectation: met") != 1 {
+		t.Errorf("want exactly one met expectation:\n%s", out)
+	}
+}
+
 func TestIncompleteAnalysisIsShown(t *testing.T) {
 	requests := write(t, "r.json", `[
 		{"name": "a body with no parser", "method": "POST", "uri": "/", "headers": [["Content-Type", "text/plain"]], "body": "file=../../etc/passwd", "expect_ids": [930110]},
@@ -211,16 +236,20 @@ func TestIncompleteAnalysisIsShown(t *testing.T) {
 	}
 }
 
-// The summary over the converted CRS tests of all 51 PL1 rules in scope:
-// 5 in file 930, 26 in 941 and 20 in 942, with 72 + 242 + 373 tests. The
+// The summary over the converted CRS tests of the finished rule files, run
+// at paranoia level 4 as the CRS project runs them: 1 rule in file 913, 6
+// in 930, 33 in 941 and 60 in 942, with 9 + 83 + 263 + 1,033 tests. The
 // numbers were counted independently from the CRS files. Every rule is
 // active and every test must pass.
 func TestSummaryOfCRSTests(t *testing.T) {
-	code, out, _ := runTool(t, "-config", config, "-requests", "../../testdata/requests/crs", "-summary", "-json")
+	code, out, _ := runTool(t, "-config", config, "-requests", "../../testdata/requests/crs", "-summary", "-json", "-paranoia-level", "4")
 	if code != 0 {
 		t.Errorf("exit %d, want 0", code)
 	}
 	var doc struct {
+		Startup struct {
+			ParanoiaLevel int `json:"paranoia_level"`
+		} `json:"startup"`
 		Requests []json.RawMessage `json:"requests"`
 		Summary  []struct {
 			Source       string `json:"source"`
@@ -234,11 +263,14 @@ func TestSummaryOfCRSTests(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &doc); err != nil {
 		t.Fatalf("output is not JSON: %v", err)
 	}
+	if doc.Startup.ParanoiaLevel != 4 {
+		t.Errorf("paranoia level = %d, want 4", doc.Startup.ParanoiaLevel)
+	}
 	if doc.Requests != nil {
 		t.Error("the summary also lists the requests")
 	}
-	if len(doc.Summary) != 51 {
-		t.Fatalf("%d files, want 51", len(doc.Summary))
+	if len(doc.Summary) != 100 {
+		t.Fatalf("%d files, want 100", len(doc.Summary))
 	}
 	tests := map[string]int{}
 	for _, g := range doc.Summary {
@@ -247,11 +279,31 @@ func TestSummaryOfCRSTests(t *testing.T) {
 			t.Errorf("rule %s: %+v", g.Source, g)
 		}
 	}
-	if want := map[string]int{"930": 72, "941": 242, "942": 373}; !reflect.DeepEqual(tests, want) {
+	if want := map[string]int{"913": 9, "930": 83, "941": 263, "942": 1033}; !reflect.DeepEqual(tests, want) {
 		t.Errorf("tests per rule file = %v, want %v", tests, want)
 	}
-	if first := doc.Summary[0]; first.Source != "930100" || first.Tests != 5 {
+	if first := doc.Summary[0]; first.Source != "913100" || first.Tests != 9 {
 		t.Errorf("first row = %+v", first)
+	}
+}
+
+// At the default level 1 the rules of higher levels are switched off, so
+// their tests fail and the tool says so with exit code 1. An unsupported
+// level stops the tool before any request is read.
+func TestParanoiaLevelFlag(t *testing.T) {
+	code, out, _ := runTool(t, "-config", config, "-requests", "../../testdata/requests/crs/942200.json", "-summary")
+	if code != 1 || !strings.Contains(out, "paranoia level 1") {
+		t.Errorf("level 1: exit %d, output:\n%s", code, out)
+	}
+	code, out, _ = runTool(t, "-config", config, "-requests", "../../testdata/requests/crs/942200.json", "-summary", "-paranoia-level", "2")
+	if code != 0 || !strings.Contains(out, "paranoia level 2") {
+		t.Errorf("level 2: exit %d, output:\n%s", code, out)
+	}
+	for _, level := range []string{"5", "-1"} {
+		code, _, errOut := runTool(t, "-config", config, "-paranoia-level", level)
+		if code != 2 || !strings.Contains(errOut, "paranoia level "+level+" is not supported") {
+			t.Errorf("level %s: exit %d, error output: %s", level, code, errOut)
+		}
 	}
 }
 

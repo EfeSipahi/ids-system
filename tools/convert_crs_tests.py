@@ -2,8 +2,8 @@
 """Convert CRS regression tests to the example format of ids-offline.
 
 The CRS project keeps its tests as YAML files, one per rule, under
-tests/regression/tests/. This script reads the tests of the rules at one
-paranoia level in chosen rule files and writes one JSON file per rule.
+tests/regression/tests/. This script reads the tests of chosen rule files,
+at all paranoia levels, and writes one JSON file per rule.
 
 Usage, from the project directory:
 
@@ -24,11 +24,29 @@ would have seen. They follow go-ftw's ftwhttp/request.go:
   5. "Connection: close" and "Content-Length" are added when absent.
 
 Steps 2, 3 and 5 are skipped for a test that sets autocomplete_headers to
-false. The script stops with an error on any test field it does not know,
-so a new kind of test cannot be converted wrongly without notice.
+false.
+
+A test can give the whole request as bytes (encoded_request) in place of
+the single fields. go-ftw sends those bytes as they are. Here they are split
+into request line, headers and body, and a chunked body is put together, as
+a web server does before a rule engine sees the request.
+
+What a test expects:
+
+  expect_ids, no_expect_ids      kept
+  match_regex, no_match_regex    kept as expect_log and no_expect_log: a
+                                 pattern for the text of a log line
+  status, expect_error           dropped. They describe the answer of the
+                                 web server, which an offline engine does
+                                 not have. A test that expects nothing else
+                                 is left out and counted in the output.
+
+The script stops with an error on any test field it does not know, so a new
+kind of test cannot be converted wrongly without notice.
 """
 
 import argparse
+import base64
 import json
 import re
 import sys
@@ -42,23 +60,50 @@ FORM = "application/x-www-form-urlencoded"
 KNOWN_INPUT_KEYS = {
     "dest_addr", "port", "protocol",  # where go-ftw sends the request; not part of it
     "method", "uri", "version", "headers", "data",
-    "autocomplete_headers",
+    "autocomplete_headers", "encoded_request",
 }
-KNOWN_LOG_KEYS = {"expect_ids", "no_expect_ids"}
+KNOWN_OUTPUT_KEYS = {"log", "status", "expect_error"}
+LOG_KEYS = {
+    "expect_ids": "expect_ids",
+    "no_expect_ids": "no_expect_ids",
+    "match_regex": "expect_log",
+    "no_match_regex": "no_expect_log",
+}
 
 
-def rule_ids(conf_path, level):
-    """Return the ids of the rules tagged with the paranoia level, in file order."""
-    text = conf_path.read_text(encoding="utf-8").replace("\\\n", "")
-    ids = []
-    for line in text.split("\n"):
-        line = line.strip()
-        if not line.startswith("SecRule") or f"paranoia-level/{level}'" not in line:
-            continue
-        match = re.search(r"\bid:(\d+)", line)
-        if match:
-            ids.append(int(match.group(1)))
-    return ids
+def parse_raw_request(raw, where):
+    """Split the bytes of a whole request into the fields of an example."""
+    head, separator, body = raw.partition(b"\r\n\r\n")
+    if not separator:
+        sys.exit(f"{where}: encoded_request has no empty line after its headers")
+    lines = head.decode("latin-1").split("\r\n")
+    parts = lines[0].split(" ")
+    if len(parts) != 3:
+        sys.exit(f"{where}: cannot read the request line {lines[0]!r}")
+    headers = []
+    for line in lines[1:]:
+        name, colon, value = line.partition(":")
+        if not colon:
+            sys.exit(f"{where}: cannot read the header line {line!r}")
+        headers.append([name, value.strip()])
+    if any(v.lower() == "chunked" for v in header_values(headers, "Transfer-Encoding")):
+        body = join_chunks(body, where)
+    return parts[0], parts[1], parts[2], headers, body
+
+
+def join_chunks(body, where):
+    """Return the content of a chunked body: each chunk is a length in hex on
+    one line, then that many bytes; a chunk of length 0 ends the body."""
+    out = b""
+    while True:
+        size_line, separator, rest = body.partition(b"\r\n")
+        if not separator:
+            sys.exit(f"{where}: the chunked body ends early")
+        size = int(size_line.split(b";")[0], 16)
+        if size == 0:
+            return out
+        out += rest[:size]
+        body = rest[size + 2:]
 
 
 def header_values(headers, name):
@@ -90,14 +135,44 @@ def encode_form(data):
 
 
 def convert_stage(stage, where):
+    """Return the example for one stage, or None when the stage expects
+    nothing that an offline engine can check."""
     inp = stage["input"]
     unknown = set(inp) - KNOWN_INPUT_KEYS
     if unknown:
         sys.exit(f"{where}: unknown input fields {sorted(unknown)}")
     out = stage["output"]
-    if set(out) != {"log"} or set(out["log"]) - KNOWN_LOG_KEYS:
+    log = out.get("log") or {}
+    if set(out) - KNOWN_OUTPUT_KEYS or set(log) - set(LOG_KEYS):
         sys.exit(f"{where}: unknown output fields {out}")
+    if not log:
+        return None
 
+    if "encoded_request" in inp:
+        raw = base64.b64decode(inp["encoded_request"])
+        method, uri, version, headers, data = parse_raw_request(raw, where)
+    else:
+        method, uri, version, headers, data = complete_request(inp, where)
+
+    example = {"method": method, "uri": uri, "version": version, "headers": headers}
+    if isinstance(data, bytes):
+        # A body from encoded_request. JSON holds text only, so a body that
+        # is not UTF-8 text is written in base64.
+        try:
+            data = data.decode("utf-8")
+        except UnicodeDecodeError:
+            example["body_base64"] = base64.b64encode(data).decode("ascii")
+            data = ""
+    if data:
+        example["body"] = data
+    for key, name in LOG_KEYS.items():
+        if key in log:
+            example[name] = log[key]
+    return example
+
+
+def complete_request(inp, where):
+    """Build the request from its single fields, as go-ftw does."""
     method = inp.get("method", "GET")
     headers = [[str(k), str(v)] for k, v in (inp.get("headers") or {}).items()]
     data = inp.get("data") or ""
@@ -121,36 +196,35 @@ def convert_stage(stage, where):
         has_body_method = re.search(r"^POST|PUT|PATCH|DELETE$", method) is not None
         if not header_values(headers, "Content-Length") and (data or has_body_method):
             headers.append(["Content-Length", str(len(data.encode("utf-8")))])
-
-    example = {
-        "method": method,
-        "uri": inp.get("uri", "/"),
-        "version": inp.get("version", "HTTP/1.1"),
-        "headers": headers,
-    }
-    if data:
-        example["body"] = data
-    for key in ("expect_ids", "no_expect_ids"):
-        if key in out["log"]:
-            example[key] = out["log"][key]
-    return example
+    return method, inp.get("uri", "/"), inp.get("version", "HTTP/1.1"), headers, data
 
 
-def convert_rule(test_path, rule_id):
+def convert_rule(test_path):
+    """Return the examples of one test file and the number of stages left out."""
     doc = yaml.safe_load(test_path.read_text(encoding="utf-8"))
-    if doc.get("rule_id") != rule_id:
-        sys.exit(f"{test_path}: rule_id is {doc.get('rule_id')}, expected {rule_id}")
+    if not doc or not doc.get("tests"):
+        return [], 0
+    # The file name is the rule id. One CRS file (933200.yaml) carries a
+    # mistyped rule_id field, so the field is only reported, not trusted.
+    rule_id = test_path.stem
+    if str(doc.get("rule_id")) != rule_id:
+        print(f"{test_path.name}: its rule_id field says {doc.get('rule_id')}; the file name is used")
     examples = []
+    left_out = 0
     for test in doc["tests"]:
         stages = test["stages"]
         for number, stage in enumerate(stages, start=1):
             label = f"{rule_id}-{test['test_id']}"
             if len(stages) > 1:
                 label += f" stage {number}"
-            example = {"name": f"CRS {label}: {test.get('desc', '').strip()}".rstrip(": ")}
-            example.update(convert_stage(stage, f"{test_path} test {test['test_id']}"))
+            converted = convert_stage(stage, f"{test_path} test {test['test_id']}")
+            if converted is None:
+                left_out += 1
+                continue
+            example = {"name": f"CRS {label}: {(test.get('desc') or '').strip()}".rstrip(": ")}
+            example.update(converted)
             examples.append(example)
-    return examples
+    return examples, left_out
 
 
 def main():
@@ -159,32 +233,36 @@ def main():
     parser.add_argument("--out", default="testdata/requests/crs", help="output directory")
     parser.add_argument("--files", nargs="+", required=True, metavar="NUMBER",
                         help="rule file numbers, for example 930 941 942")
-    parser.add_argument("--paranoia-level", type=int, default=1)
     args = parser.parse_args()
 
     crs = Path(args.crs)
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    total_rules = total_tests = 0
+    total_rules = total_tests = total_left_out = 0
     for number in args.files:
         matches = sorted((crs / "rules").glob(f"REQUEST-{number}-*.conf"))
         if len(matches) != 1:
             sys.exit(f"expected one rule file REQUEST-{number}-*.conf in {crs / 'rules'}, found {len(matches)}")
-        conf = matches[0]
-        tests_dir = crs / "tests" / "regression" / "tests" / conf.stem
-        for rule_id in rule_ids(conf, args.paranoia_level):
-            test_path = tests_dir / f"{rule_id}.yaml"
-            if not test_path.exists():
-                print(f"rule {rule_id}: no test file, skipped")
+        tests_dir = crs / "tests" / "regression" / "tests" / matches[0].stem
+        rules = tests = 0
+        for test_path in sorted(tests_dir.glob("*.yaml")):
+            examples, left_out = convert_rule(test_path)
+            total_left_out += left_out
+            if not examples:
+                print(f"{test_path.name}: nothing to convert")
                 continue
-            examples = convert_rule(test_path, rule_id)
-            with open(out_dir / f"{rule_id}.json", "w", encoding="utf-8") as f:
+            with open(out_dir / f"{test_path.stem}.json", "w", encoding="utf-8") as f:
                 json.dump(examples, f, indent=2, ensure_ascii=False)
                 f.write("\n")
-            total_rules += 1
-            total_tests += len(examples)
+            rules += 1
+            tests += len(examples)
+        print(f"{number}: {rules} rules, {tests} tests")
+        total_rules += rules
+        total_tests += tests
     print(f"{total_rules} rules, {total_tests} tests written to {out_dir}")
+    if total_left_out:
+        print(f"{total_left_out} tests left out: they expect only an answer of the web server")
 
 
 if __name__ == "__main__":

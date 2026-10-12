@@ -1,0 +1,97 @@
+[
+  {
+    "name": "CRS 941330-1: IE XSS Filters - Attack",
+    "method": "GET",
+    "uri": "/get?var=%22in%20\\u0076\\u0061l\\u0075e\\u004F\\u0066%3d",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941330
+    ]
+  },
+  {
+    "name": "CRS 941330-2: XSS test based on portswigger XSS cheatsheet",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "101"
+      ]
+    ],
+    "body": "payload=%3Ciframe+srcdoc%3D%22%3Cimg+src%3D1+onerror%3Dalert%281%29%3E%22%3E%3C%2Fiframe%3E%3C%2Fa%3E",
+    "expect_ids": [
+      941330
+    ]
+  },
+  {
+    "name": "CRS 941330-3: GHSA: 941330 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "92"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&quot;in \\u0076\\u0061l\\u0075e\\u004F\\u0066=\"></a></root>",
+    "expect_ids": [
+      941330
+    ]
+  }
+]

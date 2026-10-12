@@ -1,0 +1,166 @@
+[
+  {
+    "name": "CRS 921130-1: HTTP response splitting (921130) from old modsec regressions",
+    "method": "GET",
+    "uri": "/?lang=foobar%3Cmeta%20http-equiv%3D%22Refresh%22%20content%3D%220%3B%20url%3Dhttp%3A%2F%2Fwww.hacker.com%2F%22%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate"
+      ],
+      [
+        "Accept-Language",
+        "zh-sg"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "Referer",
+        "http"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921130
+    ]
+  },
+  {
+    "name": "CRS 921130-2: HTTP Response splitting attack: cookie data",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Cookie",
+        "oreo=munchmuch%0d%0a%0d%0a<HTML><title></title></HTML>"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921130
+    ]
+  },
+  {
+    "name": "CRS 921130-3: HTTP Request Smuggling with not supported HTTP versions such as HTTP/1.2",
+    "method": "GET",
+    "uri": "/?arg1=GET%20http%3A%2F%2Fwww.foo.bar%20HTTP%2F1.2",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921130
+    ]
+  },
+  {
+    "name": "CRS 921130-4: HTTP Request Smuggling with not supported HTTP versions such as HTTP/3",
+    "method": "GET",
+    "uri": "/?arg1=GET%20http%3A%2F%2Fwww.foo.bar%20HTTP%2F3.2",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921130
+    ]
+  },
+  {
+    "name": "CRS 921130-5: GHSA: 921130 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "149"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"foobar&lt;meta http-equiv=&quot;Refresh&quot; content=&quot;0; url=http://www.hacker.com/&quot;&gt;\"></a></root>",
+    "expect_ids": [
+      921130
+    ]
+  }
+]

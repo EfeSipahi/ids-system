@@ -482,6 +482,8 @@ func TestLoadConfig(t *testing.T) {
 		{`{"files": ["r.conf"], "exclude": [{"id": 0, "reason": "x"}]}`, "invalid rule id 0"},
 		{`{"files": ["r.conf"], "exclude": [{"id": 1, "reason": "x"}, {"id": 1, "reason": "y"}]}`, "rule 1 is excluded twice"},
 		{`{"files": ["r.conf"], "excluded": []}`, `unknown field "excluded"`},
+		{`{"files": ["r.conf"], "paranoia_level": 5}`, "paranoia level 5 is not supported; it must be 1 to 4"},
+		{`{"files": ["r.conf"], "paranoia_level": -1}`, "paranoia level -1 is not supported"},
 		{`{"files": ["r.conf"]} {}`, "unexpected content"},
 		{`not json`, "invalid JSON"},
 	}
@@ -492,6 +494,49 @@ func TestLoadConfig(t *testing.T) {
 	}
 	if _, err := LoadConfig(filepath.Join(dir, "missing.json")); err == nil {
 		t.Error("no error for a missing configuration file")
+	}
+}
+
+// The paranoia level of the configuration becomes the TX variable that the
+// CRS files read. Without a level it is 1, the CRS default.
+func TestParanoiaLevel(t *testing.T) {
+	rule := `SecRule TX:blocking_paranoia_level "@ge 3" "id:1,phase:1,pass,nolog,tag:'paranoia-level/3',setvar:tx.high=1"`
+	cfg := rulesConfig(t, rule)
+
+	rs, err := Load(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if rs.ParanoiaLevel() != 1 {
+		t.Errorf("level = %d, want 1", rs.ParanoiaLevel())
+	}
+	wantVars(t, rs.Evaluate(get("/")), map[string]string{"blocking_paranoia_level": "1"})
+	if s := rs.Statuses()[0]; s.ParanoiaLevel != 3 {
+		t.Errorf("level of the rule = %d, want 3", s.ParanoiaLevel)
+	}
+
+	cfg.ParanoiaLevel = 3
+	rs, err = Load(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantVars(t, rs.Evaluate(get("/")), map[string]string{"blocking_paranoia_level": "3", "high": "1"})
+	// The starting values are copied for each request, not shared.
+	wantVars(t, rs.Evaluate(get("/")), map[string]string{"blocking_paranoia_level": "3", "high": "1"})
+
+	cfg.ParanoiaLevel = 5
+	if _, err := Load(cfg); err == nil || !strings.Contains(err.Error(), "paranoia level 5 is not supported") {
+		t.Errorf("level 5: error = %v", err)
+	}
+}
+
+// A log line has the bracket form that the CRS tests look for.
+func TestLogLine(t *testing.T) {
+	rs := loadRules(t, `SecRule ARGS "@rx b(.)d" "id:7,phase:2,pass,log,capture,msg:'Found \"%{tx.1}\"',logdata:'Matched Data: %{TX.0} found within %{MATCHED_VAR_NAME}'"`)
+	res := rs.Evaluate(get("/?x=bad"))
+	want := []string{`[id "7"] [msg "Found \"a\""] [data "Matched Data: bad found within ARGS:x"]`}
+	if got := res.LogLines(); !reflect.DeepEqual(got, want) {
+		t.Errorf("log lines = %q\nwant        %q", got, want)
 	}
 }
 

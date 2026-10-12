@@ -1,0 +1,277 @@
+[
+  {
+    "name": "CRS 932281-1: Bash Brace expansion - {,echo,#test}",
+    "method": "GET",
+    "uri": "/get?932281-1=%7B%2Cecho%2C%23test%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-2: Bash Brace expansion - {,cd,/etc,}",
+    "method": "GET",
+    "uri": "/get?932281-2=%7B%2Ccd%2C%2Fetc%2C%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-3: Bash Brace expansion - {,$'whoami',}",
+    "method": "GET",
+    "uri": "/get?932281-3=%7B%2C%24%27whoami%27%2C%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-4: Bash Brace expansion - {,$\"whoami\",}",
+    "method": "GET",
+    "uri": "/get?932281-4=%7B%2C%24%22whoami%22%2C%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-5: Bash Brace expansion - {,/?s?/?i?/c?t,/e??/p??s??,}",
+    "method": "GET",
+    "uri": "/get?932281-5=%7B%2C%2F%3Fs%3F%2F%3Fi%3F%2Fc%3Ft%2C%2Fe%3F%3F%2Fp%3F%3Fs%3F%3F%2C%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-6: False Positive: json payload with no spaces\npayload: `[{\"value\":true,\"key\":\"enabled\",\"scope\":\"fileRequest\"}]`",
+    "method": "GET",
+    "uri": "/get?932281-6=%5B%7B%22value%22:true,%22key%22:%22enabled%22,%22scope%22:%22fileRequest%22%7D%5D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-7: Bash Brace expansion - {/?s?/?i?/c?t,}",
+    "method": "GET",
+    "uri": "/get?932281-7=%7B%2F%3Fs%3F%2F%3Fi%3F%2Fc%3Ft%2C%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-8: False Positive: json payload with empty curly braces\npayload: `{\"single_blog_post_related_order_meta_first\":[{},{}]}`",
+    "method": "GET",
+    "uri": "/get?932281-8=%7B%22single_blog_post_related_order_meta_first%22:%5B%7B%7D,%7B%7D%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-9: GHSA: 932281 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "73"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&#x7B;,echo,#test&#x7D;\"></a></root>",
+    "expect_ids": [
+      932281
+    ]
+  },
+  {
+    "name": "CRS 932281-10: Detect RCE in last path segment\nPayload: {c?t,test.txt}",
+    "method": "GET",
+    "uri": "/path/with/%7Bc%3Ft%2Ctest.txt%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932281
+    ]
+  }
+]

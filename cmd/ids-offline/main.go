@@ -26,6 +26,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -64,6 +66,10 @@ type expectation struct {
 	Missing []int `json:"missing,omitempty"`
 	// Unwanted are rules that matched and must not.
 	Unwanted []int `json:"unwanted,omitempty"`
+	// MissingLog is the expected log pattern when no match produced it,
+	// and UnwantedLog the forbidden one when a match did.
+	MissingLog  string `json:"missing_log,omitempty"`
+	UnwantedLog string `json:"unwanted_log,omitempty"`
 }
 
 // groupSummary counts the examples of one file.
@@ -100,6 +106,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	summary := flags.Bool("summary", false, "print one line per file instead of every request")
 	asJSON := flags.Bool("json", false, "print JSON instead of text")
 	showValues := flags.Bool("show-values", false, "also print matched values and the request URI (may reveal sensitive content)")
+	level := flags.Int("paranoia-level", 0, "CRS paranoia `level` 1 to 4, in place of the one in the configuration")
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}
@@ -112,6 +119,9 @@ func run(args []string, stdout, stderr io.Writer) int {
 	if err != nil {
 		fmt.Fprintf(stderr, "ids-offline: %v\n", err)
 		return 2
+	}
+	if *level != 0 {
+		cfg.ParanoiaLevel = *level
 	}
 	rules, err := engine.Load(cfg)
 	if err != nil {
@@ -141,7 +151,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 					Source:      source,
 					Name:        ex.Name,
 					Record:      result.NewRecord(ex.Request, res, opt),
-					Expectation: check(ex, res.MatchedIDs()),
+					Expectation: check(ex, res),
 				})
 			}
 		}
@@ -266,12 +276,12 @@ func writeSummary(w io.Writer, out output) {
 
 // check compares the matched rule ids with what an example expects. It
 // returns nil for an example that expects nothing.
-func check(ex offline.Example, matched []int) *expectation {
-	if len(ex.ExpectIDs) == 0 && len(ex.NoExpectIDs) == 0 {
+func check(ex offline.Example, res *engine.Result) *expectation {
+	if !ex.HasExpectation() {
 		return nil
 	}
 	has := map[int]bool{}
-	for _, id := range matched {
+	for _, id := range res.MatchedIDs() {
 		has[id] = true
 	}
 	e := &expectation{}
@@ -285,14 +295,23 @@ func check(ex offline.Example, matched []int) *expectation {
 			e.Unwanted = append(e.Unwanted, id)
 		}
 	}
-	e.Met = len(e.Missing) == 0 && len(e.Unwanted) == 0
+	logged := func(pattern *regexp.Regexp) bool {
+		return slices.ContainsFunc(res.LogLines(), pattern.MatchString)
+	}
+	if ex.ExpectLog != nil && !logged(ex.ExpectLog) {
+		e.MissingLog = ex.ExpectLog.String()
+	}
+	if ex.NoExpectLog != nil && logged(ex.NoExpectLog) {
+		e.UnwantedLog = ex.NoExpectLog.String()
+	}
+	e.Met = len(e.Missing) == 0 && len(e.Unwanted) == 0 && e.MissingLog == "" && e.UnwantedLog == ""
 	return e
 }
 
 // writeStartup prints the rule report. With brief set, the excluded rules
 // are counted but not listed.
 func writeStartup(w io.Writer, s result.Startup, brief bool) {
-	fmt.Fprintf(w, "Rules: %s, %d active, %d excluded\n", orNone(s.Ruleset), s.ActiveRules, len(s.ExcludedRules))
+	fmt.Fprintf(w, "Rules: %s, paranoia level %d, %d active, %d excluded\n", orNone(s.Ruleset), s.ParanoiaLevel, s.ActiveRules, len(s.ExcludedRules))
 	if !brief {
 		for _, ex := range s.ExcludedRules {
 			fmt.Fprintf(w, "  excluded %d (%s:%d): %s\n", ex.ID, ex.File, ex.Line, ex.Reason)
@@ -360,6 +379,12 @@ func writeText(w io.Writer, out output) {
 				}
 				if len(e.Unwanted) > 0 {
 					fmt.Fprintf(w, ", must not match %v", e.Unwanted)
+				}
+				if e.MissingLog != "" {
+					fmt.Fprintf(w, ", no log line has %q", e.MissingLog)
+				}
+				if e.UnwantedLog != "" {
+					fmt.Fprintf(w, ", a log line has %q", e.UnwantedLog)
 				}
 				fmt.Fprintln(w)
 			}

@@ -1,0 +1,429 @@
+[
+  {
+    "name": "CRS 934130-1: negative test case",
+    "method": "GET",
+    "uri": "/get?foo=proto",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-2: positive test case with JSON POST",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "82"
+      ]
+    ],
+    "body": "{\"text\":\"a\",\"title\":{\"__proto__\":{\"where\":{\"name\":\"sqlinjection\",\"where\":null}}}}\n",
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-3: positive test case, CVE-2021-20083",
+    "method": "GET",
+    "uri": "/get?__proto__[test]=test",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-4: positive test case, CVE-2021-20084, 1/2",
+    "method": "GET",
+    "uri": "/get?__proto__.test=test",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-5: positive test case, CVE-2021-20084, 2/2",
+    "method": "GET",
+    "uri": "/get?constructor.prototype.test=test",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-6: positive test case with space evasion, CVE-2021-20084, 2/2",
+    "method": "GET",
+    "uri": "/get?constructor.prototype.%20test=test",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-7: positive test case with GET parameter, jQuery $.get",
+    "method": "GET",
+    "uri": "/get?__proto__[context]=<img/src/onerror%3dalert(1)>",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-8: positive test case with GET parameter, V4Fire Core Library",
+    "method": "GET",
+    "uri": "/get?__proto__%5Btest%5D%3D%7B%22json%22%3A%22value%22%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-9: positive test case with GET parameter, analytics-utils < 1.0.3",
+    "method": "GET",
+    "uri": "/get?constructor%5Bprototype%5D%5Btest%5D%3Dtest",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-10: positive test case with GET parameter, jQuery $.get",
+    "method": "GET",
+    "uri": "/get?__proto__[jquery]=x",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-11: positive test case with GET parameter, Vue.js",
+    "method": "GET",
+    "uri": "/get?__proto__%5Bv-bind%3Aclass%5D%3D%27%27.constructor.constructor%28%27alert%281%29%27%29%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-12: Detect example payload __proto__... submitted as plaintext",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Cookie",
+        "test_cookie=__proto__.foo=bar"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-13: Detect example payload __proto__... submitted as plaintext with JavaScript escape sequence obfuscation",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Cookie",
+        "test_cookie=__\\u0070\\u0072oto__.foo=bar"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-14: Detect example payload [constructor][prototype]",
+    "method": "GET",
+    "uri": "/get?x=x&a[constructor][prototype]=image&a[constructor][prototype][onerror]=a",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934130
+    ]
+  },
+  {
+    "name": "CRS 934130-15: GHSA: 934130 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "256"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"&#x7B;&quot;text&quot;:&quot;a&quot;,&quot;title&quot;:&#x7B;&quot;__proto__&quot;:&#x7B;&quot;where&quot;:&#x7B;&quot;name&quot;:&quot;sqlinjection&quot;,&quot;where&quot;:null&#x7D;&#x7D;&#x7D;&#x7D;&#10;\"></a></root>",
+    "expect_ids": [
+      934130
+    ]
+  }
+]

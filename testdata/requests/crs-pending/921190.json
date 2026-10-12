@@ -1,0 +1,110 @@
+[
+  {
+    "name": "CRS 921190-1: New line char in request filename (1)",
+    "method": "GET",
+    "uri": "/foo%0Abar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921190
+    ]
+  },
+  {
+    "name": "CRS 921190-2: New line char in request filename (2)",
+    "method": "GET",
+    "uri": "/foo%0abar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921190
+    ]
+  },
+  {
+    "name": "CRS 921190-3: FastCGI variable injection: Nginx + PHP-FPM (CVE-2019-11043)",
+    "method": "GET",
+    "uri": "/index.php/PHP%0Ainfo.php?QQQ",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921190
+    ]
+  },
+  {
+    "name": "CRS 921190-4: PHP Settings injection: Nginx + PHP-FPM (CVE-2019-11043)",
+    "method": "GET",
+    "uri": "/index.php/PHP_VALUE%0Asession.auto_start=1;;;?QQQ",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921190
+    ]
+  }
+]

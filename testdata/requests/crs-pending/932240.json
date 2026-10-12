@@ -1,0 +1,760 @@
+[
+  {
+    "name": "CRS 932240-1: globbing technique 1: garb=cur[l];$garb+google.com (BB X)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "cmd=garb%3Dadduse%5Br%5D%3B%24garb+pizza%0A",
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-2: globbing technique 2: {n$u\\c$u,-nlvp,777} (BB X)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "40"
+      ]
+    ],
+    "body": "cmd=%7Bn%24u%5Cc%24u%2C-nlvp%2C777%7D%0A",
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-3: globbing technique 3: una$$me -a in cookies (BB S01X1GRV)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Cookie",
+        "una$$me -a"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-4: globbing technique 4: uname$u -a (BB S01X1GRV)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Cookie",
+        "uname$u -a"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-5: vars + spacing: v=\"u\";cu$v\\\\r\\l google.com (BB X)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "49"
+      ]
+    ],
+    "body": "cmd=v%3D%27u%27%3Bcu%24v%5C%5Cr%5Cl+google.com%0A",
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-6: vars + spacing: non-existing vars: cu$@rl (BB X)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "28"
+      ]
+    ],
+    "body": "cmd=cu%24%40rl+google.com%0A",
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-7: Negative test on German numbering - Schauen Sie sich diese Zahl an:1'000'000",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "65"
+      ]
+    ],
+    "body": "text=Schauen%20Sie%20sich%20diese%20Zahl%20an%3A%201%27000%27000\n",
+    "no_expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-8: Negative test on WordPress like args",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "180"
+      ]
+    ],
+    "body": "data%5Bwp-refresh-post-lock%5D%5Block%5D=1667487208%3A1&data%5Bwp-refresh-post-lock%5D%5Bpost_id%5D=1&interval=60&_nonce=25ed3b910d&action=heartbeat&screen_id=post&has_focus=false\n",
+    "no_expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-9: Unix Command Injection - python version bypass test",
+    "method": "GET",
+    "uri": "/get?cmd=\"\"p\"\"y\"\"t\"\"h\"\"o\"\"n\"\"3\"\".\"\"1\"\"0\"\"%20\"\"c\"\"m\"\"d\"\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-10: Backticks command subtition WAF evasion",
+    "method": "GET",
+    "uri": "/get?x=ping``%20127.0.0.1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-11: Backticks command subtition WAF evasion (mid command)",
+    "method": "GET",
+    "uri": "/get?x=pi``ng%20127.0.0.1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-12: Dollar sign command subtition WAF evasion",
+    "method": "GET",
+    "uri": "/get?x=ping$()%20127.0.0.1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-13: Dollar sign command subtition WAF evasion (mid command)",
+    "method": "GET",
+    "uri": "/get?x=pi$()ng%20127.0.0.1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-14: Process subtition '<()' WAF evasion (mid command)",
+    "method": "GET",
+    "uri": "/get?x=pi<()ng%20127.0.0.1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-15: Process subtition '>()' WAF evasion (mid command)",
+    "method": "GET",
+    "uri": "/get?x=pi>()ng%20127.0.0.1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-16: FP against single quote inside string",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "108"
+      ]
+    ],
+    "body": "payload=All+told%2C+people+were+taken+with+the+concept+of+Stadia%2C+but+the+execution+just+didn%27t+work.%0A",
+    "no_expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-17: Detect quote evasion: kill '-'9",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "payload=kill+%27-%279%0A",
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-18: False positive against quote evasion with two quotes",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "161"
+      ]
+    ],
+    "body": "payload=An+affordable+housing+advocate+says+the+city%27s+rewrite+of+the+land+development+code+would+boost+affordable+housing%2C+but+there%27s+room+to+do+more.%0A",
+    "no_expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-19: Detect quote evasion: py''thon",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "56"
+      ]
+    ],
+    "body": "payload=py%27%27thon+-c+%22print%28%27attack%27%29%22%0A",
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-20: False Positive URL encoded JSON payloaded\n{\"name\":\"John Doe\",\"age\":\"30\",\"email\":\"johndoe@example.com\"}",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "99"
+      ]
+    ],
+    "body": "payload=%7B%22name%22:%22John%20Doe%22,%22age%22:%2230%22,%22email%22:%22johndoe@example.com%22%7D\n",
+    "no_expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-21: Urlencoded form array\n[\"account\",\"sharing\"]",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "44"
+      ]
+    ],
+    "body": "payload=%5B%22account%22%2C%22sharing%22%5D\n",
+    "no_expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-22: GHSA: 932240 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "85"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"cmd=garb=adduse[r];$garb pizza&#10;\"></a></root>",
+    "expect_ids": [
+      932240
+    ]
+  },
+  {
+    "name": "CRS 932240-23: Detect RCE in last path segment\nPayload: ;una$$me -a",
+    "method": "GET",
+    "uri": "/path/with/%3Buna%24%24me%20-a",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932240
+    ]
+  }
+]

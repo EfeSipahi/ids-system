@@ -1,0 +1,88 @@
+[
+  {
+    "name": "CRS 932371-1: Windows Command Injection: at command injection scheduling a command",
+    "method": "GET",
+    "uri": "/get?cmd=;at%202:00%20\"echo%20test\"",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932371
+    ]
+  },
+  {
+    "name": "CRS 932371-2: Known false positive: matching `at` after newline",
+    "method": "GET",
+    "uri": "/get?cmd=Go%20to%20store.%0AAt%20the%20store%2C%20shop.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932371
+    ]
+  },
+  {
+    "name": "CRS 932371-3: GHSA: 932371 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "80"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\";at 2:00 &quot;echo test&quot;\"></a></root>",
+    "expect_ids": [
+      932371
+    ]
+  }
+]

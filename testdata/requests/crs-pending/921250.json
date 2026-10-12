@@ -1,0 +1,111 @@
+[
+  {
+    "name": "CRS 921250-1: Positive test: Detect if the cookie V1 is present in the request headers",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Origin",
+        "https://www.example.com"
+      ],
+      [
+        "Referer",
+        "https://www.example.com/"
+      ],
+      [
+        "Cookie",
+        "$Version=1; session=\\\"deadbeef; PHPSESSID=secret; dummy=qaz\\\""
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921250
+    ]
+  },
+  {
+    "name": "CRS 921250-2: Positive test: Detect if cookie V1 and also quoting is trying to be abused in the request headers",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Origin",
+        "https://www.example.com"
+      ],
+      [
+        "Referer",
+        "https://www.example.com/"
+      ],
+      [
+        "Cookie",
+        "$Version=1; session=\"deadbeef; PHPSESSID=secret; dummy=qaz\""
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921250
+    ]
+  },
+  {
+    "name": "CRS 921250-3: Negative test: do not match if Version is used as part of a cookie name",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Cookie",
+        "MyVersion=1; PHPSESSID=secret"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921250
+    ]
+  }
+]

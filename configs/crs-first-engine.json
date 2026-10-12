@@ -2,6 +2,7 @@
   "files": [
     "../coreruleset-4.30.0/crs-setup.conf.example",
     "../coreruleset-4.30.0/rules/REQUEST-901-INITIALIZATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-913-SCANNER-DETECTION.conf",
     "../coreruleset-4.30.0/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf",
     "../coreruleset-4.30.0/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf",
     "../coreruleset-4.30.0/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf",

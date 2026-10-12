@@ -1,0 +1,78 @@
+[
+  {
+    "name": "CRS 932231-1: True Negative Rule Integrity 1\narg value of \"ifconfig;. rm -rf /; Something „The Title”. After space or new line more characters\" is blocked",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "111"
+      ]
+    ],
+    "body": "arg=ifconfig;.+rm+-rf+/;+Something+%26%238222%3BThe+Title%26%238221%3B.+After+space+or+new+line+more+characters",
+    "expect_ids": [
+      932231
+    ]
+  },
+  {
+    "name": "CRS 932231-2: GHSA: 932231 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "153"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"ifconfig;. rm -rf /; Something &amp;#8222;The Title&amp;#8221;. After space or new line more characters\"></a></root>",
+    "expect_ids": [
+      932231
+    ]
+  }
+]

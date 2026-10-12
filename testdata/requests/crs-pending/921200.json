@@ -1,0 +1,983 @@
+[
+  {
+    "name": "CRS 921200-1: False positive: LDAP filter with objectCategory and userAccountControl attributes, valid query",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "85"
+      ]
+    ],
+    "body": "foo=(%26(objectCategory=computer)  (userAccountControl:1.2.840.113556.1.4.803:=8192))",
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-2: False positive: LDAP filter with objectSID, valid SID format",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "64"
+      ]
+    ],
+    "body": "foo=%28objectSID%3DS-1-5-21-73586283-152049171-839522115-1111%29",
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-3: False positive: LDAP filter with userAccountControl and groupType, valid group query",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "130"
+      ]
+    ],
+    "body": "foo=(userAccountControl:1.2.840.113556.1.4.803:=67108864)(%26(objectCategory=group)(groupType:1.2.840.113556.1.4.803:=2147483648))",
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-4: False positive: Simple alphanumeric query parameter, no LDAP syntax",
+    "method": "GET",
+    "uri": "/?username=johndoe",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-5: False positive: Parentheses in mathematical expression, not LDAP related",
+    "method": "GET",
+    "uri": "/?formula=(a+b)*c",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-6: False positive: Email address in query parameter, standard format",
+    "method": "GET",
+    "uri": "/?email=user@example.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-7: False positive: Standard URL query parameters with ampersand, no LDAP syntax",
+    "method": "GET",
+    "uri": "/?a=1&b=2&c=3",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-8: False positive: Pipe character in search term, not LDAP syntax",
+    "method": "GET",
+    "uri": "/?search=foo|bar",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-9: False positive: Balanced parentheses in arithmetic expression",
+    "method": "GET",
+    "uri": "/?expr=(1+2)+(3+4)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-10: False positive: Exclamation mark in text, not LDAP related",
+    "method": "GET",
+    "uri": "/?message=Hello!World",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-11: False positive: Tilde in file path, standard Unix path",
+    "method": "GET",
+    "uri": "/~user/file.txt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-12: False positive: Colon in time format, not LDAP syntax",
+    "method": "GET",
+    "uri": "/?time=12:30:45",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-13: LDAP injection: close parenthesis followed by encoded AND operator, classic injection pattern",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "foo=bar)(%26)",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-14: LDAP injection: close parenthesis followed by uid wildcard filter, filter manipulation",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "foo=printer%29%28uid%3D%2A%29",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-15: LDAP injection: complex filter manipulation using objectClass, multiple filters",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "51"
+      ]
+    ],
+    "body": "foo=void)(objectClass=users))(%26(objectClass=void)",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-16: LDAP injection: NOT operator with sn wildcard, filter negation",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "31"
+      ]
+    ],
+    "body": "foo=eb9adbd87d%29%21%28sn%3D%2A",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-17: LDAP injection: wildcard value followed by NOT operator, filter negation",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "24"
+      ]
+    ],
+    "body": "foo=%2A%29%21%28sn%3D%2A",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-18: LDAP injection: complex OR injection with multiple uid filters, chaining filters",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "foo=%2A%29%28uid%3D%2A%29%29%28%7C%28uid%3D%2A",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-19: LDAP injection: greater-than-equals comparison operator in filter, privilege escalation attempt",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "foo=aaa%2Aaaa%29%28cn%3E%3Dbob%29",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-20: LDAP injection: less-than-equals comparison operator in filter, privilege restriction attempt",
+    "method": "GET",
+    "uri": "/?filter=value)(gidNumber%3C%3D100",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-21: LDAP injection: approximate match operator in filter, fuzzy search manipulation",
+    "method": "GET",
+    "uri": "/?name=john)(sn~%3Dsmith",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-22: LDAP injection: OR operator injection, filter chaining for bypass",
+    "method": "GET",
+    "uri": "/?user=admin)(|",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-23: LDAP injection: double parenthesis escape with AND operator, advanced filter manipulation",
+    "method": "GET",
+    "uri": "/?q=test))(%26(objectClass%3D*",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-24: LDAP injection: AND operator with new filter attribute, filter expansion",
+    "method": "GET",
+    "uri": "/?param=val)%26(cn%3Dadmin",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-25: LDAP injection: OR operator with new filter attribute, filter expansion",
+    "method": "GET",
+    "uri": "/?param=val)%7C(uid%3D*",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-26: LDAP injection: Joomla CVE-2017-14596 style attack, OR operator with password wildcard",
+    "method": "GET",
+    "uri": "/?username=admin)(%7C(password%3D*",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-27: LDAP injection: attack via cookie value, filter manipulation in session",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Cookie",
+        "session=value)(uid=*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-28: LDAP injection: whitespace evasion using URL-encoded spaces between filters",
+    "method": "GET",
+    "uri": "/?q=test)%20(%20%26%20",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-29: LDAP injection: tab character as whitespace evasion between filters",
+    "method": "GET",
+    "uri": "/?q=test)%09(%09|",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-30: LDAP injection: authentication bypass attempt via POST, AND operator with objectClass wildcard",
+    "method": "POST",
+    "uri": "/login",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "54"
+      ]
+    ],
+    "body": "username=admin)(%26(objectClass%3D*)&password=anything",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-31: LDAP injection: authentication bypass attempt via POST, AND operator with objectClass wildcard\n4RI-250413",
+    "method": "POST",
+    "uri": "/login",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "{ \"session=value)(uid=*\": \"foo\" }",
+    "expect_ids": [
+      921200
+    ]
+  },
+  {
+    "name": "CRS 921200-32: GHSA: 921200 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "61"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"bar)(&amp;)\"></a></root>",
+    "expect_ids": [
+      921200
+    ]
+  }
+]

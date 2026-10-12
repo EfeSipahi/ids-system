@@ -18,7 +18,27 @@ type Config struct {
 	// Exclude lists rules that are in the files but must not run. Every
 	// other rule must be fully supported, or loading fails.
 	Exclude []Exclusion `json:"exclude"`
+
+	// ParanoiaLevel is the CRS paranoia level, 1 to 4. A higher level runs
+	// more rules, which find more attacks and flag more normal requests.
+	// A level includes the rules of the levels below it. Left out, it is 1.
+	ParanoiaLevel int `json:"paranoia_level"`
 }
+
+// Level returns the paranoia level, with the default filled in.
+func (c Config) Level() int {
+	if c.ParanoiaLevel == 0 {
+		return DefaultParanoiaLevel
+	}
+	return c.ParanoiaLevel
+}
+
+// DefaultParanoiaLevel is the level used when the configuration names none.
+// It is also the default of CRS itself.
+const (
+	DefaultParanoiaLevel = 1
+	MaxParanoiaLevel     = 4
+)
 
 // Exclusion names one rule that is left out, and why. The reason is
 // required: it is what the startup report shows for that rule.
@@ -61,6 +81,9 @@ func LoadConfig(path string) (Config, error) {
 func (c Config) validate() error {
 	if len(c.Files) == 0 {
 		return errors.New("no rule files are listed")
+	}
+	if level := c.Level(); level < 1 || level > MaxParanoiaLevel {
+		return fmt.Errorf("paranoia level %d is not supported; it must be 1 to %d", c.ParanoiaLevel, MaxParanoiaLevel)
 	}
 	seen := map[int]bool{}
 	for _, ex := range c.Exclude {

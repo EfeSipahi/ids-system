@@ -1,0 +1,259 @@
+[
+  {
+    "name": "CRS 933153-1: pmf + chain",
+    "method": "GET",
+    "uri": "/get/sodium_crypto_aead_chacha20poly1305_ietf_keygen%20%28",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-2: pmf + chain",
+    "method": "GET",
+    "uri": "/get?tidy_parse_string%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-3: non-dangerous PHP functions, removed to reduce FP",
+    "method": "GET",
+    "uri": "/get?foo=filemtime%28%24foo%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-4: pmf + chain",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "zend_test_is_string_marked_as_valid_utf8%28",
+    "expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-5: No parenthesis after keyword",
+    "method": "GET",
+    "uri": "/get?foo=zlib_get_coding_type",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-6: rule should not trigger when there are other words before parenthesis (`sodium_add` should not be matched)",
+    "method": "GET",
+    "uri": "/get?a=sodium_add_to_recipe(foo)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-7: snippets of Eng words (like prev) should not be matched, requiring regex match with word boundaries (e.g. 933160)",
+    "method": "GET",
+    "uri": "/get?a=preview",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-8: snippets of Eng words (like exp) should not be matched, requiring regex match with word boundaries (e.g. 933160)",
+    "method": "GET",
+    "uri": "/get?a=exploration",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933153
+    ]
+  },
+  {
+    "name": "CRS 933153-9: GHSA: 933153 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "99"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"sodium_crypto_aead_chacha20poly1305_ietf_keygen (\"></a></root>",
+    "expect_ids": [
+      933153
+    ]
+  }
+]

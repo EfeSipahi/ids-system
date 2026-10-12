@@ -1,0 +1,875 @@
+[
+  {
+    "name": "CRS 942390-1: Positive test: SQL Injection Attack: sdfsd'or 1 > 1",
+    "method": "GET",
+    "uri": "/get?var=sdfsd%27or%201%20%3e%201",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-2: Positive test: SQL Injection Attack using '  xor  abcdefg!",
+    "method": "GET",
+    "uri": "/get?var=%27%20%20xor%20%20abcdefg%21",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-3: Positive test: SQL Injection Attack using xor 2 <",
+    "method": "GET",
+    "uri": "/get?var=xor%202%20%3C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-4: Positive test: SQL Injection Attack using or 'a' <",
+    "method": "GET",
+    "uri": "/get?var=or%20%27a%27%20%3C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-5: Positive test: SQL Injection Attack using xor 'b' >",
+    "method": "GET",
+    "uri": "/get?var=xor%20%27b%27%20%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-6: Positive test: SQL Injection Attack using 'or     12356789<'",
+    "method": "GET",
+    "uri": "/get?var=%27or%20%20%20%20%2012356789%3C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-7: Positive test: SQL Injection Attack using '  or 3,4,2@!",
+    "method": "GET",
+    "uri": "/get?var=%27%20%20or%203%2C4%2C2%40%21",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-8: Positive test: SQL Injection with or 1=",
+    "method": "GET",
+    "uri": "/search?q=test%27%20or%201%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-9: Positive test: SQL Injection with xor 99>",
+    "method": "GET",
+    "uri": "/api?id=xor%2099%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-10: Positive test: SQL Injection with xor 5-",
+    "method": "GET",
+    "uri": "/page?filter=xor%205-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-11: Positive test: SQL Injection in POST body with or 'x' <",
+    "method": "POST",
+    "uri": "/login",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "52"
+      ]
+    ],
+    "body": "username=admin%27%20or%20%27x%27%20%3C&password=test",
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-12: Positive test: SQL Injection with xor 'test'>",
+    "method": "GET",
+    "uri": "/data?val=xor%20%27test%27%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-13: Positive test: SQL Injection with multiple spaces or 123<",
+    "method": "GET",
+    "uri": "/query?p=test%27%20%20%20%20or%20%20%20123%3C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-14: Positive test: SQL Injection with 'or abc!",
+    "method": "GET",
+    "uri": "/item?name=%27%20or%20abc%21",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-15: Positive test: SQL Injection with \"xor 456>",
+    "method": "GET",
+    "uri": "/search?term=%22xor%20456%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-16: Positive test: SQL Injection with 'or xyz!",
+    "method": "GET",
+    "uri": "/products?cat=%27%20or%20xyz%21",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-17: Positive test: SQL Injection in cookie with xor 7<",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Cookie",
+        "session_id=abc123%27xor%207%3C"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-18: Positive test: SQL Injection with or 88 (no comparison operator)",
+    "method": "GET",
+    "uri": "/check?id=or%2088",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-19: Positive test: SQL Injection with xor 1234567890<",
+    "method": "GET",
+    "uri": "/view?num=xor%201234567890%3C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-20: Positive test: SQL Injection with 'or xyz-",
+    "method": "GET",
+    "uri": "/filter?val=%27%20or%20xyz-",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-21: Negative test: Legitimate code 'for' should not trigger",
+    "method": "GET",
+    "uri": "/code?snippet=for%20loop%20in%20javascript",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-22: Negative test: Word 'format' should not trigger",
+    "method": "GET",
+    "uri": "/settings?format=json",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-23: Negative test: Email with 'or' should not trigger",
+    "method": "GET",
+    "uri": "/contact?email=support@organization.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-24: Negative test: Normal comparison without or/xor should not trigger",
+    "method": "GET",
+    "uri": "/compare?value=123%3C456",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-25: Negative test: Word 'actor' should not trigger",
+    "method": "GET",
+    "uri": "/search?q=famous%20actor",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-26: Positive test: SQL Injection with tab characters xor\t5>",
+    "method": "GET",
+    "uri": "/test?p=xor%09%09%09%09%09%095%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-27: Positive test: SQL Injection with vertical tab xor\u000b3<",
+    "method": "GET",
+    "uri": "/test?p=xor%0b3%3C",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-28: Positive test: SQL Injection with or 0>",
+    "method": "GET",
+    "uri": "/endpoint?val=test%27or%200%3E",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-29: GHSA: 942390 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "67"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"sdfsd'or 1 &gt; 1\"></a></root>",
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-30: Positive test: quoted literal longer than 10 chars must still be caught (or 'aaaaaaaaaaaaaaaaaaaa' <)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "47"
+      ]
+    ],
+    "body": "foo=%27%20or%20%27aaaaaaaaaaaaaaaaaaaa%27%20%3C",
+    "expect_ids": [
+      942390
+    ]
+  },
+  {
+    "name": "CRS 942390-31: Positive test: unquoted literal longer than 20 chars before a unary operator must still be caught",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "43"
+      ]
+    ],
+    "body": "foo=%27%20or%20aaaaaaaaaaaaaaaaaaaaaaaaa%3C",
+    "expect_ids": [
+      942390
+    ]
+  }
+]

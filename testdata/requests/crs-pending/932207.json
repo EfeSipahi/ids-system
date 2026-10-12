@@ -1,0 +1,217 @@
+[
+  {
+    "name": "CRS 932207-1: Referer with command injection in URL Fragment",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "https://www.google.com/?param=something#x=foo;cat$u+/etc$u/passwd"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932207
+    ]
+  },
+  {
+    "name": "CRS 932207-2: Referer with command injection in URL Fragment",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "https://www.google.com/?param=something#x=foo;c$_at+/et$_c/pas$_swd"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932207
+    ]
+  },
+  {
+    "name": "CRS 932207-3: Referer header with query string and obvious payload(Negative test)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "www.google.com/?param=;/bin/ca?+/et*/passwd"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932207
+    ]
+  },
+  {
+    "name": "CRS 932207-4: Referer header with query string and obvious payload",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "www.google.com/;ls%20-al"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932207
+    ]
+  },
+  {
+    "name": "CRS 932207-5: False positive test against syntax highlighter (generic)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "https://coreruleset.org/#:~:text=generic%20attack%20detection"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932207
+    ]
+  },
+  {
+    "name": "CRS 932207-6: False positive test against fragment (scroll to text fragment)",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "https://www.google.com/url?q=https://example.com/path/#:~:text=Inoltre%2C%20non%20vi%20sono%20evidenze,'immaginario%20comune%20(1).&sa=U&ved=2ahUKEwjSluGs8eX9AhWiSvEDHaaEChEQFnoECAgQBQ&usg=AOvVaw1_nmpM50Zh9-mGx1DsMw7j"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932207
+    ]
+  },
+  {
+    "name": "CRS 932207-7: Referer with command injection in URL Fragment",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.0",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Referer",
+        "https://www.google.com/?param=something#x=foo;cat$u+/etc$u/passwd"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_log": "Matched Data: \\$u found within REQUEST_HEADERS:Referer: #x=foo;cat\\$u /etc\\$u/passwd"
+  }
+]

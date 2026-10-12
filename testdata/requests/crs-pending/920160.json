@@ -1,0 +1,50 @@
+[
+  {
+    "name": "CRS 920160-4: Content-Length HTTP header is not numeric (920160)  from old modsec regressions\nTest is based in httpbin.org, so backend returns 405 if you are not posting to /post\nApache auto corrects for this error now so the log should not contain anything",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Length",
+        "3"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "body": "abc",
+    "no_expect_ids": [
+      920160
+    ]
+  }
+]

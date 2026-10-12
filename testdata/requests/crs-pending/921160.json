@@ -1,0 +1,164 @@
+[
+  {
+    "name": "CRS 921160-1: HTTP Header Injection Attack via payload: w/header, invalid line break, newlines after key",
+    "method": "GET",
+    "uri": "/script_rule921160.jsp?variableX=bar&variable2=Y&%0d%0Remote-addr%0d%0d%0d:%20foo.bar.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921160
+    ]
+  },
+  {
+    "name": "CRS 921160-2: HTTP Header Injection Attack via payload: w/header, correct line break, newlines after key",
+    "method": "GET",
+    "uri": "/script_rule921160.jsp?variableX=bar&variable2=Y&%0d%0aRemote-addr%0d%0d%0d:%20foo.bar.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921160
+    ]
+  },
+  {
+    "name": "CRS 921160-3: HTTP Header Injection Attack via payload: w/header",
+    "method": "GET",
+    "uri": "/script_rule921160.jsp?variableX=bar&variable2=Y&%0d%0aRemote-addr:%20foo.bar.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921160
+    ]
+  },
+  {
+    "name": "CRS 921160-4: HTTP Header Injection Attack via payload: w/header, attack explicitly in value rather than key",
+    "method": "GET",
+    "uri": "/script_rule921160.jsp?variableX=bar&variable2=%0d%0aRemote-addr:%20foo.bar.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921160
+    ]
+  },
+  {
+    "name": "CRS 921160-5: HTTP Header Injection Attack via payload: w/header, attack explicitly in key rather than value",
+    "method": "GET",
+    "uri": "/script_rule921160.jsp?variableX=bar&%0d%0aRemote-addr:%20foo.bar.com=Y",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921160
+    ]
+  },
+  {
+    "name": "CRS 921160-6: Status Page Test - simple HTTP header Injection Attack via payload in value",
+    "method": "GET",
+    "uri": "/get?foo=%0d%0arefresh:%20www.bar.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921160
+    ]
+  }
+]

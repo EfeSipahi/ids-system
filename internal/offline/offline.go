@@ -7,11 +7,13 @@
 package offline
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
 )
@@ -25,6 +27,18 @@ type Example struct {
 	// rule IDs that must not. Both may be empty.
 	ExpectIDs   []int
 	NoExpectIDs []int
+
+	// ExpectLog is a pattern that the log line of at least one match must
+	// contain; NoExpectLog is one that no log line may contain. Either may
+	// be nil. A log line names the rule and carries its message and data;
+	// see engine.Match.LogLine.
+	ExpectLog   *regexp.Regexp
+	NoExpectLog *regexp.Regexp
+}
+
+// HasExpectation reports whether the example expects anything.
+func (ex Example) HasExpectation() bool {
+	return len(ex.ExpectIDs) > 0 || len(ex.NoExpectIDs) > 0 || ex.ExpectLog != nil || ex.NoExpectLog != nil
 }
 
 // fileExample is the JSON form of one example.
@@ -38,9 +52,15 @@ type fileExample struct {
 	// lets the same header appear twice; a JSON object could do neither.
 	Headers [][]string `json:"headers"`
 
+	// Body is the body as text. BodyBase64 is for a body that is not
+	// UTF-8 text, which JSON cannot hold: the same bytes in base64. Only
+	// one of the two may be set.
 	Body        string `json:"body"`
+	BodyBase64  string `json:"body_base64"`
 	ExpectIDs   []int  `json:"expect_ids"`
 	NoExpectIDs []int  `json:"no_expect_ids"`
+	ExpectLog   string `json:"expect_log"`
+	NoExpectLog string `json:"no_expect_log"`
 }
 
 const defaultVersion = "HTTP/1.1"
@@ -110,14 +130,35 @@ func (fe fileExample) toExample() (Example, error) {
 		}
 		rec.Headers = append(rec.Headers, httpmodel.Header{Name: h[0], Value: h[1]})
 	}
-	if fe.Body != "" {
+	switch {
+	case fe.Body != "" && fe.BodyBase64 != "":
+		return Example{}, errors.New("body and body_base64 are both set")
+	case fe.Body != "":
 		rec.Body = []byte(fe.Body)
+	case fe.BodyBase64 != "":
+		body, err := base64.StdEncoding.DecodeString(fe.BodyBase64)
+		if err != nil {
+			return Example{}, fmt.Errorf("body_base64: %w", err)
+		}
+		rec.Body = body
 	}
 
-	return Example{
+	ex := Example{
 		Name:        fe.Name,
 		Request:     httpmodel.New(rec),
 		ExpectIDs:   fe.ExpectIDs,
 		NoExpectIDs: fe.NoExpectIDs,
-	}, nil
+	}
+	var err error
+	if fe.ExpectLog != "" {
+		if ex.ExpectLog, err = regexp.Compile(fe.ExpectLog); err != nil {
+			return Example{}, fmt.Errorf("expect_log: %w", err)
+		}
+	}
+	if fe.NoExpectLog != "" {
+		if ex.NoExpectLog, err = regexp.Compile(fe.NoExpectLog); err != nil {
+			return Example{}, fmt.Errorf("no_expect_log: %w", err)
+		}
+	}
+	return ex, nil
 }

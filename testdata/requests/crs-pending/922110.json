@@ -1,0 +1,962 @@
+[
+  {
+    "name": "CRS 922110-1: Single multipart part with illegal charset=utf-7",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "175"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"username\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-img+ACA-src+AD0-x+AD4-\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-2: Multipart bypass - illegal charset=utf-7 in first part, legitimate utf-8 in second (original bug)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "296"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"username\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-img+ACA-src+AD0-x+AD4-\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"dummy\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\ntest\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-3: Multipart with legitimate utf-8 in first part, illegal charset=utf-7 in second",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "296"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"dummy\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\ntest\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"username\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-img+ACA-src+AD0-x+AD4-\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-4: Duplicate part names - first has illegal charset=utf-7, second has utf-8",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "305"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"username\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-img+ACA-src+AD0-x+AD4-\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"username\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nlegitimate\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-5: Multipart with all legitimate charsets (utf-8)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "276"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue1\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field2\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue2\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-6: Various legitimate charsets (iso-8859-1, utf-8, windows-1252)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "412"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=iso-8859-1\r\n\r\nvalue1\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field2\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue2\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field3\"\r\nContent-Type: text/plain; charset=windows-1252\r\n\r\nvalue3\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-7: Illegal charset in middle part between two legitimate parts",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "435"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue1\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-script+AD4-alert(1)+ADw-/script+AD4-\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field3\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue3\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-8: Illegal charset=utf-16",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "164"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain; charset=utf-16\r\n\r\nmalicious content\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-9: Multiple illegal charsets (utf-7 and utf-16)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "289"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack1\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-script+AD4-\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack2\"\r\nContent-Type: text/plain; charset=utf-16\r\n\r\nattack\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-10: Parts without Content-Type headers",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "194"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\n\r\nvalue1\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field2\"\r\n\r\nvalue2\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-11: Mixed parts - some with Content-Type (one malicious), some without",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "381"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\n\r\nno content type\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/html; charset=utf-7\r\n\r\n+ADw-script+AD4-\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field3\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nlegitimate\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-12: Quoted charset value (legitimate)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "153"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=\"utf-8\"\r\n\r\nvalue\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-13: Whitespace around charset parameter",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "154"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain;  charset = utf-8\r\n\r\nvalue\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-14: Case variations in legitimate charset (UTF-8, Utf-8)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "276"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nvalue1\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field2\"\r\nContent-Type: text/plain; charset=Utf-8\r\n\r\nvalue2\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-15: Illegal charset=shift-jis",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "164"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain; charset=shift-jis\r\n\r\nattack payload\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-16: Legitimate charset=iso-8859-15",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "157"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=iso-8859-15\r\n\r\nvalue\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-17: Wildcard content-type with legitimate charset",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "154"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: application/*; charset=utf-8\r\n\r\nvalue\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-18: Content-Type with multiple parameters",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "167"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=utf-8; boundary=inner\r\n\r\nvalue\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-19: Empty multipart request",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "28"
+      ]
+    ],
+    "body": "------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-20: Five parts with illegal charset in middle (position 3 of 5)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "652"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue1\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field2\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue2\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain; charset=utf-32\r\n\r\nmalicious\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field4\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue4\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field5\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue5\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-21: Illegal charset in uppercase (CHARSET=UTF-7)",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "162"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain; CHARSET=UTF-7\r\n\r\n+ADw-script+AD4-\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-22: Content-Type without charset parameter",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "156"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: application/octet-stream\r\n\r\nbinary data\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-23: Illegal charset followed by other parameters",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "178"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain; charset=utf-7; boundary=inner\r\n\r\n+ADw-script+AD4-\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-24: Stress test - 15 parts with illegal charset in part 10",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "1938"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue1\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field2\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue2\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field3\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue3\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field4\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue4\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field5\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue5\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field6\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue6\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field7\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue7\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field8\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue8\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field9\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue9\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"ATTACK_HERE\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-script+AD4-alert(1)+ADw-/script+AD4-\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field11\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue11\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field12\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue12\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field13\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue13\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field14\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue14\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field15\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nvalue15\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-25: Illegal charset=euc-jp",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "161"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain; charset=euc-jp\r\n\r\nattack payload\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-26: Three parts with same name, middle has illegal charset",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "402"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"data\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nfirst\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"data\"\r\nContent-Type: text/plain; charset=utf-7\r\n\r\n+ADw-attack+AD4-\r\n------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"data\"\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nthird\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-27: Legitimate charset=iso-8859-1",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "156"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"field1\"\r\nContent-Type: text/plain; charset=iso-8859-1\r\n\r\nvalue\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-28: Illegal charset with spacing obfuscation",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "167"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nContent-Type: text/plain;  charset  =  utf-7\r\n\r\n+ADw-script+AD4-\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-29: Content-Type header in mixed case with illegal charset",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "162"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"attack\"\r\nCoNtEnT-TyPe: text/plain; charset=utf-7\r\n\r\n+ADw-script+AD4-\r\n------WebKitFormBoundary--\r\n",
+    "expect_ids": [
+      922110
+    ]
+  },
+  {
+    "name": "CRS 922110-30: Application/json with legitimate charset",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS Tests"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----WebKitFormBoundary"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "170"
+      ]
+    ],
+    "body": "------WebKitFormBoundary\r\nContent-Disposition: form-data; name=\"jsondata\"\r\nContent-Type: application/json; charset=utf-8\r\n\r\n{\"test\": \"data\"}\r\n------WebKitFormBoundary--\r\n",
+    "no_expect_ids": [
+      922110
+    ]
+  }
+]

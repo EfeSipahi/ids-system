@@ -1,0 +1,855 @@
+[
+  {
+    "name": "CRS 932380-1: Windows shell command injection with 'bcdboot': view=image.jpg%26bcdboot < file.txt\nMatch input redirection to bcdboot",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26bcdboot%20%3C%20file.txt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-2: Windows shell command injection with 'bcdboot': view=image.jpg%26bcdboot /r file.txt\nMatch bcdboot with normal argument",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26bcdboot%20%2Fr%20file.txt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-3: Windows shell command injection with 'bcdboot': view=image.jpg%26bcdboot/r file.txt\nMatch bcdboot with argument without preceding space",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26bcdboot%2Fr%20file.txt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-4: Windows shell command injection with 'bcdboot': view=image.jpg%26bcdboot  /r file.txt\nMatch bcdboot with argument with multiple preceding space",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26bcdboot%20%20%2Fr%20file.txt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-5: Windows shell command injection with 'sort' (false positive): sort%3Dex%26sort%3Dascending\nDo not match query parameter",
+    "method": "GET",
+    "uri": "/get/www/delivery/lg.php?bannerid=18&campaignid=1&zoneid=4&loc=https%3A%2F%2Fwww.example.com%2Ffoo%2Fbar%2Fx-x%2Fx%3Fs%3D2014-11-01%26e%3D2020-10-31%26ex%3D7%26page%3D1%26sort%3Dex%26sort%3Ddescending&referer=https%3A%2F%2Fwww.example.com%2Ffoo%2Fbar%2Fx-x%2Fx%3Fs%3D2014-11-01%26e%3D2020-10-31%26ex%3D7%26page%3D1%26sort%3Dex%26sort%3Dascending&cb=7de91ea349",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-6: Windows shell command injection with 'sort' (false positive): sort%3D0\nDo not match encoded path",
+    "method": "GET",
+    "uri": "/get/url%2Fbla%3Ftest%3D1%26sort%3D0",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-7: Windows shell command injection using 'bcdboot'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "54"
+      ]
+    ],
+    "body": "var=test@coreruleset.org\"|bcdboot %SYSTEMROOT%\\win.ini",
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-8: False positive against 'time warner'",
+    "method": "GET",
+    "uri": "/get?foo=time+warner+",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-9: False positive against 'time for'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "175"
+      ]
+    ],
+    "body": "payload=While+this+is+a+challenging+time+for+us+all%2C+we+are+busy+helping+customers+manage+playout+infrastructure+in+ways+that+were+just+dreams+only+a+couple+of+years+ago.%0A",
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-10: False positive against '; vol'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "148"
+      ]
+    ],
+    "body": "payload=El+primer+avi%C3%B3n+de+la+aerol%C3%ADnea+fue+en+Curtiss+Robin%3B+vol%C3%B3+rutas+dom%C3%A9sticas+como+transporte+de+correos+y+pasajeros.%0A",
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-11: False positive against '; where'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "181"
+      ]
+    ],
+    "body": "payload=This+street+is+the+home+of+the+Foreign+Office%2C+Mycroft%27s+place+of+work%3B+where+the+Mazarin+Stone+was+stolen%2C+and+Percy+Phelps+chased+the+thief+of+the+naval+treaty.%0A",
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-12: False positive against '; for'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "119"
+      ]
+    ],
+    "body": "payload=A+brief+overview+of+methods+is+presented+here%3B+for+detailed+coverage%2C+see+the+cross-referenced+articles.%0A",
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-13: False positive against '; if'",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate, br"
+      ],
+      [
+        "Accept-Language",
+        "en-us,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "159"
+      ]
+    ],
+    "body": "payload=I+have+no+money%2C+but+I%E2%80%99m+gonna+push+through%3B+if+nothing+happens+by+the+end+of+next+year%2C+it%E2%80%99s+a+sign+I+need+to+move+back+home.%0A",
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-14: GHSA: 932380 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "90"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"view=image.jpg&amp;bcdboot &lt; file.txt\"></a></root>",
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-15: Windows shell command injection with 'dsquery': view=image.jpg%26dsquery user\nMatch dsquery (AD DS directory-service command-line tool)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26dsquery%20user",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-16: Windows shell command injection with 'dsadd': view=image.jpg%26dsadd user\nMatch dsadd (AD DS object creation)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26dsadd%20user",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-17: Windows shell command injection with 'ntdsutil': view=image.jpg%26ntdsutil\nMatch ntdsutil (AD DS database management, ntds.dit extraction)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26ntdsutil%20snapshot",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-18: Windows shell command injection with 'csvde': view=image.jpg%26csvde -f out.csv\nMatch csvde (directory export)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26csvde%20-f%20out.csv",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-19: No false positive on benign word containing the 'ds' command substrings: broadsword",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "57"
+      ]
+    ],
+    "body": "payload=the+broadsword+and+windshield+were+goldsmith+made",
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-20: Windows shell command injection with 'dsget': view=image.jpg|dsget user\nMatch dsget (AD DS object properties, pipe separator)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%7Cdsget%20user",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-21: Windows shell command injection with 'dsmod': view=image.jpg;dsmod user\nMatch dsmod (AD DS object modification, semicolon separator)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%3Bdsmod%20user",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-22: Windows shell command injection with 'dsmove': view=image.jpg&&dsmove\nMatch dsmove (AD DS object relocation, && separator)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26%26dsmove%20%22CN%3Dtest%22",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-23: Windows shell command injection with 'dsrm': view=image.jpg\\ndsrm\nMatch dsrm (AD DS object deletion, newline separator)",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%0Adsrm%20-subtree",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-24: Windows shell command injection with 'dsacls' obfuscated by quotes: view=image.jpg%26d\"s\"acls\nMatch dsacls (AD DS ACL manipulation) despite quote insertion",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26d%22s%22acls",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-25: Windows shell command injection with 'dsmgmt' called by path:\nview=image.jpg%26\\Windows\\System32\\dsmgmt\nMatch dsmgmt (AD DS database management) with a path prefix",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26%5CWindows%5CSystem32%5Cdsmgmt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-26: Windows shell command injection with 'ldifde.exe': view=image.jpg%26ldifde.exe -f out.ldf\nMatch ldifde (directory import/export) with an explicit .exe extension",
+    "method": "GET",
+    "uri": "/get?view%3Dimage.jpg%26ldifde.exe%20-f%20out.ldf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-27: No false positive for the new commands without a command injection separator",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "62"
+      ]
+    ],
+    "body": "payload=dsquery+ldifde+ntdsutil+csvde+dsacls+are+windows+tools",
+    "no_expect_ids": [
+      932380
+    ]
+  },
+  {
+    "name": "CRS 932380-28: Detect RCE in last path segment\nPayload: view=image.jpg&bcdboot c:\\windows",
+    "method": "GET",
+    "uri": "/path/with/view%3Dimage.jpg%26bcdboot%20c%3A%5Cwindows",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      932380
+    ]
+  }
+]

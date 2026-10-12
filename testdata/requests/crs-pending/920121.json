@@ -1,0 +1,254 @@
+[
+  {
+    "name": "CRS 920121-1",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "163"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"fileRap\"; filename=\"te;st.txt\"\r\nContent-Type: text/plain\r\n\r\nSome-file-test-here\r\n----------397236876--\r\n",
+    "expect_ids": [
+      920121
+    ]
+  },
+  {
+    "name": "CRS 920121-2",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "163"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"fileRap\"; filename=\"te'st.txt\"\r\nContent-Type: text/plain\r\n\r\nSome-file-text-here\r\n----------397236876--\r\n",
+    "expect_ids": [
+      920121
+    ]
+  },
+  {
+    "name": "CRS 920121-3",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "164"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"fileRap\"; filename=\"te\\\"st.txt\"\r\nContent-Type: text/plain\r\n\r\nSome-file-text-here\r\n----------397236876--\r\n",
+    "expect_ids": [
+      920121
+    ]
+  },
+  {
+    "name": "CRS 920121-4",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "163"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"fileRap\"; filename=\"te=st.txt\"\r\nContent-Type: text/plain\r\n\r\nSome-file-text-here\r\n----------397236876--\r\n",
+    "expect_ids": [
+      920121
+    ]
+  },
+  {
+    "name": "CRS 920121-5",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=--------397236876"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "194"
+      ]
+    ],
+    "body": "----------397236876\r\nContent-Disposition: form-data; name=\"fileRap\"; filename=\"test.txt\"\r\nContent-Type: text/plain\r\n\r\nCharacters-shouldn't-trigger-rule-\"-match-in-;-file\r\n----------397236876--\r\n",
+    "no_expect_ids": [
+      920121
+    ]
+  },
+  {
+    "name": "CRS 920121-6: Attempted multipart/form-data bypass (920121). Match \\ in FILES.",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=---------------------------265001916915724"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "215"
+      ]
+    ],
+    "body": "-----------------------------265001916915724\r\nContent-Disposition: form-data; name=\"cv.pdf\"; filename=\"1.j\\s\\p\"\r\nContent-Type: application/octet-stream\r\n\r\nhelloworld\r\n-----------------------------265001916915724--\r\n",
+    "expect_ids": [
+      920121
+    ]
+  },
+  {
+    "name": "CRS 920121-7: Attempted multipart/form-data bypass (920121). Match \\ in FILES_NAMES.",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=---------------------------265001916915724"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "216"
+      ]
+    ],
+    "body": "-----------------------------265001916915724\r\nContent-Disposition: form-data; name=\"cv.p\\d\\f\"; filename=\"cv.pdf\"\r\nContent-Type: application/octet-stream\r\n\r\nhelloworld\r\n-----------------------------265001916915724--\r\n",
+    "expect_ids": [
+      920121
+    ]
+  }
+]

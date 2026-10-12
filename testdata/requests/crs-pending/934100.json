@@ -1,0 +1,999 @@
+[
+  {
+    "name": "CRS 934100-1: imported test",
+    "method": "GET",
+    "uri": "/get?foo=_%24%24ND_FUNC%24%24_",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-2: imported test",
+    "method": "GET",
+    "uri": "/get?foo=__js_function",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-3: imported test",
+    "method": "GET",
+    "uri": "/get?foo=eval%28String.fromCharCode",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-4: imported test",
+    "method": "GET",
+    "uri": "/get?foo=function%28%29+%7B",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-5: imported test",
+    "method": "GET",
+    "uri": "/get?foo=new+Function+%28",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-6: imported test",
+    "method": "GET",
+    "uri": "/get?foo=this.constructor.constructor",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-7: imported test",
+    "method": "GET",
+    "uri": "/get?foo=module.exports%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-8: base64 encoded test",
+    "method": "GET",
+    "uri": "/get?foo=XyQkTkRfRlVOQyQkXwo=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-9: base64 encoded test",
+    "method": "GET",
+    "uri": "/get?foo=XyQkTkRfRlVOQyQkXwo=",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-10: process.env test",
+    "method": "GET",
+    "uri": "/get?foo=process.env",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-11: console.info test",
+    "method": "GET",
+    "uri": "/get?foo=console.info(1)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-12: console.info test (JavaScript escape sequences)",
+    "method": "GET",
+    "uri": "/get?foo=c%5Cu006fnsole.info(1)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-13: process.env test (square bracket property access)",
+    "method": "GET",
+    "uri": "/get?foo=process[\"env\"]",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-14: console.info test (square bracket property access)",
+    "method": "GET",
+    "uri": "/get?foo=console[\"info\"](1)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-15: console.info test (call method)",
+    "method": "GET",
+    "uri": "/get?foo=console.info.call(this,1)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-16: \"process\" false positive test",
+    "method": "GET",
+    "uri": "/get?foo=process.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-17: \"console\" false positive test",
+    "method": "GET",
+    "uri": "/get?foo=console.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-18: ssti test 1",
+    "method": "GET",
+    "uri": "/get?foo=%23%7Bprocess.binding%28foo%29.spawn%28foo2%29%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-19: ssti test 2",
+    "method": "GET",
+    "uri": "/get?foo=%23%7Brequire.main.constructor._load%28foo%29.readdirSync%28foo2%29%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-20: ssti test 3",
+    "method": "GET",
+    "uri": "/get?foo=process%5Breq.query.a",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-21: ssti test 4",
+    "method": "GET",
+    "uri": "/get?foo=require%5Breq.query.a",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-22: ssti test 5",
+    "method": "GET",
+    "uri": "/get?foo=process%5BmainModule",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-23: require child_process",
+    "method": "GET",
+    "uri": "/get?foo=require(\"child_process\").exec('whoami')",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-24: 5ZLKNU33",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "14"
+      ]
+    ],
+    "body": "process.env%0A",
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-25: 5ZLKNU33",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "console.info%281%29%0A",
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-26: 5ZLKNU33",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "29"
+      ]
+    ],
+    "body": "c%5Cu006fnsole.info%281%29%0A",
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-27: Detect example function _$$ND_FUNC$$_ submitted as plaintext",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Cookie",
+        "test_cookie=_$$ND_FUNC$$_function()"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-28: Detect example function _$$ND_FUNC$$_ submitted as plaintext with JavaScript escape sequence obfuscation",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Cookie",
+        "test_cookie=_$$\\u004e\\u0044_FUNC$$_\\u0066unction()"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-29: Detect example function _$$ND_FUNC$$_ submitted as plaintext that has been Base64 encoded",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Cookie",
+        "test_cookie=XyQkTkRfRlVOQyQkX2Z1bmN0aW9uKCkK"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-30: Detect example function _$$ND_FUNC$$_ submitted as plaintext with JavaScript escape sequence obfuscation that has been Base64 encoded",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Cookie",
+        "test_cookie=XyQkXHUwMDRlXHUwMDQ0X0ZVTkMkJF9cdTAwNjZ1bmN0aW9uKCkK"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-31: Detect example function _$$ND_FUNC$$_ submitted as plaintext that has been Base64 encoded and then obfuscated with JavaScript escape sequences",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Cookie",
+        "test_cookie=\\u0058\\u0079QkTkRfRlVOQyQkX2Z1bmN0aW9uKCkK"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-32: Detect CVE-2025-55182 payload from public POC",
+    "method": "GET",
+    "uri": "/get?test=%7B%27_prefix%27%3A%27console.log%287%2A7%2B1%29%2F%2F%27%2C+%27_formData%27%3A%7B%27get%27%3A%27%243%3Aconstructor%3Aconstructor%27%7D%2C+%27_chunks%27%3A%27%242%3A_response%3A_chunks%27%2C%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-33: Detect CVE-2025-55182 payload from public POC",
+    "method": "GET",
+    "uri": "/get?test=%7B%22status%22%3A%22resolved_model%22%2C%20%22reason%22%3A%7B%220%22%3A%22%247%3AModule%3Aprototype%22%2C%20%22length%22%3A1%2C%20%22toString%22%3A%20%22%24b%3Apop%22%7D%2C%20%22_response%22%3A%20%22%249%22%2C%20%22value%22%3A%20%22%7B%5C%22set%5C%22%3A%5C%22%247%3AModule%3Aprototype%3A_compile%5C%22%2C%5C%22then%5C%22%3A%5C%22%24b%3Amap%5C%22%2C%5C%220%5C%22%3A%5C%22%2411%5C%22%2C%5C%22length%5C%22%3A1%7D%22%2C%20%22then%22%3A%22%242%3Athen%22%7D%27",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-34: Detect CVE-2025-55182 payload from TW SIEM",
+    "method": "GET",
+    "uri": "/get?test=%7B%22then%22%3A%22%241%3A__proto__%3Athen%22%2C%22status%22%3A%22resolved_model%22%2C%22reason%22%3A-1%2C%22value%22%3A%22%7B%5C%22then%5C%22%3A%5C%22%24B1337%5C%22%7D%22%2C%22_response%22%3A%7B%22_prefix%22%3A%22var+res%3Dprocess.mainModule.require%28%27child_process%27%29.execSync%28%27echo+%24%28%2841%2A271%29%29%27%29.toString%28%29.trim%28%29%3B%3Bthrow+Object.assign%28new+Error%28%27NEXT_REDIRECT%27%29%2C%7Bdigest%3A+%60NEXT_REDIRECT%3Bpush%3B%2Flogin%3Fa%3D%24%7Bres%7D%3B307%3B%60%7D%29%3B%22%2C%22_chunks%22%3A%22%24Q2%22%2C%22_formData%22%3A%7B%22get%22%3A%22%241%3Aconstructor%3Aconstructor%22%7D%7D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934100
+    ]
+  },
+  {
+    "name": "CRS 934100-35: GHSA: 934100 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"_$$ND_FUNC$$_\"></a></root>",
+    "expect_ids": [
+      934100
+    ]
+  }
+]

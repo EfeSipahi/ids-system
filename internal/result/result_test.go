@@ -160,6 +160,7 @@ func TestStartup(t *testing.T) {
 	got := NewStartup(rs)
 	want := Startup{
 		Ruleset:              "TEST/1",
+		ParanoiaLevel:        1,
 		ActiveRules:          3,
 		ExcludedRules:        []ExcludedRule{{ID: 4, File: "rules.conf", Line: 6, Reason: "responses are not inspected"}},
 		IgnoredTargetUpdates: []int{},
@@ -170,7 +171,7 @@ func TestStartup(t *testing.T) {
 
 	// Empty lists are written as [] and not as null.
 	out, _ := json.Marshal(NewStartup(loadRules(t, `SecAction "id:1,phase:1,nolog,pass"`)))
-	if string(out) != `{"ruleset":"","active_rules":1,"excluded_rules":[],"ignored_target_updates":[]}` {
+	if string(out) != `{"ruleset":"","paranoia_level":1,"active_rules":1,"excluded_rules":[],"ignored_target_updates":[]}` {
 		t.Errorf("startup JSON = %s", out)
 	}
 }

@@ -35,6 +35,7 @@ type Options struct {
 // Startup describes the loaded rules: what runs, what does not, and why.
 type Startup struct {
 	Ruleset       string         `json:"ruleset"`
+	ParanoiaLevel int            `json:"paranoia_level"`
 	ActiveRules   int            `json:"active_rules"`
 	ExcludedRules []ExcludedRule `json:"excluded_rules"`
 
@@ -56,6 +57,7 @@ type ExcludedRule struct {
 func NewStartup(rs *engine.RuleSet) Startup {
 	s := Startup{
 		Ruleset:              rs.Signature(),
+		ParanoiaLevel:        rs.ParanoiaLevel(),
 		ExcludedRules:        []ExcludedRule{},
 		IgnoredTargetUpdates: rs.IgnoredTargetUpdates(),
 	}

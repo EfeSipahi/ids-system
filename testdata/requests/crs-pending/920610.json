@@ -1,0 +1,29 @@
+[
+  {
+    "name": "CRS 920610-1: Encoded URL fragment false positive test",
+    "method": "GET",
+    "uri": "/%23fragment",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/html;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920610
+    ]
+  }
+]

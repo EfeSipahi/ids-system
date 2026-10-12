@@ -1,0 +1,254 @@
+[
+  {
+    "name": "CRS 922100-1: Positive test: utf-7 is not in allowed charsets",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "206"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-7\r\n--boundary\r\nContent-disposition: form-data; name=\"positive\"\r\nContent-Type: text/plain\r\n\r\nLet me see if I can use utf-7.\r\n--boundary--\r\n",
+    "expect_ids": [
+      922100
+    ]
+  },
+  {
+    "name": "CRS 922100-2: Negative test: only allowed charsets when using _charset_",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "228"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-8\r\n--boundary\r\nContent-disposition: form-data; name=\"negative\"\r\nContent-Type: text/plain\r\n\r\nThis should be good as we use utf-8 that is allowed.\r\n--boundary--\r\n",
+    "no_expect_ids": [
+      922100
+    ]
+  },
+  {
+    "name": "CRS 922100-3: Positive test: don't allow substrings of valid charsets when using _charset_",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "213"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-\r\n--boundary\r\nContent-disposition: form-data; name=\"negative\"\r\nContent-Type: text/plain\r\n\r\nutf-8 is valid but utf- should not be.\r\n--boundary--\r\n",
+    "expect_ids": [
+      922100
+    ]
+  },
+  {
+    "name": "CRS 922100-4: Negative test: no multipart part with name '_charset_' at all",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "143"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"negative\"\r\nContent-Type: text/plain\r\n\r\nutf-8 is valid but utf- should not be.\r\n--boundary--\r\n",
+    "no_expect_ids": [
+      922100
+    ]
+  },
+  {
+    "name": "CRS 922100-5: Positive test: utf-7 is not in allowed charsets, even there is an argument",
+    "method": "POST",
+    "uri": "/post?_charset_=utf-8",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "206"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-7\r\n--boundary\r\nContent-disposition: form-data; name=\"positive\"\r\nContent-Type: text/plain\r\n\r\nLet me see if I can use utf-7.\r\n--boundary--\r\n",
+    "expect_ids": [
+      922100
+    ]
+  },
+  {
+    "name": "CRS 922100-6: Positive test: utf-7 is not in allowed charsets, even there is another MP",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "415"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-8\r\n--boundary\r\nContent-disposition: form-data; name=\"positive\"\r\nContent-Type: text/plain\r\n\r\nTry to hide the multipart with invalid charset.\r\n--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-7\r\n--boundary\r\nContent-disposition: form-data; name=\"positive\"\r\nContent-Type: text/plain\r\n\r\nLet me see if I can use utf-7.\r\n--boundary--\r\n",
+    "expect_ids": [
+      922100
+    ]
+  },
+  {
+    "name": "CRS 922100-7: Positive test: utf-7 is not in allowed charsets, even if a later part sets an allowed charset",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=boundary"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "277"
+      ]
+    ],
+    "body": "--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-7\r\n--boundary\r\nContent-disposition: form-data; name=\"positive\"\r\nContent-Type: text/plain\r\n\r\nLet me see if I can use utf-7.\r\n--boundary\r\nContent-disposition: form-data; name=\"_charset_\"\r\n\r\nutf-8\r\n--boundary--\r\n",
+    "expect_ids": [
+      922100
+    ]
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "CRS 921150-1: HTTP Header Injection Attack via payload",
+    "method": "GET",
+    "uri": "/get/script.jsp?variableX=bar&variable2=Y&%0d%0restofdata",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921150
+    ]
+  },
+  {
+    "name": "CRS 921150-2: Status Page Test - Header Injection Attack (CR/LF detected): Send a parameter name that includes %0d%0a (percent-encoded CR-LF)",
+    "method": "GET",
+    "uri": "/get?parameter%0d%0a=test",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      921150
+    ]
+  }
+]

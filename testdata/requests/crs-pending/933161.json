@@ -1,0 +1,475 @@
+[
+  {
+    "name": "CRS 933161-1: regexp; must run test in PL3!",
+    "method": "POST",
+    "uri": "/post?%20checkDate%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "gethostbynamE%28",
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-2: regexp; must run test in PL3!",
+    "method": "POST",
+    "uri": "/post?foo=chroot%09%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "gethostbynamE%28",
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-3: symlink \\t()",
+    "method": "POST",
+    "uri": "/post?foo=symlink%09%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "gethostbynamE%28",
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-4: Negative - 'dl' is deliberately absent from the function list: it is only\nregistered by the CLI, embed and non-serving CGI SAPIs, so it is an\nundefined function under any HTTP-serving SAPI, while the two-character\nname matches ordinary prose such as \"5 dl (500 ml) water\".\nSee https://github.com/coreruleset/coreruleset/issues/3693",
+    "method": "GET",
+    "uri": "/get?foo=dl%2f%2afoo%2a%2f%09%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-5: ucfirst()",
+    "method": "POST",
+    "uri": "/post?foo=xucfirst%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "gethostbynamE%28",
+    "no_expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-6: block comment between function name and parens: checkdate/*x*/()",
+    "method": "GET",
+    "uri": "/get?foo=checkdate%2f%2ax%2a%2f%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-7: // line comment terminated by a newline before parens: symlink//c\\n()",
+    "method": "GET",
+    "uri": "/get?foo=symlink%2f%2fc%0a%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-8: # line comment terminated by a newline before parens: serialize#c\\n()",
+    "method": "GET",
+    "uri": "/get?foo=serialize%23c%0a%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-9: multi-line block comment between function name and parens: touch/*a\\r\\nb*/()",
+    "method": "GET",
+    "uri": "/get?foo=touch%2f%2aa%0d%0ab%2a%2f%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-10: vertical tab as separator before parens: pi\\x0b()",
+    "method": "GET",
+    "uri": "/get?foo=pi%0b%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-11: mixed whitespace and block comment before parens: range \\t/*x*/()",
+    "method": "GET",
+    "uri": "/get?foo=range%20%09%2f%2ax%2a%2f%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-12: function call with arguments inside the parens: crypt(abc)",
+    "method": "GET",
+    "uri": "/get?foo=crypt%28abc%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-13: Negative - function name as a substring without a word boundary\n(xcheckdate) must not match",
+    "method": "GET",
+    "uri": "/get?foo=xcheckdate%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-14: Negative - a # line comment without a trailing newline puts the parens\ninside the comment, so it is not a function call: symlink#x()",
+    "method": "GET",
+    "uri": "/get?foo=symlink%23x%28%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-15: Negative - bare function name without parentheses must not match",
+    "method": "GET",
+    "uri": "/get?foo=checkdate",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      933161
+    ]
+  },
+  {
+    "name": "CRS 933161-16: GHSA: 933161 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "58"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"system()\"></a></root>",
+    "expect_ids": [
+      933161
+    ]
+  }
+]

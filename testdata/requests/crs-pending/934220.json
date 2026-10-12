@@ -1,0 +1,218 @@
+[
+  {
+    "name": "CRS 934220-1: True positive Y4H-260326\nNested ORM traversal + operator in a JSON body key",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "70"
+      ]
+    ],
+    "body": "{\"created_by__departments__employees__user__username__startswith\":\"p\"}",
+    "expect_ids": [
+      934220
+    ]
+  },
+  {
+    "name": "CRS 934220-2: True positive - two-level traversal in query string (a__b__icontains)",
+    "method": "GET",
+    "uri": "/get?user__profile__icontains=x",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934220
+    ]
+  },
+  {
+    "name": "CRS 934220-3: True positive - nested traversal JSON key sent with a non-JSON\nContent-Type (caught via REQUEST_BODY)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "39"
+      ]
+    ],
+    "body": "{\"user__profile__city__startswith\":\"p\"}",
+    "expect_ids": [
+      934220
+    ]
+  },
+  {
+    "name": "CRS 934220-4: Negative test - single field + operator (normal django-filter usage)\nmust NOT match the PL2 traversal rule (left to 934210 at PL3)",
+    "method": "GET",
+    "uri": "/get?username__startswith=p",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934220
+    ]
+  },
+  {
+    "name": "CRS 934220-5: Negative test - two separate single-field operator keys in a raw\nJSON body must not be spanned into one traversal match",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "text/plain"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "34"
+      ]
+    ],
+    "body": "{\"name__exact\":\"a\",\"city__in\":\"b\"}",
+    "no_expect_ids": [
+      934220
+    ]
+  },
+  {
+    "name": "CRS 934220-6: True positive - nested traversal + case-insensitive lookup __istartswith",
+    "method": "GET",
+    "uri": "/get?user__profile__nickname__istartswith=adm",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934220
+    ]
+  },
+  {
+    "name": "CRS 934220-7: True positive - nested traversal + JSONField __has_keys lookup",
+    "method": "GET",
+    "uri": "/get?user__metadata__has_keys=is_staff",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934220
+    ]
+  }
+]

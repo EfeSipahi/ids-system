@@ -1,0 +1,288 @@
+[
+  {
+    "name": "CRS 920640-1: POST request with body but no Content-Type header",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ]
+    ],
+    "body": "{\"id_order\":\"select(sleep(10));\"}",
+    "expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-2: POST request with body and proper Content-Type header",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "33"
+      ]
+    ],
+    "body": "{\"id_order\":\"select(sleep(10));\"}",
+    "no_expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-3: GET request without body (negative test)",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-4: POST request with body but empty Content-Type header value.\nThis test should trigger the rule, but currently doesn't work with HTTP/1.1\ndue to the requirement of Content-Length header. Cases with Content-Length are\ncovered in other tests. This test will primarily work when HTTP/2.0 support\nis available in go-ftw.",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        ""
+      ],
+      [
+        "Content-Length",
+        "33"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "body": "{\"id_order\":\"select(sleep(10));\"}",
+    "no_expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-5: POST request with body, no Content-Length and no Content-Type headers.\nThis test should trigger the rule, but currently doesn't work with HTTP/1.1\ndue to the requirement of Content-Length header. Cases with Content-Length are\ncovered in other tests. This test will primarily work when HTTP/2.0 support\nis available in go-ftw, as HTTP/2 and up use a binary protocol with proper\nlength encoding in the data frames.",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "body": "{\"id_order\":\"select(sleep(10));\"}",
+    "no_expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-6: POST request with simple text body and no Content-Type header",
+    "method": "POST",
+    "uri": "/test",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Length",
+        "9"
+      ]
+    ],
+    "body": "test_data",
+    "expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-7: POST request with XML body but no Content-Type header",
+    "method": "POST",
+    "uri": "/api",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><data><id>123</id></data>",
+    "expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-8: PUT request with body but no Content-Type header",
+    "method": "PUT",
+    "uri": "/resource/1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Length",
+        "18"
+      ]
+    ],
+    "body": "{\"name\":\"updated\"}",
+    "expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-9: POST request with Content-Length 0 (negative test - no actual body)",
+    "method": "POST",
+    "uri": "/test",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Length",
+        "0"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ]
+    ],
+    "no_expect_ids": [
+      920640
+    ]
+  },
+  {
+    "name": "CRS 920640-10: PATCH request with body but no Content-Type header",
+    "method": "PATCH",
+    "uri": "/resource/1",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Content-Length",
+        "46"
+      ]
+    ],
+    "body": "{\"op\":\"replace\",\"path\":\"/name\",\"value\":\"test\"}",
+    "expect_ids": [
+      920640
+    ]
+  }
+]

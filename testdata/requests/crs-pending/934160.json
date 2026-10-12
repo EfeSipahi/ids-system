@@ -1,0 +1,925 @@
+[
+  {
+    "name": "CRS 934160-1: Normal text false positive test",
+    "method": "GET",
+    "uri": "/get?text=while%20(foo)%20is%20bar.",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-2: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!false)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-3: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!-0);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-4: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!%2B0);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-5: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!0);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-6: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!-0);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-7: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!\"\");",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-8: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!'');",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-9: while falsy with negations",
+    "method": "GET",
+    "uri": "/get?eval=while(!``);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-10: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(true);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-11: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(Infinity);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-12: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(-Infinity);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-13: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(%2BInfinity);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-14: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(-1);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-15: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(%2B1);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-16: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(new%20Date);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-17: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(this);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-18: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while(String);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-19: while truthy with negation (false positive)",
+    "method": "GET",
+    "uri": "/get?eval=while(!true);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-20: while truthy with double negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!!{});",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-21: while truthy with double negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!![]);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-22: while truthy with double negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!!\"\");",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-23: while truthy with double negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!!'');",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-24: while truthy with double negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!!``);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-25: while falsy with negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!null)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-26: while falsy with negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!undefined)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-27: while falsy with negation",
+    "method": "GET",
+    "uri": "/get?eval=while(!NaN)",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-28: while truthy",
+    "method": "GET",
+    "uri": "/get?eval=while((true)))",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-29: Detect example DoS loop while(true) submitted as plaintext",
+    "method": "GET",
+    "uri": "/get?eval=while(true);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-30: Detect example DoS loop while(true) submitted as plaintext with JavaScript escape sequence obfuscation",
+    "method": "GET",
+    "uri": "/get?eval=while(true);",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-31: Detect example DoS loop while(true) submitted as plaintext that has been Base64 encoded",
+    "method": "GET",
+    "uri": "/get?eval=d2hpbGUodHJ1ZSk7Cg%3D%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-32: Detect example DoS loop while(true) submitted as plaintext with JavaScript escape sequence obfuscation that has been Base64 encoded",
+    "method": "GET",
+    "uri": "/get?eval=XHUwMDc3XHUwMDY4aWxlKHRydWUpOwo%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-33: Detect example DoS loop while(true) submitted as plaintext that has been Base64 encoded and then obfuscated with JavaScript escape sequences",
+    "method": "GET",
+    "uri": "/get?eval=d2hpbGUodHJ1ZSk7Cg%3D%3D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934160
+    ]
+  },
+  {
+    "name": "CRS 934160-34: GHSA: 934160 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "63"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"while(!false)\"></a></root>",
+    "expect_ids": [
+      934160
+    ]
+  }
+]

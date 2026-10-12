@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"path/filepath"
 	"reflect"
+	"regexp"
+	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -20,10 +23,17 @@ const firstEngineConfig = "../../configs/crs-first-engine.json"
 
 func loadCRS(t *testing.T) *RuleSet {
 	t.Helper()
+	return loadCRSAt(t, DefaultParanoiaLevel)
+}
+
+// loadCRSAt loads the CRS rules at the given paranoia level.
+func loadCRSAt(t *testing.T, level int) *RuleSet {
+	t.Helper()
 	cfg, err := LoadConfig(firstEngineConfig)
 	if err != nil {
 		t.Fatal(err)
 	}
+	cfg.ParanoiaLevel = level
 	rs, err := Load(cfg)
 	if err != nil {
 		t.Fatalf("Load: %v", err)
@@ -56,11 +66,26 @@ func TestCRSStartupReport(t *testing.T) {
 		t.Errorf("signature = %q", rs.Signature())
 	}
 
-	// 1 rule in crs-setup, 33 in 901, 14 in 930, 42 in 941, 68 in 942 and
-	// 28 in 949: every one has a status.
+	// 1 rule in crs-setup, 33 in 901, 9 in 913, 14 in 930, 42 in 941, 68
+	// in 942 and 28 in 949: every one has a status.
 	statuses := rs.Statuses()
-	if len(statuses) != 186 {
-		t.Errorf("%d statuses, want 186", len(statuses))
+	if len(statuses) != 195 {
+		t.Errorf("%d statuses, want 195", len(statuses))
+	}
+	if rs.ParanoiaLevel() != 1 {
+		t.Errorf("paranoia level = %d, want the default 1", rs.ParanoiaLevel())
+	}
+	// Detection rules per level, counted from the tags in the CRS files:
+	// 913 has 1; 930 has 5 and 1; 941 has 26 and 7; 942 has 20, 31, 7
+	// and 2.
+	perLevel := map[int]int{}
+	for _, s := range statuses {
+		if s.ParanoiaLevel != 0 {
+			perLevel[s.ParanoiaLevel]++
+		}
+	}
+	if want := map[int]int{1: 52, 2: 39, 3: 7, 4: 2}; !reflect.DeepEqual(perLevel, want) {
+		t.Errorf("detection rules per level = %v, want %v", perLevel, want)
 	}
 	// File 999 holds one update for a rule of file 932, which is not
 	// loaded.
@@ -226,41 +251,71 @@ func TestCRSStarterExamples(t *testing.T) {
 	rs := loadCRS(t)
 	for _, ex := range loadExamples(t, "path-traversal.json") {
 		t.Run(ex.Name, func(t *testing.T) {
-			checkExample(t, rs, ex)
+			checkExample(t, rs, ex, DefaultParanoiaLevel)
 		})
 	}
 }
 
-// The acceptance check: the CRS regression tests of every PL1 rule in scope,
-// converted by tools/convert_crs_tests.py. Each request must be read
-// completely, every rule a test expects must match, and no rule it forbids
-// may match.
+// TestCRSRegression runs the converted CRS regression tests of the rule
+// files that are finished: 913, 930, 941 and 942, at every paranoia level
+// of their rules. Each test is named after one rule and says which rules
+// must and must not match.
+//
+// The tests run at level 4, as the CRS project runs them: its test setup
+// sets BLOCKING_PARANOIA to 4 (tests/docker-compose.yml). At that level
+// every test must pass.
+//
+// They then run at levels 1 to 3 as a check of the levels themselves. A
+// test whose rule belongs to the level or a lower one must still pass. A
+// test of a rule above the level must not find that rule: the rule is
+// switched off there.
 func TestCRSRegression(t *testing.T) {
-	rs := loadCRS(t)
 	files, err := filepath.Glob("../../testdata/requests/crs/*.json")
-	if err != nil || len(files) != 51 {
-		t.Fatalf("found %d test files (%v), want 51", len(files), err)
+	if err != nil || len(files) != 100 {
+		t.Fatalf("found %d test files (%v), want 100", len(files), err)
 	}
-	total := 0
-	for _, file := range files {
-		for _, ex := range loadExamples(t, "crs/"+filepath.Base(file)) {
-			total++
-			t.Run(ex.Name, func(t *testing.T) {
-				if !ex.Request.Status.Body.Complete() {
-					t.Fatalf("the body was not read completely: %s", ex.Request.Status.BodyReason)
-				}
-				checkExample(t, rs, ex)
-			})
+	// The level of each rule, from the tags in the CRS files.
+	levelOfRule := map[int]int{}
+	for _, s := range loadCRS(t).Statuses() {
+		levelOfRule[s.ID] = s.ParanoiaLevel
+	}
+
+	for level := MaxParanoiaLevel; level >= 1; level-- {
+		rs := loadCRSAt(t, level)
+		total := 0
+		for _, file := range files {
+			name := strings.TrimSuffix(filepath.Base(file), ".json")
+			ruleID, err := strconv.Atoi(name)
+			if err != nil || levelOfRule[ruleID] == 0 {
+				t.Fatalf("%s is not named after a detection rule", file)
+			}
+			for _, ex := range loadExamples(t, "crs/"+filepath.Base(file)) {
+				total++
+				t.Run(fmt.Sprintf("PL%d/%s", level, ex.Name), func(t *testing.T) {
+					if !ex.Request.Status.Body.Complete() {
+						t.Fatalf("the body was not read completely: %s", ex.Request.Status.BodyReason)
+					}
+					if levelOfRule[ruleID] > level {
+						if ids := rs.Evaluate(ex.Request).MatchedIDs(); contains(ids, ruleID) {
+							t.Errorf("rule %d of level %d matched at level %d", ruleID, levelOfRule[ruleID], level)
+						}
+						return
+					}
+					checkExample(t, rs, ex, level)
+				})
+			}
 		}
-	}
-	if total != 687 {
-		t.Errorf("%d tests, want 687", total)
+		// 9 tests in file 913, 83 in 930, 263 in 941 and 1,033 in 942,
+		// counted from the CRS test files.
+		if total != 1388 {
+			t.Errorf("%d tests, want 1388", total)
+		}
 	}
 }
 
-// checkExample runs one example and compares the matched rules with what
-// the example expects.
-func checkExample(t *testing.T, rs *RuleSet, ex offline.Example) {
+// checkExample runs one example and compares the result with what the
+// example expects.
+func checkExample(t *testing.T, rs *RuleSet, ex offline.Example, level int) {
 	t.Helper()
 	res := rs.Evaluate(ex.Request)
 	ids := res.MatchedIDs()
@@ -274,17 +329,34 @@ func checkExample(t *testing.T, rs *RuleSet, ex offline.Example) {
 			t.Errorf("rule %d matched but must not; matches: %+v", id, res.Matches)
 		}
 	}
-	// A detection always reaches the threshold, and a request with no
-	// detection has no score.
+	logged := func(pattern *regexp.Regexp) bool {
+		return slices.ContainsFunc(res.LogLines(), pattern.MatchString)
+	}
+	if ex.ExpectLog != nil && !logged(ex.ExpectLog) {
+		t.Errorf("no log line has %q; lines: %q", ex.ExpectLog, res.LogLines())
+	}
+	if ex.NoExpectLog != nil && logged(ex.NoExpectLog) {
+		t.Errorf("a log line has %q", ex.NoExpectLog)
+	}
+	// The scoring must agree with the matches: a request with a detection
+	// has a score, one without has none, and rule 949110 reports exactly
+	// the requests whose score reaches the threshold. A detection alone
+	// does not always reach it: some rules of levels 2 to 4 add 3, and the
+	// threshold is 5.
 	detected := false
 	for _, id := range ids {
 		switch id / 1000 {
-		case 930, 941, 942:
+		case 913, 930, 941, 942:
 			detected = true
 		}
 	}
-	if detected != contains(ids, 949110) || detected != (res.Score("inbound_anomaly_score_pl1") >= 5) {
-		t.Errorf("matched %v with score %d", ids, res.Score("inbound_anomaly_score_pl1"))
+	score := 0
+	for pl := 1; pl <= level; pl++ {
+		score += res.Score(fmt.Sprintf("inbound_anomaly_score_pl%d", pl))
+	}
+	threshold := res.Score("inbound_anomaly_score_threshold")
+	if detected != (score > 0) || contains(ids, 949110) != (score >= threshold) || threshold != 5 {
+		t.Errorf("matched %v with score %d, threshold %d", ids, score, threshold)
 	}
 }
 

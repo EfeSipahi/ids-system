@@ -1,0 +1,1210 @@
+[
+  {
+    "name": "CRS 943110-1: Session Fixation Attack (943110) from old modsec regressions",
+    "method": "GET",
+    "uri": "/get/login.php?jsessionid=74B0CB414BD77D17B5680A6386EF1666",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate"
+      ],
+      [
+        "Accept-Language",
+        "zh-sg"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "Referer",
+        "http://www.attackersite.com/test"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-2: session fixation attack",
+    "method": "GET",
+    "uri": "/get?phpsessid=asdfdasfadsads",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Referer",
+        "https://localhost.attackersite.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-3: session fixation attack",
+    "method": "GET",
+    "uri": "/get?phpsessid=asdfdasfadsads",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Referer",
+        "https://attackersite.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-4: Session Fixation Attack (943110) from old modsec regressions",
+    "method": "GET",
+    "uri": "/get/login.php?jsessionid=74B0CB414BD77D17B5680A6386EF1666",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "Accept-Encoding",
+        "gzip, deflate"
+      ],
+      [
+        "Accept-Language",
+        "zh-sg"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Referer",
+        "http://localhost/test"
+      ],
+      [
+        "Keep-Alive",
+        "300"
+      ],
+      [
+        "Proxy-Connection",
+        "keep-alive"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-5: ASP.NET session fixation with external referer",
+    "method": "GET",
+    "uri": "/login?asp.net_sessionid=abc123def456",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "example.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.com/malicious"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-6: Laravel session fixation with external referer",
+    "method": "GET",
+    "uri": "/auth?laravel_session=eyJpdiI6IktmYw",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "myapp.com"
+      ],
+      [
+        "Referer",
+        "https://evil.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-7: Express.js connect.sid session fixation",
+    "method": "GET",
+    "uri": "/api/login?connect.sid=s%3Aj8jK9_xPq2",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "nodeapp.io"
+      ],
+      [
+        "Referer",
+        "http://phishing-site.com/fake-login"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-8: Flask session fixation with external referer",
+    "method": "GET",
+    "uri": "/login?_flask_session=eyJsb2dnZWRfaW4iOnRydWV9",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "flaskapp.com"
+      ],
+      [
+        "Referer",
+        "https://badactor.org/redirect"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-9: NextAuth session token fixation",
+    "method": "GET",
+    "uri": "/api/auth/signin?next-auth.session-token=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "nextjs-app.com"
+      ],
+      [
+        "Referer",
+        "https://compromised-site.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-10: Meteor login token fixation",
+    "method": "GET",
+    "uri": "/login?meteor_login_token=xyz789abc",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "meteorapp.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-11: Ruby Rack session fixation",
+    "method": "GET",
+    "uri": "/authenticate?rack.session=BAh7CEkiD3Nlc3Npb25",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "rubyapp.com"
+      ],
+      [
+        "Referer",
+        "http://evil-domain.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-12: Play Framework session fixation",
+    "method": "GET",
+    "uri": "/login?play_session=eyJhbGciOiJIUzI1NiJ9",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "playapp.com"
+      ],
+      [
+        "Referer",
+        "http://phisher.org/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-13: Sails.js session fixation",
+    "method": "GET",
+    "uri": "/auth?sails.sid=s%3Aabcdef123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "sailsapp.com"
+      ],
+      [
+        "Referer",
+        "https://attacker-domain.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-14: CakePHP session fixation",
+    "method": "GET",
+    "uri": "/users/login?cakephp=abc123def456",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "cakeapp.com"
+      ],
+      [
+        "Referer",
+        "http://malware-site.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-15: CodeIgniter session fixation",
+    "method": "GET",
+    "uri": "/login?ci_session=a%3A5%3A%7Bs%3A10",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "ciapp.com"
+      ],
+      [
+        "Referer",
+        "https://evil.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-16: Koa.js session fixation (dot notation)",
+    "method": "GET",
+    "uri": "/login?koa.sess=eyJ1c2VySWQiOjF9",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "koaapp.com"
+      ],
+      [
+        "Referer",
+        "http://badsite.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-17: Koa.js session fixation (colon notation)",
+    "method": "GET",
+    "uri": "/api/auth?koa:sess=eyJ1c2VySWQiOjF9",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "koaapp.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-18: ColdFusion CFID session fixation",
+    "method": "GET",
+    "uri": "/login.cfm?cfid=12345&cftoken=67890",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "cfapp.com"
+      ],
+      [
+        "Referer",
+        "http://malicious-redirect.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-19: Zend Framework session fixation",
+    "method": "GET",
+    "uri": "/auth?zend_session_id=abc123xyz789",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "zendapp.com"
+      ],
+      [
+        "Referer",
+        "https://phishing.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-20: Shiny R session token fixation",
+    "method": "GET",
+    "uri": "/app?shiny-token=abc123def",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "shinyapp.com"
+      ],
+      [
+        "Referer",
+        "http://attacker.org/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-21: WebLogic session fixation",
+    "method": "GET",
+    "uri": "/console/login?weblogicsession=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "weblogicapp.com"
+      ],
+      [
+        "Referer",
+        "http://evil-site.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-22: Generic sessionid with POST method",
+    "method": "POST",
+    "uri": "/login",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "webapp.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "47"
+      ]
+    ],
+    "body": "sessionid=abc123&username=test&password=test123",
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-23: Session-id with hyphen notation",
+    "method": "GET",
+    "uri": "/auth?session-id=xyz789",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "myapp.com"
+      ],
+      [
+        "Referer",
+        "http://badactor.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-24: Mixed case PHPSESSID should match (t:lowercase transformation)",
+    "method": "GET",
+    "uri": "/login?PHPSESSid=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "phpapp.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-25: Secure NextAuth session token (__host- prefix)",
+    "method": "GET",
+    "uri": "/api/signin?__host-next-auth.session-token=secure123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "nextjs.example"
+      ],
+      [
+        "Referer",
+        "http://malicious.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-26: Secure NextAuth session token (__secure- prefix)",
+    "method": "GET",
+    "uri": "/api/signin?__secure-next-auth.session-token=token456",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "nextjs.example"
+      ],
+      [
+        "Referer",
+        "https://evil.org/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-27: ASPSESSIONID with external referer",
+    "method": "GET",
+    "uri": "/login.asp?aspsessionid=GKFPMNABCDLMNOP",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "aspapp.com"
+      ],
+      [
+        "Referer",
+        "http://attacker-domain.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-28: Generic _session_id parameter",
+    "method": "GET",
+    "uri": "/login?_session_id=abc123xyz",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "genericapp.com"
+      ],
+      [
+        "Referer",
+        "https://phisher.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-29: Rails session with underscore",
+    "method": "GET",
+    "uri": "/sessions/new?_rails_session=BAh7B0kiD3Nlc3Npb24",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "railsapp.com"
+      ],
+      [
+        "Referer",
+        "http://evil-redirect.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-30: Negative test: legitimate same-domain HTTPS referer",
+    "method": "GET",
+    "uri": "/login?sessionid=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "myapp.com"
+      ],
+      [
+        "Referer",
+        "https://myapp.com/previous-page"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-31: Negative test: subdomain should not match (different from host)",
+    "method": "GET",
+    "uri": "/login?sessionid=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "app.example.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.example.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-32: Negative test: legitimate subdomain from same parent",
+    "method": "GET",
+    "uri": "/login?sessionid=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "api.example.com"
+      ],
+      [
+        "Referer",
+        "https://api.example.com/oauth"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-33: Java jservsession parameter",
+    "method": "GET",
+    "uri": "/servlet/login?jservsession=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "javaapp.com"
+      ],
+      [
+        "Referer",
+        "http://malicious.org/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-34: Java jwsession parameter",
+    "method": "GET",
+    "uri": "/login?jwsession=xyz789",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "javaapp.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-35: ColdFusion CFTOKEN",
+    "method": "GET",
+    "uri": "/login.cfm?cftoken=abc123xyz",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "coldapp.com"
+      ],
+      [
+        "Referer",
+        "http://evil.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-36: ColdFusion CFSID",
+    "method": "GET",
+    "uri": "/app.cfm?cfsid=12345",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "coldapp.com"
+      ],
+      [
+        "Referer",
+        "https://badactor.org/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-37: PHP phpsession parameter (alternative spelling)",
+    "method": "GET",
+    "uri": "/login?phpsession=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "phpapp.com"
+      ],
+      [
+        "Referer",
+        "http://attacker.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-38: Negative test: no session parameter in URL",
+    "method": "GET",
+    "uri": "/login?username=test&password=test123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "myapp.com"
+      ],
+      [
+        "Referer",
+        "http://attacker.com/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-39: Negative test: legitimate same host with different path",
+    "method": "GET",
+    "uri": "/login?jsessionid=abc123",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "example.com"
+      ],
+      [
+        "Referer",
+        "http://example.com/another-page"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-40: Session fixation with very long session value",
+    "method": "GET",
+    "uri": "/login?sessionid=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "myapp.com"
+      ],
+      [
+        "Referer",
+        "https://attacker.net/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-41: Session fixation with URL-encoded session parameter value",
+    "method": "GET",
+    "uri": "/auth?jsessionid=abc%3D%3D123%2Bxyz",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "webapp.com"
+      ],
+      [
+        "Referer",
+        "http://malicious.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      943110
+    ]
+  },
+  {
+    "name": "CRS 943110-42: PHP phpsession parameter (alternative spelling)\n4RI-250413",
+    "method": "POST",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "phpapp.com"
+      ],
+      [
+        "Referer",
+        "http://attacker.example/"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "22"
+      ]
+    ],
+    "body": "{ \"phpsession\":\"foo\" }",
+    "expect_ids": [
+      943110
+    ]
+  }
+]

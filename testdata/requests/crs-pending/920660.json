@@ -1,0 +1,956 @@
+[
+  {
+    "name": "CRS 920660-1: Request-Range header with simple byte range",
+    "method": "GET",
+    "uri": "/document.pdf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=0-1023"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-2: Request-Range header with open-ended range",
+    "method": "GET",
+    "uri": "/video.mp4",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=1024-"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-3: Request-Range header with suffix range",
+    "method": "GET",
+    "uri": "/audio.mp3",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=-500"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-4: Request-Range header with multiple ranges",
+    "method": "GET",
+    "uri": "/file.bin",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=0-100,200-300,400-500"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-5: Request-Range header with mixed case",
+    "method": "GET",
+    "uri": "/download.zip",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "request-range",
+        "bytes=0-1023"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-6: REQUEST-RANGE header in uppercase",
+    "method": "GET",
+    "uri": "/large-file.iso",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "REQUEST-RANGE",
+        "bytes=1000-2000"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-7: Request-Range in POST request",
+    "method": "POST",
+    "uri": "/api/upload",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=0-512"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "13"
+      ]
+    ],
+    "body": "action=resume",
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-8: Request-Range in HEAD request",
+    "method": "HEAD",
+    "uri": "/document.pdf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=0-0"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-9: Request-Range in PUT request",
+    "method": "PUT",
+    "uri": "/upload/file.dat",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=1024-2047"
+      ],
+      [
+        "Content-Type",
+        "application/octet-stream"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "16"
+      ]
+    ],
+    "body": "binary-data-here",
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-10: Request-Range with whitespace in value",
+    "method": "GET",
+    "uri": "/data.bin",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        " bytes=0-1023 "
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-11: Request-Range with large range values",
+    "method": "GET",
+    "uri": "/bigfile.iso",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=1073741824-2147483647"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-12: Request-Range with zero range",
+    "method": "GET",
+    "uri": "/tiny.txt",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=0-0"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-13: Request-Range with old Netscape user agent",
+    "method": "GET",
+    "uri": "/download.exe",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "Mozilla/3.0 (Win95; I)"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=0-8191"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-14: Request-Range with old MSIE user agent",
+    "method": "GET",
+    "uri": "/update.cab",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "Mozilla/2.0 (compatible; MSIE 3.0; Windows 95)"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "bytes=16384-32767"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-15: Request-Range with invalid syntax (still triggers as header exists)",
+    "method": "GET",
+    "uri": "/resource",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        "invalid-range-spec"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-16: Request-Range with empty value (header still present)",
+    "method": "GET",
+    "uri": "/test.html",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Request-Range",
+        ""
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-17: Both Request-Range and Range headers present",
+    "method": "GET",
+    "uri": "/media.mp4",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Range",
+        "bytes=0-1023"
+      ],
+      [
+        "Request-Range",
+        "bytes=0-1023"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-18: Negative - Standard Range header (RFC 9110)",
+    "method": "GET",
+    "uri": "/video.mp4",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Range",
+        "bytes=0-1023"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-19: Negative - Range header with multiple ranges",
+    "method": "GET",
+    "uri": "/document.pdf",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Range",
+        "bytes=0-100,200-300"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-20: Negative - Normal GET request without Range headers",
+    "method": "GET",
+    "uri": "/index.html",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-21: Negative - POST request without Range headers",
+    "method": "POST",
+    "uri": "/api/data",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "19"
+      ]
+    ],
+    "body": "name=test&value=123",
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-22: Negative - If-Range header (conditional range request)",
+    "method": "GET",
+    "uri": "/large.bin",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Range",
+        "bytes=1024-2047"
+      ],
+      [
+        "If-Range",
+        "Wed, 21 Oct 2015 07:28:00 GMT"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-23: Negative - Content-Range header in response (should not trigger)",
+    "method": "GET",
+    "uri": "/data.zip",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Range",
+        "bytes 0-1023/4096"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-24: Negative - Accept-Ranges in request (unusual but not Request-Range)",
+    "method": "OPTIONS",
+    "uri": "/resource",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Accept-Ranges",
+        "bytes"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-25: Negative - Modern Chrome with standard Range header",
+    "method": "GET",
+    "uri": "/stream.webm",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Range",
+        "bytes=0-"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-26: Negative - Modern Firefox with standard Range header",
+    "method": "GET",
+    "uri": "/music.ogg",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Range",
+        "bytes=8192-16383"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-27: Negative - Query parameter named request_range",
+    "method": "GET",
+    "uri": "/api/download?request_range=0-1023",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-28: Negative - POST body containing 'Request-Range' text",
+    "method": "POST",
+    "uri": "/api/logs",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "35"
+      ]
+    ],
+    "body": "log=Request-Range%3A+bytes%3D0-1023",
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-29: Negative - Custom header X-Request-Range",
+    "method": "GET",
+    "uri": "/download",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "X-Request-Range",
+        "bytes=0-1023"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  },
+  {
+    "name": "CRS 920660-30: Negative - HEAD request without any range headers",
+    "method": "HEAD",
+    "uri": "/file.bin",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920660
+    ]
+  }
+]

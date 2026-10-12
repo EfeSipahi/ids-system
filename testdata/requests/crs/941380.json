@@ -1,0 +1,61 @@
+[
+  {
+    "name": "CRS 941380-1: AngularJS client side template injection detection",
+    "method": "GET",
+    "uri": "/get/login?user=%20x%20%7B%7Bconstructor.constructor(%27alert(1)%27)()%7D%7D%20.%20ff",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
+      ],
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      941380
+    ]
+  },
+  {
+    "name": "CRS 941380-2: GHSA: 941380 payload via XML attribute injection (verifies XML://@* coverage)",
+    "method": "POST",
+    "uri": "/post",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Content-Type",
+        "application/xml"
+      ],
+      [
+        "Connection",
+        "close"
+      ],
+      [
+        "Content-Length",
+        "119"
+      ]
+    ],
+    "body": "<?xml version=\"1.0\"?><root><a probe=\" x &#x7B;&#x7B;constructor.constructor('alert(1)')()&#x7D;&#x7D; . ff\"></a></root>",
+    "expect_ids": [
+      941380
+    ]
+  }
+]

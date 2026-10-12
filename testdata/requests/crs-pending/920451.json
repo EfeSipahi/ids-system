@@ -1,0 +1,64 @@
+[
+  {
+    "name": "CRS 920451-1: Send an Accept-Charset header, which should be blocked",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/html"
+      ],
+      [
+        "Accept-Charset",
+        "UTF-8"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "expect_ids": [
+      920451
+    ]
+  },
+  {
+    "name": "CRS 920451-2: Send a Content-Range header, which should be blocked but by this rule's sibling rule, not by this rule",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [
+      [
+        "User-Agent",
+        "OWASP CRS test agent"
+      ],
+      [
+        "Host",
+        "localhost"
+      ],
+      [
+        "Accept",
+        "text/html"
+      ],
+      [
+        "Content-Range",
+        "bytes 4096-8192/8192"
+      ],
+      [
+        "Connection",
+        "close"
+      ]
+    ],
+    "no_expect_ids": [
+      920451
+    ]
+  }
+]
