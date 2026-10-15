@@ -50,6 +50,12 @@ type Result struct {
 	// Variables are the TX variables at the end, with lower-case names.
 	// The anomaly scores are among them.
 	Variables map[string]string
+
+	// Request is the request as the rules of phase 2 saw it. It is the one
+	// passed to Evaluate, unless a rule chose another body reader; then it
+	// is a copy with the body read that way, and its Status says how far
+	// that got.
+	Request *httpmodel.Request
 }
 
 // LogLine returns the match as one line of text, in the bracket form of a
@@ -108,8 +114,13 @@ type transaction struct {
 	// chain.
 	matchedVars []namedValue
 	// removedTargets holds the ctl:ruleRemoveTargetByTag actions that ran
-	// in this request.
+	// in this request, and removedRules the ctl:ruleRemoveById and
+	// ctl:ruleRemoveByTag actions.
 	removedTargets []targetRemoval
+	removedRules   []ruleRemoval
+	// bodyFormat is the body reader that a ctl:requestBodyProcessor action
+	// chose, or "" when none did.
+	bodyFormat string
 }
 
 // Evaluate runs the rules on one request. It does not change the RuleSet or
@@ -120,8 +131,14 @@ func (rs *RuleSet) Evaluate(req *httpmodel.Request) *Result {
 		tx.vars[name] = value
 	}
 	tx.runPhase(phaseRequestHeaders)
+	// The body is read between the two phases. A rule of phase 1 may have
+	// chosen another reader than the Content-Type did; the body is then
+	// read again with that one. The request passed in stays as it is.
+	if tx.bodyFormat != "" && tx.bodyFormat != req.Status.BodyFormat && len(req.Received.Body) > 0 {
+		tx.req = req.WithBodyFormat(tx.bodyFormat)
+	}
 	tx.runPhase(phaseRequestBody)
-	return &Result{Matches: tx.matches, Variables: tx.vars}
+	return &Result{Matches: tx.matches, Variables: tx.vars, Request: tx.req}
 }
 
 // runPhase runs the rules of one phase in load order. After a rule with
@@ -135,7 +152,7 @@ func (tx *transaction) runPhase(phase int) {
 			}
 			continue
 		}
-		if skipTo != "" {
+		if skipTo != "" || tx.isRemoved(it.rule) {
 			continue
 		}
 		if tx.runChain(it.rule) && it.rule.skipAfter != "" {
@@ -222,6 +239,10 @@ func (tx *transaction) onMatch(r, first *rule, captures []string) {
 		tx.setvar(sv)
 	}
 	tx.removedTargets = append(tx.removedTargets, r.removals...)
+	tx.removedRules = append(tx.removedRules, r.ruleRemovals...)
+	if r.bodyFormat != "" {
+		tx.bodyFormat = r.bodyFormat
+	}
 
 	if r.next != nil || !first.log {
 		return
@@ -241,6 +262,17 @@ func (tx *transaction) onMatch(r, first *rule, captures []string) {
 		m.VarName, m.Value = tx.matchedVarName, tx.matchedVar
 	}
 	tx.matches = append(tx.matches, m)
+}
+
+// isRemoved reports whether a ctl action that ran earlier in this request
+// took the rule out.
+func (tx *transaction) isRemoved(r *rule) bool {
+	for _, rr := range tx.removedRules {
+		if rr.removes(r) {
+			return true
+		}
+	}
+	return false
 }
 
 func (tx *transaction) setvar(sv setvar) {

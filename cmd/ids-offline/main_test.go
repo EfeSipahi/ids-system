@@ -28,7 +28,7 @@ func TestTextOutput(t *testing.T) {
 		t.Fatalf("exit %d, stderr %q", code, errOut)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 350 active, 7 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 449 active, 4 excluded",
 		"[2] CRS 930110-2: traversal in the query string",
 		"930110  CRITICAL  ARGS:arg ",
 		// Six matches of 5 points: 930100 and 930110 twice, 930120 and
@@ -45,7 +45,7 @@ func TestTextOutput(t *testing.T) {
 			t.Errorf("output does not contain %q", want)
 		}
 	}
-	if strings.Contains(out, "NOT MET") || strings.Contains(out, "excluded 901340") {
+	if strings.Contains(out, "NOT MET") || strings.Contains(out, "excluded 901350") {
 		t.Errorf("unexpected text in output:\n%s", out)
 	}
 }
@@ -121,7 +121,7 @@ func TestJSONOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &doc); err != nil {
 		t.Fatalf("output is not JSON: %v\n%s", err, out)
 	}
-	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 350 || len(doc.Startup.ExcludedRules) != 7 || doc.Startup.ExcludedRules[6].ID != 901450 {
+	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 449 || len(doc.Startup.ExcludedRules) != 4 || doc.Startup.ExcludedRules[3].ID != 901450 {
 		t.Errorf("startup = %+v", doc.Startup)
 	}
 	if len(doc.Requests) != 6 {
@@ -145,8 +145,8 @@ func TestStartupOnly(t *testing.T) {
 		t.Fatalf("exit %d", code)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 350 active, 7 excluded",
-		"excluded 901340 (REQUEST-901-INITIALIZATION.conf:375): Body processor control",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 449 active, 4 excluded",
+		"excluded 901350 (REQUEST-901-INITIALIZATION.conf:387): Body processor control",
 		"excluded 901450 (REQUEST-901-INITIALIZATION.conf:517): Sampling is not implemented",
 	} {
 		if !strings.Contains(out, want) {
@@ -237,12 +237,13 @@ func TestIncompleteAnalysisIsShown(t *testing.T) {
 	}
 }
 
-// The summary over the converted CRS tests of the finished rule files, run
-// at paranoia level 4 as the CRS project runs them. The numbers of tests
-// per rule file were counted independently from the CRS files. Every rule
-// is active and every test must pass.
+// The summary over the converted CRS tests of the finished rule files, with
+// the configuration the tests are written for: paranoia level 4 and the CRS
+// test setup rule. The numbers of tests per rule file were counted
+// independently from the CRS files. Every rule is active and every test
+// must pass.
 func TestSummaryOfCRSTests(t *testing.T) {
-	code, out, _ := runTool(t, "-config", config, "-requests", "../../testdata/requests/crs", "-summary", "-json", "-paranoia-level", "4")
+	code, out, _ := runTool(t, "-config", "../../testdata/crs-tests.json", "-requests", "../../testdata/requests/crs", "-summary", "-json")
 	if code != 0 {
 		t.Errorf("exit %d, want 0", code)
 	}
@@ -269,8 +270,8 @@ func TestSummaryOfCRSTests(t *testing.T) {
 	if doc.Requests != nil {
 		t.Error("the summary also lists the requests")
 	}
-	if len(doc.Summary) != 207 {
-		t.Fatalf("%d files, want 207", len(doc.Summary))
+	if len(doc.Summary) != 286 {
+		t.Fatalf("%d files, want 286", len(doc.Summary))
 	}
 	tests := map[string]int{}
 	for _, g := range doc.Summary {
@@ -282,11 +283,11 @@ func TestSummaryOfCRSTests(t *testing.T) {
 			t.Errorf("rule %s: %+v", g.Source, g)
 		}
 	}
-	want := map[string]int{"911": 8, "913": 9, "930": 83, "931": 42, "932": 1089, "933": 442, "934": 287, "941": 263, "942": 1033, "943": 47, "944": 1176}
+	want := map[string]int{"901": 18, "911": 8, "913": 9, "920": 407, "921": 116, "930": 83, "931": 42, "932": 1089, "933": 442, "934": 287, "941": 263, "942": 1033, "943": 47, "944": 1176, "949": 5}
 	if !reflect.DeepEqual(tests, want) {
 		t.Errorf("tests per rule file = %v, want %v", tests, want)
 	}
-	if first := doc.Summary[0]; first.Source != "911100" || first.Tests != 8 {
+	if first := doc.Summary[0]; first.Source != "901360" || first.Tests != 5 {
 		t.Errorf("first row = %+v", first)
 	}
 }
@@ -314,9 +315,9 @@ func TestParanoiaLevelFlag(t *testing.T) {
 func TestSummaryText(t *testing.T) {
 	dir := t.TempDir()
 	for name, content := range map[string]string{
-		"b-attacks.json": `[{"method": "GET", "uri": "/?q=../../x", "expect_ids": [930110]}, {"method": "GET", "uri": "/?q=kitap", "expect_ids": [930110]}]`,
-		"a-normal.json":  `[{"method": "GET", "uri": "/"}]`,
-		"901320.json":    `[{"method": "POST", "uri": "/", "headers": [["Content-Type", "text/plain"]], "body": "x", "expect_ids": [901320]}]`,
+		"b-attacks.json": `[{"method": "GET", "uri": "/?q=../../x", "headers": [["Host", "shop.test"]], "expect_ids": [930110]}, {"method": "GET", "uri": "/?q=kitap", "headers": [["Host", "shop.test"]], "expect_ids": [930110]}]`,
+		"a-normal.json":  `[{"method": "GET", "uri": "/", "headers": [["Host", "shop.test"]]}]`,
+		"901320.json":    `[{"method": "POST", "uri": "/", "headers": [["Host", "shop.test"], ["Content-Type", "text/plain"], ["Content-Length", "1"]], "body": "x", "expect_ids": [901320]}]`,
 		"notes.txt":      `not a request file`,
 	} {
 		if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0o600); err != nil {
@@ -336,10 +337,12 @@ func TestSummaryText(t *testing.T) {
 		}
 	}
 	want := []string{
-		"901320 excluded 1 0 0 0 1",
+		// text/plain is not an allowed content type in CRS, so rule
+		// 920420 flags this one.
+		"901320 excluded 1 1 0 0 1",
 		"a-normal - 1 0 1 0 0",
 		"b-attacks - 2 1 1 1 0",
-		"total 4 1 2 1 1",
+		"total 4 2 2 1 1",
 	}
 	if strings.Join(rows, "|") != strings.Join(want, "|") {
 		t.Errorf("rows = %q\nwant   %q\n%s", rows, want, out)
@@ -357,7 +360,7 @@ func TestSummaryText(t *testing.T) {
 }
 
 func TestLoadFailures(t *testing.T) {
-	rules := write(t, "bad.conf", `SecRule ARGS "@ipMatch 10.0.0.1" "id:7,phase:2"`)
+	rules := write(t, "bad.conf", `SecRule ARGS "@rbl zen.example" "id:7,phase:2"`)
 	badRules := write(t, "c.json", `{"files": ["`+rules+`"]}`)
 
 	tests := []struct {
@@ -366,7 +369,7 @@ func TestLoadFailures(t *testing.T) {
 		msg  string
 	}{
 		{"missing config", []string{"-config", "no-such-file.json"}, "no-such-file.json"},
-		{"unsupported rule", []string{"-config", badRules}, "rule 7: operator @ipMatch is not supported"},
+		{"unsupported rule", []string{"-config", badRules}, "rule 7: operator @rbl is not supported"},
 		{"missing requests", []string{"-config", config, "-requests", "no-such-file.json"}, "no-such-file.json"},
 		{"bad requests", []string{"-config", config, "-requests", write(t, "r.json", `[{"uri": "/"}]`)}, "method is missing"},
 		{"unknown flag", []string{"-nope"}, "flag provided but not defined"},

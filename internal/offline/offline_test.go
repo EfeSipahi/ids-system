@@ -117,6 +117,28 @@ func TestLoadBinaryBodyAndLogExpectations(t *testing.T) {
 	}
 }
 
+// The client address may be given, and an empty version means a request
+// line without one.
+func TestRemoteAddrAndVersion(t *testing.T) {
+	src := `[
+		{"method": "GET", "uri": "/", "remote_addr": "::1", "version": ""},
+		{"method": "GET", "uri": "/"}
+	]`
+	examples, err := Load(strings.NewReader(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if rec := examples[0].Request.Received; rec.RemoteAddr != "::1" || rec.Version != "" {
+		t.Errorf("first = %+v", rec)
+	}
+	if rec := examples[1].Request.Received; rec.RemoteAddr != "" || rec.Version != "HTTP/1.1" {
+		t.Errorf("second = %+v", rec)
+	}
+	if _, err := Load(strings.NewReader(`[{"method": "GET", "uri": "/", "remote_addr": "host.example"}]`)); err == nil || !strings.Contains(err.Error(), "remote_addr") {
+		t.Errorf("error = %v", err)
+	}
+}
+
 func TestLoadFileMissing(t *testing.T) {
 	if _, err := LoadFile("does-not-exist.json"); err == nil {
 		t.Error("no error for a missing file")

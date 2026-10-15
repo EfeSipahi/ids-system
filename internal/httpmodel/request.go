@@ -26,9 +26,16 @@ type Received struct {
 	// percent-encoded, for example "/get?arg=..%2f..%2fetc".
 	Target string
 
+	// Version is the protocol of the request line, such as "HTTP/1.1". It
+	// is empty for a request line without one, which a web server reads as
+	// HTTP/0.9.
 	Version string
 	Headers []Header
 	Body    []byte
+
+	// RemoteAddr is the IP address of the client, such as "203.0.113.7"
+	// or "::1", without a port. It is empty when it is not known.
+	RemoteAddr string
 }
 
 // Origin says which part of the request a parameter came from.
@@ -72,7 +79,8 @@ type Cookie struct {
 // Parsed is the view of the request after splitting and decoding.
 type Parsed struct {
 	// Path and RawQuery are the two halves of Received.Target, split at
-	// the first "?". Both are still percent-encoded. When the target is a
+	// the first "?", without a fragment ("#..."). Both are still
+	// percent-encoded. When the target is a
 	// full URL, as a proxy request has it, Path starts after the host.
 	Path     string
 	RawQuery string
@@ -108,6 +116,7 @@ type Parsed struct {
 type File struct {
 	Field string // the name of the form field
 	Name  string // the file name as the client sent it, with any path
+	Size  int    // the length of the content in bytes; the content is not kept
 }
 
 // BodyState says how far the body was inspected.

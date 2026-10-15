@@ -1,0 +1,29 @@
+# Changes to CRS regression tests for the offline engine, in the format of
+# the CRS project's own override files (tests/regression/*-overrides.yaml).
+# tools/convert_crs_tests.py applies them. Each one says why.
+#
+# An override whose output has no "log" leaves the test out: it then
+# expects only an answer of the web server, which an offline engine does not
+# have.
+version: "v0.0.0"
+meta:
+  engine: "ids-system offline engine"
+test_overrides:
+  - rule_id: 921140
+    test_ids: [1]
+    reason: >-
+      The header value holds a bare carriage return. Apache rejects such a
+      request with status 400 before ModSecurity runs, which is what the
+      test checks; there is no rule result to compare.
+    output:
+      status: 400
+  - rule_id: 920620
+    test_ids: [1]
+    reason: >-
+      Two Content-Type headers. Apache merges them into one before
+      ModSecurity sees them, so the test expects no match. The engine keeps
+      both, as nginx and Coraza do, and rule 920620 finds them, which is
+      what the rule is for (see the CRS nginx override for this test).
+    output:
+      log:
+        expect_ids: [920620]

@@ -12,9 +12,26 @@ const formContentType = "application/x-www-form-urlencoded"
 // New never fails. Content it cannot parse stays available in Received and
 // is reported in Status, so the parts that can be inspected still are.
 func New(rec Received) *Request {
+	return build(rec, "")
+}
+
+// WithBodyFormat returns a new request with the same received content, whose
+// body is read with the given reader ("form", "multipart", "json" or
+// "xml") whatever the Content-Type says. The request itself is not changed.
+//
+// It is for the rule ctl:requestBodyProcessor, with which CRS chooses the
+// reader for some content types. An unknown format reads nothing.
+func (r *Request) WithBodyFormat(format string) *Request {
+	return build(r.Received, format)
+}
+
+func build(rec Received, forced string) *Request {
 	r := &Request{Received: rec}
 
-	r.Parsed.Path, r.Parsed.RawQuery, _ = strings.Cut(rec.Target, "?")
+	// A fragment ("#...") is not part of the request for the server; it
+	// cuts it off before reading path and query. It stays in Target.
+	target, _, _ := strings.Cut(rec.Target, "#")
+	r.Parsed.Path, r.Parsed.RawQuery, _ = strings.Cut(target, "?")
 	r.Parsed.Path = withoutOrigin(r.Parsed.Path)
 	var badPath bool
 	r.Parsed.DecodedPath, badPath = decodePercent(r.Parsed.Path, false)
@@ -32,7 +49,7 @@ func New(rec Received) *Request {
 	r.Parsed.Query, malformed = parseParams(r.Parsed.RawQuery, OriginQuery)
 	r.noteMalformed("query", malformed)
 
-	r.parseBody()
+	r.parseBody(forced)
 	return r
 }
 
@@ -40,7 +57,7 @@ func New(rec Received) *Request {
 // kept as received and reported as not inspected.
 const DefaultBodyLimit = 1 << 20
 
-func (r *Request) parseBody() {
+func (r *Request) parseBody(forced string) {
 	body := r.Received.Body
 	if len(body) == 0 {
 		r.Status.Body = BodyEmpty
@@ -48,7 +65,7 @@ func (r *Request) parseBody() {
 	}
 
 	types := r.HeaderValues("Content-Type")
-	if len(types) == 0 {
+	if len(types) == 0 && forced == "" {
 		r.Status.Body = BodyNotInspected
 		r.Status.BodyReason = "the request has a body but no Content-Type header"
 		return
@@ -60,8 +77,20 @@ func (r *Request) parseBody() {
 		})
 	}
 
-	media := mediaType(types[0])
+	contentType := ""
+	if len(types) > 0 {
+		contentType = types[0]
+	}
+	media := mediaType(contentType)
 	r.Status.BodyFormat = bodyFormat(media)
+	if forced != "" {
+		r.Status.BodyFormat = forced
+	}
+	switch r.Status.BodyFormat {
+	case "form", "multipart", "json", "xml":
+	default:
+		r.Status.BodyFormat = ""
+	}
 	if r.Status.BodyFormat == "" {
 		r.Status.Body = BodyNotInspected
 		r.Status.BodyReason = fmt.Sprintf("content type %q is not parsed", media)
@@ -84,7 +113,7 @@ func (r *Request) parseBody() {
 	case "json":
 		r.Parsed.BodyArgs, err = parseJSON(body)
 	case "multipart":
-		r.Parsed.BodyArgs, r.Parsed.Files, err = parseMultipart(body, types[0])
+		r.Parsed.BodyArgs, r.Parsed.Files, err = parseMultipart(body, contentType)
 	case "xml":
 		r.Parsed.XMLText, r.Parsed.XMLAttributes, err = parseXML(body)
 	}
@@ -96,18 +125,36 @@ func (r *Request) parseBody() {
 	r.Status.Body = BodyInspected
 }
 
+// DeclaredBodyFormat returns the body format that the first Content-Type
+// header names, whether or not the request has a body: "form",
+// "multipart", "json", "xml", or "" when there is no header or no parser
+// for its type. ModSecurity and Coraza choose their body processor the same
+// way, from the headers alone.
+func (r *Request) DeclaredBodyFormat() string {
+	types := r.HeaderValues("Content-Type")
+	if len(types) == 0 {
+		return ""
+	}
+	return bodyFormat(mediaType(types[0]))
+}
+
 // bodyFormat chooses a parser from the media type, or returns "" when there
-// is none. The choices follow the rules that CRS and the recommended engine
-// configuration use to pick a body processor.
+// is none. Form and multipart are recognised by the start of the type, as
+// ModSecurity and Coraza do: a type such as "multipart/form-dataX" still
+// gets the multipart reader. JSON and XML are recognised as the two rules
+// of the recommended ModSecurity and Coraza configuration do it (rules
+// 200000 and 200001 of modsecurity.conf-recommended).
+//
+// Other JSON types, such as application/ld+json, are left to the CRS rules
+// 901360 and 901370, which choose the JSON reader with
+// ctl:requestBodyProcessor and also add the type to the allowed ones.
 func bodyFormat(media string) string {
 	switch {
-	case media == formContentType:
+	case strings.HasPrefix(media, formContentType):
 		return "form"
-	case media == "multipart/form-data":
+	case strings.HasPrefix(media, "multipart/form-data"):
 		return "multipart"
-	case strings.HasPrefix(media, "application/json"),
-		strings.HasPrefix(media, "application/x-amz-json-1."),
-		strings.HasPrefix(media, "application/") && strings.HasSuffix(media, "+json"):
+	case strings.HasPrefix(media, "application/json"):
 		return "json"
 	case strings.HasPrefix(media, "application/xml"),
 		strings.HasPrefix(media, "application/soap+xml"),

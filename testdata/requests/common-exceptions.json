@@ -1,0 +1,55 @@
+[
+  {
+    "name": "905110: Apache's internal dummy connection from the server itself, with XSS in a cookie. The exception switches off every CRS rule",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "remote_addr": "127.0.0.1",
+    "headers": [["Host", "localhost"], ["User-Agent", "Apache/2.4.62 (Debian) (internal dummy connection)"], ["Cookie", "a=<script>alert(1)</script>"]],
+    "no_expect_ids": [941100, 941110, 949110]
+  },
+  {
+    "name": "905110 over IPv6: the same from ::1",
+    "method": "OPTIONS",
+    "uri": "*",
+    "version": "HTTP/1.0",
+    "remote_addr": "::1",
+    "headers": [["Host", "localhost"], ["User-Agent", "Apache (internal dummy connection)"], ["Cookie", "a=<script>alert(1)</script>"]],
+    "no_expect_ids": [941100, 941110, 949110]
+  },
+  {
+    "name": "The same request from another address: no exception, the XSS is found",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "remote_addr": "203.0.113.7",
+    "headers": [["Host", "localhost"], ["User-Agent", "Apache/2.4.62 (Debian) (internal dummy connection)"], ["Cookie", "a=<script>alert(1)</script>"]],
+    "expect_ids": [941100, 941110, 949110]
+  },
+  {
+    "name": "The same request without a known address: no exception",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.1",
+    "headers": [["Host", "localhost"], ["User-Agent", "Apache/2.4.62 (Debian) (internal dummy connection)"], ["Cookie", "a=<script>alert(1)</script>"]],
+    "expect_ids": [941100, 941110, 949110]
+  },
+  {
+    "name": "From 127.0.0.1 but another path: no exception",
+    "method": "GET",
+    "uri": "/admin",
+    "version": "HTTP/1.1",
+    "remote_addr": "127.0.0.1",
+    "headers": [["Host", "localhost"], ["User-Agent", "Apache/2.4.62 (Debian) (internal dummy connection)"], ["Cookie", "a=<script>alert(1)</script>"]],
+    "expect_ids": [941100, 941110, 949110]
+  },
+  {
+    "name": "905100: the SSL pinger asks for 'GET /' without a version; from 127.0.0.1 every CRS rule is switched off",
+    "method": "GET",
+    "uri": "/",
+    "version": "",
+    "remote_addr": "127.0.0.1",
+    "headers": [["Cookie", "a=<script>alert(1)</script>"]],
+    "no_expect_ids": [941100, 941110, 949110]
+  }
+]

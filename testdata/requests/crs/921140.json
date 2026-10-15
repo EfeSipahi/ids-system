@@ -1,36 +1,5 @@
 [
   {
-    "name": "CRS 921140-1: HTTP Header Injection Attack via headers",
-    "method": "GET",
-    "uri": "/",
-    "version": "HTTP/1.1",
-    "headers": [
-      [
-        "Host",
-        "localhost"
-      ],
-      [
-        "SomeHeader",
-        "Headerdata\rInjectedHeader: response_splitting_code"
-      ],
-      [
-        "User-Agent",
-        "OWASP CRS test agent"
-      ],
-      [
-        "Accept",
-        "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"
-      ],
-      [
-        "Connection",
-        "close"
-      ]
-    ],
-    "no_expect_ids": [
-      921140
-    ]
-  },
-  {
     "name": "CRS 921140-2: HTTP Header Injection Attack via headers",
     "method": "GET",
     "uri": "/",

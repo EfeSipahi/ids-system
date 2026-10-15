@@ -26,7 +26,7 @@
         "application/xml"
       ]
     ],
-    "no_expect_ids": [
+    "expect_ids": [
       920620
     ]
   }

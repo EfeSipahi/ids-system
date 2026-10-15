@@ -1212,3 +1212,15 @@ Plan C is done: the transformations `escapeSeqDecode` (port of ModSecurity v2), 
 2. **False positives at higher levels (A04, A07):** with the command-execution rules, 18 of the 500 normal CSIC records are flagged at level 2 and 221 at level 3, mostly by rule 932350 because the application has parameters named `pwd` and `id`. Coraza flags the same numbers. Level 1 flags none. This is input for the profile work (K10), not an engine error.
 
 Details are in the progress section of the plan.
+
+### 11.19. Plan D of the request-rule plan — 16 October 2026
+
+Plan D is done: the protocol rule files 905, 920, and 921 run, with the operators `@validateUrlEncoding`, `@validateUtf8Encoding`, and `@ipMatch`, five more variables (among them `REMOTE_ADDR` and `REQBODY_PROCESSOR`), and the `ctl` forms that switch rules off or choose the body reader. 449 of the 453 rules of the product configuration are active.
+
+1. **Result:** 5,025 of 5,025 CRS tests of fifteen rule files pass at level 4 with the CRS test setup; results agree with Coraza on 6,330 requests at levels 1 and 4, apart from three explained classes.
+2. **Body reader (M17, A02):** rules can now choose the body reader with `ctl:requestBodyProcessor`, as in ModSecurity. The built-in choice is that of the recommended ModSecurity configuration; CRS rules 901360 and 901370 add the other JSON types and also allow them.
+3. **Test setup:** the CRS tests run with CRS's own test setup rule 900005 (`testdata/crs-test-setup.conf`, configuration `testdata/crs-tests.json`). The product configuration does not load it.
+4. **HTTP handling:** a fragment no longer reaches the query parameters; a request line without a version is read as HTTP/0.9; the test converter applies the message-length rules of RFC 9112 as a web server does.
+5. **False positives (A04, A07):** with the protocol rules, the old CSIC data is flagged heavily: 96 of 500 normal records at level 1 (Latin-1 text, which the default UTF-8 check flags) and all 500 at level 2 (an `Accept-Charset` header in every record). Coraza flags the same. Both are application settings, for the profile work (K10).
+
+Details are in the progress section of the plan.

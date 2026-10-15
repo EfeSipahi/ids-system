@@ -300,10 +300,56 @@ func TestJSONBody(t *testing.T) {
 		t.Errorf("arguments = %q", got)
 	}
 
-	for _, contentType := range []string{"application/vnd.api+json", "application/x-amz-json-1.1", "APPLICATION/JSON"} {
+	for _, contentType := range []string{"APPLICATION/JSON", "application/json; charset=utf-8", "application/jsonx"} {
 		if r := bodyRequest(contentType, `{"a":"b"}`); r.Status.BodyFormat != "json" || len(r.Parsed.BodyArgs) != 1 {
 			t.Errorf("%s: status = %+v", contentType, r.Status)
 		}
+	}
+	// Other JSON types are left to the CRS rules 901360 and 901370, which
+	// choose the reader with ctl:requestBodyProcessor. On its own the
+	// request does not read them; asked to, it does.
+	for _, contentType := range []string{"application/vnd.api+json", "application/x-amz-json-1.1"} {
+		r := bodyRequest(contentType, `{"a":"b"}`)
+		if r.Status.Body != BodyNotInspected || r.Status.BodyFormat != "" {
+			t.Errorf("%s: status = %+v", contentType, r.Status)
+		}
+		if again := r.WithBodyFormat("json"); again.Status.BodyFormat != "json" || len(again.Parsed.BodyArgs) != 1 || r.Status.BodyFormat != "" {
+			t.Errorf("%s as JSON: status = %+v, original %+v", contentType, again.Status, r.Status)
+		}
+	}
+}
+
+// The reader is chosen by the start of the type, as ModSecurity and Coraza
+// do it, and the declared format is known without a body.
+func TestBodyFormatChoice(t *testing.T) {
+	for contentType, want := range map[string]string{
+		"application/x-www-form-urlencoded":  "form",
+		"application/x-www-form-urlencodedX": "form",
+		"Multipart/Form-Data; boundary=x":    "multipart",
+		"multipart/form-dataX; boundary=x":   "multipart",
+		"text/xml":                           "xml",
+		"application/soap+xml":               "xml",
+		"text/plain":                         "",
+		"application/x-www-form-urlencode":   "",
+	} {
+		r := New(Received{Method: "GET", Target: "/", Version: "HTTP/1.1", Headers: []Header{{Name: "Content-Type", Value: contentType}}})
+		if got := r.DeclaredBodyFormat(); got != want {
+			t.Errorf("%q: declared format %q, want %q", contentType, got, want)
+		}
+	}
+	if got := New(Received{Method: "GET", Target: "/"}).DeclaredBodyFormat(); got != "" {
+		t.Errorf("no Content-Type: %q", got)
+	}
+}
+
+// A fragment is not part of path or query, but stays in the target.
+func TestFragment(t *testing.T) {
+	r := New(Received{Method: "GET", Target: "/a/b?x=1&y=2#top?z=3", Version: "HTTP/1.1"})
+	if r.Parsed.Path != "/a/b" || r.Parsed.RawQuery != "x=1&y=2" || len(r.Parsed.Query) != 2 || r.Parsed.Query[1].Value != "2" {
+		t.Errorf("parsed = %+v", r.Parsed)
+	}
+	if r := New(Received{Method: "GET", Target: "/a#b?c"}); r.Parsed.Path != "/a" || r.Parsed.RawQuery != "" {
+		t.Errorf("parsed = %+v", r.Parsed)
 	}
 }
 
@@ -343,7 +389,7 @@ func TestMultipartBody(t *testing.T) {
 		"--XyZ\r\n" +
 		"Content-Disposition: form-data; name=\"upload\"; filename=\"..\\\\..\\\\boot.ini\"\r\n" +
 		"Content-Type: text/plain\r\n\r\n" +
-		"the content of the file, which is not read: ../../etc\r\n" +
+		"the content of the file, which is not kept: ../../etc\r\n" +
 		"--XyZ\r\n" +
 		"Content-Disposition: form-data; name=\"title\"\r\n\r\n" +
 		"again\r\n" +
@@ -355,8 +401,10 @@ func TestMultipartBody(t *testing.T) {
 	if got, want := namesAndValues(r.Parsed.BodyArgs), []string{"title=line one\r\nline two", "title=again"}; !reflect.DeepEqual(got, want) {
 		t.Errorf("arguments = %q, want %q", got, want)
 	}
-	// The file name keeps its path; Go's own helper would cut it off.
-	wantFiles := []File{{Field: "upload", Name: `..\..\boot.ini`}, {Field: "empty", Name: ""}}
+	// The file name keeps its path; Go's own helper would cut it off. The
+	// size is that of the content, 53 bytes; the line break before the
+	// next boundary belongs to the boundary.
+	wantFiles := []File{{Field: "upload", Name: `..\..\boot.ini`, Size: 53}, {Field: "empty", Name: ""}}
 	if !reflect.DeepEqual(r.Parsed.Files, wantFiles) {
 		t.Errorf("files = %+v, want %+v", r.Parsed.Files, wantFiles)
 	}

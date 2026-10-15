@@ -94,7 +94,7 @@ Each plan is one unit of work with its own acceptance number. They run in this o
 4. Fuzzing, race detector, M11 and M21 checks again.
 5. Documents: amend M19 and M20 in `ids-system-plan-phaze1.md`, update `context.md` and `docs/crs-4.30.0-ruleset.md`.
 
-**Acceptance:** all 5,073 tests pass; no unexplained difference from Coraza.
+**Acceptance:** all 5,073 tests pass; no unexplained difference from Coraza. (5,072 after plan D, which left out one more test that only checks the web server's answer.)
 
 ## Rules for every plan
 
@@ -258,7 +258,75 @@ The jump at level 3 is rule 932350, which looks for bare Unix commands. The CSIC
 
 **The fuzzer** found a wrong property in a test of ours, not an error in the code: `\/..` becomes an empty path, because on Unix a backslash is an ordinary file name that `..` removes. Coraza does the same. The property was corrected and the input kept as a seed.
 
-### Plan D — not started
+### Plan D — done on 16 October 2026
+
+**What was added**
+
+| Kind | Added | Follows |
+| --- | --- | --- |
+| Operators | `@validateUrlEncoding` | ModSecurity v2 and Coraza, which agree |
+| | `@validateUtf8Encoding` | Coraza (Go's own check). ModSecurity also accepts the bytes 0xf4 0x90–0xbf, which stand for numbers above U+10FFFF and are not UTF-8; on 15,108 random inputs run through ModSecurity's C function these were the only 5 differences |
+| | `@ipMatch` | Addresses and networks, IPv4 and IPv6. A wrong entry stops the start, where Coraza drops it silently |
+| Variables | `REMOTE_ADDR`, `ARGS_COMBINED_SIZE`, `FILES_COMBINED_SIZE`, `REQUEST_BODY_LENGTH`, `REQBODY_PROCESSOR` | ModSecurity v2. Coraza also counts text fields in `FILES_COMBINED_SIZE`; ModSecurity counts files only, which is what the name and the rule say |
+| `ctl` | `ruleRemoveById`, `ruleRemoveByTag`, `requestBodyProcessor`; `ctl` on chained rules | ModSecurity v2 (a tag is a regular expression) |
+| `ctl`, no effect | `ruleEngine=DetectionOnly`, `auditEngine`, `forceRequestBodyVariable=On` | They describe what the engine does anyway |
+| Request | Client address in the example format (`remote_addr`); file sizes in multipart bodies; a request line without a version (HTTP/0.9) | |
+
+Rule files 905, 920 and 921 are loaded. 449 of 453 rules are active. Three exclusions were removed, because their rules now run: 901340, 901360 and 901370. Four remain: 901320 (persistent collections), 901350 (forcing the form reader on unknown bodies; the user decided against that behaviour on 16 October), 901410 and 901450 (sampling).
+
+**Body reader chosen by rules.** Rules 901360 and 901370 had been excluded because the engine read their JSON types itself. That also dropped their second job, adding those types to the allowed content types, so rule 920420 flagged valid JSON requests. The engine now supports `ctl:requestBodyProcessor`: the request reader chooses form, multipart, `application/json` and XML as the recommended ModSecurity configuration does, and CRS chooses the rest; when a rule of phase 1 picks another reader, the body is read again before phase 2. Form and multipart are now recognised by the start of the type, as both reference engines do.
+
+**The CRS test setup.** The CRS tests are written for rule 900005 of `tests/regression/README.md`, which sets limits such as `arg_length`, `max_num_args` and `combined_file_sizes`. The evidence: the ModSecurity v2 override file of the CRS project changes only two tests (920360-1, 920380-1), both because its container lacks two of those settings. The rule is copied into `testdata/crs-test-setup.conf`, and `testdata/crs-tests.json` is the product configuration plus that file, at level 4. The copy leaves out one line, the paranoia level, which our configuration sets, so that the tests can also run at levels 1 to 3. The product configuration does not load the file.
+
+**What the web server does first.** The CRS tests run behind Apache, which reads the request before ModSecurity does. The converter now does the same for three things, each checked against the test that needs it:
+
+1. Message length (RFC 9112, section 6.3): with `Transfer-Encoding: chunked` the chunks are joined and `Content-Length` is dropped; otherwise `Content-Length` says how much belongs to the body; with neither header there is no body. Tests 920181-1, 920640-5, 920170-4.
+2. A request line without a version is an HTTP/0.9 request. Like Apache, the engine gives the line as sent (`GET /`) as `REQUEST_LINE`. Test 920430-5.
+3. go-ftw expands `{{ "1" | repeat 64200 }}` in a body. Tests 920400-1 and -2.
+
+**Two overrides,** in `tools/crs-test-overrides.yaml`, in the CRS project's own format and each with a reason:
+
+1. 921140-1 is left out: Apache rejects the request (a bare CR in a header) with status 400 before any rule runs. That makes 22 tests left out in all, 21 of them since plan A.
+2. 920620-1 expects a match: the request has two `Content-Type` headers, which Apache merges into one. The engine keeps both, as nginx and Coraza do, and rule 920620 finds them, which is what the rule is for. The CRS nginx override says the same.
+
+**One error of ours, found by the comparison.** A fragment (`#...`) in the target stayed in the value of the last query parameter. Servers drop it. Fixed.
+
+**Results**
+
+| Check | Result |
+| --- | --- |
+| CRS tests of the fifteen finished files, with the test setup at level 4 | 5,025 of 5,025 pass (546 new) |
+| The same tests at levels 1, 2, 3 | A rule above the level never matches |
+| Comparison with Coraza, level 1 | 6,330 requests, 3,788 with a match, 0 unexplained differences |
+| Comparison with Coraza, level 4 | 6,330 requests, 5,952 with a match, 0 unexplained differences |
+| Examples for file 905 (`testdata/requests/common-exceptions.json`) | 6 of 6 |
+| `go vet`, `go test`, fuzzing of rule layer and body parsers | Pass |
+| `go test -race` | Pass for all packages; see the note below |
+
+5 requests are not compared because their body is broken on purpose (bad XML, bad JSON, malformed multipart in CRS tests 920240-4, 920400-1, 920400-2, 920420-9, 932180-3). All five tests pass.
+
+**Explained differences from Coraza**, each checked by its own rule in the comparison test:
+
+1. *Targets that Go's URL parser changes or rejects* (8 requests at level 1, 13 at level 4). Coraza re-encodes `REQUEST_URI` (`\` becomes `%5C`), and when the parser rejects a target it takes `REQUEST_FILENAME` undecoded. ModSecurity uses `REQUEST_URI` as sent, as we do. So rules 920460 and 920250 find more in ours; Coraza finds nothing we do not.
+2. *HTTP/0.9* (2 requests). Coraza must be given a version, so its request line differs, and rule 920100 and the exception of rule 905100 act only in ours, as in Apache with ModSecurity.
+3. *Bodies without a reader*, as before; Coraza's invented parameters now also reach chains that end on a TX variable.
+
+**Pilot records per level** (the 1,000 CSIC records; Coraza flags the same numbers at levels 1 and 2)
+
+| Level | Normal flagged (of 500) | Anomalous flagged (of 500) |
+| --- | --- | --- |
+| 1 | 96 | 176 |
+| 2 | 500 | 500 |
+| 3 | 500 | 500 |
+| 4 | 500 | 500 |
+
+1. At level 1, rule 920250 flags 96 normal records: the shop sends Spanish text in Latin-1 (`Jam\xf3n Ib\xe9rico`), which is not valid UTF-8, and CRS 4.30 checks UTF-8 by default (rule 901280). `crs-setup.conf.example` has a setting to switch this off for applications that do not use UTF-8 (`tx.crs_validate_utf8_encoding=0`).
+2. At level 2, rule 920451 flags every record: each one has an `Accept-Charset` header, which CRS restricts at level 2 because old browsers sent it and modern ones do not.
+3. Both are settings for one application, which is what profiles (K10) and the CRS setup file are for. Neither is an error of the engine. They also show that the CSIC data, from 2010, does not look like today's traffic.
+
+**Speed.** About 1.2 to 2.1 ms for an ordinary request on one core, and 57 ms for the request with a 9.4 kB field. Plan F deals with speed.
+
+**Race detector.** With all these tests, the engine package takes longer than Go's default limit of 10 minutes under `-race`; it then stops with a timeout, not with a race. Run again with `-timeout 60m`, it passed in 639 seconds.
 
 ### Plan E — not started
 

@@ -148,8 +148,9 @@ func parseMultipart(body []byte, contentType string) ([]Param, []File, error) {
 		}
 		field := disposition["name"]
 		if filename, isFile := disposition["filename"]; isFile {
-			files = append(files, File{Field: field, Name: filename})
-			if _, err := io.Copy(io.Discard, part); err != nil {
+			size, err := io.Copy(io.Discard, part)
+			files = append(files, File{Field: field, Name: filename, Size: int(size)})
+			if err != nil {
 				return params, files, err
 			}
 			continue

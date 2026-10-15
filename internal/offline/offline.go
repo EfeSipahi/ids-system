@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/netip"
 	"os"
 	"regexp"
 
@@ -43,10 +44,12 @@ func (ex Example) HasExpectation() bool {
 
 // fileExample is the JSON form of one example.
 type fileExample struct {
-	Name    string `json:"name"`
-	Method  string `json:"method"`
-	URI     string `json:"uri"`
-	Version string `json:"version"`
+	Name   string `json:"name"`
+	Method string `json:"method"`
+	URI    string `json:"uri"`
+	// Version left out means HTTP/1.1. An empty text means a request line
+	// without a version, as an HTTP/0.9 client sends it.
+	Version *string `json:"version"`
 
 	// Headers is a list of [name, value] pairs. A list keeps the order and
 	// lets the same header appear twice; a JSON object could do neither.
@@ -55,8 +58,11 @@ type fileExample struct {
 	// Body is the body as text. BodyBase64 is for a body that is not
 	// UTF-8 text, which JSON cannot hold: the same bytes in base64. Only
 	// one of the two may be set.
-	Body        string `json:"body"`
-	BodyBase64  string `json:"body_base64"`
+	Body       string `json:"body"`
+	BodyBase64 string `json:"body_base64"`
+
+	// RemoteAddr is the IP address of the client. It may be left out.
+	RemoteAddr  string `json:"remote_addr"`
 	ExpectIDs   []int  `json:"expect_ids"`
 	NoExpectIDs []int  `json:"no_expect_ids"`
 	ExpectLog   string `json:"expect_log"`
@@ -114,12 +120,18 @@ func (fe fileExample) toExample() (Example, error) {
 	}
 
 	rec := httpmodel.Received{
-		Method:  fe.Method,
-		Target:  fe.URI,
-		Version: fe.Version,
+		Method:     fe.Method,
+		Target:     fe.URI,
+		Version:    defaultVersion,
+		RemoteAddr: fe.RemoteAddr,
 	}
-	if rec.Version == "" {
-		rec.Version = defaultVersion
+	if rec.RemoteAddr != "" {
+		if _, err := netip.ParseAddr(rec.RemoteAddr); err != nil {
+			return Example{}, fmt.Errorf("remote_addr: %w", err)
+		}
+	}
+	if fe.Version != nil {
+		rec.Version = *fe.Version
 	}
 	for i, h := range fe.Headers {
 		if len(h) != 2 {

@@ -9,7 +9,7 @@
 // Usage, from this directory:
 //
 //	go run -tags coraza.rule.no_regex_multiline . \
-//	    -config ../../configs/crs-first-engine.json \
+//	    -config ../../testdata/crs-tests.json \
 //	    -requests ../../testdata/requests/crs \
 //	    -out ../../testdata/reference/coraza-first-engine.json
 //
@@ -53,11 +53,13 @@ type example struct {
 	Name    string     `json:"name"`
 	Method  string     `json:"method"`
 	URI     string     `json:"uri"`
-	Version string     `json:"version"`
+	Version *string    `json:"version"`
 	Headers [][]string `json:"headers"`
 	Body    string     `json:"body"`
 	// BodyBase64 holds a body that is not UTF-8 text.
 	BodyBase64 string `json:"body_base64"`
+	// RemoteAddr is the client address; it may be empty.
+	RemoteAddr string `json:"remote_addr"`
 }
 
 // reference is the output file.
@@ -241,15 +243,23 @@ func run() error {
 
 // evaluate runs one request through Coraza.
 func evaluate(waf coraza.WAF, ex example) (result, error) {
-	version := ex.Version
-	if version == "" {
-		version = "HTTP/1.1"
+	// A version left out of the example means HTTP/1.1. An empty one is a
+	// request line without a version, which both ModSecurity and our
+	// engine read as HTTP/0.9.
+	version := "HTTP/1.1"
+	if ex.Version != nil {
+		version = *ex.Version
+		if version == "" {
+			version = "HTTP/0.9"
+		}
 	}
 
 	tx := waf.NewTransaction()
 	defer tx.Close()
 
-	tx.ProcessConnection("127.0.0.1", 40000, "127.0.0.1", 80)
+	// The client address of the example, as our engine gets it. Without
+	// one, REMOTE_ADDR is empty in both engines.
+	tx.ProcessConnection(ex.RemoteAddr, 40000, "127.0.0.1", 80)
 	tx.ProcessURI(ex.URI, ex.Method, version)
 	for _, h := range ex.Headers {
 		if len(h) != 2 {

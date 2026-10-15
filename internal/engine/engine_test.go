@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -313,9 +314,13 @@ func TestLoadErrors(t *testing.T) {
 		msgs  []string
 	}{
 		{"action", []string{`SecAction "id:7,phase:1,pass,initcol:ip=x"`}, []string{"rulesa.conf:1: rule 7: action initcol is not supported"}},
-		{"ctl", []string{`SecAction "id:7,phase:1,pass,ctl:ruleEngine=Off"`}, []string{"rule 7: ctl:ruleEngine=Off: only ctl:ruleRemoveTargetByTag is supported"}},
+		{"ctl", []string{`SecAction "id:7,phase:1,pass,ctl:ruleEngine=Off"`}, []string{"rule 7: ctl:ruleEngine=Off: only ctl:ruleEngine=DetectionOnly is supported"}},
+		{"ctl unknown", []string{`SecAction "id:7,phase:1,pass,ctl:debugLogLevel=9"`}, []string{"rule 7: ctl:debugLogLevel=9: ctl:debugLogLevel is not supported"}},
+		{"ctl bad id", []string{`SecAction "id:7,phase:1,pass,ctl:ruleRemoveById=5-2"`}, []string{`ctl:ruleRemoveById=5-2: "5-2" is not a rule id or a range of ids`}},
+		{"ctl body processor", []string{`SecAction "id:7,phase:1,pass,ctl:requestBodyProcessor=RAW"`}, []string{`body processor "RAW" is not supported`}},
+		{"ip list", []string{`SecRule REMOTE_ADDR "@ipMatch 10.0.0.1,10.0.0.300" "id:7,phase:1"`}, []string{`rule 7: @ipMatch: "10.0.0.300" is not an address or network`}},
 		{"ctl without variable", []string{`SecAction "id:7,phase:1,pass,ctl:ruleRemoveTargetByTag=x"`}, []string{"expected TAG;VARIABLE"}},
-		{"operator", []string{`SecRule ARGS "@ipMatch 10.0.0.1" "id:7,phase:2"`}, []string{"rule 7: operator @ipMatch is not supported"}},
+		{"operator", []string{`SecRule ARGS "@rbl zen.example" "id:7,phase:2"`}, []string{"rule 7: operator @rbl is not supported"}},
 		{"data file", []string{`SecRule ARGS "@pmFromFile x.data" "id:7,phase:2"`}, []string{"rule 7: @pmFromFile: open ", "x.data"}},
 		{"regex", []string{`SecRule ARGS "@rx (?=a)" "id:7,phase:2"`}, []string{"rule 7: @rx: "}},
 		{"transformation", []string{`SecRule ARGS "@rx a" "id:7,phase:2,t:none,t:sha1"`}, []string{`rule 7: transformation "sha1" is not supported`}},
@@ -327,8 +332,8 @@ func TestLoadErrors(t *testing.T) {
 		{"tx without name", []string{`SecRule TX "@rx a" "id:7,phase:2"`}, []string{"TX without a variable name"}},
 		{"phase", []string{`SecRule ARGS "@rx a" "id:7,phase:4"`}, []string{"rule 7: phase 4 is not supported"}},
 		{"marker", []string{`SecAction "id:7,phase:1,pass,skipAfter:NOWHERE"`}, []string{"rulesa.conf:1: skipAfter names marker NOWHERE"}},
-		{"macro", []string{`SecAction "id:7,phase:1,pass,setvar:'tx.a=%{REMOTE_ADDR}'"`}, []string{"macro %{REMOTE_ADDR} is not supported"}},
-		{"macro in msg", []string{`SecRule ARGS "@rx a" "id:7,phase:2,msg:'%{REMOTE_ADDR}'"`}, []string{"rule 7: msg: macro %{REMOTE_ADDR} is not supported"}},
+		{"macro", []string{`SecAction "id:7,phase:1,pass,setvar:'tx.a=%{REMOTE_PORT}'"`}, []string{"macro %{REMOTE_PORT} is not supported"}},
+		{"macro in msg", []string{`SecRule ARGS "@rx a" "id:7,phase:2,msg:'%{REMOTE_PORT}'"`}, []string{"rule 7: msg: macro %{REMOTE_PORT} is not supported"}},
 		{"macro in operator", []string{`SecRule ARGS "@eq %{GEO.x}" "id:7,phase:2"`}, []string{"operator argument: macro %{GEO.x} is not supported"}},
 		{"setvar collection", []string{`SecAction "id:7,phase:1,pass,setvar:ip.count=+1"`}, []string{"setvar:ip.count=+1: only tx.name variables are supported"}},
 		{"setvar macro name", []string{`SecAction "id:7,phase:1,pass,setvar:'tx.a_%{GEO.x}=1'"`}, []string{"rule 7: setvar:tx.a_%{GEO.x}=1: macro %{GEO.x} is not supported"}},
@@ -336,8 +341,8 @@ func TestLoadErrors(t *testing.T) {
 		{"default action", []string{`SecDefaultAction "phase:2,log,pass,ctl:ruleEngine=Off"`}, []string{"SecDefaultAction: action ctl is not supported"}},
 		{"duplicate id in two files", []string{`SecAction "id:7,phase:1,pass"`, `SecAction "id:7,phase:1,pass"`}, []string{"rulesb.conf:1: rule id 7 is already used at", "rulesa.conf:1"}},
 		// Every problem is reported, not only the first.
-		{"several", []string{"SecAction \"id:7,phase:1,pass,initcol:ip=x\"\nSecRule ARGS \"@ipMatch a\" \"id:8,phase:2,t:md5\""},
-			[]string{"rule 7: action initcol", "rule 8: operator @ipMatch", `rule 8: transformation "md5"`}},
+		{"several", []string{"SecAction \"id:7,phase:1,pass,initcol:ip=x\"\nSecRule ARGS \"@rbl a\" \"id:8,phase:2,t:md5\""},
+			[]string{"rule 7: action initcol", "rule 8: operator @rbl", `rule 8: transformation "md5"`}},
 		{"syntax", []string{`SecRuleEngine On`}, []string{"rulesa.conf:1: unsupported directive SecRuleEngine"}},
 	}
 	for _, tt := range tests {
@@ -569,7 +574,7 @@ func TestParseTemplate(t *testing.T) {
 			t.Errorf("parseTemplate(%q): expands to %q with macro %v, want %q with macro %v", tt.in, got, tmpl.macro, tt.want, tt.macro)
 		}
 	}
-	for _, in := range []string{"%{tx}", "%{REMOTE_ADDR}", "%{MATCHED_VAR.x}", "%{REQUEST_LINE.x}", "%{GEO.a}"} {
+	for _, in := range []string{"%{tx}", "%{REMOTE_PORT}", "%{MATCHED_VAR.x}", "%{REQUEST_LINE.x}", "%{GEO.a}"} {
 		if _, err := parseTemplate(in); err == nil {
 			t.Errorf("parseTemplate(%q): no error", in)
 		}
@@ -757,6 +762,107 @@ SecRule REQUEST_METHOD "@streq %{ARGS.m}" "id:4,phase:2,pass,nolog,setvar:tx.met
 	if len(res.Matches) != 0 {
 		t.Errorf("matches = %+v", res.Matches)
 	}
+}
+
+// ctl:ruleRemoveById and ctl:ruleRemoveByTag switch rules off for the rest
+// of the request, in this phase and the next. Other requests are not
+// affected.
+func TestRuleRemoval(t *testing.T) {
+	rs := loadRules(t, `
+SecRule ARGS:off "@streq id" "id:1,phase:1,pass,nolog,ctl:ruleRemoveById=3,ctl:ruleRemoveById=10-11"
+SecRule ARGS:off "@streq tag" "id:2,phase:1,pass,nolog,chain"
+    SecRule ARGS:also "@streq yes" "ctl:ruleRemoveByTag=^attack-(?:xss|sqli)$"
+SecAction "id:3,phase:1,pass,nolog,setvar:tx.r3=1"
+SecAction "id:4,phase:2,pass,nolog,tag:'attack-xss',setvar:tx.r4=1"
+SecAction "id:5,phase:2,pass,nolog,tag:'attack-sqli-extra',setvar:tx.r5=1"
+SecAction "id:10,phase:2,pass,nolog,setvar:tx.r10=1"
+SecAction "id:11,phase:2,pass,nolog,setvar:tx.r11=1"
+SecAction "id:12,phase:2,pass,nolog,setvar:tx.r12=1"
+`)
+	all := map[string]string{"r3": "1", "r4": "1", "r5": "1", "r10": "1", "r11": "1", "r12": "1"}
+	wantVars(t, rs.Evaluate(get("/")), all)
+	wantVars(t, rs.Evaluate(get("/?off=id")), map[string]string{"r3": "<unset>", "r4": "1", "r10": "<unset>", "r11": "<unset>", "r12": "1"})
+	// The ctl of a chained rule runs only when the chain gets that far.
+	wantVars(t, rs.Evaluate(get("/?off=tag")), all)
+	// The pattern must match a whole tag here because of ^ and $:
+	// "attack-sqli-extra" does not.
+	wantVars(t, rs.Evaluate(get("/?off=tag&also=yes")), map[string]string{"r3": "1", "r4": "<unset>", "r5": "1", "r12": "1"})
+	wantVars(t, rs.Evaluate(get("/")), all)
+}
+
+// ctl:requestBodyProcessor in phase 1 chooses the reader for the body,
+// which is then read again before phase 2. REQBODY_PROCESSOR shows the
+// choice. The request passed in is not changed.
+func TestRequestBodyProcessor(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_HEADERS:Content-Type "@rx ^application/vnd\.test\+json" "id:1,phase:1,pass,nolog,ctl:requestBodyProcessor=JSON"
+SecRule REQBODY_PROCESSOR "@rx ." "id:2,phase:1,pass,nolog,setvar:tx.p1=%{MATCHED_VAR}"
+SecRule REQBODY_PROCESSOR "@rx ." "id:3,phase:2,pass,nolog,setvar:tx.p2=%{MATCHED_VAR}"
+SecRule ARGS:json.a "@streq b" "id:4,phase:2,pass,log"
+`)
+	post := func(contentType string) *httpmodel.Request {
+		return httpmodel.New(httpmodel.Received{
+			Method: "POST", Target: "/", Version: "HTTP/1.1", Body: []byte(`{"a":"b"}`),
+			Headers: []httpmodel.Header{{Name: "Content-Type", Value: contentType}},
+		})
+	}
+	req := post("application/vnd.test+json")
+	res := rs.Evaluate(req)
+	wantVars(t, res, map[string]string{"p1": "JSON", "p2": "JSON"})
+	if ids := res.MatchedIDs(); !reflect.DeepEqual(ids, []int{4}) {
+		t.Errorf("matched %v", ids)
+	}
+	if req.Status.BodyFormat != "" || res.Request == req || res.Request.Status.BodyFormat != "json" {
+		t.Errorf("request status %+v, result request status %+v", req.Status, res.Request.Status)
+	}
+
+	// Without the ctl the type has no reader.
+	res = rs.Evaluate(post("application/other+json"))
+	wantVars(t, res, map[string]string{"p1": "<unset>", "p2": "<unset>"})
+	if len(res.Matches) != 0 || res.Request.Status.Body != httpmodel.BodyNotInspected {
+		t.Errorf("matches %v, status %+v", res.Matches, res.Request.Status)
+	}
+	// A form is known from the headers, before the body is read.
+	res = rs.Evaluate(post("application/x-www-form-urlencoded"))
+	wantVars(t, res, map[string]string{"p1": "URLENCODED", "p2": "URLENCODED"})
+}
+
+// The variables about sizes and the client.
+func TestSizeAndClientVariables(t *testing.T) {
+	rs := loadRules(t, `
+SecRule ARGS_COMBINED_SIZE "@rx ." "id:1,phase:2,pass,nolog,setvar:tx.args=%{MATCHED_VAR}"
+SecRule FILES_COMBINED_SIZE "@rx ." "id:2,phase:2,pass,nolog,setvar:tx.files=%{MATCHED_VAR}"
+SecRule REQUEST_BODY_LENGTH "@rx ." "id:3,phase:2,pass,nolog,setvar:tx.body=%{MATCHED_VAR}"
+SecRule REMOTE_ADDR "@ipMatch 192.0.2.0/24" "id:4,phase:1,pass,nolog,setvar:tx.client=%{REMOTE_ADDR}"
+`)
+	body := "--b\r\nContent-Disposition: form-data; name=\"note\"\r\n\r\nhello\r\n" +
+		"--b\r\nContent-Disposition: form-data; name=\"f\"; filename=\"a.txt\"\r\n\r\n12345678\r\n" +
+		"--b\r\nContent-Disposition: form-data; name=\"g\"; filename=\"b.txt\"\r\n\r\n12\r\n--b--\r\n"
+	req := httpmodel.New(httpmodel.Received{
+		Method: "POST", Target: "/?q=abc", Version: "HTTP/1.1", RemoteAddr: "192.0.2.10", Body: []byte(body),
+		Headers: []httpmodel.Header{{Name: "Content-Type", Value: "multipart/form-data; boundary=b"}},
+	})
+	wantVars(t, rs.Evaluate(req), map[string]string{
+		// q=abc and note=hello: 1+3 and 4+5 bytes.
+		"args": "13",
+		// The two files, 8 and 2 bytes; the text field is not a file.
+		"files":  "10",
+		"body":   strconv.Itoa(len(body)),
+		"client": "192.0.2.10",
+	})
+	wantVars(t, rs.Evaluate(get("/")), map[string]string{"args": "0", "files": "0", "body": "0", "client": "<unset>"})
+}
+
+// A request line without a version is an HTTP/0.9 request. Like Apache,
+// the engine gives the rules the line as sent.
+func TestHTTP09(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_LINE "@rx ." "id:1,phase:1,pass,nolog,setvar:tx.line=%{MATCHED_VAR}"
+SecRule REQUEST_PROTOCOL "@rx ." "id:2,phase:1,pass,nolog,setvar:tx.protocol=%{MATCHED_VAR}"
+`)
+	req := httpmodel.New(httpmodel.Received{Method: "GET", Target: "/"})
+	wantVars(t, rs.Evaluate(req), map[string]string{"line": "GET /", "protocol": "HTTP/0.9"})
+	wantVars(t, rs.Evaluate(get("/a")), map[string]string{"line": "GET /a HTTP/1.1", "protocol": "HTTP/1.1"})
 }
 
 func TestRegexSelectors(t *testing.T) {

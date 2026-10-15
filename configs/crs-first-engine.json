@@ -2,8 +2,11 @@
   "files": [
     "../coreruleset-4.30.0/crs-setup.conf.example",
     "../coreruleset-4.30.0/rules/REQUEST-901-INITIALIZATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-905-COMMON-EXCEPTIONS.conf",
     "../coreruleset-4.30.0/rules/REQUEST-911-METHOD-ENFORCEMENT.conf",
     "../coreruleset-4.30.0/rules/REQUEST-913-SCANNER-DETECTION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-921-PROTOCOL-ATTACK.conf",
     "../coreruleset-4.30.0/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf",
     "../coreruleset-4.30.0/rules/REQUEST-931-APPLICATION-ATTACK-RFI.conf",
     "../coreruleset-4.30.0/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf",
@@ -18,10 +21,7 @@
   ],
   "exclude": [
     {"id": 901320, "reason": "Persistent collections (initcol) are not implemented. The rule only acts when tx.enable_default_collections is 1, which is not set."},
-    {"id": 901340, "reason": "Body processor control (ctl, REQBODY_PROCESSOR) is not implemented. The rule asks for REQUEST_BODY when no body reader was chosen; the engine does that itself for a body it does not parse."},
-    {"id": 901350, "reason": "Body processor control (ctl, REQBODY_PROCESSOR) is not implemented. The rule only acts when tx.enforce_bodyproc_urlencoded is 1; the default is 0."},
-    {"id": 901360, "reason": "Body processor control (ctl) is not implemented. The engine itself reads application/x-amz-json bodies as JSON."},
-    {"id": 901370, "reason": "Body processor control (ctl) is not implemented. The engine itself reads application/...+json bodies as JSON."},
+    {"id": 901350, "reason": "Body processor control (ctl:requestBodyProcessor) is not implemented. The rule only acts when tx.enforce_bodyproc_urlencoded is 1; the default is 0. The user decided on 16 October 2026 that a body without a reader stays one text."},
     {"id": 901410, "reason": "Sampling is not implemented (UNIQUE_ID, sha1). Rule 901400 skips this rule at the default sampling percentage of 100."},
     {"id": 901450, "reason": "Sampling is not implemented (ctl). Rule 901400 skips this rule at the default sampling percentage of 100."}
   ]

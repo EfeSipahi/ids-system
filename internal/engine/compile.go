@@ -331,11 +331,9 @@ func (c *compiler) compileOne(d, first seclang.Directive, chained bool) *rule {
 			// block means "do what SecDefaultAction says".
 			r.action = def.action
 		case "ctl":
-			removal, err := parseCtl(a.Value)
-			if err != nil {
+			if err := parseCtl(a.Value, r); err != nil {
 				fail("ctl:%s: %v", a.Value, err)
 			}
-			r.removals = append(r.removals, removal)
 		case "skipafter":
 			r.skipAfter = a.Value
 		case "msg":
@@ -367,7 +365,7 @@ func (c *compiler) compileOne(d, first seclang.Directive, chained bool) *rule {
 // allowedInChain are the actions a chained rule may carry. Everything that
 // describes or steers the rule as a whole belongs on the first rule.
 var allowedInChain = map[string]bool{
-	"t": true, "setvar": true, "capture": true, "multimatch": true, "chain": true,
+	"t": true, "setvar": true, "capture": true, "multimatch": true, "chain": true, "ctl": true,
 }
 
 func (c *compiler) compileTargets(d seclang.Directive, r *rule, fail func(string, ...any)) {
@@ -386,30 +384,85 @@ func (c *compiler) compileTargets(d seclang.Directive, r *rule, fail func(string
 	}
 }
 
-// parseCtl compiles a ctl action. One form is supported:
+// parseCtl compiles a ctl action and adds it to the rule. The supported
+// forms:
 //
-//	ctl:ruleRemoveTargetByTag=TAG;VARIABLE
+//	ctl:ruleRemoveTargetByTag=TAG;VARIABLE  rules with a fitting tag stop
+//	                                        looking at the variable
+//	ctl:ruleRemoveById=ID or =FIRST-LAST    these rules do not run
+//	ctl:ruleRemoveByTag=TAG                 rules with a fitting tag do not run
+//	ctl:requestBodyProcessor=JSON           read the body with this reader:
+//	                                        URLENCODED, MULTIPART, JSON or XML
 //
-// TAG is a regular expression matched against the tags of every rule.
-func parseCtl(s string) (targetRemoval, error) {
+// TAG is a regular expression matched against each tag of a rule, as in
+// ModSecurity. Every form lasts until the end of the request.
+//
+// Three more forms are accepted and change nothing, because they describe
+// what this engine does anyway:
+//
+//	ctl:ruleEngine=DetectionOnly        it never blocks
+//	ctl:auditEngine=...                 it keeps no audit log
+//	ctl:forceRequestBodyVariable=On     it gives REQUEST_BODY a value for
+//	                                    every body without a reader
+//
+// Any other ctl is an error.
+func parseCtl(s string, r *rule) error {
 	name, value, _ := strings.Cut(s, "=")
-	if !strings.EqualFold(name, "ruleRemoveTargetByTag") {
-		return targetRemoval{}, errors.New("only ctl:ruleRemoveTargetByTag is supported")
+	switch strings.ToLower(name) {
+	case "ruleremovetargetbytag":
+		tag, variable, ok := strings.Cut(value, ";")
+		if !ok || tag == "" || variable == "" {
+			return errors.New("expected TAG;VARIABLE")
+		}
+		tagRe, err := regexp.Compile(tag)
+		if err != nil {
+			return err
+		}
+		collection, selector, _ := strings.Cut(variable, ":")
+		t, err := compileTarget(seclang.Variable{Collection: strings.ToUpper(collection), Selector: selector})
+		if err != nil {
+			return err
+		}
+		r.removals = append(r.removals, targetRemoval{tag: tagRe, target: t})
+	case "ruleremovebyid":
+		firstText, lastText, isRange := strings.Cut(value, "-")
+		first, err := strconv.Atoi(firstText)
+		last := first
+		if err == nil && isRange {
+			last, err = strconv.Atoi(lastText)
+		}
+		if err != nil || first <= 0 || last < first {
+			return fmt.Errorf("%q is not a rule id or a range of ids", value)
+		}
+		r.ruleRemovals = append(r.ruleRemovals, ruleRemoval{first: first, last: last})
+	case "ruleremovebytag":
+		if value == "" {
+			return errors.New("no tag is given")
+		}
+		tagRe, err := regexp.Compile(value)
+		if err != nil {
+			return err
+		}
+		r.ruleRemovals = append(r.ruleRemovals, ruleRemoval{tag: tagRe})
+	case "requestbodyprocessor":
+		format, ok := bodyFormats[strings.ToUpper(value)]
+		if !ok {
+			return fmt.Errorf("body processor %q is not supported", value)
+		}
+		r.bodyFormat = format
+	case "ruleengine":
+		if !strings.EqualFold(value, "DetectionOnly") {
+			return errors.New("only ctl:ruleEngine=DetectionOnly is supported; this engine never blocks")
+		}
+	case "auditengine":
+	case "forcerequestbodyvariable":
+		if !strings.EqualFold(value, "On") {
+			return errors.New("only ctl:forceRequestBodyVariable=On is supported")
+		}
+	default:
+		return fmt.Errorf("ctl:%s is not supported", name)
 	}
-	tag, variable, ok := strings.Cut(value, ";")
-	if !ok || tag == "" || variable == "" {
-		return targetRemoval{}, errors.New("expected TAG;VARIABLE")
-	}
-	tagRe, err := regexp.Compile(tag)
-	if err != nil {
-		return targetRemoval{}, err
-	}
-	collection, selector, _ := strings.Cut(variable, ":")
-	t, err := compileTarget(seclang.Variable{Collection: strings.ToUpper(collection), Selector: selector})
-	if err != nil {
-		return targetRemoval{}, err
-	}
-	return targetRemoval{tag: tagRe, target: t}, nil
+	return nil
 }
 
 // parseSetvar compiles the value of a setvar action:

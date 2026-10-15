@@ -34,7 +34,8 @@
       ["Host", "localhost"],
       ["User-Agent", "OWASP CRS test agent"],
       ["Accept", "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"],
-      ["Content-Type", "application/x-www-form-urlencoded"]
+      ["Content-Type", "application/x-www-form-urlencoded"],
+      ["Content-Length", "31"]
     ],
     "body": "arg=../../../etc/passwd&foo=var",
     "expect_ids": [930110]
@@ -67,7 +68,8 @@
     "uri": "/giris",
     "headers": [
       ["Host", "localhost"],
-      ["Content-Type", "application/x-www-form-urlencoded"]
+      ["Content-Type", "application/x-www-form-urlencoded"],
+      ["Content-Length", "33"]
     ],
     "body": "kullanici=efe&parola=gizli+parola",
     "no_expect_ids": [930100, 930110]

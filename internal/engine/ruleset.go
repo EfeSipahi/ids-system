@@ -71,6 +71,12 @@ type rule struct {
 	capture    bool
 	setvars    []setvar
 	removals   []targetRemoval
+	// ruleRemovals are the ctl:ruleRemoveById and ctl:ruleRemoveByTag
+	// actions: rules that do not run for the rest of the request.
+	ruleRemovals []ruleRemoval
+	// bodyFormat is set by ctl:requestBodyProcessor: the body reader to
+	// use, as httpmodel names it ("form", "json", ...).
+	bodyFormat string
 
 	next *rule
 
@@ -98,6 +104,26 @@ type setvar struct {
 	unset    bool
 	relative bool // the value starts with + or -: add it to the current number
 	value    template
+}
+
+// ruleRemoval is a compiled ctl:ruleRemoveById or ctl:ruleRemoveByTag
+// action. It names rules by id, from first to last, or by a tag pattern.
+type ruleRemoval struct {
+	first, last int
+	tag         *regexp.Regexp
+}
+
+// removes reports whether the removal applies to a rule.
+func (rr ruleRemoval) removes(r *rule) bool {
+	if rr.tag == nil {
+		return r.id >= rr.first && r.id <= rr.last
+	}
+	for _, tag := range r.tags {
+		if rr.tag.MatchString(tag) {
+			return true
+		}
+	}
+	return false
 }
 
 // targetRemoval is a compiled ctl:ruleRemoveTargetByTag=TAG;VARIABLE action.

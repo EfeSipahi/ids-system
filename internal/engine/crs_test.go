@@ -26,10 +26,21 @@ func loadCRS(t *testing.T) *RuleSet {
 	return loadCRSAt(t, DefaultParanoiaLevel)
 }
 
+// crsTestConfig is the configuration the CRS regression tests are written
+// for: the product configuration plus rule 900005 of the CRS test setup,
+// at paranoia level 4. See testdata/crs-test-setup.conf.
+const crsTestConfig = "../../testdata/crs-tests.json"
+
 // loadCRSAt loads the CRS rules at the given paranoia level.
 func loadCRSAt(t *testing.T, level int) *RuleSet {
 	t.Helper()
-	cfg, err := LoadConfig(firstEngineConfig)
+	return loadConfigAt(t, firstEngineConfig, level)
+}
+
+// loadConfigAt loads a configuration at the given paranoia level.
+func loadConfigAt(t *testing.T, path string, level int) *RuleSet {
+	t.Helper()
+	cfg, err := LoadConfig(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,27 +77,29 @@ func TestCRSStartupReport(t *testing.T) {
 		t.Errorf("signature = %q", rs.Signature())
 	}
 
-	// 1 rule in crs-setup, 33 in 901, 9 in 911, 9 in 913, 14 in 930, 13
-	// in 931, 56 in 932, 29 in 933, 22 in 934, 42 in 941, 68 in 942, 11 in
-	// 943, 22 in 944 and 28 in 949: every one has a status.
+	// 1 rule in crs-setup, 33 in 901, 2 in 905, 9 in 911, 9 in 913, 68 in
+	// 920, 26 in 921, 14 in 930, 13 in 931, 56 in 932, 29 in 933, 22 in
+	// 934, 42 in 941, 68 in 942, 11 in 943, 22 in 944 and 28 in 949: every
+	// one has a status.
 	statuses := rs.Statuses()
-	if len(statuses) != 357 {
-		t.Errorf("%d statuses, want 357", len(statuses))
+	if len(statuses) != 453 {
+		t.Errorf("%d statuses, want 453", len(statuses))
 	}
 	if rs.ParanoiaLevel() != 1 {
 		t.Errorf("paranoia level = %d, want the default 1", rs.ParanoiaLevel())
 	}
 	// Detection rules per level, counted from the tags in the CRS files:
-	// 911 has 1; 913 has 1; 930 has 5 and 1; 931 has 3 and 2; 932 has 19,
-	// 19 and 10; 933 has 13, 3 and 5; 934 has 8, 5 and 1; 941 has 26 and
-	// 7; 942 has 20, 31, 7 and 2; 943 has 3; 944 has 6, 6, 1 and 1.
+	// 911 has 1; 913 has 1; 920 has 40, 9, 5 and 5; 921 has 11, 2, 3 and
+	// 1; 930 has 5 and 1; 931 has 3 and 2; 932 has 19, 19 and 10; 933 has
+	// 13, 3 and 5; 934 has 8, 5 and 1; 941 has 26 and 7; 942 has 20, 31, 7
+	// and 2; 943 has 3; 944 has 6, 6, 1 and 1.
 	perLevel := map[int]int{}
 	for _, s := range statuses {
 		if s.ParanoiaLevel != 0 {
 			perLevel[s.ParanoiaLevel]++
 		}
 	}
-	if want := map[int]int{1: 105, 2: 74, 3: 24, 4: 3}; !reflect.DeepEqual(perLevel, want) {
+	if want := map[int]int{1: 156, 2: 85, 3: 32, 4: 9}; !reflect.DeepEqual(perLevel, want) {
 		t.Errorf("detection rules per level = %v, want %v", perLevel, want)
 	}
 	// File 999 holds one update, for rule 932240 of file 932. That file is
@@ -105,7 +118,7 @@ func TestCRSStartupReport(t *testing.T) {
 			}
 		}
 	}
-	want := []int{901320, 901340, 901350, 901360, 901370, 901410, 901450}
+	want := []int{901320, 901350, 901410, 901450}
 	if !reflect.DeepEqual(excluded, want) {
 		t.Errorf("excluded = %v\nwant       %v", excluded, want)
 	}
@@ -159,12 +172,12 @@ func TestCRSUnsupportedRuleStopsLoading(t *testing.T) {
 	cfg, _ = LoadConfig(firstEngineConfig)
 	var kept []Exclusion
 	for _, ex := range cfg.Exclude {
-		if ex.ID != 901340 {
+		if ex.ID != 901320 {
 			kept = append(kept, ex)
 		}
 	}
 	cfg.Exclude = kept
-	if _, err := Load(cfg); err == nil || !strings.Contains(err.Error(), "REQUEST-901-INITIALIZATION.conf:375: rule 901340: variable REQBODY_PROCESSOR is not supported") {
+	if _, err := Load(cfg); err == nil || !strings.Contains(err.Error(), "REQUEST-901-INITIALIZATION.conf:363: rule 901320: action initcol is not supported on a chained rule") {
 		t.Errorf("error = %v", err)
 	}
 }
@@ -278,8 +291,8 @@ func TestCRSStarterExamples(t *testing.T) {
 // switched off there.
 func TestCRSRegression(t *testing.T) {
 	files, err := filepath.Glob("../../testdata/requests/crs/*.json")
-	if err != nil || len(files) != 207 {
-		t.Fatalf("found %d test files (%v), want 207", len(files), err)
+	if err != nil || len(files) != 286 {
+		t.Fatalf("found %d test files (%v), want 286", len(files), err)
 	}
 	// The level of each rule, from the tags in the CRS files.
 	levelOfRule := map[int]int{}
@@ -291,24 +304,25 @@ func TestCRSRegression(t *testing.T) {
 	levelOfRule[944000] = levelOfRule[944100]
 
 	for level := MaxParanoiaLevel; level >= 1; level-- {
-		rs := loadCRSAt(t, level)
+		rs := loadConfigAt(t, crsTestConfig, level)
 		total := 0
 		for _, file := range files {
 			name := strings.TrimSuffix(filepath.Base(file), ".json")
 			ruleID, err := strconv.Atoi(name)
-			if err != nil || levelOfRule[ruleID] == 0 {
-				t.Fatalf("%s is not named after a detection rule", file)
+			if _, known := levelOfRule[ruleID]; err != nil || !known {
+				t.Fatalf("%s is not named after a rule", file)
 			}
 			for _, ex := range loadExamples(t, "crs/"+filepath.Base(file)) {
 				total++
 				t.Run(fmt.Sprintf("PL%d/%s", level, ex.Name), func(t *testing.T) {
 					// A body of a type that has no reader is not split into
 					// fields; the rules see it as one text (REQUEST_BODY).
-					// A broken body is read as far as it goes. Only CRS
-					// test 932180-3 has one, and it must still pass; if a
-					// test with a broken body fails, the reason is named.
+					// A broken body is read as far as it goes. Five CRS
+					// tests send one on purpose, and they must still pass;
+					// if a test with a broken body fails, the reason is
+					// named.
 					if !ex.Request.Status.Body.Complete() && ex.Request.Status.BodyFormat != "" {
-						if ex.Name != "CRS 932180-3: File upload - negative test" {
+						if !brokenBodies[ex.Name] {
 							t.Errorf("unexpected broken body: %s", ex.Request.Status.BodyReason)
 						}
 						defer func() {
@@ -327,13 +341,24 @@ func TestCRSRegression(t *testing.T) {
 				})
 			}
 		}
-		// 8 tests in file 911, 9 in 913, 83 in 930, 42 in 931, 1,089 in
-		// 932, 442 in 933, 287 in 934, 263 in 941, 1,033 in 942, 47 in 943
-		// and 1,176 in 944, counted from the CRS test files.
-		if total != 4479 {
-			t.Errorf("%d tests, want 4479", total)
+		// 18 tests in file 901, 8 in 911, 9 in 913, 407 in 920, 116 in
+		// 921, 83 in 930, 42 in 931, 1,089 in 932, 442 in 933, 287 in 934,
+		// 263 in 941, 1,033 in 942, 47 in 943, 1,176 in 944 and 5 in 949,
+		// counted from the converted files.
+		if total != 5025 {
+			t.Errorf("%d tests, want 5025", total)
 		}
 	}
+}
+
+// brokenBodies are the CRS tests that send a body that cannot be read to
+// its end, on purpose.
+var brokenBodies = map[string]bool{
+	"CRS 920240-4": true, // XML that is not well-formed
+	"CRS 920400-1": true, // a multipart part without an empty line after its headers
+	"CRS 920400-2": true, // the same
+	"CRS 920420-9": true, // JSON that is not valid
+	"CRS 932180-3: File upload - negative test": true, // a multipart part without headers
 }
 
 // checkExample runs one example and compares the result with what the
@@ -368,8 +393,7 @@ func checkExample(t *testing.T, rs *RuleSet, ex offline.Example, level int) {
 	// threshold is 5.
 	detected := false
 	for _, id := range ids {
-		switch id / 1000 {
-		case 911, 913, 930, 931, 932, 933, 934, 941, 942, 943, 944:
+		if id/1000 >= 911 && id/1000 <= 944 {
 			detected = true
 		}
 	}
@@ -388,8 +412,9 @@ func checkExample(t *testing.T, rs *RuleSet, ex offline.Example, level int) {
 // parallel. Run with -race.
 func TestCRSRequestsDoNotShareState(t *testing.T) {
 	rs := loadCRS(t)
-	attack := get("/get?arg=../../../etc/passwd")
-	normal := get("/arama?q=kitap")
+	host := httpmodel.Header{Name: "Host", Value: "localhost"}
+	attack := get("/get?arg=../../../etc/passwd", host)
+	normal := get("/arama?q=kitap", host)
 
 	summary := func(res *Result) string {
 		return fmt.Sprintf("%v pl1=%s lfi=%s total=%s", res.MatchedIDs(), res.Variables["inbound_anomaly_score_pl1"], res.Variables["lfi_score"], res.Variables["blocking_inbound_anomaly_score"])

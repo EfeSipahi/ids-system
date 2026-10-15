@@ -230,7 +230,7 @@
         "close"
       ]
     ],
-    "body": "barGET /a.html HTTP/1.1\r\nSomething: GET /b.html HTTP/1.1\r\nHost: foo.com\r\nUser-Agent: foo\r\nAccept: */*\r\n\r\n",
+    "body": "barGET /a.html HTTP/1.1\r\nSomething: ",
     "expect_ids": [
       921110
     ]

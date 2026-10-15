@@ -32,6 +32,11 @@ const (
 	colRequestBody
 	colMatchedVar
 	colMatchedVarName
+	colRemoteAddr
+	colArgsCombinedSize
+	colFilesCombinedSize
+	colRequestBodyLength
+	colReqbodyProcessor
 	colRequestCookies
 	colRequestCookiesNames
 	colRequestURIRaw
@@ -66,6 +71,11 @@ var collections = map[string]struct {
 	"REQUEST_BODY":          {col: colRequestBody, single: true},
 	"MATCHED_VAR":           {col: colMatchedVar, single: true},
 	"MATCHED_VAR_NAME":      {col: colMatchedVarName, single: true},
+	"REMOTE_ADDR":           {col: colRemoteAddr, single: true},
+	"ARGS_COMBINED_SIZE":    {col: colArgsCombinedSize, single: true},
+	"FILES_COMBINED_SIZE":   {col: colFilesCombinedSize, single: true},
+	"REQUEST_BODY_LENGTH":   {col: colRequestBodyLength, single: true},
+	"REQBODY_PROCESSOR":     {col: colReqbodyProcessor, single: true},
 	"REQUEST_COOKIES":       {col: colRequestCookies},
 	"REQUEST_COOKIES_NAMES": {col: colRequestCookiesNames},
 	"REQUEST_URI_RAW":       {col: colRequestURIRaw, single: true},
@@ -232,15 +242,24 @@ func (tx *transaction) valuesOf(t target) []keyValue {
 	case colRequestMethod:
 		out = append(out, keyValue{value: req.Received.Method})
 	case colRequestProtocol:
-		out = append(out, keyValue{value: req.Received.Version})
+		// A request line without a version is HTTP/0.9.
+		version := req.Received.Version
+		if version == "" {
+			version = "HTTP/0.9"
+		}
+		out = append(out, keyValue{value: version})
 	case colRequestLine:
 		// The first line of the request as it was sent.
-		out = append(out, keyValue{value: req.Received.Method + " " + req.Received.Target + " " + req.Received.Version})
+		line := req.Received.Method + " " + req.Received.Target
+		if req.Received.Version != "" {
+			line += " " + req.Received.Version
+		}
+		out = append(out, keyValue{value: line})
 	case colRequestURI:
 		// Path and query string as sent, without the scheme and host
 		// that a request to a proxy puts in front.
 		uri := req.Parsed.Path
-		if strings.Contains(req.Received.Target, "?") {
+		if target, _, _ := strings.Cut(req.Received.Target, "#"); strings.Contains(target, "?") {
 			uri += "?" + req.Parsed.RawQuery
 		}
 		out = append(out, keyValue{value: uri})
@@ -254,6 +273,32 @@ func (tx *transaction) valuesOf(t target) []keyValue {
 		out = append(out, keyValue{value: tx.matchedVar})
 	case colMatchedVarName:
 		out = append(out, keyValue{value: tx.matchedVarName})
+	case colRemoteAddr:
+		out = append(out, keyValue{value: req.Received.RemoteAddr})
+	case colArgsCombinedSize:
+		// The lengths of all names and values of ARGS, added up.
+		size := 0
+		for _, p := range req.Args() {
+			size += len(p.Name) + len(p.Value)
+		}
+		out = append(out, keyValue{value: strconv.Itoa(size)})
+	case colFilesCombinedSize:
+		// The sizes of the uploaded files, added up. Coraza also counts
+		// the text fields of the form; ModSecurity, which this follows,
+		// counts files only.
+		size := 0
+		for _, f := range req.Parsed.Files {
+			size += f.Size
+		}
+		out = append(out, keyValue{value: strconv.Itoa(size)})
+	case colRequestBodyLength:
+		out = append(out, keyValue{value: strconv.Itoa(len(req.Received.Body))})
+	case colReqbodyProcessor:
+		format := req.DeclaredBodyFormat()
+		if tx.bodyFormat != "" {
+			format = tx.bodyFormat
+		}
+		out = append(out, keyValue{value: bodyProcessors[format]})
 	case colRequestCookies:
 		for _, c := range req.Parsed.Cookies {
 			add(c.Name, c.Value)
@@ -315,6 +360,25 @@ func (tx *transaction) valuesOf(t target) []keyValue {
 		}
 	}
 	return out
+}
+
+// bodyProcessors gives the name ModSecurity uses for each body reader, as
+// REQBODY_PROCESSOR shows it. Like ModSecurity, the engine knows it from the
+// Content-Type header before the body is read, and it is set even when the
+// request has no body. A type without a reader gives "".
+var bodyProcessors = map[string]string{
+	"form":      "URLENCODED",
+	"multipart": "MULTIPART",
+	"json":      "JSON",
+	"xml":       "XML",
+}
+
+// bodyFormats is bodyProcessors the other way round.
+var bodyFormats = map[string]string{
+	"URLENCODED": "form",
+	"MULTIPART":  "multipart",
+	"JSON":       "json",
+	"XML":        "xml",
 }
 
 // rawBody returns the body as one text for the REQUEST_BODY variable, or ""

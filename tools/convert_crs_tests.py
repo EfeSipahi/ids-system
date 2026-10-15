@@ -15,6 +15,9 @@ The CRS test runner, go-ftw, completes a request before it sends it. The
 same steps are applied here, so that a converted request is what the rules
 would have seen. They follow go-ftw's ftwhttp/request.go:
 
+  0. go-ftw reads data as a Go template. The only template the tests use is
+     {{ "x" | repeat N }}, which is expanded here; any other stops the
+     script.
   1. Missing method, uri and version become GET, / and HTTP/1.1.
   2. With a body and no Content-Type header, the header
      "Content-Type: application/x-www-form-urlencoded" is added.
@@ -26,10 +29,23 @@ would have seen. They follow go-ftw's ftwhttp/request.go:
 Steps 2, 3 and 5 are skipped for a test that sets autocomplete_headers to
 false.
 
+The web server then reads the request before the rule engine sees it. Two
+things it does are applied here too, because the tests are written for it:
+
+  6. The length of the body (RFC 9112, section 6.3). With
+     "Transfer-Encoding: chunked" the chunks are joined and Content-Length
+     is dropped. Otherwise Content-Length says how many bytes belong to the
+     body. A request with neither header has no body; bytes sent after the
+     headers are not part of it.
+  7. A request line without a version is kept without one ("version": "").
+     The engine reads it as HTTP/0.9, as the web server does.
+
 A test can give the whole request as bytes (encoded_request) in place of
 the single fields. go-ftw sends those bytes as they are. Here they are split
 into request line, headers and body, and a chunked body is put together, as
 a web server does before a rule engine sees the request.
+
+tools/crs-test-overrides.yaml changes a few tests, each with a reason.
 
 What a test expects:
 
@@ -86,8 +102,6 @@ def parse_raw_request(raw, where):
         if not colon:
             sys.exit(f"{where}: cannot read the header line {line!r}")
         headers.append([name, value.strip()])
-    if any(v.lower() == "chunked" for v in header_values(headers, "Transfer-Encoding")):
-        body = join_chunks(body, where)
     return parts[0], parts[1], parts[2], headers, body
 
 
@@ -134,6 +148,21 @@ def encode_form(data):
     return "&".join(parts)
 
 
+def apply_framing(headers, body):
+    """Return the headers and body as the web server reads them (step 6)."""
+    if any(v.strip().lower() == "chunked" for v in header_values(headers, "Transfer-Encoding")):
+        headers = [h for h in headers if h[0].lower() != "content-length"]
+        return headers, join_chunks(body, "chunked body")
+    lengths = header_values(headers, "Content-Length")
+    if not lengths:
+        return headers, b""
+    try:
+        length = int(lengths[0])
+    except ValueError:
+        return headers, body
+    return headers, body[:length] if 0 <= length < len(body) else body
+
+
 def convert_stage(stage, where):
     """Return the example for one stage, or None when the stage expects
     nothing that an offline engine can check."""
@@ -153,11 +182,13 @@ def convert_stage(stage, where):
         method, uri, version, headers, data = parse_raw_request(raw, where)
     else:
         method, uri, version, headers, data = complete_request(inp, where)
+        data = data.encode("utf-8")
+    headers, data = apply_framing(headers, data)
 
     example = {"method": method, "uri": uri, "version": version, "headers": headers}
     if isinstance(data, bytes):
-        # A body from encoded_request. JSON holds text only, so a body that
-        # is not UTF-8 text is written in base64.
+        # JSON holds text only, so a body that is not UTF-8 text is
+        # written in base64.
         try:
             data = data.decode("utf-8")
         except UnicodeDecodeError:
@@ -171,6 +202,17 @@ def convert_stage(stage, where):
     return example
 
 
+REPEAT = re.compile(r'\{\{\s*"([^"]*)"\s*\|\s*repeat\s+(\d+)\s*\}\}')
+
+
+def expand_templates(data, where):
+    """Expand {{ "x" | repeat N }} as go-ftw's template engine does."""
+    data = REPEAT.sub(lambda m: m.group(1) * int(m.group(2)), data)
+    if "{{" in data:
+        sys.exit(f"{where}: data holds a template this script cannot expand")
+    return data
+
+
 def complete_request(inp, where):
     """Build the request from its single fields, as go-ftw does."""
     method = inp.get("method", "GET")
@@ -178,6 +220,7 @@ def complete_request(inp, where):
     data = inp.get("data") or ""
     if not isinstance(data, str):
         sys.exit(f"{where}: data is not text")
+    data = expand_templates(data, where)
     autocomplete = inp.get("autocomplete_headers", True)
 
     if data and autocomplete:
@@ -199,6 +242,21 @@ def complete_request(inp, where):
     return method, inp.get("uri", "/"), inp.get("version", "HTTP/1.1"), headers, data
 
 
+def load_overrides(path):
+    """Return the overrides by (rule id, test id)."""
+    doc = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    out = {}
+    for o in doc.get("test_overrides") or []:
+        if not o.get("reason"):
+            sys.exit(f"{path}: an override of rule {o.get('rule_id')} has no reason")
+        for test_id in o["test_ids"]:
+            out[(str(o["rule_id"]), test_id)] = o["output"]
+    return out
+
+
+OVERRIDES = {}
+
+
 def convert_rule(test_path):
     """Return the examples of one test file and the number of stages left out."""
     doc = yaml.safe_load(test_path.read_text(encoding="utf-8"))
@@ -217,6 +275,9 @@ def convert_rule(test_path):
             label = f"{rule_id}-{test['test_id']}"
             if len(stages) > 1:
                 label += f" stage {number}"
+            override = OVERRIDES.pop((rule_id, test["test_id"]), None)
+            if override is not None:
+                stage = dict(stage, output=override)
             converted = convert_stage(stage, f"{test_path} test {test['test_id']}")
             if converted is None:
                 left_out += 1
@@ -231,10 +292,12 @@ def main():
     parser = argparse.ArgumentParser(description="Convert CRS regression tests to ids-offline examples.")
     parser.add_argument("--crs", default="coreruleset-4.30.0", help="CRS source directory")
     parser.add_argument("--out", default="testdata/requests/crs", help="output directory")
+    parser.add_argument("--overrides", default="tools/crs-test-overrides.yaml", help="override file")
     parser.add_argument("--files", nargs="+", required=True, metavar="NUMBER",
                         help="rule file numbers, for example 930 941 942")
     args = parser.parse_args()
 
+    OVERRIDES.update(load_overrides(args.overrides))
     crs = Path(args.crs)
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -263,6 +326,8 @@ def main():
     print(f"{total_rules} rules, {total_tests} tests written to {out_dir}")
     if total_left_out:
         print(f"{total_left_out} tests left out: they expect only an answer of the web server")
+    for rule_id, test_id in sorted(k for k in OVERRIDES if k[0][:3] in args.files):
+        sys.exit(f"the override of {rule_id}-{test_id} matches no test")
 
 
 if __name__ == "__main__":

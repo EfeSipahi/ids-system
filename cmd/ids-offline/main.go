@@ -150,7 +150,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 					Index:       len(out.Requests) + 1,
 					Source:      source,
 					Name:        ex.Name,
-					Record:      result.NewRecord(ex.Request, res, opt),
+					Record:      result.NewRecord(res.Request, res, opt),
 					Expectation: check(ex, res),
 				})
 			}

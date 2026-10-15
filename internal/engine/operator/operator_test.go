@@ -189,7 +189,7 @@ func TestNewAndSupported(t *testing.T) {
 			t.Errorf("New(%q): %v", name, err)
 		}
 	}
-	for _, name := range []string{"ipMatch", "le", "validateUtf8Encoding", ""} {
+	for _, name := range []string{"rbl", "le", "geoLookup", ""} {
 		if Supported(name) {
 			t.Errorf("Supported(%q) = true", name)
 		}
@@ -649,5 +649,78 @@ func TestRxByteModeBraceForm(t *testing.T) {
 	op := mustNew(t, "rx", `\x{bc}/[^>\x{be}]*[>\x{be}]`, false)
 	if !op.Match("\xbc/script\xbe", nil).Matched || op.Match("</script>", nil).Matched {
 		t.Error("a pattern with \\x{..} bytes gave the wrong answer")
+	}
+}
+
+// The cases follow validate_url_encoding of ModSecurity v2 and Coraza's
+// operator, which agree: a "%" must be followed by two hex digits.
+func TestValidateURLEncoding(t *testing.T) {
+	op := mustNew(t, "validateUrlEncoding", "", false)
+	for value, want := range map[string]bool{
+		"":          false,
+		"plain":     false,
+		"a%41b":     false,
+		"%2f%2F":    false,
+		"a%4":       true, // not enough characters at the end
+		"%":         true,
+		"a%zz":      true, // not hex digits
+		"a%4g":      true,
+		"%41%":      true,
+		"100%25 ok": false,
+	} {
+		if got := op.Match(value, nil).Matched; got != want {
+			t.Errorf("@validateUrlEncoding on %q = %v, want %v", value, got, want)
+		}
+	}
+}
+
+// Invalid UTF-8 matches. The kinds follow detect_utf8_character of
+// ModSecurity v2 (apache2/re_operators.c); the last case is where it
+// differs: it accepts 0xf4 0x90..., a number above U+10FFFF.
+func TestValidateUTF8Encoding(t *testing.T) {
+	op := mustNew(t, "validateUtf8Encoding", "", false)
+	for value, want := range map[string]bool{
+		"":                 false,
+		"ascii":            false,
+		"é€😀":              false,
+		"\xc3":             true, // a byte missing
+		"\xc3\x41":         true, // a wrong continuation byte
+		"\xc0\xaf":         true, // "/" written in two bytes, overlong
+		"\xe0\x80\xaf":     true, // the same in three bytes
+		"\xed\xa0\x80":     true, // a surrogate
+		"\xff":             true,
+		"\xf5\x80\x80\x80": true,
+		"\xf4\x90\x80\x80": true, // above U+10FFFF; ModSecurity accepts it
+	} {
+		if got := op.Match(value, nil).Matched; got != want {
+			t.Errorf("@validateUtf8Encoding on %q = %v, want %v", value, got, want)
+		}
+	}
+}
+
+func TestIPMatch(t *testing.T) {
+	op := mustNew(t, "ipMatch", "127.0.0.1, ::1,10.0.0.0/8 ,2001:db8::/32", false)
+	for value, want := range map[string]bool{
+		"127.0.0.1":        true,
+		"127.0.0.2":        false,
+		"::1":              true,
+		"10.200.3.4":       true,
+		"11.0.0.1":         false,
+		"2001:db8:1::5":    true,
+		"2001:db9::1":      false,
+		"::ffff:127.0.0.1": true, // an IPv4 address written as IPv6
+		"":                 false,
+		"localhost":        false,
+		" 127.0.0.1 ":      true,
+		"127.0.0.1:8080":   false,
+	} {
+		if got := op.Match(value, nil).Matched; got != want {
+			t.Errorf("@ipMatch on %q = %v, want %v", value, got, want)
+		}
+	}
+	for _, argument := range []string{"", " , ", "10.0.0.300", "10.0.0.0/33", "%{tx.ip}"} {
+		if _, err := New("ipMatch", argument, false, ""); err == nil {
+			t.Errorf("@ipMatch %q: no error", argument)
+		}
 	}
 }

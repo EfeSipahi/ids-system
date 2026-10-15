@@ -12,13 +12,13 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 
 ## 2. What we have made
 
-**The rule layer runs eleven CRS rule files at all four paranoia levels:** 911 (method enforcement), 913 (scanner detection), 930 (path traversal and file access), 931 (remote file inclusion), 932 (remote command execution), 933 (PHP), 934 (generic attacks), 941 (XSS), 942 (SQL injection), 943 (session fixation), and 944 (Java attacks), 206 detection rules in all, from the unmodified CRS files, with the setup, gate, and scoring rules they depend on. The other request rule files are the work in progress; see section 3.
+**The rule layer runs every CRS request rule file except 922 (multipart), at all four paranoia levels:** 905 (common exceptions), 911 (method enforcement), 913 (scanner detection), 920 (protocol enforcement), 921 (protocol attacks), 930 (path traversal and file access), 931 (remote file inclusion), 932 (remote command execution), 933 (PHP), 934 (generic attacks), 941 (XSS), 942 (SQL injection), 943 (session fixation), and 944 (Java attacks), 282 detection rules in all, from the unmodified CRS files, with the setup, gate, and scoring rules they depend on. The other request rule files are the work in progress; see section 3.
 
 Run it:
 
 ```
 go run ./cmd/ids-offline -requests testdata/requests/path-traversal.json
-go run ./cmd/ids-offline -requests testdata/requests/crs -summary -paranoia-level 4
+go run ./cmd/ids-offline -config testdata/crs-tests.json -requests testdata/requests/crs -summary
 ```
 
 ### 2.1. Code
@@ -31,7 +31,7 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/httpmodel` | The common request (M03, M16): received content, parsed view, analysis status (M05). Reads the query, cookies, and form, JSON, multipart, and XML bodies |
 | `internal/offline` | Reads example requests from JSON, with optional `expect_ids` / `no_expect_ids` |
 | `internal/engine/transform` | 17 transformations. 12 are ports of the ModSecurity v2 functions, `length` counts bytes; `normalizePath`, `normalizePathWin`, `htmlEntityDecode`, and `base64Decode` follow Coraza (main plan sections 11.15 and 11.18); `normalizePathWin` leaves out Coraza's cut at a colon, which could hide a file name |
-| `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@within`, `@beginsWith`, `@endsWith`, `@validateByteRange`, `@eq`, `@lt`, `@ge`, `@gt`, `@unconditionalMatch` |
+| `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@within`, `@beginsWith`, `@endsWith`, `@validateByteRange`, `@validateUrlEncoding`, `@validateUtf8Encoding`, `@ipMatch`, `@eq`, `@lt`, `@ge`, `@gt`, `@unconditionalMatch` |
 | `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21) |
 | `internal/result` | Output records: analysis status, findings, score. Request content is left out by default (M11) |
 | `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level` |
@@ -40,8 +40,9 @@ Other files:
 
 | Path | Content |
 | --- | --- |
-| `configs/crs-first-engine.json` | Loads fifteen CRS files; 350 of 357 rules active, 7 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1 |
-| `testdata/requests/` | Example requests: starter file, the 4,479 converted CRS tests of the finished rule files (`crs/`), the 594 of the others (`crs-pending/`), 1,300 generated variants (`generated/`); see its README |
+| `configs/crs-first-engine.json` | The product configuration. Loads eighteen CRS files; 449 of 453 rules active, 4 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1 |
+| `testdata/requests/` | Example requests: starter file, the 5,025 converted CRS tests of the finished rule files (`crs/`), the 47 of file 922 (`crs-pending/`), examples for file 905, 1,300 generated variants (`generated/`); see its README |
+| `testdata/crs-tests.json`, `testdata/crs-test-setup.conf` | The configuration the CRS tests are written for: the product configuration plus CRS's test setup rule 900005, at level 4 |
 | `testdata/reference/` | What Coraza found for those requests; see its README |
 | `tools/` | Python scripts that generate the test data, and `coraza-reference/`, a separate Go module that runs Coraza. Coraza is not a dependency of the IDS |
 | `docs/development-plan-all-request-rules.md` | **The plan in progress:** six plans, A to F, with results after each |
@@ -52,8 +53,8 @@ Other files:
 ### 2.2. What was checked (16 October 2026)
 
 1. `go vet ./...`, `go test ./...`, and `go test -race ./...` pass for all eight packages.
-2. **CRS regression tests:** all 4,479 tests of the eleven finished rule files pass at paranoia level 4, the level the CRS project runs them at. At levels 1 to 3 a test passes when its rule belongs to the level, and a rule above the level never matches.
-3. **Against Coraza v3.8.1:** 5,784 requests compared at level 1 (3,309 with a match) and at level 4 (5,067 with a match). Rules, match places, match counts, and scores are identical, with two known exceptions: 4 requests with invalid UTF-8 differ in match count (`utf8toUnicode`), and on requests whose body has no reader Coraza has extra matches in `ARGS`, because it splits such a body into parameters and we, like ModSecurity, do not. The reference is produced with Coraza's build option `coraza.rule.no_regex_multiline`; see `testdata/reference/README.md` for why.
+2. **CRS regression tests:** all 5,025 tests of the fifteen finished rule files pass with the CRS test setup at paranoia level 4, the level the CRS project runs them at. At levels 1 to 3 a test passes when its rule belongs to the level, and a rule above the level never matches.
+3. **Against Coraza v3.8.1:** 6,330 requests compared at level 1 (3,788 with a match) and at level 4 (5,952 with a match). Rules, match places, match counts, and scores are identical, with four explained classes, each checked by its own rule: invalid UTF-8 (`utf8toUnicode`), bodies without a reader (Coraza splits them into parameters; we, like ModSecurity, do not), targets that Go's URL parser changes (Coraza re-encodes `REQUEST_URI`; ModSecurity and we use it as sent), and HTTP/0.9 request lines. The reference is produced with Coraza's build option `coraza.rule.no_regex_multiline`; see `testdata/reference/README.md` for why.
 4. **Transformations:** 12 agree with 10,829 results recorded from the ModSecurity v2 C code; the 4 that follow Coraza agree with 4,901 results recorded from Coraza's Go code.
 5. **M21:** attack and normal requests alternate against one rule set, in sequence and in eight goroutines, without affecting each other.
 6. **M11:** the default text and JSON output contain none of the payloads of the example file.
@@ -61,14 +62,14 @@ Other files:
 
 ### 2.3. Two measurements, and what they do not show
 
-1. **Pilot records:** of the 1,000 CSIC records of the ML pilot, flagged normal / anomalous: level 1: 0 / 80; level 2: 18 / 120; level 3: 221 / 246; level 4: 222 / 247. The jump at level 3 is rule 932350 (bare Unix commands), because the application has parameters named `pwd` and `id`; Coraza flags the same numbers. This is not a false-positive rate or a detection rate for real traffic: the data is old and synthetic, and "anomalous" there includes many requests outside our three attack types.
-2. **Speed** on the development laptop, with eleven rule files: about 1.3 to 2.6 ms per ordinary request on one core, about 63 ms for a request with a 9.4 kB field (measured on a busy machine). With three rule files it was 0.4 to 0.7 ms and 18.5 ms. It grows with the number of rules, because every pattern reads every value. Measured, not optimised; plan F deals with it.
+1. **Pilot records:** of the 1,000 CSIC records of the ML pilot, flagged normal / anomalous: level 1: 96 / 176; levels 2 to 4: 500 / 500. At level 1 rule 920250 flags Latin-1 text, which is not valid UTF-8 (CRS checks UTF-8 by default); at level 2 rule 920451 flags the `Accept-Charset` header that every 2010 record carries. Coraza flags the same numbers. These are settings for one application (profiles, K10), not engine errors; the data is also far from today's traffic. This is not a false-positive rate or a detection rate for real traffic: the data is old and synthetic, and "anomalous" there includes many requests outside our three attack types.
+2. **Speed** on the development laptop, with all request rule files but one: about 1.2 to 2.1 ms per ordinary request on one core, about 57 ms for a request with a 9.4 kB field. With three rule files it was 0.4 to 0.7 ms and 18.5 ms. It grows with the number of rules, because every pattern reads every value. Measured, not optimised; plan F deals with it.
 
 ### 2.4. What it does not do
 
 1. It reads requests from files only. There is no proxy integration.
 2. There is no ML layer, profile layer, decision mechanism, or stored record. A finding of the rule layer is not an alert decision.
-3. Eleven request rule files. The others are planned; see section 3.1. No response rules.
+3. All request rule files but 922 (multipart). The others are planned; see section 3.1. No response rules.
 4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
 5. Passing the CRS tests is not full CRS compatibility, and no request has been run through ModSecurity itself.
 
@@ -76,7 +77,7 @@ Other files:
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: everything up to and including plan C is on `main` and pushed to GitHub (16 October 2026). The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to and including plan D is on `main` and pushed to GitHub (16 October 2026). The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -89,11 +90,11 @@ On 12 October 2026 the user decided to finish the rule part before any other lay
 | A | Paranoia levels, test base, files 913, 930, 941, 942 | 1,388 | **Done 12 October 2026** |
 | B | Request variables, small operators, engine items; files 911, 931, 943, 944 | 1,273 | **Done 12 October 2026** |
 | C | `normalizePath`, `escapeSeqDecode`, `base64Decode`; files 932, 933, 934 | 1,818 | **Done 16 October 2026** |
-| D | Protocol rules; files 920, 921, 905, and the tests of 901 and 949 | 547 | Next; not started |
-| E | Multipart rules; file 922 | 47 | Not started |
-| F | Checks on the whole set: Coraza, normal traffic, speed, documents | all 5,073 | Not started |
+| D | Protocol rules; files 920, 921, 905, and the tests of 901 and 949 | 546 | **Done 16 October 2026** |
+| E | Multipart rules; file 922 | 47 | Next; not started |
+| F | Checks on the whole set: Coraza, normal traffic, speed, documents | all 5,072 | Not started |
 
-Do not start plan D before the user says so.
+Do not start plan E before the user says so.
 
 Response rules (CRS files 950–980) are not part of this; they wait for the proxy decision (K8).
 

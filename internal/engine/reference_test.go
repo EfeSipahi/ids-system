@@ -3,6 +3,7 @@ package engine
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -44,11 +45,9 @@ type referenceDoc struct {
 // score. Setup rules are left out: some of them are excluded in our
 // configuration, and the reference lists some that only log in Coraza.
 func compared(ruleID int) bool {
-	switch ruleID / 1000 {
-	case 911, 913, 930, 931, 932, 933, 934, 941, 942, 943, 944:
-		return true
-	}
-	return ruleID == 949110
+	// The detection rules of files 911 to 944, and the one rule of 949
+	// that reports the total.
+	return (ruleID/1000 >= 911 && ruleID/1000 <= 944) || ruleID == 949110
 }
 
 // TestAgainstCoraza compares our engine with the reference engine, request
@@ -81,10 +80,29 @@ func compared(ruleID int) bool {
 //     shows the cost of Coraza's way: a JSON text sent as text/plain
 //     becomes one long parameter name, and SQL injection rules match it.
 //
+//   - A request whose target Go's URL parser, which Coraza uses, rejects or
+//     writes differently. Coraza then sees REQUEST_URI re-encoded ("\"
+//     becomes "%5C"), or, when the parser rejects the target, takes the
+//     path for REQUEST_FILENAME without decoding it. ModSecurity uses the
+//     path as sent for REQUEST_URI, and we do the same; for
+//     REQUEST_FILENAME we decode it once, as Coraza does for every target
+//     its parser accepts. On such a request we may have more matches, on
+//     REQUEST_URI or REQUEST_FILENAME only (rules 920460 and 920250), and
+//     a higher score. Coraza must not find anything that we do not.
+//
 // knownDifferences lists single requests on which the two engines are known
 // to disagree, with the reason. The key is the example file and the position
 // in it.
-var knownDifferences = map[string]string{}
+var knownDifferences = map[string]string{
+	// A request line without a version (HTTP/0.9). Apache gives
+	// ModSecurity the line as sent, "GET /", and so does our engine; the
+	// reference program has to give Coraza a version, so its REQUEST_LINE
+	// is "GET / HTTP/0.9". Rule 920100 therefore finds an invalid line only
+	// in ours, and the exception of rule 905100, which looks for exactly
+	// "GET /", applies only in ours.
+	"920430#4":            "REQUEST_LINE of an HTTP/0.9 request",
+	"common-exceptions#6": "REQUEST_LINE of an HTTP/0.9 request",
+}
 
 func TestAgainstCoraza(t *testing.T) {
 	for _, file := range referenceFiles {
@@ -105,7 +123,7 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 		t.Fatalf("reference engine = %q", ref.Engine)
 	}
 
-	rs := loadCRSAt(t, ref.ParanoiaLevel)
+	rs := loadConfigAt(t, crsTestConfig, ref.ParanoiaLevel)
 	examples := map[string][]offline.Example{}
 	load := func(source string) []offline.Example {
 		if list, ok := examples[source]; ok {
@@ -128,6 +146,7 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 
 	comparedCount, skipped, withMatches, differences := 0, 0, 0, 0
 	unparsed, unparsedDiffer, unparsedRulesDiffer := 0, 0, 0
+	reencoded := 0
 	invalidUTF8, invalidUTF8Differ := 0, 0
 	seenKnown := map[string]bool{}
 	for _, want := range ref.Results {
@@ -203,11 +222,16 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 			extra, missing := difference(wantMatches, gotMatches)
 			for _, m := range extra {
 				id, variable, _ := strings.Cut(m, "@")
-				variable = strings.TrimPrefix(variable, "matched_vars:")
+				for strings.HasPrefix(variable, "matched_vars:") {
+					variable = strings.TrimPrefix(variable, "matched_vars:")
+				}
 				// 949110 follows from the score: the extra matches can
-				// lift Coraza over the threshold where we stay below.
+				// lift Coraza over the threshold where we stay below. A
+				// chain that started on the extra parameters can end on a
+				// TX variable that its first rule captured.
 				fromScore := id == "949110" && gotScore < want.Score
-				if !fromScore && !strings.HasPrefix(variable, "args:") && !strings.HasPrefix(variable, "args_names:") {
+				fromChain := strings.HasPrefix(variable, "tx:")
+				if !fromScore && !fromChain && !strings.HasPrefix(variable, "args:") && !strings.HasPrefix(variable, "args_names:") {
 					t.Errorf("%s #%d (%s), a body without a reader: Coraza alone has %s", want.Source, want.Index, ex.Name, m)
 				}
 			}
@@ -216,6 +240,21 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 			}
 			if onlyCoraza, _ := difference(ruleIDs(wantMatches), ruleIDs(gotMatches)); len(onlyCoraza) > 0 {
 				unparsedRulesDiffer++
+			}
+			continue
+		}
+		if !same && reencodedByCoraza(ex.Request.Received.Target) {
+			// See the comment of TestAgainstCoraza.
+			reencoded++
+			onlyCoraza, onlyOurs := difference(wantMatches, gotMatches)
+			for _, m := range onlyOurs {
+				id, variable, _ := strings.Cut(m, "@")
+				if variable != "request_uri" && variable != "request_filename" && !(id == "949110" && gotScore > want.Score) {
+					t.Errorf("%s #%d (%s), a target Go's parser changes: only ours has %s", want.Source, want.Index, ex.Name, m)
+				}
+			}
+			if len(onlyCoraza) > 0 || gotScore < want.Score {
+				t.Errorf("%s #%d (%s), a target Go's parser changes\n  ours:   score %d, %v\n  coraza: score %d, %v", want.Source, want.Index, ex.Name, gotScore, gotMatches, want.Score, wantMatches)
 			}
 			continue
 		}
@@ -231,6 +270,7 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 	}
 	t.Logf("%s at paranoia level %d: %d requests have a body without a reader; on %d of them Coraza has more matches, on %d of those also a rule we do not have",
 		ref.Engine, ref.ParanoiaLevel, unparsed, unparsedDiffer, unparsedRulesDiffer)
+	t.Logf("%s at paranoia level %d: on %d requests whose target Go's URL parser changes, we have more matches on REQUEST_URI or REQUEST_FILENAME", ref.Engine, ref.ParanoiaLevel, reencoded)
 	t.Logf("%s at paranoia level %d: %d requests compared (%d with a match), %d differences; %d of them have invalid UTF-8, of which %d differ in match count only; %d skipped because their body was not read to its end",
 		ref.Engine, ref.ParanoiaLevel, comparedCount, withMatches, differences, invalidUTF8, invalidUTF8Differ, skipped)
 
@@ -272,6 +312,14 @@ func ruleIDs(matches []string) []string {
 		}
 	}
 	return ids
+}
+
+// reencodedByCoraza reports whether Go's URL parser rejects the target, or
+// gives back a path and query that differ from those sent.
+func reencodedByCoraza(target string) bool {
+	target, _, _ = strings.Cut(target, "#")
+	u, err := url.ParseRequestURI(target)
+	return err != nil || u.String() != target
 }
 
 // difference returns the entries of a that are not in b, and those of b
