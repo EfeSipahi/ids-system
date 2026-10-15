@@ -3,6 +3,7 @@ package engine
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/EfeSipahi/ids-system/internal/engine/operator"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
@@ -243,18 +244,22 @@ func (tx *transaction) onMatch(r, first *rule, captures []string) {
 }
 
 func (tx *transaction) setvar(sv setvar) {
+	key := sv.key
+	if sv.keyParts.macro {
+		key = strings.ToLower(sv.keyParts.expand(tx))
+	}
 	if sv.unset {
-		delete(tx.vars, sv.key)
+		delete(tx.vars, key)
 		return
 	}
 	value := sv.value.expand(tx)
 	if sv.relative {
 		// The sign is part of the text, so "+5" and "-5" read as numbers.
-		n := operator.ParseInt(tx.vars[sv.key]) + operator.ParseInt(value)
+		n := operator.ParseInt(tx.vars[key]) + operator.ParseInt(value)
 		if n < 0 {
 			n = 0 // counters never go below zero
 		}
 		value = strconv.FormatInt(n, 10)
 	}
-	tx.vars[sv.key] = value
+	tx.vars[key] = value
 }

@@ -3,6 +3,8 @@ package engine
 import (
 	"fmt"
 	"strings"
+
+	"github.com/EfeSipahi/ids-system/internal/seclang"
 )
 
 // A template is text that may contain macros such as %{tx.lfi_score}. It is
@@ -18,6 +20,7 @@ type templatePart struct {
 
 	source macroSource
 	key    string // the TX variable name, in lower case
+	target target // the variable, when source is sourceVariable
 }
 
 type macroSource int
@@ -27,6 +30,10 @@ const (
 	sourceTX
 	sourceMatchedVar
 	sourceMatchedVarName
+	// sourceVariable is any other variable of the request, such as
+	// %{REQUEST_LINE} or %{request_headers.host}. Of a variable with
+	// several values the first one is used.
+	sourceVariable
 )
 
 // parseTemplate splits s at its macros. A macro is %{NAME} or
@@ -69,9 +76,13 @@ func parseTemplate(s string) (template, error) {
 		case "MATCHED_VAR_NAME":
 			part.source = sourceMatchedVarName
 		default:
-			return template{}, fmt.Errorf("macro %s is not supported", rest[start:end+1])
+			target, err := compileTarget(seclang.Variable{Collection: strings.ToUpper(name), Selector: key})
+			if err != nil {
+				return template{}, fmt.Errorf("macro %s is not supported", rest[start:end+1])
+			}
+			part.source, part.target = sourceVariable, target
 		}
-		if part.source != sourceTX && key != "" {
+		if (part.source == sourceMatchedVar || part.source == sourceMatchedVarName) && key != "" {
 			return template{}, fmt.Errorf("macro %s is not supported", rest[start:end+1])
 		}
 
@@ -105,6 +116,10 @@ func (t template) expand(tx *transaction) string {
 			b.WriteString(tx.matchedVar)
 		case sourceMatchedVarName:
 			b.WriteString(tx.matchedVarName)
+		case sourceVariable:
+			if values := tx.valuesOf(p.target); len(values) > 0 {
+				b.WriteString(values[0].value)
+			}
 		}
 	}
 	return b.String()
@@ -116,7 +131,7 @@ func (t template) expand(tx *transaction) string {
 func (t template) usesRequestContent(tainted map[string]bool) bool {
 	for _, p := range t.parts {
 		switch p.source {
-		case sourceMatchedVar:
+		case sourceMatchedVar, sourceVariable:
 			return true
 		case sourceTX:
 			if isCaptureKey(p.key) || tainted[p.key] {

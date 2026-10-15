@@ -36,6 +36,7 @@ var registry = []Transformation{
 	{Name: "htmlEntityDecode", Apply: HTMLEntityDecode},
 	{Name: "jsDecode", Apply: JSDecode},
 	{Name: "cssDecode", Apply: CSSDecode},
+	{Name: "length", Apply: Length},
 }
 
 // Lookup finds a transformation by name, without regard to case.

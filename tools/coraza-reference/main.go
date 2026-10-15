@@ -25,6 +25,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -55,6 +56,8 @@ type example struct {
 	Version string     `json:"version"`
 	Headers [][]string `json:"headers"`
 	Body    string     `json:"body"`
+	// BodyBase64 holds a body that is not UTF-8 text.
+	BodyBase64 string `json:"body_base64"`
 }
 
 // reference is the output file.
@@ -258,8 +261,15 @@ func evaluate(waf coraza.WAF, ex example) (result, error) {
 		}
 	}
 	tx.ProcessRequestHeaders()
-	if ex.Body != "" && tx.IsRequestBodyAccessible() {
-		if _, _, err := tx.WriteRequestBody([]byte(ex.Body)); err != nil {
+	body := []byte(ex.Body)
+	if ex.BodyBase64 != "" {
+		var err error
+		if body, err = base64.StdEncoding.DecodeString(ex.BodyBase64); err != nil {
+			return result{}, fmt.Errorf("body_base64: %w", err)
+		}
+	}
+	if len(body) > 0 && tx.IsRequestBodyAccessible() {
+		if _, _, err := tx.WriteRequestBody(body); err != nil {
 			return result{}, err
 		}
 	}

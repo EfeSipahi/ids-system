@@ -109,6 +109,9 @@ func TestNumeric(t *testing.T) {
 		value    string
 		want     bool
 	}{
+		{"gt", "5", "6", true},
+		{"gt", "5", "5", false},
+		{"gt", "5", "abc", false},
 		{"eq", "0", "0", true},
 		{"eq", "0", "", true}, // an empty value counts as 0
 		{"eq", "0", "abc", true},
@@ -186,7 +189,7 @@ func TestNewAndSupported(t *testing.T) {
 			t.Errorf("New(%q): %v", name, err)
 		}
 	}
-	for _, name := range []string{"within", "gt", "le", "unconditionalMatch", ""} {
+	for _, name := range []string{"ipMatch", "le", "validateUtf8Encoding", ""} {
 		if Supported(name) {
 			t.Errorf("Supported(%q) = true", name)
 		}
@@ -229,12 +232,12 @@ func TestOperatorsOfFirstEngineFiles(t *testing.T) {
 		}
 	}
 	// Counted independently of this code, with a script over the same files.
-	want := map[string]int{"rx": 7, "eq": 28, "lt": 18, "ge": 18, "pmfromfile": 4}
+	// The one @unconditionalMatch is in rule 901320, which is excluded.
+	want := map[string]int{"rx": 7, "eq": 28, "lt": 18, "ge": 18, "pmfromfile": 4, "unconditionalmatch": 1}
 	if !reflect.DeepEqual(built, want) {
 		t.Errorf("operators built = %v, want %v", built, want)
 	}
-	// These belong to rules the first engine excludes.
-	wantUnsupported := map[string]bool{"unconditionalMatch": true}
+	wantUnsupported := map[string]bool{}
 	if !reflect.DeepEqual(unsupported, wantUnsupported) {
 		t.Errorf("unsupported operators = %v, want %v", unsupported, wantUnsupported)
 	}
@@ -503,7 +506,44 @@ func TestTextOperators(t *testing.T) {
 	if !streq.Match("POST", nil).Matched || streq.Match("post", nil).Matched || streq.Match("POSTS", nil).Matched {
 		t.Error("@streq gave the wrong answer")
 	}
+	// The three below were written after Coraza's operators of the same
+	// name, which are these Go calls: HasPrefix(value, argument),
+	// HasSuffix(value, argument) and Contains(argument, value).
+	tests := []struct {
+		name, argument, value string
+		want                  bool
+	}{
+		{"beginsWith", "/admin", "/admin/users", true},
+		{"beginsWith", "/admin", "/public/admin", false},
+		{"beginsWith", "", "anything", true},
+		{"endsWith", ".example.com", "www.example.com", true},
+		{"endsWith", ".example.com", "example.com.evil.org", false},
+		{"endsWith", "abc", "bc", false},
+		{"within", "GET HEAD POST", "POST", true},
+		{"within", "GET HEAD POST", "DELETE", false},
+		// A plain search in the text, not in a list of words.
+		{"within", "GET HEAD POST", "GE", true},
+		{"within", "GET HEAD POST", "post", false},
+		// An empty value is within anything.
+		{"within", "GET HEAD POST", "", true},
+		{"unconditionalMatch", "", "", true},
+		{"unconditionalMatch", "", "anything", true},
+	}
+	for _, tt := range tests {
+		if got := mustNew(t, tt.name, tt.argument, false).Match(tt.value, nil).Matched; got != tt.want {
+			t.Errorf("@%s %q on %q = %v, want %v", tt.name, tt.argument, tt.value, got, tt.want)
+		}
+	}
+	notWithin := mustNew(t, "within", "GET HEAD POST", true)
+	if notWithin.Match("POST", nil).Matched || !notWithin.Match("TRACE", nil).Matched {
+		t.Error("!@within gave the wrong answer")
+	}
+
 	// A macro argument is expanded for every test.
+	host := mustNew(t, "endsWith", ".%{request_headers.host}", false)
+	if !host.Match("www.shop.test", func(string) string { return ".shop.test" }).Matched {
+		t.Error("@endsWith with a macro gave the wrong answer")
+	}
 	withMacro := mustNew(t, "streq", "%{tx.expected}", false)
 	expand := func(string) string { return "abc" }
 	if !withMacro.Match("abc", expand).Matched || withMacro.Match("abd", expand).Matched {

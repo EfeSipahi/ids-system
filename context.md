@@ -12,7 +12,7 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 
 ## 2. What we have made
 
-**The rule layer runs four CRS rule files at all four paranoia levels:** 913 (scanner detection), 930 (path traversal and file access), 941 (XSS), and 942 (SQL injection), 100 detection rules in all, from the unmodified CRS files, with the setup, gate, and scoring rules they depend on. The other twelve request rule files are the work in progress; see section 3.
+**The rule layer runs eight CRS rule files at all four paranoia levels:** 911 (method enforcement), 913 (scanner detection), 930 (path traversal and file access), 931 (remote file inclusion), 941 (XSS), 942 (SQL injection), 943 (session fixation), and 944 (Java attacks), 123 detection rules in all, from the unmodified CRS files, with the setup, gate, and scoring rules they depend on. The other request rule files are the work in progress; see section 3.
 
 Run it:
 
@@ -30,8 +30,8 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/seclang` | Parses CRS rule files into Go values. Six directives are supported; any other is an error |
 | `internal/httpmodel` | The common request (M03, M16): received content, parsed view, analysis status (M05). Reads the query, cookies, and form, JSON, multipart, and XML bodies |
 | `internal/offline` | Reads example requests from JSON, with optional `expect_ids` / `no_expect_ids` |
-| `internal/engine/transform` | 13 transformations. 11 are ports of the ModSecurity v2 functions; `normalizePathWin` and `htmlEntityDecode` follow Coraza (user decision, main plan section 11.15); `normalizePathWin` leaves out Coraza's cut at a colon, which could hide a file name |
-| `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@validateByteRange`, `@eq`, `@lt`, `@ge` |
+| `internal/engine/transform` | 14 transformations. 11 are ports of the ModSecurity v2 functions; `normalizePathWin` and `htmlEntityDecode` follow Coraza (user decision, main plan section 11.15); `normalizePathWin` leaves out Coraza's cut at a colon, which could hide a file name |
+| `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@within`, `@beginsWith`, `@endsWith`, `@validateByteRange`, `@eq`, `@lt`, `@ge`, `@gt`, `@unconditionalMatch` |
 | `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21) |
 | `internal/result` | Output records: analysis status, findings, score. Request content is left out by default (M11) |
 | `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level` |
@@ -40,8 +40,8 @@ Other files:
 
 | Path | Content |
 | --- | --- |
-| `configs/crs-first-engine.json` | Loads eight CRS files; 188 of 195 rules active, 7 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1 |
-| `testdata/requests/` | Example requests: starter file, the 1,388 converted CRS tests of the finished rule files (`crs/`), the 3,685 of the others (`crs-pending/`), 1,300 generated variants (`generated/`); see its README |
+| `configs/crs-first-engine.json` | Loads twelve CRS files; 243 of 250 rules active, 7 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1 |
+| `testdata/requests/` | Example requests: starter file, the 2,661 converted CRS tests of the finished rule files (`crs/`), the 2,412 of the others (`crs-pending/`), 1,300 generated variants (`generated/`); see its README |
 | `testdata/reference/` | What Coraza found for those requests; see its README |
 | `tools/` | Python scripts that generate the test data, and `coraza-reference/`, a separate Go module that runs Coraza. Coraza is not a dependency of the IDS |
 | `docs/development-plan-all-request-rules.md` | **The plan in progress:** six plans, A to F, with results after each |
@@ -52,8 +52,8 @@ Other files:
 ### 2.2. What was checked (12 October 2026)
 
 1. `go vet ./...`, `go test ./...`, and `go test -race ./...` pass for all eight packages.
-2. **CRS regression tests:** all 1,388 tests of files 913, 930, 941, and 942 pass at paranoia level 4, the level the CRS project runs them at. At levels 1 to 3 a test passes when its rule belongs to the level, and a rule above the level never matches.
-3. **Against Coraza v3.8.1:** 2,694 requests compared at level 1 (1,423 with a match) and at level 4 (2,154 with a match). Rules, match places, match counts, and scores are identical, except that 4 requests with invalid UTF-8 differ in match count for a known reason (`utf8toUnicode`). The reference is produced with Coraza's build option `coraza.rule.no_regex_multiline`; see `testdata/reference/README.md` for why.
+2. **CRS regression tests:** all 2,661 tests of the eight finished rule files pass at paranoia level 4, the level the CRS project runs them at. At levels 1 to 3 a test passes when its rule belongs to the level, and a rule above the level never matches.
+3. **Against Coraza v3.8.1:** 3,967 requests compared at level 1 (2,253 with a match) and at level 4 (3,382 with a match). Rules, match places, match counts, and scores are identical, with two known exceptions: 4 requests with invalid UTF-8 differ in match count (`utf8toUnicode`), and on requests whose body has no reader Coraza has extra matches in `ARGS`, because it splits such a body into parameters and we, like ModSecurity, do not. The reference is produced with Coraza's build option `coraza.rule.no_regex_multiline`; see `testdata/reference/README.md` for why.
 4. **Transformations:** 11 agree with 10,008 results recorded from the ModSecurity v2 C code; the 2 that follow Coraza agree with 2,517 results recorded from Coraza's Go code.
 5. **M21:** attack and normal requests alternate against one rule set, in sequence and in eight goroutines, without affecting each other.
 6. **M11:** the default text and JSON output contain none of the payloads of the example file.
@@ -62,21 +62,21 @@ Other files:
 ### 2.3. Two measurements, and what they do not show
 
 1. **Pilot records:** of the 1,000 CSIC records of the ML pilot, 0 of 500 normal and 80 of 500 anomalous were flagged at level 1; at level 4, 1 normal and 102 anomalous. This is not a false-positive rate or a detection rate for real traffic: the data is old and synthetic, and "anomalous" there includes many requests outside our three attack types.
-2. **Speed** on the development laptop: 0.4 to 0.7 ms per ordinary request on one core; 18.5 ms for a request with a 9.4 kB field. A long value is slow because more than 90 patterns each read it. Measured, not optimised.
+2. **Speed** on the development laptop, with eight rule files: about 1.1 to 1.6 ms per ordinary request on one core, about 49 ms for a request with a 9.4 kB field. With three rule files it was 0.4 to 0.7 ms and 18.5 ms. It grows with the number of rules, because every pattern reads every value. Measured, not optimised; plan F deals with it.
 
 ### 2.4. What it does not do
 
 1. It reads requests from files only. There is no proxy integration.
 2. There is no ML layer, profile layer, decision mechanism, or stored record. A finding of the rule layer is not an alert decision.
-3. Four of the sixteen request rule files with detection rules or tests. The others are planned; see section 3.1. No response rules.
-4. `text/plain` bodies are not read (M17 lists them); they are reported as not inspected.
+3. Eight request rule files. The others are planned; see section 3.1. No response rules.
+4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
 5. Passing the CRS tests is not full CRS compatibility, and no request has been run through ModSecurity itself.
 
 ### 2.5. Other facts
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: everything up to and including plan A is on `main` and pushed to GitHub (12 October 2026). The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to and including plan B is on `main` and pushed to GitHub (16 October 2026). The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -87,13 +87,13 @@ On 12 October 2026 the user decided to finish the rule part before any other lay
 | Plan | Content | Tests to pass | Status |
 | --- | --- | --- | --- |
 | A | Paranoia levels, test base, files 913, 930, 941, 942 | 1,388 | **Done 12 October 2026** |
-| B | Request variables, small operators, engine items; files 911, 931, 943, 944 | 1,273 | Next; not started |
-| C | `normalizePath`, `escapeSeqDecode`, `base64Decode`; files 932, 933, 934 | 1,818 | Not started |
+| B | Request variables, small operators, engine items; files 911, 931, 943, 944 | 1,273 | **Done 12 October 2026** |
+| C | `normalizePath`, `escapeSeqDecode`, `base64Decode`; files 932, 933, 934 | 1,818 | Next; not started |
 | D | Protocol rules; files 920, 921, 905, and the tests of 901 and 949 | 547 | Not started |
 | E | Multipart rules; file 922 | 47 | Not started |
 | F | Checks on the whole set: Coraza, normal traffic, speed, documents | all 5,073 | Not started |
 
-Do not start plan B before the user says so.
+Do not start plan C before the user says so.
 
 Response rules (CRS files 950–980) are not part of this; they wait for the proxy decision (K8).
 

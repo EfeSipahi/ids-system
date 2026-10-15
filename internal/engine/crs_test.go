@@ -66,25 +66,26 @@ func TestCRSStartupReport(t *testing.T) {
 		t.Errorf("signature = %q", rs.Signature())
 	}
 
-	// 1 rule in crs-setup, 33 in 901, 9 in 913, 14 in 930, 42 in 941, 68
-	// in 942 and 28 in 949: every one has a status.
+	// 1 rule in crs-setup, 33 in 901, 9 in 911, 9 in 913, 14 in 930, 13
+	// in 931, 42 in 941, 68 in 942, 11 in 943, 22 in 944 and 28 in 949:
+	// every one has a status.
 	statuses := rs.Statuses()
-	if len(statuses) != 195 {
-		t.Errorf("%d statuses, want 195", len(statuses))
+	if len(statuses) != 250 {
+		t.Errorf("%d statuses, want 250", len(statuses))
 	}
 	if rs.ParanoiaLevel() != 1 {
 		t.Errorf("paranoia level = %d, want the default 1", rs.ParanoiaLevel())
 	}
 	// Detection rules per level, counted from the tags in the CRS files:
-	// 913 has 1; 930 has 5 and 1; 941 has 26 and 7; 942 has 20, 31, 7
-	// and 2.
+	// 911 has 1; 913 has 1; 930 has 5 and 1; 931 has 3 and 2; 941 has 26
+	// and 7; 942 has 20, 31, 7 and 2; 943 has 3; 944 has 6, 6, 1 and 1.
 	perLevel := map[int]int{}
 	for _, s := range statuses {
 		if s.ParanoiaLevel != 0 {
 			perLevel[s.ParanoiaLevel]++
 		}
 	}
-	if want := map[int]int{1: 52, 2: 39, 3: 7, 4: 2}; !reflect.DeepEqual(perLevel, want) {
+	if want := map[int]int{1: 65, 2: 47, 3: 8, 4: 3}; !reflect.DeepEqual(perLevel, want) {
 		t.Errorf("detection rules per level = %v, want %v", perLevel, want)
 	}
 	// File 999 holds one update for a rule of file 932, which is not
@@ -257,8 +258,8 @@ func TestCRSStarterExamples(t *testing.T) {
 }
 
 // TestCRSRegression runs the converted CRS regression tests of the rule
-// files that are finished: 913, 930, 941 and 942, at every paranoia level
-// of their rules. Each test is named after one rule and says which rules
+// files that are finished: 911, 913, 930, 931, 941, 942, 943 and 944, at
+// every paranoia level of their rules. Each test is named after one rule and says which rules
 // must and must not match.
 //
 // The tests run at level 4, as the CRS project runs them: its test setup
@@ -271,14 +272,17 @@ func TestCRSStarterExamples(t *testing.T) {
 // switched off there.
 func TestCRSRegression(t *testing.T) {
 	files, err := filepath.Glob("../../testdata/requests/crs/*.json")
-	if err != nil || len(files) != 100 {
-		t.Fatalf("found %d test files (%v), want 100", len(files), err)
+	if err != nil || len(files) != 124 {
+		t.Fatalf("found %d test files (%v), want 124", len(files), err)
 	}
 	// The level of each rule, from the tags in the CRS files.
 	levelOfRule := map[int]int{}
 	for _, s := range loadCRS(t).Statuses() {
 		levelOfRule[s.ID] = s.ParanoiaLevel
 	}
+	// File 944000 is named after no rule. Its one test is about rule
+	// 944100 and a body of type text/plain.
+	levelOfRule[944000] = levelOfRule[944100]
 
 	for level := MaxParanoiaLevel; level >= 1; level-- {
 		rs := loadCRSAt(t, level)
@@ -292,7 +296,9 @@ func TestCRSRegression(t *testing.T) {
 			for _, ex := range loadExamples(t, "crs/"+filepath.Base(file)) {
 				total++
 				t.Run(fmt.Sprintf("PL%d/%s", level, ex.Name), func(t *testing.T) {
-					if !ex.Request.Status.Body.Complete() {
+					// A body of a type that has no reader is not split into
+					// fields; the rules see it as one text (REQUEST_BODY).
+					if !ex.Request.Status.Body.Complete() && ex.Request.Status.BodyFormat != "" {
 						t.Fatalf("the body was not read completely: %s", ex.Request.Status.BodyReason)
 					}
 					if levelOfRule[ruleID] > level {
@@ -305,10 +311,11 @@ func TestCRSRegression(t *testing.T) {
 				})
 			}
 		}
-		// 9 tests in file 913, 83 in 930, 263 in 941 and 1,033 in 942,
-		// counted from the CRS test files.
-		if total != 1388 {
-			t.Errorf("%d tests, want 1388", total)
+		// 8 tests in file 911, 9 in 913, 83 in 930, 42 in 931, 263 in
+		// 941, 1,033 in 942, 47 in 943 and 1,176 in 944, counted from the
+		// CRS test files.
+		if total != 2661 {
+			t.Errorf("%d tests, want 2661", total)
 		}
 	}
 }
@@ -346,7 +353,7 @@ func checkExample(t *testing.T, rs *RuleSet, ex offline.Example, level int) {
 	detected := false
 	for _, id := range ids {
 		switch id / 1000 {
-		case 913, 930, 941, 942:
+		case 911, 913, 930, 931, 941, 942, 943, 944:
 			detected = true
 		}
 	}

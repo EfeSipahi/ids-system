@@ -3,8 +3,8 @@
 | Path | Content |
 | --- | --- |
 | `path-traversal.json` | Hand-picked starter examples: four CRS cases and two normal requests |
-| `crs/` | The CRS 4.30.0 regression tests of the rule files that are finished: 913, 930, 941 and 942, at all paranoia levels. 100 files, one per rule, 1,388 tests. All must pass |
-| `crs-pending/` | The same for the rule files that are not finished yet: 190 files, 3,685 tests. Most fail today, because their rule files are not loaded |
+| `crs/` | The CRS 4.30.0 regression tests of the rule files that are finished: 911, 913, 930, 931, 941, 942, 943 and 944, at all paranoia levels. 124 files, one per rule, 2,661 tests. All must pass |
+| `crs-pending/` | The same for the rule files that are not finished yet: 166 files, 2,412 tests. Most fail today, because their rule files are not loaded |
 | `generated/` | 1,300 generated requests without expectations, used to compare our engine with a reference engine: path traversal, file access, and SQLi/XSS variants. Written by the three `tools/generate_*_variants.py` scripts |
 
 What a request can expect:
@@ -28,9 +28,9 @@ These files are generated. Do not edit them by hand; change the script and
 run it again from the project directory:
 
 ```
-python3 tools/convert_crs_tests.py --files 913 930 941 942
+python3 tools/convert_crs_tests.py --files 911 913 930 931 941 942 943 944
 python3 tools/convert_crs_tests.py --out testdata/requests/crs-pending \
-    --files 901 911 920 921 922 931 932 933 934 943 944 949
+    --files 901 920 921 922 932 933 934 949
 ```
 
 The script reads `coreruleset-4.30.0/tests/regression/tests/` and applies the
@@ -51,6 +51,6 @@ switched on. To see how many tests of each rule the engine passes:
 go run ./cmd/ids-offline -requests testdata/requests/crs -summary -paranoia-level 4
 ```
 
-All 100 rules are active and all 1,388 tests pass. A test would count as "not
+All rules are active and all 2,661 tests pass. (File `944000` is named after no rule; its one test is about a `text/plain` body.) A test would count as "not
 inspected" if its expectation were not met and its body could not be read to
 its end.

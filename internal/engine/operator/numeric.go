@@ -2,7 +2,7 @@ package operator
 
 import "math"
 
-// numeric is the family @eq, @lt, @ge: read the value and the argument as
+// numeric is the family @eq, @lt, @ge, @gt: read the value and the argument as
 // whole numbers and compare them, value on the left.
 //
 //	SecRule TX:detection_paranoia_level "@lt 2"   matches when the level is below 2

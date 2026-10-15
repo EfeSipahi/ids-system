@@ -437,13 +437,15 @@ func parseSetvar(s string) (setvar, error) {
 	if !ok || !strings.EqualFold(col, "tx") || key == "" {
 		return sv, errors.New("only tx.name variables are supported")
 	}
+	var err error
 	if strings.Contains(key, "%{") {
-		return sv, errors.New("a macro in the variable name is not supported")
+		if sv.keyParts, err = parseTemplate(key); err != nil {
+			return sv, err
+		}
 	}
 	sv.key = strings.ToLower(key)
 	sv.relative = strings.HasPrefix(value, "+") || strings.HasPrefix(value, "-")
 
-	var err error
 	sv.value, err = parseTemplate(value)
 	return sv, err
 }

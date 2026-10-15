@@ -41,17 +41,22 @@ func constructors(dir string) map[string]constructor {
 		return func(argument string) (Operator, error) { return newNumeric(argument, compare), nil }
 	}
 	return map[string]constructor{
-		"rx":                newRx,
-		"eq":                numeric(func(l, r int64) bool { return l == r }),
-		"lt":                numeric(func(l, r int64) bool { return l < r }),
-		"ge":                numeric(func(l, r int64) bool { return l >= r }),
-		"pm":                newPm,
-		"pmfromfile":        newPmFromFile(dir),
-		"contains":          newContains,
-		"validatebyterange": newByteRange,
-		"streq":             newStreq,
-		"detectsqli":        func(string) (Operator, error) { return detectSQLi{}, nil },
-		"detectxss":         func(string) (Operator, error) { return detectXSS{}, nil },
+		"rx":                 newRx,
+		"eq":                 numeric(func(l, r int64) bool { return l == r }),
+		"lt":                 numeric(func(l, r int64) bool { return l < r }),
+		"ge":                 numeric(func(l, r int64) bool { return l >= r }),
+		"gt":                 numeric(func(l, r int64) bool { return l > r }),
+		"pm":                 newPm,
+		"pmfromfile":         newPmFromFile(dir),
+		"contains":           newContains,
+		"validatebyterange":  newByteRange,
+		"streq":              newStreq,
+		"within":             newWithin,
+		"beginswith":         newBeginsWith,
+		"endswith":           newEndsWith,
+		"unconditionalmatch": func(string) (Operator, error) { return unconditional{}, nil },
+		"detectsqli":         func(string) (Operator, error) { return detectSQLi{}, nil },
+		"detectxss":          func(string) (Operator, error) { return detectXSS{}, nil },
 	}
 }
 
@@ -82,6 +87,14 @@ func New(name, argument string, negated bool, dir string) (Operator, error) {
 		op = not{op}
 	}
 	return op, nil
+}
+
+// unconditional is @unconditionalMatch: it matches every value. A rule uses
+// it to run its actions once for each value of its variables.
+type unconditional struct{}
+
+func (unconditional) Match(string, func(string) string) Result {
+	return Result{Matched: true}
 }
 
 // not inverts another operator. A negated test has nothing to capture.

@@ -2,16 +2,20 @@
   "files": [
     "../coreruleset-4.30.0/crs-setup.conf.example",
     "../coreruleset-4.30.0/rules/REQUEST-901-INITIALIZATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-911-METHOD-ENFORCEMENT.conf",
     "../coreruleset-4.30.0/rules/REQUEST-913-SCANNER-DETECTION.conf",
     "../coreruleset-4.30.0/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-931-APPLICATION-ATTACK-RFI.conf",
     "../coreruleset-4.30.0/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf",
     "../coreruleset-4.30.0/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-943-APPLICATION-ATTACK-SESSION-FIXATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-944-APPLICATION-ATTACK-JAVA.conf",
     "../coreruleset-4.30.0/rules/REQUEST-949-BLOCKING-EVALUATION.conf",
     "../coreruleset-4.30.0/rules/REQUEST-999-COMMON-EXCEPTIONS-AFTER.conf"
   ],
   "exclude": [
     {"id": 901320, "reason": "Persistent collections (initcol) are not implemented. The rule only acts when tx.enable_default_collections is 1, which is not set."},
-    {"id": 901340, "reason": "Body processor control (ctl, REQBODY_PROCESSOR) is not implemented. The engine decides how to parse a body from its Content-Type."},
+    {"id": 901340, "reason": "Body processor control (ctl, REQBODY_PROCESSOR) is not implemented. The rule asks for REQUEST_BODY when no body reader was chosen; the engine does that itself for a body it does not parse."},
     {"id": 901350, "reason": "Body processor control (ctl, REQBODY_PROCESSOR) is not implemented. The rule only acts when tx.enforce_bodyproc_urlencoded is 1; the default is 0."},
     {"id": 901360, "reason": "Body processor control (ctl) is not implemented. The engine itself reads application/x-amz-json bodies as JSON."},
     {"id": 901370, "reason": "Body processor control (ctl) is not implemented. The engine itself reads application/...+json bodies as JSON."},

@@ -32,12 +32,12 @@ belongs to the current example files.
 | Fact | Value |
 | --- | --- |
 | Reference engine | Coraza v3.8.1, detection-only mode |
-| Rule files | The eight files of `configs/crs-first-engine.json`, unmodified |
+| Rule files | The twelve files of `configs/crs-first-engine.json`, unmodified |
 | Build option | `coraza.rule.no_regex_multiline` |
 | Paranoia level | 1 in the first file, 4 in the second, set with rule 900000 as `crs-setup.conf.example` describes |
 | Added before the rule files | The two rules of `coraza.conf-recommended` that choose the XML and JSON body readers |
 | Left out | The `SecRuleUpdateTargetById` line for rule 932240, which is not loaded; Coraza refuses such a line, our engine ignores and reports it |
-| Requests | 2,694: 6 starter examples, 1,388 converted CRS tests, 1,300 generated variants |
+| Requests | 3,967: 6 starter examples, 2,661 converted CRS tests, 1,300 generated variants |
 | Produced on | 12 October 2026 |
 
 For a chained rule the file lists what the last rule of the chain matched.
@@ -46,3 +46,10 @@ Coraza is a second implementation of the language ModSecurity defined. It is
 an independent engine to compare with, not a definition of what is right:
 where the two engines differ, the difference is examined and either fixed in
 our engine or written down with its reason.
+
+One difference between the engines is known and checked by its own rule in
+the test. For a body of a type that has no reader, such as `text/plain`,
+Coraza splits the body into parameters as if it were a form. ModSecurity
+with the CRS defaults does not, and neither do we: the rules get the body as
+one text, `REQUEST_BODY`. On such a request Coraza may therefore have more
+matches, all in `ARGS` or `ARGS_NAMES`, and a higher score.

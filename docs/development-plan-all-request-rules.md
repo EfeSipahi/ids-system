@@ -171,7 +171,39 @@ No engine code had to be corrected: the rules of levels 2 to 4 in these four fil
 2. 21 tests expect only a web-server status and are not converted. Plan D decides whether any of them says something about a rule.
 3. The log-line form was only needed by one test so far. 13 more tests in later plans use it and will show whether the form is close enough to ModSecurity's.
 
-### Plan B — not started
+### Plan B — done on 12 October 2026
+
+**What was added**
+
+1. **Variables:** `REQUEST_METHOD`, `REQUEST_PROTOCOL`, `REQUEST_LINE`, `REQUEST_URI`, `QUERY_STRING`, `REQUEST_BODY`, `REQUEST_HEADERS_NAMES`, `ARGS_GET`, `ARGS_GET_NAMES`, `ARGS_POST`, `ARGS_POST_NAMES`, `MATCHED_VAR`, `MATCHED_VAR_NAME`.
+2. **Operators:** `@gt`, `@within`, `@beginsWith`, `@endsWith`, `@unconditionalMatch`, written after Coraza's operators of the same names.
+3. **Transformation:** `length`.
+4. **Engine:** a macro may name any supported variable (`%{request_headers.host}`, `%{REQUEST_LINE}`); a `setvar` name may contain a macro (`tx.rfi_parameter_%{MATCHED_VAR_NAME}`); a pattern may select TX variables (`TX:/rfi_parameter_.*/`).
+5. **Rule files 911, 931, 943, 944** are loaded. 243 of 250 rules are active; the 7 excluded ones are unchanged.
+
+**`REQUEST_BODY`, the one design point.** It holds the body as one text when the body is a form or of a type that has no reader, such as `text/plain`. For a JSON, XML or multipart body it has no value; the rules see the parts. This is what ModSecurity does with the CRS defaults: it fills `REQUEST_BODY` for a form, and CRS rule 901340 asks for it when no body reader was chosen. Rule 901340 itself stays excluded, because the engine does this without being told. One consequence: a `text/plain` body used to be invisible to the rules and is now inspected by every rule that reads `REQUEST_BODY`. It is still reported as "not inspected", meaning not split into fields.
+
+**Results**
+
+| Check | Result |
+| --- | --- |
+| CRS tests of the eight finished files at level 4 | 2,661 of 2,661 pass (911: 8, 913: 9, 930: 83, 931: 42, 941: 263, 942: 1,033, 943: 47, 944: 1,176) |
+| The same tests at levels 1, 2, 3 | As in plan A: a rule above the level never matches |
+| Comparison with Coraza, level 1 | 3,967 requests, 2,253 with a match, 0 differences |
+| Comparison with Coraza, level 4 | 3,967 requests, 3,382 with a match, 0 differences |
+| `go vet`, `go test`, `go test -race` | Pass, eight packages |
+
+All 1,273 new tests passed on the first run after the features were written.
+
+**One explained class of difference from Coraza.** 108 of the compared requests have a body without a reader. Coraza splits such a body into parameters as if it were a form; ModSecurity, and we, do not. So on 62 of them at level 1 (95 at level 4) Coraza has more matches, all in `ARGS` or `ARGS_NAMES`, and a higher score. The comparison checks this class by its own rule: everything we find, Coraza must find, and what only Coraza finds must be in `ARGS`. On none of the 108 requests did Coraza find a rule that we did not. CRS has a setting for the other behaviour (`tx.enforce_bodyproc_urlencoded`, rule 901350, off by default). It is not implemented. The user decided on 16 October 2026 to keep the body as one text.
+
+**Corrections to the comparison test itself.** It compared only the rules of the files finished earlier; the new files are now included. It also skipped requests whose body has no reader; they are now compared as described above. A rule that counts values (`&REQUEST_HEADERS:Referer`) is named with the `&` by us and without by Coraza; the test now treats the two names as the same.
+
+**Pilot records per level:** unchanged from plan A (normal flagged: 0, 0, 0, 1; anomalous flagged: 80, 98, 100, 102). The four new rule files flag none of the 1,000 records.
+
+**Speed, measured and not yet treated.** With the four new rule files an ordinary request takes about 1.1 to 1.6 ms on one core of the development laptop, against about 0.5 ms after plan A; the request with a 9.4 kB field takes about 49 ms, against about 20 ms. The numbers vary between runs. File 944 tests many patterns against every header, cookie and parameter. This is the subject of plan F.
+
+**Moved from plan B to plan D.** `REQUEST_BODY_LENGTH`, `ARGS_COMBINED_SIZE`, `FILES_COMBINED_SIZE`, `REQBODY_PROCESSOR`, `ctl:ruleRemoveById` and `ctl` in a chain. Only rules of file 920 use them, and their tests are in plan D; writing them now would have left them unverified.
 
 ### Plan C — not started
 

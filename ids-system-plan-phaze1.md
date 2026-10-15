@@ -1193,3 +1193,13 @@ The work is described in [docs/development-plan-all-request-rules.md](docs/devel
 **Plan A, done on 12 October 2026:** the paranoia-level option, rule file 913, and the tests of files 913, 930, 941, and 942 at all levels. 1,388 of 1,388 tests pass at level 4; the levels switch rules on and off as CRS intends; results agree with Coraza on 2,694 requests at level 1 and at level 4. Details are in the progress section of that plan.
 
 **Status of M19 and M20 after this:** the text of sections 5.19 and 5.20 is the original decision. K6 and K7 extend them. Implemented so far: files 913, 930, 941, and 942 at paranoia levels 1 to 4.
+
+### 11.17. Plan B of the request-rule plan — 12 October 2026
+
+Plan B of [docs/development-plan-all-request-rules.md](docs/development-plan-all-request-rules.md) is done: thirteen request variables (among them `REQUEST_METHOD`, `REQUEST_LINE`, `REQUEST_URI`, `REQUEST_BODY`), the operators `@gt`, `@within`, `@beginsWith`, `@endsWith`, `@unconditionalMatch`, the transformation `length`, macros for request variables, macros in `setvar` names, and patterns on TX variables. Rule files 911, 931, 943, and 944 are loaded.
+
+1. **Result:** 2,661 of 2,661 CRS tests of the eight finished rule files pass at level 4; results agree with Coraza on 3,967 requests at level 1 and at level 4.
+2. **`REQUEST_BODY` (touches M17 and A02):** a body that is a form, or of a type without a reader such as `text/plain`, is given to the rules as one text. This follows ModSecurity with the CRS defaults (rule 901340). A `text/plain` body is thereby inspected by the rules that read `REQUEST_BODY`; it is not split into parameters.
+3. **Decided by the user on 16 October 2026:** a body without a reader stays one text (`REQUEST_BODY`), as in ModSecurity with the CRS defaults. It is not split into parameters as Coraza does; the CRS setting for that (`tx.enforce_bodyproc_urlencoded`) is not implemented.
+
+Details are in the progress section of the plan.

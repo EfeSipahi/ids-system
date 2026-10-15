@@ -45,7 +45,7 @@ type referenceDoc struct {
 // configuration, and the reference lists some that only log in Coraza.
 func compared(ruleID int) bool {
 	switch ruleID / 1000 {
-	case 913, 930, 941, 942:
+	case 911, 913, 930, 931, 941, 942, 943, 944:
 		return true
 	}
 	return ruleID == 949110
@@ -70,6 +70,14 @@ func compared(ruleID int) bool {
 //     and a multiMatch rule such as 930110 tests it one more time. The rule
 //     is found by both engines; Coraza counts it more often and ends with a
 //     higher score.
+//
+//   - A request with a body of a type that has no reader, such as
+//     text/plain. We give such a body to the rules as one text, the
+//     variable REQUEST_BODY, which is what ModSecurity does with the CRS
+//     defaults (CRS rule 901340). Coraza also splits it into parameters as
+//     if it were a form. So Coraza may have more matches, all of them in
+//     ARGS or ARGS_NAMES, and a higher score. Everything we find, Coraza
+//     must find too.
 //
 // knownDifferences lists single requests on which the two engines are known
 // to disagree, with the reason. The key is the example file and the position
@@ -117,6 +125,7 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 	}
 
 	comparedCount, skipped, withMatches, differences := 0, 0, 0, 0
+	unparsed, unparsedDiffer, unparsedRulesDiffer := 0, 0, 0
 	invalidUTF8, invalidUTF8Differ := 0, 0
 	seenKnown := map[string]bool{}
 	for _, want := range ref.Results {
@@ -125,7 +134,9 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 			t.Fatalf("%s #%d: the reference does not belong to the current example files; run tools/coraza-reference again", want.Source, want.Index)
 		}
 		ex := list[want.Index-1]
-		if !ex.Request.Status.Body.Complete() {
+		// A body that a reader gave up on is not compared.
+		noReader := !ex.Request.Status.Body.Complete() && ex.Request.Status.BodyFormat == ""
+		if !ex.Request.Status.Body.Complete() && !noReader {
 			skipped++
 			continue
 		}
@@ -180,6 +191,29 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 			}
 			continue
 		}
+		if noReader {
+			// See the comment of TestAgainstCoraza.
+			unparsed++
+			if same {
+				continue
+			}
+			unparsedDiffer++
+			extra, missing := difference(wantMatches, gotMatches)
+			for _, m := range extra {
+				_, variable, _ := strings.Cut(m, "@")
+				variable = strings.TrimPrefix(variable, "matched_vars:")
+				if !strings.HasPrefix(variable, "args:") && !strings.HasPrefix(variable, "args_names:") {
+					t.Errorf("%s #%d (%s), a body without a reader: Coraza alone has %s", want.Source, want.Index, ex.Name, m)
+				}
+			}
+			if len(missing) > 0 || gotScore > want.Score {
+				t.Errorf("%s #%d (%s), a body without a reader\n  ours:   score %d, %v\n  coraza: score %d, %v", want.Source, want.Index, ex.Name, gotScore, gotMatches, want.Score, wantMatches)
+			}
+			if onlyCoraza, _ := difference(ruleIDs(wantMatches), ruleIDs(gotMatches)); len(onlyCoraza) > 0 {
+				unparsedRulesDiffer++
+			}
+			continue
+		}
 		if !same {
 			differences++
 			if differences <= 15 {
@@ -190,6 +224,8 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 	if differences > 15 {
 		t.Errorf("%d more differences not shown", differences-15)
 	}
+	t.Logf("%s at paranoia level %d: %d requests have a body without a reader; on %d of them Coraza has more matches, on %d of those also a rule we do not have",
+		ref.Engine, ref.ParanoiaLevel, unparsed, unparsedDiffer, unparsedRulesDiffer)
 	t.Logf("%s at paranoia level %d: %d requests compared (%d with a match), %d differences; %d of them have invalid UTF-8, of which %d differ in match count only; %d skipped because their body was not read to its end",
 		ref.Engine, ref.ParanoiaLevel, comparedCount, withMatches, differences, invalidUTF8, invalidUTF8Differ, skipped)
 
@@ -200,7 +236,7 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 	}
 
 	// The comparison must not shrink without notice.
-	if comparedCount < 2600 || withMatches < 1400 {
+	if comparedCount < 3900 || withMatches < 2200 {
 		t.Errorf("only %d requests compared, %d with a match", comparedCount, withMatches)
 	}
 }
@@ -233,12 +269,42 @@ func ruleIDs(matches []string) []string {
 	return ids
 }
 
+// difference returns the entries of a that are not in b, and those of b
+// that are not in a. An entry that appears twice counts twice.
+func difference(a, b []string) (onlyA, onlyB []string) {
+	count := map[string]int{}
+	for _, x := range b {
+		count[x]++
+	}
+	for _, x := range a {
+		if count[x] > 0 {
+			count[x]--
+		} else {
+			onlyA = append(onlyA, x)
+		}
+	}
+	count = map[string]int{}
+	for _, x := range a {
+		count[x]++
+	}
+	for _, x := range b {
+		if count[x] > 0 {
+			count[x]--
+		} else {
+			onlyB = append(onlyB, x)
+		}
+	}
+	return onlyA, onlyB
+}
+
 // comparableName brings a variable name into a form both engines share.
 // Names are compared without regard to case. Coraza reports XML content
 // under the name REQUEST_XML. For an uploaded file, Coraza reports "FILES"
 // where we report "FILES:" and the form field, so the field is left out.
+// For a rule that counts values, written with "&", we report the name with
+// the "&" and Coraza without.
 func comparableName(name string) string {
-	name = strings.ToLower(name)
+	name = strings.ToLower(strings.TrimPrefix(name, "&"))
 	name = strings.ReplaceAll(name, "request_xml:", "xml:")
 	for _, prefix := range []string{"files_names", "files"} {
 		if name == prefix || strings.HasPrefix(name, prefix+":") {

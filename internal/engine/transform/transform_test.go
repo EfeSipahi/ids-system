@@ -203,6 +203,16 @@ func TestSQLiAndXSSTransformations(t *testing.T) {
 	})
 }
 
+func TestLength(t *testing.T) {
+	runCases(t, "Length", Length, []testCase{
+		{"", "0"},
+		{"hello", "5"},
+		// Bytes are counted, not characters.
+		{"é", "2"},
+		{"a\x00b", "3"},
+	})
+}
+
 func TestLookupAndResolve(t *testing.T) {
 	for _, name := range []string{"utf8toUnicode", "URLDECODEUNI", "removenulls", "cmdLine", "normalizePathWin"} {
 		if _, ok := Lookup(name); !ok {
@@ -290,6 +300,11 @@ var followCoraza = map[string]bool{"normalizePathWin": true, "htmlEntityDecode":
 func TestAgainstModSecurityV2(t *testing.T) {
 	counts := compareWithVectors(t, "testdata/modsecurity_v2_vectors.txt", "ModSecurity")
 	for _, tr := range registry {
+		if tr.Name == "length" {
+			// Nothing to compare: it is the length of the value. See
+			// TestLength.
+			continue
+		}
 		if want := !followCoraza[tr.Name]; want && counts[tr.Name] < 800 {
 			t.Errorf("only %d reference cases for %s", counts[tr.Name], tr.Name)
 		} else if !want && counts[tr.Name] > 0 {

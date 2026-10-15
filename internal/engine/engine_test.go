@@ -315,29 +315,29 @@ func TestLoadErrors(t *testing.T) {
 		{"action", []string{`SecAction "id:7,phase:1,pass,initcol:ip=x"`}, []string{"rulesa.conf:1: rule 7: action initcol is not supported"}},
 		{"ctl", []string{`SecAction "id:7,phase:1,pass,ctl:ruleEngine=Off"`}, []string{"rule 7: ctl:ruleEngine=Off: only ctl:ruleRemoveTargetByTag is supported"}},
 		{"ctl without variable", []string{`SecAction "id:7,phase:1,pass,ctl:ruleRemoveTargetByTag=x"`}, []string{"expected TAG;VARIABLE"}},
-		{"operator", []string{`SecRule ARGS "@within a b" "id:7,phase:2"`}, []string{"rule 7: operator @within is not supported"}},
+		{"operator", []string{`SecRule ARGS "@ipMatch 10.0.0.1" "id:7,phase:2"`}, []string{"rule 7: operator @ipMatch is not supported"}},
 		{"data file", []string{`SecRule ARGS "@pmFromFile x.data" "id:7,phase:2"`}, []string{"rule 7: @pmFromFile: open ", "x.data"}},
 		{"regex", []string{`SecRule ARGS "@rx (?=a)" "id:7,phase:2"`}, []string{"rule 7: @rx: "}},
 		{"transformation", []string{`SecRule ARGS "@rx a" "id:7,phase:2,t:none,t:sha1"`}, []string{`rule 7: transformation "sha1" is not supported`}},
 		{"variable", []string{`SecRule RESPONSE_BODY "@rx a" "id:7,phase:2"`}, []string{"rule 7: variable RESPONSE_BODY is not supported"}},
 		{"regex selector", []string{`SecRule ARGS:/(a/ "@rx a" "id:7,phase:2"`}, []string{"rule 7: variable ARGS:/(a/: error parsing regexp"}},
-		{"regex selector on tx", []string{`SecRule TX:/^a/ "@rx a" "id:7,phase:2"`}, []string{"a regular expression selector on TX is not supported"}},
+		{"bad regex selector on tx", []string{`SecRule TX:/a(/ "@rx a" "id:7,phase:2"`}, []string{"rule 7: variable TX:/a(/"}},
 		{"selector on single value", []string{`SecRule REQUEST_FILENAME:x "@rx a" "id:7,phase:2"`}, []string{"variable REQUEST_FILENAME takes no selector"}},
 		{"update with unsupported variable", []string{"SecRule ARGS \"@rx a\" \"id:7,phase:2\"\nSecRuleUpdateTargetById 7 \"!GEO:x\""}, []string{"rulesa.conf:2: SecRuleUpdateTargetById 7: variable GEO is not supported"}},
 		{"tx without name", []string{`SecRule TX "@rx a" "id:7,phase:2"`}, []string{"TX without a variable name"}},
 		{"phase", []string{`SecRule ARGS "@rx a" "id:7,phase:4"`}, []string{"rule 7: phase 4 is not supported"}},
 		{"marker", []string{`SecAction "id:7,phase:1,pass,skipAfter:NOWHERE"`}, []string{"rulesa.conf:1: skipAfter names marker NOWHERE"}},
 		{"macro", []string{`SecAction "id:7,phase:1,pass,setvar:'tx.a=%{REMOTE_ADDR}'"`}, []string{"macro %{REMOTE_ADDR} is not supported"}},
-		{"macro in msg", []string{`SecRule ARGS "@rx a" "id:7,phase:2,msg:'%{REQUEST_HEADERS.Host}'"`}, []string{"rule 7: msg: macro %{REQUEST_HEADERS.Host} is not supported"}},
-		{"macro in operator", []string{`SecRule ARGS "@eq %{ARGS.x}" "id:7,phase:2"`}, []string{"operator argument: macro %{ARGS.x} is not supported"}},
+		{"macro in msg", []string{`SecRule ARGS "@rx a" "id:7,phase:2,msg:'%{REMOTE_ADDR}'"`}, []string{"rule 7: msg: macro %{REMOTE_ADDR} is not supported"}},
+		{"macro in operator", []string{`SecRule ARGS "@eq %{GEO.x}" "id:7,phase:2"`}, []string{"operator argument: macro %{GEO.x} is not supported"}},
 		{"setvar collection", []string{`SecAction "id:7,phase:1,pass,setvar:ip.count=+1"`}, []string{"setvar:ip.count=+1: only tx.name variables are supported"}},
-		{"setvar macro name", []string{`SecAction "id:7,phase:1,pass,setvar:'tx.%{tx.a}=1'"`}, []string{"macro in the variable name"}},
+		{"setvar macro name", []string{`SecAction "id:7,phase:1,pass,setvar:'tx.a_%{GEO.x}=1'"`}, []string{"rule 7: setvar:tx.a_%{GEO.x}=1: macro %{GEO.x} is not supported"}},
 		{"chained action", []string{"SecRule ARGS \"@rx a\" \"id:7,phase:2,chain\"\n    SecRule ARGS \"@rx b\" \"msg:'x'\""}, []string{"rulesa.conf:2: rule 7: action msg is not supported on a chained rule"}},
 		{"default action", []string{`SecDefaultAction "phase:2,log,pass,ctl:ruleEngine=Off"`}, []string{"SecDefaultAction: action ctl is not supported"}},
 		{"duplicate id in two files", []string{`SecAction "id:7,phase:1,pass"`, `SecAction "id:7,phase:1,pass"`}, []string{"rulesb.conf:1: rule id 7 is already used at", "rulesa.conf:1"}},
 		// Every problem is reported, not only the first.
-		{"several", []string{"SecAction \"id:7,phase:1,pass,initcol:ip=x\"\nSecRule ARGS \"@within a\" \"id:8,phase:2,t:md5\""},
-			[]string{"rule 7: action initcol", "rule 8: operator @within", `rule 8: transformation "md5"`}},
+		{"several", []string{"SecAction \"id:7,phase:1,pass,initcol:ip=x\"\nSecRule ARGS \"@ipMatch a\" \"id:8,phase:2,t:md5\""},
+			[]string{"rule 7: action initcol", "rule 8: operator @ipMatch", `rule 8: transformation "md5"`}},
 		{"syntax", []string{`SecRuleEngine On`}, []string{"rulesa.conf:1: unsupported directive SecRuleEngine"}},
 	}
 	for _, tt := range tests {
@@ -569,7 +569,7 @@ func TestParseTemplate(t *testing.T) {
 			t.Errorf("parseTemplate(%q): expands to %q with macro %v, want %q with macro %v", tt.in, got, tmpl.macro, tt.want, tt.macro)
 		}
 	}
-	for _, in := range []string{"%{tx}", "%{REMOTE_ADDR}", "%{MATCHED_VAR.x}", "%{ARGS.a}"} {
+	for _, in := range []string{"%{tx}", "%{REMOTE_ADDR}", "%{MATCHED_VAR.x}", "%{REQUEST_LINE.x}", "%{GEO.a}"} {
 		if _, err := parseTemplate(in); err == nil {
 			t.Errorf("parseTemplate(%q): no error", in)
 		}
@@ -642,6 +642,120 @@ SecRule ARGS_NAMES:user[name] "@rx ." "id:9,phase:2,log,pass"
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("matches = %v\nwant      %v", got, want)
+	}
+}
+
+// The variables of the request line and the body.
+func TestRequestLineAndBodyVariables(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_METHOD "@streq POST" "id:1,phase:1,log,pass"
+SecRule REQUEST_PROTOCOL "@streq HTTP/1.0" "id:2,phase:1,log,pass"
+SecRule REQUEST_LINE "@rx ." "id:3,phase:1,log,pass"
+SecRule REQUEST_URI "@rx ." "id:4,phase:1,log,pass"
+SecRule QUERY_STRING "@rx ." "id:5,phase:1,log,pass"
+SecRule REQUEST_BODY "@rx ." "id:6,phase:2,log,pass"
+SecRule REQUEST_HEADERS_NAMES "@rx ^x-" "id:7,phase:1,log,pass,t:lowercase"
+SecRule ARGS_GET "@rx ." "id:8,phase:2,log,pass"
+SecRule ARGS_POST "@rx ." "id:9,phase:2,log,pass"
+SecRule ARGS_GET_NAMES "@rx ." "id:10,phase:2,log,pass"
+SecRule ARGS_POST_NAMES "@rx ." "id:11,phase:2,log,pass"
+SecRule &REQUEST_BODY "@eq 1" "id:12,phase:2,log,pass"
+`)
+	matchesOf := func(req *httpmodel.Request) map[int]string {
+		got := map[int]string{}
+		for _, m := range rs.Evaluate(req).Matches {
+			got[m.RuleID] = m.VarName + "=" + m.Value
+		}
+		return got
+	}
+
+	form := httpmodel.New(httpmodel.Received{
+		Method: "POST", Target: "http://shop.test/a%20b?q=1%2B1", Version: "HTTP/1.0",
+		Headers: []httpmodel.Header{{Name: "Content-Type", Value: "application/x-www-form-urlencoded"}, {Name: "X-Test", Value: "1"}},
+		Body:    []byte("p=%41"),
+	})
+	want := map[int]string{
+		1: "REQUEST_METHOD=POST",
+		2: "REQUEST_PROTOCOL=HTTP/1.0",
+		// The line as sent, and the URI without scheme and host. Neither
+		// is decoded.
+		3:  "REQUEST_LINE=POST http://shop.test/a%20b?q=1%2B1 HTTP/1.0",
+		4:  "REQUEST_URI=/a%20b?q=1%2B1",
+		5:  "QUERY_STRING=q=1%2B1",
+		6:  "REQUEST_BODY=p=%41",
+		7:  "REQUEST_HEADERS_NAMES:X-Test=x-test",
+		8:  "ARGS_GET:q=1+1",
+		9:  "ARGS_POST:p=A",
+		10: "ARGS_GET_NAMES:q=q",
+		11: "ARGS_POST_NAMES:p=p",
+		12: "&REQUEST_BODY=1",
+	}
+	if got := matchesOf(form); !reflect.DeepEqual(got, want) {
+		t.Errorf("form body: matches = %v\nwant              %v", got, want)
+	}
+
+	// REQUEST_BODY is the body as one text when it is a form or of a type
+	// that has no reader. A JSON body is given to the rules in parts only.
+	body := func(contentType, body string) *httpmodel.Request {
+		return httpmodel.New(httpmodel.Received{
+			Method: "POST", Target: "/", Version: "HTTP/1.1",
+			Headers: []httpmodel.Header{{Name: "Content-Type", Value: contentType}},
+			Body:    []byte(body),
+		})
+	}
+	if got := matchesOf(body("text/plain", "a=b"))[6]; got != "REQUEST_BODY=a=b" {
+		t.Errorf("text/plain: rule 6 = %q", got)
+	}
+	if got := matchesOf(body("text/plain", "a=b")); got[9] != "" || got[11] != "" {
+		t.Errorf("text/plain: the body was split into parameters: %v", got)
+	}
+	for _, contentType := range []string{"application/json", "text/xml", "multipart/form-data; boundary=x"} {
+		got := matchesOf(body(contentType, `{"a": "b"}`))
+		if got[6] != "" || got[12] != "" {
+			t.Errorf("%s: REQUEST_BODY has a value: %v", contentType, got)
+		}
+	}
+	if got := matchesOf(get("/")); got[6] != "" || got[5] != "" || got[4] != "REQUEST_URI=/" {
+		t.Errorf("no body, no query: %v", got)
+	}
+}
+
+// A setvar name may be built from a macro, a pattern on TX selects the
+// variables made that way, and a macro may name any variable of the request.
+// This is the shape of CRS rules 931130 and 943110.
+func TestDynamicNamesAndRequestMacros(t *testing.T) {
+	rs := loadRules(t, `
+SecRule ARGS "@rx ^https?://([^/]*)" "id:1,phase:2,log,pass,capture,msg:'link to %{tx.1} on %{request_headers.host}',\
+    setvar:'tx.link_%{MATCHED_VAR_NAME}=.%{tx.1}',chain"
+    SecRule TX:/^link_/ "!@endsWith .%{request_headers.host}" "setvar:tx.off_domain=+1"
+SecRule &TX:/^link_/ "@gt 0" "id:2,phase:2,pass,nolog,setvar:tx.links=%{MATCHED_VAR}"
+SecRule ARGS:a "@rx ." "id:3,phase:2,pass,nolog,chain"
+    SecRule MATCHED_VAR "@beginsWith http" "setvar:tx.matched_var=%{MATCHED_VAR_NAME}"
+SecRule REQUEST_METHOD "@streq %{ARGS.m}" "id:4,phase:2,pass,nolog,setvar:tx.method_matches=1"
+`)
+	host := httpmodel.Header{Name: "Host", Value: "shop.test"}
+
+	res := rs.Evaluate(get("/?a=http://img.shop.test/x&B=https://evil.example/y&m=GET", host))
+	wantVars(t, res, map[string]string{
+		// Names are kept in lower case.
+		"link_args:a":    ".img.shop.test",
+		"link_args:b":    ".evil.example",
+		"off_domain":     "1",
+		"links":          "2",
+		"matched_var":    "MATCHED_VAR",
+		"method_matches": "1",
+	})
+	if len(res.Matches) != 1 || res.Matches[0].Message != "link to evil.example on shop.test" || res.Matches[0].VarName != "TX:link_args:b" {
+		t.Errorf("matches = %+v", res.Matches)
+	}
+	if !res.Matches[0].MessageSensitive {
+		t.Error("a message built from a request header is not marked as sensitive")
+	}
+
+	res = rs.Evaluate(get("/?a=http://img.shop.test/x&m=POST", host))
+	wantVars(t, res, map[string]string{"off_domain": "<unset>", "links": "1", "method_matches": "<unset>"})
+	if len(res.Matches) != 0 {
+		t.Errorf("matches = %+v", res.Matches)
 	}
 }
 

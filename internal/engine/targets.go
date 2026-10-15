@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/EfeSipahi/ids-system/internal/httpmodel"
 	"github.com/EfeSipahi/ids-system/internal/seclang"
 )
 
@@ -16,7 +18,20 @@ type collection int
 const (
 	colArgs collection = iota + 1
 	colArgsNames
+	colArgsGet
+	colArgsGetNames
+	colArgsPost
+	colArgsPostNames
 	colRequestHeaders
+	colRequestHeadersNames
+	colRequestMethod
+	colRequestProtocol
+	colRequestLine
+	colRequestURI
+	colQueryString
+	colRequestBody
+	colMatchedVar
+	colMatchedVarName
 	colRequestCookies
 	colRequestCookiesNames
 	colRequestURIRaw
@@ -37,7 +52,20 @@ var collections = map[string]struct {
 }{
 	"ARGS":                  {col: colArgs},
 	"ARGS_NAMES":            {col: colArgsNames},
+	"ARGS_GET":              {col: colArgsGet},
+	"ARGS_GET_NAMES":        {col: colArgsGetNames},
+	"ARGS_POST":             {col: colArgsPost},
+	"ARGS_POST_NAMES":       {col: colArgsPostNames},
 	"REQUEST_HEADERS":       {col: colRequestHeaders},
+	"REQUEST_HEADERS_NAMES": {col: colRequestHeadersNames},
+	"REQUEST_METHOD":        {col: colRequestMethod, single: true},
+	"REQUEST_PROTOCOL":      {col: colRequestProtocol, single: true},
+	"REQUEST_LINE":          {col: colRequestLine, single: true},
+	"REQUEST_URI":           {col: colRequestURI, single: true},
+	"QUERY_STRING":          {col: colQueryString, single: true},
+	"REQUEST_BODY":          {col: colRequestBody, single: true},
+	"MATCHED_VAR":           {col: colMatchedVar, single: true},
+	"MATCHED_VAR_NAME":      {col: colMatchedVarName, single: true},
 	"REQUEST_COOKIES":       {col: colRequestCookies},
 	"REQUEST_COOKIES_NAMES": {col: colRequestCookiesNames},
 	"REQUEST_URI_RAW":       {col: colRequestURIRaw, single: true},
@@ -91,8 +119,6 @@ func compileTarget(v seclang.Variable) (target, error) {
 		return target{}, fmt.Errorf("variable %s takes no selector", v.Collection)
 	case info.col == colTX && v.Selector == "":
 		return target{}, errors.New("variable TX without a variable name is not supported")
-	case info.col == colTX && v.Regex:
-		return target{}, fmt.Errorf("variable %s: a regular expression selector on TX is not supported", v)
 	case info.col == colXML && v.Selector != xmlAllText && v.Selector != xmlAllAttributes:
 		return target{}, fmt.Errorf("variable %s: only XML:%s and XML:%s are supported", v, xmlAllText, xmlAllAttributes)
 	}
@@ -179,10 +205,55 @@ func (tx *transaction) valuesOf(t target) []keyValue {
 		for _, p := range req.Parsed.BodyArgs {
 			add(p.Name, p.Name)
 		}
+	case colArgsGet:
+		for _, p := range req.Parsed.Query {
+			add(p.Name, p.Value)
+		}
+	case colArgsGetNames:
+		for _, p := range req.Parsed.Query {
+			add(p.Name, p.Name)
+		}
+	case colArgsPost:
+		for _, p := range req.Parsed.BodyArgs {
+			add(p.Name, p.Value)
+		}
+	case colArgsPostNames:
+		for _, p := range req.Parsed.BodyArgs {
+			add(p.Name, p.Name)
+		}
 	case colRequestHeaders:
 		for _, h := range req.Received.Headers {
 			add(h.Name, h.Value)
 		}
+	case colRequestHeadersNames:
+		for _, h := range req.Received.Headers {
+			add(h.Name, h.Name)
+		}
+	case colRequestMethod:
+		out = append(out, keyValue{value: req.Received.Method})
+	case colRequestProtocol:
+		out = append(out, keyValue{value: req.Received.Version})
+	case colRequestLine:
+		// The first line of the request as it was sent.
+		out = append(out, keyValue{value: req.Received.Method + " " + req.Received.Target + " " + req.Received.Version})
+	case colRequestURI:
+		// Path and query string as sent, without the scheme and host
+		// that a request to a proxy puts in front.
+		uri := req.Parsed.Path
+		if strings.Contains(req.Received.Target, "?") {
+			uri += "?" + req.Parsed.RawQuery
+		}
+		out = append(out, keyValue{value: uri})
+	case colQueryString:
+		out = append(out, keyValue{value: req.Parsed.RawQuery})
+	case colRequestBody:
+		if body := rawBody(req); body != "" {
+			out = append(out, keyValue{value: body})
+		}
+	case colMatchedVar:
+		out = append(out, keyValue{value: tx.matchedVar})
+	case colMatchedVarName:
+		out = append(out, keyValue{value: tx.matchedVarName})
 	case colRequestCookies:
 		for _, c := range req.Parsed.Cookies {
 			add(c.Name, c.Value)
@@ -223,11 +294,42 @@ func (tx *transaction) valuesOf(t target) []keyValue {
 			add(m.name, m.value)
 		}
 	case colTX:
-		if value, ok := tx.vars[strings.ToLower(t.selector)]; ok {
-			out = append(out, keyValue{key: t.selector, value: value})
+		if t.re == nil {
+			if value, ok := tx.vars[strings.ToLower(t.selector)]; ok {
+				out = append(out, keyValue{key: t.selector, value: value})
+			}
+			break
+		}
+		// A pattern selects every TX variable whose name it matches.
+		// They are taken in the order of their names, so that a request
+		// always gives the same result.
+		var names []string
+		for name := range tx.vars {
+			if t.re.MatchString(name) {
+				names = append(names, name)
+			}
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			out = append(out, keyValue{key: name, value: tx.vars[name]})
 		}
 	}
 	return out
+}
+
+// rawBody returns the body as one text for the REQUEST_BODY variable, or ""
+// when the variable has no value.
+//
+// ModSecurity fills REQUEST_BODY for a form body, and CRS rule 901340 asks
+// for it whenever no body reader was chosen, which is the case for a body
+// of a type the engine does not parse, such as text/plain. A JSON, XML or
+// multipart body is not given as one text; the rules see its parts.
+func rawBody(req *httpmodel.Request) string {
+	switch req.Status.BodyFormat {
+	case "", "form":
+		return string(req.Received.Body)
+	}
+	return ""
 }
 
 // removedForRequest reports whether a ctl:ruleRemoveTargetByTag action that

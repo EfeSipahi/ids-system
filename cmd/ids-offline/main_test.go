@@ -28,7 +28,7 @@ func TestTextOutput(t *testing.T) {
 		t.Fatalf("exit %d, stderr %q", code, errOut)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 188 active, 7 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 243 active, 7 excluded",
 		"Target updates for 1 rules that are not active were ignored",
 		"[2] CRS 930110-2: traversal in the query string",
 		"930110  CRITICAL  ARGS:arg ",
@@ -120,7 +120,7 @@ func TestJSONOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &doc); err != nil {
 		t.Fatalf("output is not JSON: %v\n%s", err, out)
 	}
-	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 188 || len(doc.Startup.ExcludedRules) != 7 || doc.Startup.ExcludedRules[6].ID != 901450 {
+	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 243 || len(doc.Startup.ExcludedRules) != 7 || doc.Startup.ExcludedRules[6].ID != 901450 {
 		t.Errorf("startup = %+v", doc.Startup)
 	}
 	if len(doc.Requests) != 6 {
@@ -144,7 +144,7 @@ func TestStartupOnly(t *testing.T) {
 		t.Fatalf("exit %d", code)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 188 active, 7 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 243 active, 7 excluded",
 		"excluded 901340 (REQUEST-901-INITIALIZATION.conf:375): Body processor control",
 		"excluded 901450 (REQUEST-901-INITIALIZATION.conf:517): Sampling is not implemented",
 	} {
@@ -237,10 +237,9 @@ func TestIncompleteAnalysisIsShown(t *testing.T) {
 }
 
 // The summary over the converted CRS tests of the finished rule files, run
-// at paranoia level 4 as the CRS project runs them: 1 rule in file 913, 6
-// in 930, 33 in 941 and 60 in 942, with 9 + 83 + 263 + 1,033 tests. The
-// numbers were counted independently from the CRS files. Every rule is
-// active and every test must pass.
+// at paranoia level 4 as the CRS project runs them. The numbers of tests
+// per rule file were counted independently from the CRS files. Every rule
+// is active and every test must pass.
 func TestSummaryOfCRSTests(t *testing.T) {
 	code, out, _ := runTool(t, "-config", config, "-requests", "../../testdata/requests/crs", "-summary", "-json", "-paranoia-level", "4")
 	if code != 0 {
@@ -269,20 +268,24 @@ func TestSummaryOfCRSTests(t *testing.T) {
 	if doc.Requests != nil {
 		t.Error("the summary also lists the requests")
 	}
-	if len(doc.Summary) != 100 {
-		t.Fatalf("%d files, want 100", len(doc.Summary))
+	if len(doc.Summary) != 124 {
+		t.Fatalf("%d files, want 124", len(doc.Summary))
 	}
 	tests := map[string]int{}
 	for _, g := range doc.Summary {
 		tests[g.Source[:3]] += g.Tests
-		if g.RuleStatus != "active" || g.Passed != g.Tests || g.Failed != 0 || g.NotInspected != 0 {
+		// File 944000 is named after no rule; its one test is about a
+		// body of type text/plain.
+		active := g.RuleStatus == "active" || g.Source == "944000"
+		if !active || g.Passed != g.Tests || g.Failed != 0 || g.NotInspected != 0 {
 			t.Errorf("rule %s: %+v", g.Source, g)
 		}
 	}
-	if want := map[string]int{"913": 9, "930": 83, "941": 263, "942": 1033}; !reflect.DeepEqual(tests, want) {
+	want := map[string]int{"911": 8, "913": 9, "930": 83, "931": 42, "941": 263, "942": 1033, "943": 47, "944": 1176}
+	if !reflect.DeepEqual(tests, want) {
 		t.Errorf("tests per rule file = %v, want %v", tests, want)
 	}
-	if first := doc.Summary[0]; first.Source != "913100" || first.Tests != 9 {
+	if first := doc.Summary[0]; first.Source != "911100" || first.Tests != 8 {
 		t.Errorf("first row = %+v", first)
 	}
 }
@@ -353,7 +356,7 @@ func TestSummaryText(t *testing.T) {
 }
 
 func TestLoadFailures(t *testing.T) {
-	rules := write(t, "bad.conf", `SecRule ARGS "@within a b" "id:7,phase:2"`)
+	rules := write(t, "bad.conf", `SecRule ARGS "@ipMatch 10.0.0.1" "id:7,phase:2"`)
 	badRules := write(t, "c.json", `{"files": ["`+rules+`"]}`)
 
 	tests := []struct {
@@ -362,7 +365,7 @@ func TestLoadFailures(t *testing.T) {
 		msg  string
 	}{
 		{"missing config", []string{"-config", "no-such-file.json"}, "no-such-file.json"},
-		{"unsupported rule", []string{"-config", badRules}, "rule 7: operator @within is not supported"},
+		{"unsupported rule", []string{"-config", badRules}, "rule 7: operator @ipMatch is not supported"},
 		{"missing requests", []string{"-config", config, "-requests", "no-such-file.json"}, "no-such-file.json"},
 		{"bad requests", []string{"-config", config, "-requests", write(t, "r.json", `[{"uri": "/"}]`)}, "method is missing"},
 		{"unknown flag", []string{"-nope"}, "flag provided but not defined"},

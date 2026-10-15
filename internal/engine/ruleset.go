@@ -90,7 +90,11 @@ type rule struct {
 
 // setvar is one compiled setvar action on a TX variable.
 type setvar struct {
-	key      string // lower case
+	key string // lower case
+	// keyParts is set when the name contains a macro, as in
+	// tx.rfi_parameter_%{MATCHED_VAR_NAME}. The name is then built for
+	// each match and key is not used.
+	keyParts template
 	unset    bool
 	relative bool // the value starts with + or -: add it to the current number
 	value    template
