@@ -205,7 +205,58 @@ All 1,273 new tests passed on the first run after the features were written.
 
 **Moved from plan B to plan D.** `REQUEST_BODY_LENGTH`, `ARGS_COMBINED_SIZE`, `FILES_COMBINED_SIZE`, `REQBODY_PROCESSOR`, `ctl:ruleRemoveById` and `ctl` in a chain. Only rules of file 920 use them, and their tests are in plan D; writing them now would have left them unverified.
 
-### Plan C — not started
+### Plan C — done on 16 October 2026
+
+**What was added**
+
+| Transformation | Follows | Why |
+| --- | --- | --- |
+| `escapeSeqDecode` | ModSecurity v2 (`ansi_c_sequences_decode_inplace`) | Coraza's is the same algorithm |
+| `base64Decode` | Coraza v3.8.1 | ModSecurity calls APR's decoder, which is the same except that it stops at a line break. An attacker could hide the rest of an encoded value behind one |
+| `normalizePath` | Coraza v3.8.1 | Same reason as for `normalizePathWin` (main plan, section 11.15): ModSecurity removes a segment ending in two dots, such as `passwd..` |
+
+Rule files 932 (remote command execution), 933 (PHP) and 934 (generic attacks) are loaded. 350 of 357 rules are active; the 7 excluded ones are unchanged.
+
+**How the three were checked**
+
+1. `escapeSeqDecode` agrees with 821 results of ModSecurity's C function, compiled unchanged with a small C program.
+2. `base64Decode` and `normalizePath` agree with 884 and 1,500 results of Coraza's Go functions, run from unchanged copies.
+3. Coraza's and APR's base64 decoders were run on the same 884 inputs. They differ on 120, and every one of them contains a line break; on all others they agree.
+
+The C program was built from the ModSecurity sources at the same commit as before (151074a) and from apr-util 1.6.3, downloaded again because the earlier copies had been removed with the scratch directory.
+
+**One change to the JSON reader.** CRS test 934210-13 sends `{"roles__contained_by":["admin","user"]}` and expects rule 934210 to see the key `roles__contained_by`. Our reader named only the elements, `json.roles__contained_by.0` and `.1`. Coraza also adds the length of every list that is not empty, under the name of the list (`json.roles__contained_by=2`), and ModSecurity v2 names list elements after their list. The reader now does what Coraza does.
+
+**Results**
+
+| Check | Result |
+| --- | --- |
+| CRS tests of the eleven finished files at level 4 | 4,479 of 4,479 pass (1,818 new) |
+| The same tests at levels 1, 2, 3 | A rule above the level never matches |
+| Comparison with Coraza, level 1 | 5,784 requests, 3,309 with a match, 0 differences |
+| Comparison with Coraza, level 4 | 5,784 requests, 5,067 with a match, 0 differences |
+| `go vet`, `go test`, `go test -race`, 30 s fuzzing | Pass |
+
+1 request is not compared because its body is broken: CRS test 932180-3 sends a multipart part with no headers and no closing boundary. ModSecurity also stops reading such a body ("Part missing Content-Disposition header"). The test is a negative test and passes.
+
+**The example attack changed score.** `/get?arg=../../../etc/passwd` now scores 30, not 25: rule 932160 of the command-execution file also recognises `etc/passwd`, as a file a shell command would read. Coraza gives 30 too.
+
+**Bodies without a reader, once more.** In four CRS tests of file 934 at level 4, Coraza flags a JSON text sent as `text/plain` with SQL injection rules (942340, 942431, 942432), because it turns the whole text into one parameter name. One of them, 934210-9, is a negative test that expects no alert, and its description says ModSecurity does not split such a body. This supports the user's decision of 16 October to keep such a body as one text. The comparison test now accepts rule 949110 in this class when it follows from Coraza's extra matches.
+
+**Pilot records per level** (the 1,000 CSIC records)
+
+| Level | Normal flagged (of 500) | Anomalous flagged (of 500) | Coraza, normal / anomalous |
+| --- | --- | --- | --- |
+| 1 | 0 | 80 | not run |
+| 2 | 18 | 120 | 18 / 120 |
+| 3 | 221 | 246 | 221 / 246 |
+| 4 | 222 | 247 | not run |
+
+The jump at level 3 is rule 932350, which looks for bare Unix commands. The CSIC shop has parameters named `pwd` (a password) and `id`, which are also Unix commands. At level 2 rules 932200, 932236 and 932240 flag 18 normal records. Coraza flags exactly the same numbers, so this is how CRS behaves on this application, not an error of ours. It is the kind of false positive that application profiles (decision K10) are meant to remove. Level 1 still flags no normal record.
+
+**Speed.** About 1.3 to 2.6 ms for an ordinary request and about 63 ms for the request with a 9.4 kB field, measured while another test run was using the machine; the real numbers are lower. Plan F deals with speed.
+
+**The fuzzer** found a wrong property in a test of ours, not an error in the code: `\/..` becomes an empty path, because on Unix a backslash is an ordinary file name that `..` removes. Coraza does the same. The property was corrected and the input kept as a seed.
 
 ### Plan D — not started
 

@@ -28,12 +28,13 @@ func TestTextOutput(t *testing.T) {
 		t.Fatalf("exit %d, stderr %q", code, errOut)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 243 active, 7 excluded",
-		"Target updates for 1 rules that are not active were ignored",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 350 active, 7 excluded",
 		"[2] CRS 930110-2: traversal in the query string",
 		"930110  CRITICAL  ARGS:arg ",
-		"Inbound Anomaly Score Exceeded (Total Score: 25)",
-		"score 25, threshold 5: THRESHOLD EXCEEDED",
+		// Six matches of 5 points: 930100 and 930110 twice, 930120 and
+		// 932160 once. Coraza gives the same total.
+		"Inbound Anomaly Score Exceeded (Total Score: 30)",
+		"score 30, threshold 5: THRESHOLD EXCEEDED",
 		"[5] normal: search with a repeated parameter",
 		"no findings",
 		"score 0, threshold 5: below threshold",
@@ -120,7 +121,7 @@ func TestJSONOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &doc); err != nil {
 		t.Fatalf("output is not JSON: %v\n%s", err, out)
 	}
-	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 243 || len(doc.Startup.ExcludedRules) != 7 || doc.Startup.ExcludedRules[6].ID != 901450 {
+	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 350 || len(doc.Startup.ExcludedRules) != 7 || doc.Startup.ExcludedRules[6].ID != 901450 {
 		t.Errorf("startup = %+v", doc.Startup)
 	}
 	if len(doc.Requests) != 6 {
@@ -128,9 +129,9 @@ func TestJSONOutput(t *testing.T) {
 	}
 	r := doc.Requests[2]
 	if r.Index != 3 || r.Method != "POST" || r.Analysis.Body != "inspected" || !r.Analysis.Complete ||
-		len(r.Findings) != 4 || r.Findings[0].RuleID != 930100 || r.Findings[0].Location != "ARGS:arg" ||
-		r.Findings[2].RuleID != 930120 || r.Findings[3].RuleID != 949110 || r.Findings[3].Action != "deny" ||
-		r.Score.Total != 15 || !r.Score.Exceeded || r.Score.Categories["lfi"] != 15 || !r.Expectation.Met {
+		len(r.Findings) != 5 || r.Findings[0].RuleID != 930100 || r.Findings[0].Location != "ARGS:arg" ||
+		r.Findings[2].RuleID != 930120 || r.Findings[3].RuleID != 932160 || r.Findings[4].RuleID != 949110 || r.Findings[4].Action != "deny" ||
+		r.Score.Total != 20 || !r.Score.Exceeded || r.Score.Categories["lfi"] != 15 || r.Score.Categories["rce"] != 5 || !r.Expectation.Met {
 		t.Errorf("request 3 = %+v", r)
 	}
 	if n := doc.Requests[4]; len(n.Findings) != 0 || n.Score.Total != 0 || n.Score.Exceeded {
@@ -144,7 +145,7 @@ func TestStartupOnly(t *testing.T) {
 		t.Fatalf("exit %d", code)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 243 active, 7 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 350 active, 7 excluded",
 		"excluded 901340 (REQUEST-901-INITIALIZATION.conf:375): Body processor control",
 		"excluded 901450 (REQUEST-901-INITIALIZATION.conf:517): Sampling is not implemented",
 	} {
@@ -268,8 +269,8 @@ func TestSummaryOfCRSTests(t *testing.T) {
 	if doc.Requests != nil {
 		t.Error("the summary also lists the requests")
 	}
-	if len(doc.Summary) != 124 {
-		t.Fatalf("%d files, want 124", len(doc.Summary))
+	if len(doc.Summary) != 207 {
+		t.Fatalf("%d files, want 207", len(doc.Summary))
 	}
 	tests := map[string]int{}
 	for _, g := range doc.Summary {
@@ -281,7 +282,7 @@ func TestSummaryOfCRSTests(t *testing.T) {
 			t.Errorf("rule %s: %+v", g.Source, g)
 		}
 	}
-	want := map[string]int{"911": 8, "913": 9, "930": 83, "931": 42, "941": 263, "942": 1033, "943": 47, "944": 1176}
+	want := map[string]int{"911": 8, "913": 9, "930": 83, "931": 42, "932": 1089, "933": 442, "934": 287, "941": 263, "942": 1033, "943": 47, "944": 1176}
 	if !reflect.DeepEqual(tests, want) {
 		t.Errorf("tests per rule file = %v, want %v", tests, want)
 	}

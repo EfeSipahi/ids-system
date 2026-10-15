@@ -45,7 +45,7 @@ type referenceDoc struct {
 // configuration, and the reference lists some that only log in Coraza.
 func compared(ruleID int) bool {
 	switch ruleID / 1000 {
-	case 911, 913, 930, 931, 941, 942, 943, 944:
+	case 911, 913, 930, 931, 932, 933, 934, 941, 942, 943, 944:
 		return true
 	}
 	return ruleID == 949110
@@ -76,8 +76,10 @@ func compared(ruleID int) bool {
 //     variable REQUEST_BODY, which is what ModSecurity does with the CRS
 //     defaults (CRS rule 901340). Coraza also splits it into parameters as
 //     if it were a form. So Coraza may have more matches, all of them in
-//     ARGS or ARGS_NAMES, and a higher score. Everything we find, Coraza
-//     must find too.
+//     ARGS or ARGS_NAMES, and a higher score, which can also bring rule
+//     949110. Everything we find, Coraza must find too. CRS test 934210-9
+//     shows the cost of Coraza's way: a JSON text sent as text/plain
+//     becomes one long parameter name, and SQL injection rules match it.
 //
 // knownDifferences lists single requests on which the two engines are known
 // to disagree, with the reason. The key is the example file and the position
@@ -200,9 +202,12 @@ func compareWithCoraza(t *testing.T, referenceFile string) {
 			unparsedDiffer++
 			extra, missing := difference(wantMatches, gotMatches)
 			for _, m := range extra {
-				_, variable, _ := strings.Cut(m, "@")
+				id, variable, _ := strings.Cut(m, "@")
 				variable = strings.TrimPrefix(variable, "matched_vars:")
-				if !strings.HasPrefix(variable, "args:") && !strings.HasPrefix(variable, "args_names:") {
+				// 949110 follows from the score: the extra matches can
+				// lift Coraza over the threshold where we stay below.
+				fromScore := id == "949110" && gotScore < want.Score
+				if !fromScore && !strings.HasPrefix(variable, "args:") && !strings.HasPrefix(variable, "args_names:") {
 					t.Errorf("%s #%d (%s), a body without a reader: Coraza alone has %s", want.Source, want.Index, ex.Name, m)
 				}
 			}

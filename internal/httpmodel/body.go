@@ -21,8 +21,12 @@ const maxJSONDepth = 64
 //
 //	{"user": {"name": "efe"}, "tags": ["a", "b"]}
 //
-// gives json.user.name=efe, json.tags.0=a, json.tags.1=b. A key that
-// appears twice gives two parameters. Numbers keep the text they were
+// gives json.user.name=efe, json.tags.0=a, json.tags.1=b, json.tags=2. A
+// list that is not empty also gives its length, under the name of the list,
+// after its elements; this is what Coraza does. It means the name of every
+// key is also a parameter name, as in ModSecurity, which names list
+// elements after their list. Some CRS rules look for a pattern at the end
+// of a parameter name. A key that appears twice gives two parameters. Numbers keep the text they were
 // written with, true and false become those words, and null is empty.
 //
 // On a syntax error the parameters read so far are returned with the error.
@@ -77,6 +81,10 @@ func parseJSON(body []byte) ([]Param, error) {
 			// The closing bracket.
 			if _, err := dec.Token(); err != nil {
 				return err
+			}
+			if v == '[' && index > 0 {
+				// The length of the list, under the name of the list.
+				add(path, strconv.Itoa(index))
 			}
 		}
 		return nil

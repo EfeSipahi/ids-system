@@ -32,13 +32,12 @@ belongs to the current example files.
 | Fact | Value |
 | --- | --- |
 | Reference engine | Coraza v3.8.1, detection-only mode |
-| Rule files | The twelve files of `configs/crs-first-engine.json`, unmodified |
+| Rule files | The fifteen files of `configs/crs-first-engine.json`, unmodified |
 | Build option | `coraza.rule.no_regex_multiline` |
 | Paranoia level | 1 in the first file, 4 in the second, set with rule 900000 as `crs-setup.conf.example` describes |
 | Added before the rule files | The two rules of `coraza.conf-recommended` that choose the XML and JSON body readers |
-| Left out | The `SecRuleUpdateTargetById` line for rule 932240, which is not loaded; Coraza refuses such a line, our engine ignores and reports it |
-| Requests | 3,967: 6 starter examples, 2,661 converted CRS tests, 1,300 generated variants |
-| Produced on | 12 October 2026 |
+| Requests | 5,785: 6 starter examples, 4,479 converted CRS tests, 1,300 generated variants |
+| Produced on | 16 October 2026 |
 
 For a chained rule the file lists what the last rule of the chain matched.
 

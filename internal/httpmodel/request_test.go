@@ -276,6 +276,8 @@ func TestJSONBody(t *testing.T) {
 	}`)
 	want := []string{
 		"json.user.name=efe", "json.user.roles.0=admin", "json.user.roles.1=dev",
+		// A list also gives its length, after its elements.
+		"json.user.roles=2",
 		// Numbers keep the text they were written with.
 		"json.count=3", "json.price=1.50", "json.big=12345678901234567890",
 		"json.ok=true", "json.none=",
@@ -283,7 +285,8 @@ func TestJSONBody(t *testing.T) {
 		"json.path=../../etc/passwd",
 		// A key that appears twice gives two values.
 		"json.a=1", "json.a=2",
-		"json.list.0.0=1",
+		// An empty list gives no length, and neither does an empty object.
+		"json.list.0.0=1", "json.list.0=1", "json.list=2",
 	}
 	if got := namesAndValues(r.Parsed.BodyArgs); !reflect.DeepEqual(got, want) {
 		t.Errorf("arguments = %q\nwant        %q", got, want)

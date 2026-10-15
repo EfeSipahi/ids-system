@@ -1203,3 +1203,12 @@ Plan B of [docs/development-plan-all-request-rules.md](docs/development-plan-all
 3. **Decided by the user on 16 October 2026:** a body without a reader stays one text (`REQUEST_BODY`), as in ModSecurity with the CRS defaults. It is not split into parameters as Coraza does; the CRS setting for that (`tx.enforce_bodyproc_urlencoded`) is not implemented.
 
 Details are in the progress section of the plan.
+
+### 11.18. Plan C of the request-rule plan — 16 October 2026
+
+Plan C is done: the transformations `escapeSeqDecode` (port of ModSecurity v2), `base64Decode` and `normalizePath` (both following Coraza, which detects more there), and rule files 932 (remote command execution), 933 (PHP), and 934 (generic attacks). The JSON reader now also gives the length of a list under the name of the list, as Coraza does; a CRS test needs the name of the list to be a parameter name.
+
+1. **Result:** 4,479 of 4,479 CRS tests of the eleven finished rule files pass at level 4; results agree with Coraza on 5,784 requests at levels 1 and 4.
+2. **False positives at higher levels (A04, A07):** with the command-execution rules, 18 of the 500 normal CSIC records are flagged at level 2 and 221 at level 3, mostly by rule 932350 because the application has parameters named `pwd` and `id`. Coraza flags the same numbers. Level 1 flags none. This is input for the profile work (K10), not an engine error.
+
+Details are in the progress section of the plan.

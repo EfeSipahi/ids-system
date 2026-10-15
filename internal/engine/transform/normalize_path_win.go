@@ -42,6 +42,26 @@ func NormalizePathWin(s string) string {
 	return trimSegments(clean)
 }
 
+// NormalizePath cleans up a path the way NormalizePathWin does, but for
+// Unix: backslashes stay as they are, and dots and spaces at the end of a
+// segment are kept, because they are part of the name there.
+//
+//	"/etc//./passwd"     becomes  "/etc/passwd"
+//	"/a/b/../../etc/x"   becomes  "/etc/x"
+//	"../../etc/passwd"   stays as it is
+//
+// This follows normalisePath of Coraza v3.8.1, including its odd result
+// for a path that is only "/": "//". It is a deliberate difference from
+// ModSecurity v2 for the same reason as in NormalizePathWin: ModSecurity
+// reads a segment ending in two dots, such as "passwd..", as a
+// back-reference and removes it with the segment before it.
+func NormalizePath(s string) string {
+	if s == "" {
+		return s
+	}
+	return cleanPath(s)
+}
+
 // cleanPath resolves ".", ".." and repeated slashes. A slash at the end of
 // the input is put back after cleaning.
 func cleanPath(s string) string {

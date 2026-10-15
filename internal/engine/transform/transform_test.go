@@ -203,6 +203,34 @@ func TestSQLiAndXSSTransformations(t *testing.T) {
 	})
 }
 
+// Readable examples of the three transformations of rule files 932 to 934.
+// The thorough checks are the reference files.
+func TestCommandAndBase64Transformations(t *testing.T) {
+	runCases(t, "EscapeSeqDecode", EscapeSeqDecode, []testCase{
+		{`c\at /e\tc/p\x61sswd`, "c\at /e\tc/passwd"},
+		{`$'\143\141\164'`, "$'cat'"},
+		{`\777`, "\xff"},
+		{`\q\x4`, "qx4"},
+		{`end\`, `end\`},
+	})
+	runCases(t, "Base64Decode", Base64Decode, []testCase{
+		{"PHNjcmlwdD4=", "<script>"},
+		{"PHNj\r\ncmlwdD4", "<script>"},
+		{"PHNj cmlwdD4=", "<sc"},
+		{"YWJjZA*ignored", "abcd"},
+		{"Y", ""},
+	})
+	runCases(t, "NormalizePath", NormalizePath, []testCase{
+		{"/etc//./passwd", "/etc/passwd"},
+		{"/a/b/../../etc/x", "/etc/x"},
+		{"../../etc/passwd", "../../etc/passwd"},
+		// Unlike ModSecurity, a segment ending in two dots stays.
+		{"/etc/passwd..", "/etc/passwd.."},
+		{`a\..\b`, `a\..\b`},
+		{"a/b/", "a/b/"},
+	})
+}
+
 func TestLength(t *testing.T) {
 	runCases(t, "Length", Length, []testCase{
 		{"", "0"},
@@ -292,7 +320,7 @@ func TestRule930110Chain(t *testing.T) {
 
 // followCoraza names the transformations that are compared with Coraza. All
 // others are compared with ModSecurity v2.
-var followCoraza = map[string]bool{"normalizePathWin": true, "htmlEntityDecode": true}
+var followCoraza = map[string]bool{"normalizePath": true, "normalizePathWin": true, "htmlEntityDecode": true, "base64Decode": true}
 
 // TestAgainstModSecurityV2 compares the transformations with results
 // recorded from the ModSecurity v2 C code. The header of the data file says
@@ -405,6 +433,18 @@ func FuzzTransformations(f *testing.F) {
 		// One more byte is possible: a lone slash is doubled.
 		if got := NormalizePathWin(s); len(got) > len(s)+1 || strings.Contains(got, `\`) {
 			t.Errorf("NormalizePathWin(%q) = %q", s, got)
+		}
+		if got := EscapeSeqDecode(s); len(got) > len(s) || (!strings.Contains(s, `\`) && got != s) {
+			t.Errorf("EscapeSeqDecode(%q) = %q", s, got)
+		}
+		if got := Base64Decode(s); len(got) > len(s)*3/4+2 {
+			t.Errorf("Base64Decode(%q) = %q is too long", s, got)
+		}
+		// One more byte is possible, as in NormalizePathWin. A backslash
+		// is an ordinary character here, so ".." may remove one ("\/.."
+		// becomes ""), but none is ever added.
+		if got := NormalizePath(s); len(got) > len(s)+1 || strings.Count(got, `\`) > strings.Count(s, `\`) {
+			t.Errorf("NormalizePath(%q) = %q", s, got)
 		}
 		if got := HTMLEntityDecode(s); !strings.Contains(s, "&") && got != s {
 			t.Errorf("HTMLEntityDecode(%q) = %q, but the input has no ampersand", s, got)

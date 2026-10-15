@@ -67,30 +67,31 @@ func TestCRSStartupReport(t *testing.T) {
 	}
 
 	// 1 rule in crs-setup, 33 in 901, 9 in 911, 9 in 913, 14 in 930, 13
-	// in 931, 42 in 941, 68 in 942, 11 in 943, 22 in 944 and 28 in 949:
-	// every one has a status.
+	// in 931, 56 in 932, 29 in 933, 22 in 934, 42 in 941, 68 in 942, 11 in
+	// 943, 22 in 944 and 28 in 949: every one has a status.
 	statuses := rs.Statuses()
-	if len(statuses) != 250 {
-		t.Errorf("%d statuses, want 250", len(statuses))
+	if len(statuses) != 357 {
+		t.Errorf("%d statuses, want 357", len(statuses))
 	}
 	if rs.ParanoiaLevel() != 1 {
 		t.Errorf("paranoia level = %d, want the default 1", rs.ParanoiaLevel())
 	}
 	// Detection rules per level, counted from the tags in the CRS files:
-	// 911 has 1; 913 has 1; 930 has 5 and 1; 931 has 3 and 2; 941 has 26
-	// and 7; 942 has 20, 31, 7 and 2; 943 has 3; 944 has 6, 6, 1 and 1.
+	// 911 has 1; 913 has 1; 930 has 5 and 1; 931 has 3 and 2; 932 has 19,
+	// 19 and 10; 933 has 13, 3 and 5; 934 has 8, 5 and 1; 941 has 26 and
+	// 7; 942 has 20, 31, 7 and 2; 943 has 3; 944 has 6, 6, 1 and 1.
 	perLevel := map[int]int{}
 	for _, s := range statuses {
 		if s.ParanoiaLevel != 0 {
 			perLevel[s.ParanoiaLevel]++
 		}
 	}
-	if want := map[int]int{1: 65, 2: 47, 3: 8, 4: 3}; !reflect.DeepEqual(perLevel, want) {
+	if want := map[int]int{1: 105, 2: 74, 3: 24, 4: 3}; !reflect.DeepEqual(perLevel, want) {
 		t.Errorf("detection rules per level = %v, want %v", perLevel, want)
 	}
-	// File 999 holds one update for a rule of file 932, which is not
-	// loaded.
-	if got := rs.IgnoredTargetUpdates(); !reflect.DeepEqual(got, []int{932240}) {
+	// File 999 holds one update, for rule 932240 of file 932. That file is
+	// loaded, so the update is applied and nothing is ignored.
+	if got := rs.IgnoredTargetUpdates(); len(got) != 0 {
 		t.Errorf("ignored target updates = %v", got)
 	}
 	var excluded []int
@@ -217,6 +218,9 @@ func TestCRSTraversalInQuery(t *testing.T) {
 		// 930120 looks for the names of system files. It does not look
 		// at the raw URI, only at parameters and cookies.
 		{930120, "ARGS:arg", "Matched Data: etc/passwd found within ARGS:arg: ../../../etc/passwd"},
+		// 932160, of the command execution rules, also knows
+		// etc/passwd: as a file a shell command would read.
+		{932160, "ARGS:arg", "Matched Data: etc/passwd found within ARGS:arg: ../../../etc/passwd"},
 		{949110, "TX:BLOCKING_INBOUND_ANOMALY_SCORE", ""},
 	}
 	if !reflect.DeepEqual(got, want) {
@@ -229,17 +233,19 @@ func TestCRSTraversalInQuery(t *testing.T) {
 		t.Errorf("first match = %+v", first)
 	}
 
-	// Five matches of 5 points each. Rule 949110 compares the total with
-	// the threshold of 5. Its deny is recorded, not carried out.
-	last := res.Matches[5]
-	if last.Message != "Inbound Anomaly Score Exceeded (Total Score: 25)" || last.Action != "deny" || last.Value != "25" {
+	// Six matches of 5 points each; Coraza gives the same total. Rule
+	// 949110 compares the total with the threshold of 5. Its deny is
+	// recorded, not carried out.
+	last := res.Matches[6]
+	if last.Message != "Inbound Anomaly Score Exceeded (Total Score: 30)" || last.Action != "deny" || last.Value != "30" {
 		t.Errorf("949110 match = %+v", last)
 	}
 	wantVars(t, res, map[string]string{
-		"inbound_anomaly_score_pl1":       "25",
+		"inbound_anomaly_score_pl1":       "30",
 		"lfi_score":                       "25",
-		"blocking_inbound_anomaly_score":  "25",
-		"detection_inbound_anomaly_score": "25",
+		"rce_score":                       "5",
+		"blocking_inbound_anomaly_score":  "30",
+		"detection_inbound_anomaly_score": "30",
 		"inbound_anomaly_score_pl2":       "0",
 	})
 	if res.Score("lfi_score") != 25 || res.Score("no_such_variable") != 0 {
@@ -258,8 +264,8 @@ func TestCRSStarterExamples(t *testing.T) {
 }
 
 // TestCRSRegression runs the converted CRS regression tests of the rule
-// files that are finished: 911, 913, 930, 931, 941, 942, 943 and 944, at
-// every paranoia level of their rules. Each test is named after one rule and says which rules
+// files that are finished: 911, 913, 930 to 934 and 941 to 944, at every
+// paranoia level of their rules. Each test is named after one rule and says which rules
 // must and must not match.
 //
 // The tests run at level 4, as the CRS project runs them: its test setup
@@ -272,8 +278,8 @@ func TestCRSStarterExamples(t *testing.T) {
 // switched off there.
 func TestCRSRegression(t *testing.T) {
 	files, err := filepath.Glob("../../testdata/requests/crs/*.json")
-	if err != nil || len(files) != 124 {
-		t.Fatalf("found %d test files (%v), want 124", len(files), err)
+	if err != nil || len(files) != 207 {
+		t.Fatalf("found %d test files (%v), want 207", len(files), err)
 	}
 	// The level of each rule, from the tags in the CRS files.
 	levelOfRule := map[int]int{}
@@ -298,8 +304,18 @@ func TestCRSRegression(t *testing.T) {
 				t.Run(fmt.Sprintf("PL%d/%s", level, ex.Name), func(t *testing.T) {
 					// A body of a type that has no reader is not split into
 					// fields; the rules see it as one text (REQUEST_BODY).
+					// A broken body is read as far as it goes. Only CRS
+					// test 932180-3 has one, and it must still pass; if a
+					// test with a broken body fails, the reason is named.
 					if !ex.Request.Status.Body.Complete() && ex.Request.Status.BodyFormat != "" {
-						t.Fatalf("the body was not read completely: %s", ex.Request.Status.BodyReason)
+						if ex.Name != "CRS 932180-3: File upload - negative test" {
+							t.Errorf("unexpected broken body: %s", ex.Request.Status.BodyReason)
+						}
+						defer func() {
+							if t.Failed() {
+								t.Logf("the body was not read to its end: %s", ex.Request.Status.BodyReason)
+							}
+						}()
 					}
 					if levelOfRule[ruleID] > level {
 						if ids := rs.Evaluate(ex.Request).MatchedIDs(); contains(ids, ruleID) {
@@ -311,11 +327,11 @@ func TestCRSRegression(t *testing.T) {
 				})
 			}
 		}
-		// 8 tests in file 911, 9 in 913, 83 in 930, 42 in 931, 263 in
-		// 941, 1,033 in 942, 47 in 943 and 1,176 in 944, counted from the
-		// CRS test files.
-		if total != 2661 {
-			t.Errorf("%d tests, want 2661", total)
+		// 8 tests in file 911, 9 in 913, 83 in 930, 42 in 931, 1,089 in
+		// 932, 442 in 933, 287 in 934, 263 in 941, 1,033 in 942, 47 in 943
+		// and 1,176 in 944, counted from the CRS test files.
+		if total != 4479 {
+			t.Errorf("%d tests, want 4479", total)
 		}
 	}
 }
@@ -353,7 +369,7 @@ func checkExample(t *testing.T, rs *RuleSet, ex offline.Example, level int) {
 	detected := false
 	for _, id := range ids {
 		switch id / 1000 {
-		case 911, 913, 930, 931, 941, 942, 943, 944:
+		case 911, 913, 930, 931, 932, 933, 934, 941, 942, 943, 944:
 			detected = true
 		}
 	}
@@ -378,7 +394,7 @@ func TestCRSRequestsDoNotShareState(t *testing.T) {
 	summary := func(res *Result) string {
 		return fmt.Sprintf("%v pl1=%s lfi=%s total=%s", res.MatchedIDs(), res.Variables["inbound_anomaly_score_pl1"], res.Variables["lfi_score"], res.Variables["blocking_inbound_anomaly_score"])
 	}
-	const wantAttack = "[930100 930110 930120 949110] pl1=25 lfi=25 total=25"
+	const wantAttack = "[930100 930110 930120 932160 949110] pl1=30 lfi=25 total=30"
 	const wantNormal = "[] pl1=0 lfi=0 total=0"
 
 	for i := 0; i < 3; i++ {
