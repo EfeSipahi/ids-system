@@ -164,6 +164,75 @@ func parseMultipart(body []byte, contentType string) ([]Param, []File, error) {
 	}
 }
 
+// partHeaderLines collects the header lines of every part of a multipart
+// body, the way ModSecurity v2 builds MULTIPART_PART_HEADERS
+// (apache2/msc_multipart.c): each line as received, without its line
+// break; a line that starts with a space or tab continues the one before
+// and is joined to it with one space.
+//
+// It reads the body on its own, line by line, because Go's multipart
+// reader rejects header lines with characters it does not allow and
+// rewrites the others. One difference from ModSecurity, which stops with an
+// error at a header name with a character outside 33 to 126: such a line is
+// kept, so that CRS rule 922130, which looks for exactly that, can find it.
+func partHeaderLines(body []byte, contentType string) []PartHeader {
+	_, typeParams, err := mime.ParseMediaType(contentType)
+	if err != nil || typeParams["boundary"] == "" {
+		return nil
+	}
+	delimiter := "--" + typeParams["boundary"]
+
+	var (
+		out      []PartHeader
+		part     []string // the header lines of the current part
+		inHeader bool
+	)
+	finish := func() {
+		name := ""
+		for _, line := range part {
+			header, value, _ := strings.Cut(line, ":")
+			if strings.EqualFold(strings.TrimSpace(header), "Content-Disposition") {
+				if _, params, err := mime.ParseMediaType(value); err == nil {
+					name = params["name"]
+				}
+			}
+		}
+		for _, line := range part {
+			out = append(out, PartHeader{Part: name, Line: line})
+		}
+		part = nil
+	}
+	for _, line := range strings.Split(string(body), "\n") {
+		line = strings.TrimSuffix(line, "\r")
+		if rest, ok := strings.CutPrefix(line, delimiter); ok {
+			if inHeader {
+				finish()
+			}
+			if strings.HasPrefix(rest, "--") {
+				return out // the closing delimiter
+			}
+			inHeader = true
+			continue
+		}
+		if !inHeader {
+			continue // part content, or text before the first delimiter
+		}
+		switch {
+		case line == "":
+			finish()
+			inHeader = false
+		case (line[0] == ' ' || line[0] == '\t') && len(part) > 0:
+			part[len(part)-1] += " " + strings.TrimLeft(line, " \t")
+		default:
+			part = append(part, line)
+		}
+	}
+	if inHeader {
+		finish()
+	}
+	return out
+}
+
 // parseXML collects the text between tags and the values of attributes. It
 // does not build a document tree and does not load anything the document
 // refers to, such as external entities.

@@ -121,6 +121,12 @@ type transaction struct {
 	// bodyFormat is the body reader that a ctl:requestBodyProcessor action
 	// chose, or "" when none did.
 	bodyFormat string
+
+	// valueCache holds the values of variables that depend on the request
+	// only, by what they select; see namedValuesOf. collected is memory
+	// that collect reuses.
+	valueCache map[targetKey][]keyedValue
+	collected  []namedValue
 }
 
 // Evaluate runs the rules on one request. It does not change the RuleSet or
@@ -136,6 +142,7 @@ func (rs *RuleSet) Evaluate(req *httpmodel.Request) *Result {
 	// read again with that one. The request passed in stays as it is.
 	if tx.bodyFormat != "" && tx.bodyFormat != req.Status.BodyFormat && len(req.Received.Body) > 0 {
 		tx.req = req.WithBodyFormat(tx.bodyFormat)
+		tx.valueCache = nil // the values were those of the old reading
 	}
 	tx.runPhase(phaseRequestBody)
 	return &Result{Matches: tx.matches, Variables: tx.vars, Request: tx.req}

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -314,6 +315,8 @@ func ruleIDs(matches []string) []string {
 	return ids
 }
 
+var multipartCounter = regexp.MustCompile(`^(tx:multipart_headers_content_types_)[0-9]+$`)
+
 // reencodedByCoraza reports whether Go's URL parser rejects the target, or
 // gives back a path and query that differ from those sent.
 func reencodedByCoraza(target string) bool {
@@ -356,8 +359,15 @@ func difference(a, b []string) (onlyA, onlyB []string) {
 // where we report "FILES:" and the form field, so the field is left out.
 // For a rule that counts values, written with "&", we report the name with
 // the "&" and Coraza without.
+//
+// Rule 922150 numbers the header lines of multipart parts in the order it
+// sees them, in TX variables named multipart_headers_content_types_N.
+// Coraza goes through the headers of a part in the order of a Go map, which
+// is random, so its N differs from run to run; ours follow the order
+// received, as in ModSecurity. The number is left out.
 func comparableName(name string) string {
 	name = strings.ToLower(strings.TrimPrefix(name, "&"))
+	name = multipartCounter.ReplaceAllString(name, "${1}N")
 	name = strings.ReplaceAll(name, "request_xml:", "xml:")
 	for _, prefix := range []string{"files_names", "files"} {
 		if name == prefix || strings.HasPrefix(name, prefix+":") {

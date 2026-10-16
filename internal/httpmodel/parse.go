@@ -113,6 +113,7 @@ func (r *Request) parseBody(forced string) {
 	case "json":
 		r.Parsed.BodyArgs, err = parseJSON(body)
 	case "multipart":
+		r.Parsed.PartHeaders = partHeaderLines(body, contentType)
 		r.Parsed.BodyArgs, r.Parsed.Files, err = parseMultipart(body, contentType)
 	case "xml":
 		r.Parsed.XMLText, r.Parsed.XMLAttributes, err = parseXML(body)

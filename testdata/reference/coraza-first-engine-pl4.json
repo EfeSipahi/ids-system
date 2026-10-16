@@ -6353,8 +6353,8 @@
         {
           "rule_id": 942440,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:--0000\nContent-Disposition: form-data; name",
-            "MATCHED_VARS:ARGS:--0000\nContent-Disposition: form-data; name"
+            "MATCHED_VARS:ARGS:--0000\nContent-Disposition: form-data; name",
+            "MATCHED_VARS:ARGS_NAMES:--0000\nContent-Disposition: form-data; name"
           ]
         },
         {
@@ -6452,8 +6452,8 @@
         {
           "rule_id": 942440,
           "variables": [
-            "MATCHED_VARS:ARGS:--0000\nContent-Disposition: form-data; name",
-            "MATCHED_VARS:ARGS_NAMES:--0000\nContent-Disposition: form-data; name"
+            "MATCHED_VARS:ARGS_NAMES:--0000\nContent-Disposition: form-data; name",
+            "MATCHED_VARS:ARGS:--0000\nContent-Disposition: form-data; name"
           ]
         },
         {
@@ -6705,8 +6705,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}",
-            "MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}"
+            "MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}",
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}"
           ]
         },
         {
@@ -6781,8 +6781,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}",
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}"
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}",
+            "MATCHED_VARS:ARGS_NAMES:{\"foo\" : \"; cat /e\\\\t\\\\*/pa\\\\?s\\\\wd\"}"
           ]
         },
         {
@@ -7640,8 +7640,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:file",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:file"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:file",
+            "MATCHED_VARS:ARGS:file"
           ]
         },
         {
@@ -15815,6 +15815,1471 @@
       "score": 0
     },
     {
+      "source": "922100",
+      "index": 1,
+      "name": "CRS 922100-1: Positive test: utf-7 is not in allowed charsets",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:positive"
+          ]
+        },
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 10
+    },
+    {
+      "source": "922100",
+      "index": 2,
+      "name": "CRS 922100-2: Negative test: only allowed charsets when using _charset_",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:negative"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922100",
+      "index": 3,
+      "name": "CRS 922100-3: Positive test: don't allow substrings of valid charsets when using _charset_",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:negative"
+          ]
+        },
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:negative"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 13
+    },
+    {
+      "source": "922100",
+      "index": 4,
+      "name": "CRS 922100-4: Negative test: no multipart part with name '_charset_' at all",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:negative"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:negative"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 8
+    },
+    {
+      "source": "922100",
+      "index": 5,
+      "name": "CRS 922100-5: Positive test: utf-7 is not in allowed charsets, even there is an argument",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:positive"
+          ]
+        },
+        {
+          "rule_id": 921180,
+          "variables": [
+            "TX:paramcounter_args_names:_charset_"
+          ]
+        },
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922100",
+      "index": 6,
+      "name": "CRS 922100-6: Positive test: utf-7 is not in allowed charsets, even there is another MP",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:positive",
+            "ARGS:positive"
+          ]
+        },
+        {
+          "rule_id": 921180,
+          "variables": [
+            "TX:paramcounter_args_names:positive",
+            "TX:paramcounter_args_names:_charset_"
+          ]
+        },
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 25
+    },
+    {
+      "source": "922100",
+      "index": 7,
+      "name": "CRS 922100-7: Positive test: utf-7 is not in allowed charsets, even if a later part sets an allowed charset",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:positive"
+          ]
+        },
+        {
+          "rule_id": 921180,
+          "variables": [
+            "TX:paramcounter_args_names:_charset_"
+          ]
+        },
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 1,
+      "name": "CRS 922110-1: Single multipart part with illegal charset=utf-7",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 2,
+      "name": "CRS 922110-2: Multipart bypass - illegal charset=utf-7 in first part, legitimate utf-8 in second (original bug)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 3,
+      "name": "CRS 922110-3: Multipart with legitimate utf-8 in first part, illegal charset=utf-7 in second",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_1"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 4,
+      "name": "CRS 922110-4: Duplicate part names - first has illegal charset=utf-7, second has utf-8",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 921180,
+          "variables": [
+            "TX:paramcounter_args_names:username"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:username"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 20
+    },
+    {
+      "source": "922110",
+      "index": 5,
+      "name": "CRS 922110-5: Multipart with all legitimate charsets (utf-8)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 6,
+      "name": "CRS 922110-6: Various legitimate charsets (iso-8859-1, utf-8, windows-1252)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 7,
+      "name": "CRS 922110-7: Illegal charset in middle part between two legitimate parts",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_1"
+          ]
+        },
+        {
+          "rule_id": 941390,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 942431,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 23
+    },
+    {
+      "source": "922110",
+      "index": 8,
+      "name": "CRS 922110-8: Illegal charset=utf-16",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 12
+    },
+    {
+      "source": "922110",
+      "index": 9,
+      "name": "CRS 922110-9: Multiple illegal charsets (utf-7 and utf-16)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack1"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0",
+            "TX:multipart_headers_content_types_1"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:attack1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 20
+    },
+    {
+      "source": "922110",
+      "index": 10,
+      "name": "CRS 922110-10: Parts without Content-Type headers",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 11,
+      "name": "CRS 922110-11: Mixed parts - some with Content-Type (one malicious), some without",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:field1",
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 20
+    },
+    {
+      "source": "922110",
+      "index": 12,
+      "name": "CRS 922110-12: Quoted charset value (legitimate)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 13,
+      "name": "CRS 922110-13: Whitespace around charset parameter",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 14,
+      "name": "CRS 922110-14: Case variations in legitimate charset (UTF-8, Utf-8)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 15,
+      "name": "CRS 922110-15: Illegal charset=shift-jis",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 12
+    },
+    {
+      "source": "922110",
+      "index": 16,
+      "name": "CRS 922110-16: Legitimate charset=iso-8859-15",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 17,
+      "name": "CRS 922110-17: Wildcard content-type with legitimate charset",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 18,
+      "name": "CRS 922110-18: Content-Type with multiple parameters",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 19,
+      "name": "CRS 922110-19: Empty multipart request",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 20,
+      "name": "CRS 922110-20: Five parts with illegal charset in middle (position 3 of 5)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_4"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 7
+    },
+    {
+      "source": "922110",
+      "index": 21,
+      "name": "CRS 922110-21: Illegal charset in uppercase (CHARSET=UTF-7)",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 22,
+      "name": "CRS 922110-22: Content-Type without charset parameter",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:field1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 7
+    },
+    {
+      "source": "922110",
+      "index": 23,
+      "name": "CRS 922110-23: Illegal charset followed by other parameters",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 24,
+      "name": "CRS 922110-24: Stress test - 15 parts with illegal charset in part 10",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:ATTACK_HERE"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_12"
+          ]
+        },
+        {
+          "rule_id": 941390,
+          "variables": [
+            "ARGS:ATTACK_HERE"
+          ]
+        },
+        {
+          "rule_id": 942431,
+          "variables": [
+            "ARGS:ATTACK_HERE"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:ATTACK_HERE"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 23
+    },
+    {
+      "source": "922110",
+      "index": 25,
+      "name": "CRS 922110-25: Illegal charset=euc-jp",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 12
+    },
+    {
+      "source": "922110",
+      "index": 26,
+      "name": "CRS 922110-26: Three parts with same name, middle has illegal charset",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:data"
+          ]
+        },
+        {
+          "rule_id": 921180,
+          "variables": [
+            "TX:paramcounter_args_names:data"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_1"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:data"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 20
+    },
+    {
+      "source": "922110",
+      "index": 27,
+      "name": "CRS 922110-27: Legitimate charset=iso-8859-1",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        }
+      ],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 28,
+      "name": "CRS 922110-28: Illegal charset with spacing obfuscation",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 29,
+      "name": "CRS 922110-29: Content-Type header in mixed case with illegal charset",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922110",
+      "index": 30,
+      "name": "CRS 922110-30: Application/json with legitimate charset",
+      "matches": [
+        {
+          "rule_id": 920300,
+          "variables": [
+            "REQUEST_HEADERS:User-Agent"
+          ]
+        },
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:jsondata"
+          ]
+        },
+        {
+          "rule_id": 942431,
+          "variables": [
+            "ARGS:jsondata"
+          ]
+        },
+        {
+          "rule_id": 942460,
+          "variables": [
+            "ARGS:jsondata"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:jsondata"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 16
+    },
+    {
+      "source": "922120",
+      "index": 1,
+      "name": "CRS 922120-1: Positive test: utf-7 is not in allowed charsets",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:flavors"
+          ]
+        },
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 922120,
+          "variables": [
+            "MULTIPART_PART_HEADERS:flavors"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 15
+    },
+    {
+      "source": "922120",
+      "index": 2,
+      "name": "CRS 922120-2: Negative test: no content-transfer-encoding header should be good",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:negative"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:negative"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 8
+    },
+    {
+      "source": "922130",
+      "index": 1,
+      "name": "CRS 922130-1: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x0E character at the first position.\n--boundary\n\\x0EContent-Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922130",
+      "index": 2,
+      "name": "CRS 922130-2: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x0E character at the last position.\n--boundary\nContent-Disposition\\x0E: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922130",
+      "index": 3,
+      "name": "CRS 922130-3: Negative test: no special character in multipart header",
+      "matches": [
+        {
+          "rule_id": 933110,
+          "variables": [
+            "FILES"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922130",
+      "index": 4,
+      "name": "CRS 922130-4: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x20 character, the last invalid character before the valid range.\n--boundary\nContent-\\x20Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 922130,
+          "variables": [
+            "MULTIPART_PART_HEADERS:post"
+          ]
+        },
+        {
+          "rule_id": 930120,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 932160,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 932200,
+          "variables": [
+            "MATCHED_VARS:ARGS:post",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933100,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933150,
+          "variables": [
+            "MATCHED_VARS:ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933153,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942370,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942520,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942431,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942460,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 64
+    },
+    {
+      "source": "922130",
+      "index": 5,
+      "name": "CRS 922130-5: Negative test: no character from outside of range in multipart header; '!' is allowed (!, the first character in the range of valid characters))",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 930120,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 932160,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 932200,
+          "variables": [
+            "MATCHED_VARS:ARGS",
+            "MATCHED_VARS:MATCHED_VARS:ARGS"
+          ]
+        },
+        {
+          "rule_id": 933100,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 933150,
+          "variables": [
+            "MATCHED_VARS:ARGS"
+          ]
+        },
+        {
+          "rule_id": 933153,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 933190,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 942370,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 942520,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 942431,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 942460,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 64
+    },
+    {
+      "source": "922130",
+      "index": 6,
+      "name": "CRS 922130-6: Negative test: no character from outside of range in multipart header; '~' is allowed (~, the last valid character in the range of valid characters)",
+      "matches": [
+        {
+          "rule_id": 920273,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 930120,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 932160,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 932200,
+          "variables": [
+            "MATCHED_VARS:MATCHED_VARS:ARGS:post",
+            "MATCHED_VARS:ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933100,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933150,
+          "variables": [
+            "MATCHED_VARS:ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933153,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933190,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942370,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942520,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942431,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942460,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 942432,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 64
+    },
+    {
+      "source": "922130",
+      "index": 7,
+      "name": "CRS 922130-7: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x7F character, the first invalid character after the valid range.\n--boundary\nContent\\x7F-Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922130",
+      "index": 8,
+      "name": "CRS 922130-8: Negative test - do not match when there are no multipart headers.",
+      "matches": [],
+      "score": 0
+    },
+    {
       "source": "930100",
       "index": 1,
       "name": "CRS 930100-1: Path Traversal Attack (/../) encoded",
@@ -21181,8 +22646,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:932130-18",
-            "MATCHED_VARS:ARGS:932130-18"
+            "MATCHED_VARS:ARGS:932130-18",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:932130-18"
           ]
         },
         {
@@ -22609,8 +24074,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -22868,8 +24333,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -22944,8 +24409,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -23032,8 +24497,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -24435,8 +25900,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -24529,8 +25994,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -24723,8 +26188,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -24805,8 +26270,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -24887,8 +26352,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -24981,8 +26446,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -25639,8 +27104,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -26132,8 +27597,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -26320,8 +27785,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -26950,8 +28415,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -27797,8 +29262,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -27836,8 +29301,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -33841,8 +35306,8 @@
         {
           "rule_id": 932206,
           "variables": [
-            "MATCHED_VARS:REQUEST_HEADERS:Referer",
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer"
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer",
+            "MATCHED_VARS:REQUEST_HEADERS:Referer"
           ]
         },
         {
@@ -35873,8 +37338,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -35930,8 +37395,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -36150,8 +37615,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:json.foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:json.foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:json.foo",
+            "MATCHED_VARS:ARGS:json.foo"
           ]
         },
         {
@@ -36295,8 +37760,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -36422,8 +37887,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -36467,8 +37932,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -36518,8 +37983,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -36665,8 +38130,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -36716,8 +38181,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -36761,8 +38226,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -36920,8 +38385,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:host",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:host"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:host",
+            "MATCHED_VARS:ARGS:host"
           ]
         },
         {
@@ -37182,8 +38647,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:REQUEST_XML://@*",
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*"
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*",
+            "MATCHED_VARS:REQUEST_XML://@*"
           ]
         },
         {
@@ -37411,8 +38876,8 @@
         {
           "rule_id": 932206,
           "variables": [
-            "MATCHED_VARS:REQUEST_HEADERS:Referer",
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer"
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer",
+            "MATCHED_VARS:REQUEST_HEADERS:Referer"
           ]
         },
         {
@@ -39279,8 +40744,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:arg1",
             "ARGS:arg2",
+            "ARGS:arg1",
             "REQUEST_BODY"
           ]
         },
@@ -39323,8 +40788,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg2",
-            "MATCHED_VARS:ARGS:arg2"
+            "MATCHED_VARS:ARGS:arg2",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg2"
           ]
         },
         {
@@ -39501,8 +40966,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -39589,8 +41054,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -39640,8 +41105,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:arg2",
             "ARGS:arg",
+            "ARGS:arg2",
             "ARGS_NAMES: echo vulnerable 6\"",
             "REQUEST_BODY"
           ]
@@ -39686,8 +41151,8 @@
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:arg2",
-            "ARGS:arg"
+            "ARGS:arg",
+            "ARGS:arg2"
           ]
         },
         {
@@ -39699,8 +41164,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:arg2",
-            "ARGS:arg"
+            "ARGS:arg",
+            "ARGS:arg2"
           ]
         },
         {
@@ -39721,10 +41186,10 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:arg2",
-            "ARGS_NAMES:lt;!--#exec cmd",
-            "ARGS_NAMES:quot;/bin/cat /etc/shadow",
             "ARGS_NAMES:quot;--",
+            "ARGS_NAMES:quot;/bin/cat /etc/shadow",
             "ARGS_NAMES:gt;",
+            "ARGS_NAMES:lt;!--#exec cmd",
             "REQUEST_BODY"
           ]
         },
@@ -39767,8 +41232,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS_NAMES:quot;--",
             "ARGS_NAMES:lt;!--#exec cmd",
+            "ARGS_NAMES:quot;--",
             "ARGS:arg2"
           ]
         },
@@ -39796,8 +41261,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:arg",
             "ARGS:arg2",
+            "ARGS:arg",
             "REQUEST_BODY"
           ]
         },
@@ -39898,8 +41363,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -39990,10 +41455,10 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS_NAMES:quot;--",
-            "ARGS_NAMES:gt; Something \u0026#8222;The Title\u0026#8221;. After something",
             "ARGS_NAMES:lt;!--#exec cmd",
             "ARGS_NAMES:quot;/bin/cat /etc/shadow",
+            "ARGS_NAMES:quot;--",
+            "ARGS_NAMES:gt; Something \u0026#8222;The Title\u0026#8221;. After something",
             "REQUEST_BODY"
           ]
         },
@@ -40036,9 +41501,9 @@
         {
           "rule_id": 942432,
           "variables": [
+            "ARGS_NAMES:quot;--",
             "ARGS_NAMES:gt; Something \u0026#8222;The Title\u0026#8221;. After something",
-            "ARGS_NAMES:lt;!--#exec cmd",
-            "ARGS_NAMES:quot;--"
+            "ARGS_NAMES:lt;!--#exec cmd"
           ]
         },
         {
@@ -40059,10 +41524,10 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:arg",
-            "ARGS_NAMES:gt;",
-            "ARGS_NAMES:lt;!--#exec cmd",
             "ARGS_NAMES:quot;/bin/cat /etc/shadow",
             "ARGS_NAMES:quot;--",
+            "ARGS_NAMES:gt;",
+            "ARGS_NAMES:lt;!--#exec cmd",
             "REQUEST_BODY"
           ]
         },
@@ -40105,8 +41570,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS_NAMES:lt;!--#exec cmd",
             "ARGS_NAMES:quot;--",
+            "ARGS_NAMES:lt;!--#exec cmd",
             "ARGS:arg"
           ]
         },
@@ -40404,8 +41869,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -40704,8 +42169,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:var",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:var"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:var",
+            "MATCHED_VARS:ARGS:var"
           ]
         },
         {
@@ -47463,8 +48928,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -47767,8 +49232,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:arg2",
-            "ARGS:arg1"
+            "ARGS:arg1",
+            "ARGS:arg2"
           ]
         },
         {
@@ -48001,8 +49466,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -48099,8 +49564,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS_NAMES:lt;!--#exec cmd",
             "ARGS_NAMES:quot;--",
+            "ARGS_NAMES:lt;!--#exec cmd",
             "ARGS:arg2"
           ]
         },
@@ -48230,8 +49695,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -48268,8 +49733,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:arg2",
-            "ARGS:arg"
+            "ARGS:arg",
+            "ARGS:arg2"
           ]
         },
         {
@@ -48289,10 +49754,10 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS_NAMES:quot;--",
-            "ARGS_NAMES:gt; Something \u0026#8222;The Title\u0026#8221;. After something",
             "ARGS_NAMES:lt;!--#exec cmd",
             "ARGS_NAMES:quot;/bin/cat /etc/shadow",
+            "ARGS_NAMES:quot;--",
+            "ARGS_NAMES:gt; Something \u0026#8222;The Title\u0026#8221;. After something",
             "REQUEST_BODY"
           ]
         },
@@ -48358,10 +49823,10 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:arg",
-            "ARGS_NAMES:lt;!--#exec cmd",
-            "ARGS_NAMES:quot;/bin/cat /etc/shadow",
             "ARGS_NAMES:quot;--",
             "ARGS_NAMES:gt;",
+            "ARGS_NAMES:lt;!--#exec cmd",
+            "ARGS_NAMES:quot;/bin/cat /etc/shadow",
             "REQUEST_BODY"
           ]
         },
@@ -53494,8 +54959,8 @@
         {
           "rule_id": 932206,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer",
-            "MATCHED_VARS:REQUEST_HEADERS:Referer"
+            "MATCHED_VARS:REQUEST_HEADERS:Referer",
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer"
           ]
         },
         {
@@ -62366,8 +63831,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:textarea",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:textarea"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:textarea",
+            "MATCHED_VARS:ARGS:textarea"
           ]
         },
         {
@@ -62885,8 +64350,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:textarea",
-            "MATCHED_VARS:ARGS:textarea"
+            "MATCHED_VARS:ARGS:textarea",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:textarea"
           ]
         },
         {
@@ -65539,8 +67004,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:cmd=; regedit /E c:\\ads\\file.txt:regfile.reg HKEY_CURRENT_USER\\MyCustomRegKey",
-            "MATCHED_VARS:ARGS_NAMES:cmd=; regedit /E c:\\ads\\file.txt:regfile.reg HKEY_CURRENT_USER\\MyCustomRegKey"
+            "MATCHED_VARS:ARGS_NAMES:cmd=; regedit /E c:\\ads\\file.txt:regfile.reg HKEY_CURRENT_USER\\MyCustomRegKey",
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:cmd=; regedit /E c:\\ads\\file.txt:regfile.reg HKEY_CURRENT_USER\\MyCustomRegKey"
           ]
         },
         {
@@ -66137,29 +67602,29 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:referer",
-            "ARGS:loc"
+            "ARGS:loc",
+            "ARGS:referer"
           ]
         },
         {
           "rule_id": 931130,
           "variables": [
-            "TX:rfi_parameter_args:referer",
-            "TX:rfi_parameter_args:loc"
+            "TX:rfi_parameter_args:loc",
+            "TX:rfi_parameter_args:referer"
           ]
         },
         {
           "rule_id": 932236,
           "variables": [
-            "ARGS:referer",
-            "ARGS:loc"
+            "ARGS:loc",
+            "ARGS:referer"
           ]
         },
         {
           "rule_id": 932190,
           "variables": [
-            "ARGS:referer",
-            "ARGS:loc"
+            "ARGS:loc",
+            "ARGS:referer"
           ]
         },
         {
@@ -66172,15 +67637,15 @@
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:referer",
-            "ARGS:loc"
+            "ARGS:loc",
+            "ARGS:referer"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:referer",
-            "ARGS:loc"
+            "ARGS:loc",
+            "ARGS:referer"
           ]
         },
         {
@@ -67887,8 +69352,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -67932,8 +69397,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -69472,8 +70937,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:flux",
-            "MATCHED_VARS:ARGS:flux"
+            "MATCHED_VARS:ARGS:flux",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:flux"
           ]
         },
         {
@@ -69986,8 +71451,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -70315,8 +71780,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:file",
-            "MATCHED_VARS:ARGS:file"
+            "MATCHED_VARS:ARGS:file",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:file"
           ]
         },
         {
@@ -71139,8 +72604,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:data",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:data"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:data",
+            "MATCHED_VARS:ARGS:data"
           ]
         },
         {
@@ -71367,8 +72832,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:image",
-            "MATCHED_VARS:ARGS:image"
+            "MATCHED_VARS:ARGS:image",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:image"
           ]
         },
         {
@@ -71557,8 +73022,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:name",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:name"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:name",
+            "MATCHED_VARS:ARGS:name"
           ]
         },
         {
@@ -72909,8 +74374,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:data",
-            "MATCHED_VARS:ARGS:data"
+            "MATCHED_VARS:ARGS:data",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:data"
           ]
         },
         {
@@ -75817,8 +77282,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -78640,8 +80105,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -80523,8 +81988,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -80931,8 +82396,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:foo",
-            "MATCHED_VARS:ARGS:foo"
+            "MATCHED_VARS:ARGS:foo",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:foo"
           ]
         },
         {
@@ -82840,8 +84305,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -85265,8 +86730,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -85592,8 +87057,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -86977,8 +88442,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -92859,8 +94324,8 @@
         {
           "rule_id": 942440,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:----------397236876\nContent-Disposition: form-data; name",
-            "MATCHED_VARS:ARGS:----------397236876\nContent-Disposition: form-data; name"
+            "MATCHED_VARS:ARGS:----------397236876\nContent-Disposition: form-data; name",
+            "MATCHED_VARS:ARGS_NAMES:----------397236876\nContent-Disposition: form-data; name"
           ]
         },
         {
@@ -96317,8 +97782,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -96392,8 +97857,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -96467,8 +97932,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:x",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:x"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:x",
+            "MATCHED_VARS:ARGS:x"
           ]
         },
         {
@@ -101329,8 +102794,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:input",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:input"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:input",
+            "MATCHED_VARS:ARGS:input"
           ]
         },
         {
@@ -101675,8 +103140,8 @@
         {
           "rule_id": 932206,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer",
-            "MATCHED_VARS:REQUEST_HEADERS:Referer"
+            "MATCHED_VARS:REQUEST_HEADERS:Referer",
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_HEADERS:Referer"
           ]
         },
         {
@@ -101777,8 +103242,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*",
-            "MATCHED_VARS:REQUEST_XML://@*"
+            "MATCHED_VARS:REQUEST_XML://@*",
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*"
           ]
         },
         {
@@ -103390,9 +104855,9 @@
         {
           "rule_id": 942120,
           "variables": [
-            "ARGS:confirmation",
             "ARGS:transaction_hash",
-            "ARGS:verification_token"
+            "ARGS:verification_token",
+            "ARGS:confirmation"
           ]
         },
         {
@@ -104394,8 +105859,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:var",
-            "MATCHED_VARS:ARGS:var"
+            "MATCHED_VARS:ARGS:var",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:var"
           ]
         },
         {
@@ -104887,8 +106352,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:var",
-            "MATCHED_VARS:ARGS:var"
+            "MATCHED_VARS:ARGS:var",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:var"
           ]
         },
         {
@@ -105030,8 +106495,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:var",
-            "MATCHED_VARS:ARGS:var"
+            "MATCHED_VARS:ARGS:var",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:var"
           ]
         },
         {
@@ -107248,8 +108713,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -107581,8 +109046,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:mime",
-            "ARGS:body"
+            "ARGS:body",
+            "ARGS:mime"
           ]
         },
         {
@@ -108281,8 +109746,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*",
-            "MATCHED_VARS:REQUEST_XML://@*"
+            "MATCHED_VARS:REQUEST_XML://@*",
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*"
           ]
         },
         {
@@ -108440,8 +109905,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:body",
-            "ARGS:mime"
+            "ARGS:mime",
+            "ARGS:body"
           ]
         },
         {
@@ -108552,8 +110017,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -111221,8 +112686,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -113288,8 +114753,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -114075,8 +115540,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:a",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:a"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:a",
+            "MATCHED_VARS:ARGS:a"
           ]
         },
         {
@@ -114390,8 +115855,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*",
-            "MATCHED_VARS:REQUEST_XML://@*"
+            "MATCHED_VARS:REQUEST_XML://@*",
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_XML://@*"
           ]
         },
         {
@@ -115290,8 +116755,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:xss",
-            "MATCHED_VARS:ARGS:xss"
+            "MATCHED_VARS:ARGS:xss",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:xss"
           ]
         },
         {
@@ -116329,8 +117794,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:1'||(select extractvalue(xmltype('\u003c?xml version",
-            "MATCHED_VARS:ARGS:1'||(select extractvalue(xmltype('\u003c?xml version"
+            "MATCHED_VARS:ARGS:1'||(select extractvalue(xmltype('\u003c?xml version",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:1'||(select extractvalue(xmltype('\u003c?xml version"
           ]
         },
         {
@@ -127715,8 +129180,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:select]=polygon((/*!00000select*/*/*!00000from*/(/*!00000select*/*/*!00000from*/(/*!00000select*/concat_ws(0x7e3a,0x6d616b6d616e,version(),user(\n",
-            "MATCHED_VARS:ARGS_NAMES:select]=polygon((/*!00000select*/*/*!00000from*/(/*!00000select*/*/*!00000from*/(/*!00000select*/concat_ws(0x7e3a,0x6d616b6d616e,version(),user(\n"
+            "MATCHED_VARS:ARGS_NAMES:select]=polygon((/*!00000select*/*/*!00000from*/(/*!00000select*/*/*!00000from*/(/*!00000select*/concat_ws(0x7e3a,0x6d616b6d616e,version(),user(\n",
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:select]=polygon((/*!00000select*/*/*!00000from*/(/*!00000select*/*/*!00000from*/(/*!00000select*/concat_ws(0x7e3a,0x6d616b6d616e,version(),user(\n"
           ]
         },
         {
@@ -128772,8 +130237,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:execution=e1s1\u0026OlyH=9767 AND 1=1 UNION ALL SELECT 1,NULL,'\u003cscript\u003ealert(\"XSS\")\u003c/script\u003e',table_name FROM information_schema.tables WHERE 2\u003e1--/**/; EXEC xp_cmdshell\n",
-            "MATCHED_VARS:ARGS_NAMES:execution=e1s1\u0026OlyH=9767 AND 1=1 UNION ALL SELECT 1,NULL,'\u003cscript\u003ealert(\"XSS\")\u003c/script\u003e',table_name FROM information_schema.tables WHERE 2\u003e1--/**/; EXEC xp_cmdshell\n"
+            "MATCHED_VARS:ARGS_NAMES:execution=e1s1\u0026OlyH=9767 AND 1=1 UNION ALL SELECT 1,NULL,'\u003cscript\u003ealert(\"XSS\")\u003c/script\u003e',table_name FROM information_schema.tables WHERE 2\u003e1--/**/; EXEC xp_cmdshell\n",
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:execution=e1s1\u0026OlyH=9767 AND 1=1 UNION ALL SELECT 1,NULL,'\u003cscript\u003ealert(\"XSS\")\u003c/script\u003e',table_name FROM information_schema.tables WHERE 2\u003e1--/**/; EXEC xp_cmdshell\n"
           ]
         },
         {
@@ -137384,8 +138849,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:pay",
-            "MATCHED_VARS:ARGS:pay"
+            "MATCHED_VARS:ARGS:pay",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:pay"
           ]
         },
         {
@@ -137641,8 +139106,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -139001,8 +140466,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -139094,8 +140559,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -141465,8 +142930,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:' alter/",
-            "MATCHED_VARS:ARGS_NAMES:' alter/"
+            "MATCHED_VARS:ARGS_NAMES:' alter/",
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:' alter/"
           ]
         },
         {
@@ -153008,8 +154473,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -156050,8 +157515,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -156155,8 +157620,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -156260,8 +157725,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -156324,8 +157789,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -159822,8 +161287,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:email",
-            "MATCHED_VARS:ARGS:email"
+            "MATCHED_VARS:ARGS:email",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:email"
           ]
         },
         {
@@ -162127,8 +163592,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:q",
-            "MATCHED_VARS:ARGS:q"
+            "MATCHED_VARS:ARGS:q",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:q"
           ]
         },
         {
@@ -162766,8 +164231,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:q",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:q"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:q",
+            "MATCHED_VARS:ARGS:q"
           ]
         },
         {
@@ -165019,8 +166484,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -165181,8 +166646,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:java.lang.ProcessBuilder",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:java.lang.ProcessBuilder"
           ]
         },
         {
@@ -165700,8 +167165,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -165740,8 +167205,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -166210,8 +167675,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -166448,8 +167913,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -166634,8 +168099,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -166739,8 +168204,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -166838,8 +168303,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -167076,8 +168541,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -167262,8 +168727,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -167367,8 +168832,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -167466,8 +168931,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -167890,8 +169355,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -168094,8 +169559,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -168960,8 +170425,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -169350,8 +170815,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -169978,8 +171443,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -170216,8 +171681,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -170402,8 +171867,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -170606,8 +172071,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -171030,8 +172495,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -171135,8 +172600,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -178056,8 +179521,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -178383,8 +179848,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -178778,8 +180243,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:java.lang.Runtime",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:java.lang.Runtime"
           ]
         },
         {
@@ -179063,8 +180528,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -186263,8 +187728,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -186897,8 +188362,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:payload",
-            "MATCHED_VARS:ARGS:payload"
+            "MATCHED_VARS:ARGS:payload",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:payload"
           ]
         },
         {
@@ -187018,8 +188483,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:runtime.clonetransformer"
+            "MATCHED_VARS:ARGS_NAMES:runtime.clonetransformer",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -187214,8 +188679,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -187294,8 +188759,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -187322,8 +188787,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:runtime.forclosure"
+            "MATCHED_VARS:ARGS_NAMES:runtime.forclosure",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -187626,8 +189091,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:runtime.instantiatefactory"
+            "MATCHED_VARS:ARGS_NAMES:runtime.instantiatefactory",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -187822,8 +189287,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -187902,8 +189367,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -187930,8 +189395,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:runtime.instantiatetransformer"
+            "MATCHED_VARS:ARGS_NAMES:runtime.instantiatetransformer",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -188126,8 +189591,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -188206,8 +189671,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -188234,8 +189699,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:runtime.invokertransformer"
+            "MATCHED_VARS:ARGS_NAMES:runtime.invokertransformer",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -188734,8 +190199,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -188842,8 +190307,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:runtime.prototypeserializationfactory"
+            "MATCHED_VARS:ARGS_NAMES:runtime.prototypeserializationfactory",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -189038,8 +190503,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -189450,8 +190915,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:java.evil.runtime"
+            "MATCHED_VARS:ARGS_NAMES:java.evil.runtime",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -189956,8 +191421,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -190175,8 +191640,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:class.module.classLoader.resources.context.parent.pipeline.first.pattern"
+            "MATCHED_VARS:ARGS:class.module.classLoader.resources.context.parent.pipeline.first.pattern",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -197295,8 +198760,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:input",
-            "MATCHED_VARS:ARGS:input"
+            "MATCHED_VARS:ARGS:input",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:input"
           ]
         },
         {
@@ -209987,8 +211452,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -210300,8 +211765,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:comment",
-            "MATCHED_VARS:ARGS:comment"
+            "MATCHED_VARS:ARGS:comment",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:comment"
           ]
         },
         {
@@ -211286,36 +212751,36 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941110,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941150,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941320,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -211740,8 +213205,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -212132,8 +213597,8 @@
         {
           "rule_id": 932236,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -212736,15 +214201,15 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -212757,15 +214222,15 @@
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -212784,15 +214249,15 @@
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -213043,8 +214508,8 @@
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -213277,8 +214742,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -213291,15 +214756,15 @@
         {
           "rule_id": 942310,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942330,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -213312,15 +214777,15 @@
         {
           "rule_id": 942410,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942480,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -213743,8 +215208,8 @@
         {
           "rule_id": 941180,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -214411,8 +215876,8 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -214424,8 +215889,8 @@
         {
           "rule_id": 942440,
           "variables": [
-            "MATCHED_VARS:ARGS:json.tags.1",
-            "MATCHED_VARS:ARGS:json.user.name"
+            "MATCHED_VARS:ARGS:json.user.name",
+            "MATCHED_VARS:ARGS:json.tags.1"
           ]
         },
         {
@@ -214438,8 +215903,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -215810,8 +217275,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -215837,22 +217302,22 @@
         {
           "rule_id": 942180,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942330,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942370,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -215865,8 +217330,8 @@
         {
           "rule_id": 942520,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -215879,8 +217344,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -216383,8 +217848,8 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -216410,8 +217875,8 @@
         {
           "rule_id": 942370,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -216482,8 +217947,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -216698,8 +218163,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -216725,8 +218190,8 @@
         {
           "rule_id": 920230,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -216748,8 +218213,8 @@
         {
           "rule_id": 942540,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -216762,15 +218227,15 @@
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942530,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -217619,8 +219084,8 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -217640,22 +219105,22 @@
         {
           "rule_id": 941150,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941320,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -218050,8 +219515,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -218456,8 +219921,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -219105,15 +220570,15 @@
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942200,
           "variables": [
-            "MATCHED_VARS:ARGS:json.tags.1",
-            "MATCHED_VARS:ARGS:json.user.name"
+            "MATCHED_VARS:ARGS:json.user.name",
+            "MATCHED_VARS:ARGS:json.tags.1"
           ]
         },
         {
@@ -219126,8 +220591,8 @@
         {
           "rule_id": 942361,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -219140,8 +220605,8 @@
         {
           "rule_id": 942480,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -219364,15 +220829,15 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 920460,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -219663,22 +221128,22 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941110,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -219691,8 +221156,8 @@
         {
           "rule_id": 941320,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -219704,15 +221169,15 @@
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -219752,22 +221217,22 @@
         {
           "rule_id": 932240,
           "variables": [
-            "MATCHED_VARS:ARGS:json.user.name",
-            "MATCHED_VARS:ARGS:json.tags.1"
+            "MATCHED_VARS:ARGS:json.tags.1",
+            "MATCHED_VARS:ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941120,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -219780,15 +221245,15 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -220008,8 +221473,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -220022,15 +221487,15 @@
         {
           "rule_id": 932240,
           "variables": [
-            "MATCHED_VARS:ARGS:json.tags.1",
-            "MATCHED_VARS:ARGS:json.user.name"
+            "MATCHED_VARS:ARGS:json.user.name",
+            "MATCHED_VARS:ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -222289,8 +223754,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -222303,8 +223768,8 @@
         {
           "rule_id": 932240,
           "variables": [
-            "MATCHED_VARS:ARGS:json.tags.1",
-            "MATCHED_VARS:ARGS:json.user.name"
+            "MATCHED_VARS:ARGS:json.user.name",
+            "MATCHED_VARS:ARGS:json.tags.1"
           ]
         },
         {
@@ -223982,8 +225447,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:1/**/OR/**/1 = 1",
-            "MATCHED_VARS:ARGS_NAMES:1/**/OR/**/1 = 1"
+            "MATCHED_VARS:ARGS_NAMES:1/**/OR/**/1 = 1",
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:1/**/OR/**/1 = 1"
           ]
         },
         {
@@ -224412,8 +225877,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -224835,8 +226300,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -224849,24 +226314,24 @@
         {
           "rule_id": 932240,
           "variables": [
-            "MATCHED_VARS:ARGS:json.tags.1",
-            "MATCHED_VARS:ARGS:json.user.name"
+            "MATCHED_VARS:ARGS:json.user.name",
+            "MATCHED_VARS:ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 934101,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.user.name",
             "ARGS:json.tags.1",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941180,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -224879,8 +226344,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -225198,8 +226663,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:REQUEST_COOKIES:pref",
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_COOKIES:pref"
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_COOKIES:pref",
+            "MATCHED_VARS:REQUEST_COOKIES:pref"
           ]
         },
         {
@@ -225529,8 +226994,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -226009,8 +227474,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -226023,8 +227488,8 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -226050,8 +227515,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -227161,8 +228626,8 @@
         {
           "rule_id": 934100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -227175,15 +228640,15 @@
         {
           "rule_id": 942540,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942180,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -227196,8 +228661,8 @@
         {
           "rule_id": 942460,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -227388,15 +228853,15 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -227952,8 +229417,8 @@
         {
           "rule_id": 920460,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -227973,29 +229438,29 @@
         {
           "rule_id": 941110,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941320,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -228007,8 +229472,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -228533,36 +229998,36 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 920460,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 932240,
           "variables": [
-            "MATCHED_VARS:ARGS:json.tags.1",
-            "MATCHED_VARS:ARGS:json.user.name"
+            "MATCHED_VARS:ARGS:json.user.name",
+            "MATCHED_VARS:ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942460,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -228821,8 +230286,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -230190,15 +231655,15 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -230218,22 +231683,22 @@
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942200,
           "variables": [
-            "MATCHED_VARS:ARGS:json.tags.1",
-            "MATCHED_VARS:ARGS:json.user.name"
+            "MATCHED_VARS:ARGS:json.user.name",
+            "MATCHED_VARS:ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942260,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -230253,8 +231718,8 @@
         {
           "rule_id": 942480,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -230301,8 +231766,8 @@
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -230315,8 +231780,8 @@
         {
           "rule_id": 942180,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -230329,8 +231794,8 @@
         {
           "rule_id": 942362,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -230350,8 +231815,8 @@
         {
           "rule_id": 942530,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -230761,15 +232226,15 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942190,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -230782,8 +232247,8 @@
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -230817,8 +232282,8 @@
         {
           "rule_id": 942480,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -232602,8 +234067,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -233454,8 +234919,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:\\3c a\\20 h\\72 ef=\"javascrip\\74 :co\\6e f\\69 rm\\28 1)\"\\3e x\u003c/a\u003e",
-            "MATCHED_VARS:ARGS_NAMES:\\3c a\\20 h\\72 ef=\"javascrip\\74 :co\\6e f\\69 rm\\28 1)\"\\3e x\u003c/a\u003e"
+            "MATCHED_VARS:ARGS_NAMES:\\3c a\\20 h\\72 ef=\"javascrip\\74 :co\\6e f\\69 rm\\28 1)\"\\3e x\u003c/a\u003e",
+            "MATCHED_VARS:MATCHED_VARS:ARGS_NAMES:\\3c a\\20 h\\72 ef=\"javascrip\\74 :co\\6e f\\69 rm\\28 1)\"\\3e x\u003c/a\u003e"
           ]
         },
         {
@@ -233679,8 +235144,8 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -233721,8 +235186,8 @@
         {
           "rule_id": 942361,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -233735,8 +235200,8 @@
         {
           "rule_id": 942480,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -234083,8 +235548,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:REQUEST_COOKIES:pref",
-            "MATCHED_VARS:MATCHED_VARS:REQUEST_COOKIES:pref"
+            "MATCHED_VARS:MATCHED_VARS:REQUEST_COOKIES:pref",
+            "MATCHED_VARS:REQUEST_COOKIES:pref"
           ]
         },
         {
@@ -234530,15 +235995,15 @@
         {
           "rule_id": 920230,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -234732,15 +236197,15 @@
         {
           "rule_id": 920460,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 932240,
           "variables": [
-            "MATCHED_VARS:ARGS:json.user.name",
-            "MATCHED_VARS:ARGS:json.tags.1"
+            "MATCHED_VARS:ARGS:json.tags.1",
+            "MATCHED_VARS:ARGS:json.user.name"
           ]
         },
         {
@@ -234760,15 +236225,15 @@
         {
           "rule_id": 942490,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -234815,8 +236280,8 @@
         {
           "rule_id": 920460,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -234843,8 +236308,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -234900,8 +236365,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -234969,15 +236434,15 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -234990,8 +236455,8 @@
         {
           "rule_id": 942120,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -235018,8 +236483,8 @@
         {
           "rule_id": 942520,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -235032,15 +236497,15 @@
         {
           "rule_id": 942460,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -235531,15 +236996,15 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942511,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -236297,8 +237762,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -236318,8 +237783,8 @@
         {
           "rule_id": 932236,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -236346,8 +237811,8 @@
         {
           "rule_id": 941180,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -236360,8 +237825,8 @@
         {
           "rule_id": 941181,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -236381,15 +237846,15 @@
         {
           "rule_id": 942460,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -236694,15 +238159,15 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941110,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -236715,15 +238180,15 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941320,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -236742,8 +238207,8 @@
         {
           "rule_id": 942520,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -236756,8 +238221,8 @@
         {
           "rule_id": 942460,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -237262,8 +238727,8 @@
         {
           "rule_id": 942190,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -237276,8 +238741,8 @@
         {
           "rule_id": 942361,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -237297,8 +238762,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -237477,22 +238942,22 @@
         {
           "rule_id": 932235,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 932236,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -237512,22 +238977,22 @@
         {
           "rule_id": 941150,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942430,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -238298,8 +239763,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -238555,8 +240020,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -238583,8 +240048,8 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -238916,8 +240381,8 @@
         {
           "rule_id": 932190,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -238930,15 +240395,15 @@
         {
           "rule_id": 941120,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -238958,8 +240423,8 @@
         {
           "rule_id": 942431,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -239485,8 +240950,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:id",
-            "MATCHED_VARS:ARGS:id"
+            "MATCHED_VARS:ARGS:id",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:id"
           ]
         },
         {
@@ -240507,8 +241972,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:comment",
-            "MATCHED_VARS:ARGS:comment"
+            "MATCHED_VARS:ARGS:comment",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:comment"
           ]
         },
         {
@@ -240815,8 +242280,8 @@
         {
           "rule_id": 920230,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -240829,8 +242294,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -240931,8 +242396,8 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:q",
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -241848,8 +243313,8 @@
         {
           "rule_id": 920272,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -242055,8 +243520,8 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:q",
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -242369,8 +243834,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -242486,8 +243951,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -243300,8 +244765,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -245657,8 +247122,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:arg",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:arg"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:arg",
+            "MATCHED_VARS:ARGS:arg"
           ]
         },
         {
@@ -247346,8 +248811,8 @@
         {
           "rule_id": 930120,
           "variables": [
-            "ARGS:file",
-            "ARGS:note"
+            "ARGS:note",
+            "ARGS:file"
           ]
         },
         {
@@ -248354,8 +249819,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -248702,8 +250167,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -249569,16 +251034,16 @@
         {
           "rule_id": 920272,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -250097,8 +251562,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -251804,8 +253269,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -251856,8 +253321,8 @@
         {
           "rule_id": 920272,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -252543,8 +254008,8 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:q",
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -253837,8 +255302,8 @@
         {
           "rule_id": 942432,
           "variables": [
-            "ARGS:note",
-            "ARGS:file"
+            "ARGS:file",
+            "ARGS:note"
           ]
         },
         {
@@ -256131,8 +257596,8 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:q",
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -256598,8 +258063,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -256860,16 +258325,16 @@
         {
           "rule_id": 920272,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -257503,8 +258968,8 @@
         {
           "rule_id": 920272,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -258482,8 +259947,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -259891,8 +261356,8 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:q",
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -261202,8 +262667,8 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:q",
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -261338,8 +262803,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -261516,8 +262981,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:ARGS:a",
-            "MATCHED_VARS:MATCHED_VARS:ARGS:a"
+            "MATCHED_VARS:MATCHED_VARS:ARGS:a",
+            "MATCHED_VARS:ARGS:a"
           ]
         },
         {
@@ -261601,8 +263066,8 @@
         {
           "rule_id": 932200,
           "variables": [
-            "MATCHED_VARS:MATCHED_VARS:ARGS:a",
-            "MATCHED_VARS:ARGS:a"
+            "MATCHED_VARS:ARGS:a",
+            "MATCHED_VARS:MATCHED_VARS:ARGS:a"
           ]
         },
         {
@@ -261773,16 +263238,16 @@
         {
           "rule_id": 920272,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },
@@ -262376,8 +263841,8 @@
         {
           "rule_id": 920273,
           "variables": [
-            "ARGS:file",
             "ARGS:note",
+            "ARGS:file",
             "REQUEST_BODY"
           ]
         },
@@ -263992,8 +265457,8 @@
           "rule_id": 920273,
           "variables": [
             "ARGS:q",
-            "ARGS:note",
             "ARGS:file",
+            "ARGS:note",
             "REQUEST_BODY"
           ]
         },

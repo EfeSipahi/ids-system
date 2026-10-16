@@ -10673,6 +10673,765 @@
       "score": 0
     },
     {
+      "source": "922100",
+      "index": 1,
+      "name": "CRS 922100-1: Positive test: utf-7 is not in allowed charsets",
+      "matches": [
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922100",
+      "index": 2,
+      "name": "CRS 922100-2: Negative test: only allowed charsets when using _charset_",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922100",
+      "index": 3,
+      "name": "CRS 922100-3: Positive test: don't allow substrings of valid charsets when using _charset_",
+      "matches": [
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922100",
+      "index": 4,
+      "name": "CRS 922100-4: Negative test: no multipart part with name '_charset_' at all",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922100",
+      "index": 5,
+      "name": "CRS 922100-5: Positive test: utf-7 is not in allowed charsets, even there is an argument",
+      "matches": [
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922100",
+      "index": 6,
+      "name": "CRS 922100-6: Positive test: utf-7 is not in allowed charsets, even there is another MP",
+      "matches": [
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922100",
+      "index": 7,
+      "name": "CRS 922100-7: Positive test: utf-7 is not in allowed charsets, even if a later part sets an allowed charset",
+      "matches": [
+        {
+          "rule_id": 922100,
+          "variables": [
+            "TX:922100_charset_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 1,
+      "name": "CRS 922110-1: Single multipart part with illegal charset=utf-7",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 2,
+      "name": "CRS 922110-2: Multipart bypass - illegal charset=utf-7 in first part, legitimate utf-8 in second (original bug)",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 3,
+      "name": "CRS 922110-3: Multipart with legitimate utf-8 in first part, illegal charset=utf-7 in second",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 4,
+      "name": "CRS 922110-4: Duplicate part names - first has illegal charset=utf-7, second has utf-8",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 5,
+      "name": "CRS 922110-5: Multipart with all legitimate charsets (utf-8)",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 6,
+      "name": "CRS 922110-6: Various legitimate charsets (iso-8859-1, utf-8, windows-1252)",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 7,
+      "name": "CRS 922110-7: Illegal charset in middle part between two legitimate parts",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_1"
+          ]
+        },
+        {
+          "rule_id": 941390,
+          "variables": [
+            "ARGS:attack"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 10
+    },
+    {
+      "source": "922110",
+      "index": 8,
+      "name": "CRS 922110-8: Illegal charset=utf-16",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 9,
+      "name": "CRS 922110-9: Multiple illegal charsets (utf-7 and utf-16)",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0",
+            "TX:multipart_headers_content_types_1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 10
+    },
+    {
+      "source": "922110",
+      "index": 10,
+      "name": "CRS 922110-10: Parts without Content-Type headers",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 11,
+      "name": "CRS 922110-11: Mixed parts - some with Content-Type (one malicious), some without",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 12,
+      "name": "CRS 922110-12: Quoted charset value (legitimate)",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 13,
+      "name": "CRS 922110-13: Whitespace around charset parameter",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 14,
+      "name": "CRS 922110-14: Case variations in legitimate charset (UTF-8, Utf-8)",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 15,
+      "name": "CRS 922110-15: Illegal charset=shift-jis",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 16,
+      "name": "CRS 922110-16: Legitimate charset=iso-8859-15",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 17,
+      "name": "CRS 922110-17: Wildcard content-type with legitimate charset",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 18,
+      "name": "CRS 922110-18: Content-Type with multiple parameters",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 19,
+      "name": "CRS 922110-19: Empty multipart request",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 20,
+      "name": "CRS 922110-20: Five parts with illegal charset in middle (position 3 of 5)",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 21,
+      "name": "CRS 922110-21: Illegal charset in uppercase (CHARSET=UTF-7)",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 22,
+      "name": "CRS 922110-22: Content-Type without charset parameter",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 23,
+      "name": "CRS 922110-23: Illegal charset followed by other parameters",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 24,
+      "name": "CRS 922110-24: Stress test - 15 parts with illegal charset in part 10",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_5"
+          ]
+        },
+        {
+          "rule_id": 941390,
+          "variables": [
+            "ARGS:ATTACK_HERE"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 10
+    },
+    {
+      "source": "922110",
+      "index": 25,
+      "name": "CRS 922110-25: Illegal charset=euc-jp",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 26,
+      "name": "CRS 922110-26: Three parts with same name, middle has illegal charset",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_1"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 27,
+      "name": "CRS 922110-27: Legitimate charset=iso-8859-1",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922110",
+      "index": 28,
+      "name": "CRS 922110-28: Illegal charset with spacing obfuscation",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 29,
+      "name": "CRS 922110-29: Content-Type header in mixed case with illegal charset",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922110",
+      "index": 30,
+      "name": "CRS 922110-30: Application/json with legitimate charset",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922120",
+      "index": 1,
+      "name": "CRS 922120-1: Positive test: utf-7 is not in allowed charsets",
+      "matches": [
+        {
+          "rule_id": 922110,
+          "variables": [
+            "TX:multipart_headers_content_types_0"
+          ]
+        },
+        {
+          "rule_id": 922120,
+          "variables": [
+            "MULTIPART_PART_HEADERS:flavors"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 10
+    },
+    {
+      "source": "922120",
+      "index": 2,
+      "name": "CRS 922120-2: Negative test: no content-transfer-encoding header should be good",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922130",
+      "index": 1,
+      "name": "CRS 922130-1: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x0E character at the first position.\n--boundary\n\\x0EContent-Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922130",
+      "index": 2,
+      "name": "CRS 922130-2: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x0E character at the last position.\n--boundary\nContent-Disposition\\x0E: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922130",
+      "index": 3,
+      "name": "CRS 922130-3: Negative test: no special character in multipart header",
+      "matches": [
+        {
+          "rule_id": 933110,
+          "variables": [
+            "FILES"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 5
+    },
+    {
+      "source": "922130",
+      "index": 4,
+      "name": "CRS 922130-4: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x20 character, the last invalid character before the valid range.\n--boundary\nContent-\\x20Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [
+        {
+          "rule_id": 922130,
+          "variables": [
+            "MULTIPART_PART_HEADERS:post"
+          ]
+        },
+        {
+          "rule_id": 930120,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 932160,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933100,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933150,
+          "variables": [
+            "MATCHED_VARS:ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 25
+    },
+    {
+      "source": "922130",
+      "index": 5,
+      "name": "CRS 922130-5: Negative test: no character from outside of range in multipart header; '!' is allowed (!, the first character in the range of valid characters))",
+      "matches": [
+        {
+          "rule_id": 930120,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 932160,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 933100,
+          "variables": [
+            "ARGS"
+          ]
+        },
+        {
+          "rule_id": 933150,
+          "variables": [
+            "MATCHED_VARS:ARGS"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 20
+    },
+    {
+      "source": "922130",
+      "index": 6,
+      "name": "CRS 922130-6: Negative test: no character from outside of range in multipart header; '~' is allowed (~, the last valid character in the range of valid characters)",
+      "matches": [
+        {
+          "rule_id": 930120,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 932160,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933100,
+          "variables": [
+            "ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 933150,
+          "variables": [
+            "MATCHED_VARS:ARGS:post"
+          ]
+        },
+        {
+          "rule_id": 949110,
+          "variables": [
+            "TX:blocking_inbound_anomaly_score"
+          ]
+        }
+      ],
+      "score": 20
+    },
+    {
+      "source": "922130",
+      "index": 7,
+      "name": "CRS 922130-7: Positive test: special character in multipart header.\nRequest is a multipart request with 2 Content-Disposition headers,\nwhere the first one contains a 0x7F character, the first invalid character after the valid range.\n--boundary\nContent\\x7F-Disposition: form-data; name=\"file\"; filename=\"1.php\"\nContent-Disposition: form-data; name=\"post\"\n\n\u003c?php var_dump(file_get_contents(\"/etc/passwd\"));\n--boundary--",
+      "matches": [],
+      "score": 0
+    },
+    {
+      "source": "922130",
+      "index": 8,
+      "name": "CRS 922130-8: Negative test - do not match when there are no multipart headers.",
+      "matches": [],
+      "score": 0
+    },
+    {
       "source": "930100",
       "index": 1,
       "name": "CRS 930100-1: Path Traversal Attack (/../) encoded",
@@ -76742,8 +77501,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:java.lang.Runtime",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:java.lang.Runtime"
           ]
         },
         {
@@ -76789,8 +77548,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:java.lang.ProcessBuilder",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:java.lang.ProcessBuilder"
           ]
         },
         {
@@ -77274,8 +78033,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -77307,8 +78066,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS_NAMES:java.Runtime"
+            "MATCHED_VARS:ARGS_NAMES:java.Runtime",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -77696,8 +78455,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.clonetransformer",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.clonetransformer"
           ]
         },
         {
@@ -78204,8 +78963,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -78357,8 +79116,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -78378,8 +79137,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.instantiatefactory",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.instantiatefactory"
           ]
         },
         {
@@ -78545,8 +79304,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -78698,8 +79457,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -78886,8 +79645,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -79039,8 +79798,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -79060,8 +79819,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.invokertransformer",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.invokertransformer"
           ]
         },
         {
@@ -79227,8 +79986,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -79380,8 +80139,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -79742,8 +80501,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.prototypeserializationfactory",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.prototypeserializationfactory"
           ]
         },
         {
@@ -80062,8 +80821,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -80083,8 +80842,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.whileclosure",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:ProcessBuilder.evil.whileclosure"
           ]
         },
         {
@@ -87260,8 +88019,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:java.lang.ProcessBuilder",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:java.lang.ProcessBuilder"
           ]
         },
         {
@@ -87836,8 +88595,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -88113,8 +88872,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -92547,8 +93306,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -92629,8 +93388,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:runtime.forclosure",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:runtime.forclosure"
           ]
         },
         {
@@ -93099,8 +93858,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:runtime.instantiatetransformer",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:runtime.instantiatetransformer"
           ]
         },
         {
@@ -93487,8 +94246,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:REQUEST_BODY",
-            "MATCHED_VARS:ARGS:test"
+            "MATCHED_VARS:ARGS:test",
+            "MATCHED_VARS:REQUEST_BODY"
           ]
         },
         {
@@ -93783,8 +94542,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -93804,8 +94563,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS_NAMES:runtime.prototypeserializationfactory",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS_NAMES:runtime.prototypeserializationfactory"
           ]
         },
         {
@@ -93957,8 +94716,8 @@
         {
           "rule_id": 944120,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -94668,8 +95427,8 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS:test",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:test"
           ]
         },
         {
@@ -94755,18 +95514,18 @@
         {
           "rule_id": 944110,
           "variables": [
-            "MATCHED_VARS:ARGS:class.module.classLoader.resources.context.parent.pipeline.first.pattern",
-            "MATCHED_VARS:REQUEST_BODY"
+            "MATCHED_VARS:REQUEST_BODY",
+            "MATCHED_VARS:ARGS:class.module.classLoader.resources.context.parent.pipeline.first.pattern"
           ]
         },
         {
           "rule_id": 944130,
           "variables": [
             "ARGS:class.module.classLoader.resources.context.parent.pipeline.first.pattern",
-            "ARGS_NAMES:class.module.classLoader.resources.context.parent.pipeline.first.directory",
             "ARGS_NAMES:class.module.classLoader.resources.context.parent.pipeline.first.prefix",
             "ARGS_NAMES:class.module.classLoader.resources.context.parent.pipeline.first.fileDateFormat",
             "ARGS_NAMES:class.module.classLoader.resources.context.parent.pipeline.first.pattern",
+            "ARGS_NAMES:class.module.classLoader.resources.context.parent.pipeline.first.directory",
             "ARGS_NAMES:class.module.classLoader.resources.context.parent.pipeline.first.suffix",
             "REQUEST_BODY"
           ]
@@ -106769,15 +107528,15 @@
         {
           "rule_id": 941110,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -107362,8 +108121,8 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -107376,15 +108135,15 @@
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -107760,8 +108519,8 @@
         {
           "rule_id": 941180,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -108028,8 +108787,8 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -108809,8 +109568,8 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -108940,8 +109699,8 @@
         {
           "rule_id": 942540,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -109277,8 +110036,8 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -109291,8 +110050,8 @@
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -109885,8 +110644,8 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -109899,8 +110658,8 @@
         {
           "rule_id": 942270,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -110169,8 +110928,8 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -110183,15 +110942,15 @@
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -110295,8 +111054,8 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -112849,8 +113608,8 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -113380,22 +114139,22 @@
         {
           "rule_id": 934100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942540,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -113754,8 +114513,8 @@
         {
           "rule_id": 941110,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -114802,29 +115561,29 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942350,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942540,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -115008,22 +115767,22 @@
         {
           "rule_id": 942190,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942270,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -116312,8 +117071,8 @@
         {
           "rule_id": 942190,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -116326,8 +117085,8 @@
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -116619,8 +117378,8 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -116750,15 +117509,15 @@
         {
           "rule_id": 942100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
           "rule_id": 942360,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -117326,8 +118085,8 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -117340,8 +118099,8 @@
         {
           "rule_id": 941160,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -117472,15 +118231,15 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
           "rule_id": 941110,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -117719,8 +118478,8 @@
         {
           "rule_id": 942190,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -117846,8 +118605,8 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -118224,8 +118983,8 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -118336,8 +119095,8 @@
         {
           "rule_id": 941180,
           "variables": [
-            "ARGS:json.user.name",
-            "ARGS:json.tags.1"
+            "ARGS:json.tags.1",
+            "ARGS:json.user.name"
           ]
         },
         {
@@ -118350,8 +119109,8 @@
         {
           "rule_id": 941390,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -118520,8 +119279,8 @@
         {
           "rule_id": 941100,
           "variables": [
-            "ARGS:json.tags.1",
-            "ARGS:json.user.name"
+            "ARGS:json.user.name",
+            "ARGS:json.tags.1"
           ]
         },
         {
@@ -122026,8 +122785,8 @@
         {
           "rule_id": 930120,
           "variables": [
-            "ARGS:note",
-            "ARGS:file"
+            "ARGS:file",
+            "ARGS:note"
           ]
         },
         {

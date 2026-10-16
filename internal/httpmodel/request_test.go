@@ -530,3 +530,44 @@ func TestDecodedPath(t *testing.T) {
 		}
 	}
 }
+
+// The header lines of multipart parts are kept as received, the way
+// ModSecurity builds MULTIPART_PART_HEADERS, also when Go's reader rejects
+// one of them.
+func TestPartHeaderLines(t *testing.T) {
+	body := "preamble\r\n" +
+		"--b\r\n" +
+		"Content-Disposition: form-data; name=\"note\"\r\n" +
+		"content-type: text/plain;\r\n charset=utf-8\r\n" +
+		"\r\n" +
+		"--b is not a delimiter here, it is content\r\n" +
+		"--b\r\n" +
+		"Content-Disposition: form-data; name=\"_charset_\"\r\n" +
+		"\r\n" +
+		"utf-8\r\n" +
+		"--b\r\n" +
+		"Content\x0e-Disposition: form-data; name=\"bad\"\r\n" +
+		"\r\n" +
+		"x\r\n" +
+		"--b--\r\n" +
+		"Epilogue: not a header\r\n"
+	r := bodyRequest("multipart/form-data; boundary=b", body)
+	want := []PartHeader{
+		{Part: "note", Line: `Content-Disposition: form-data; name="note"`},
+		// A folded line is joined to the one before with one space.
+		{Part: "note", Line: "content-type: text/plain; charset=utf-8"},
+		{Part: "_charset_", Line: `Content-Disposition: form-data; name="_charset_"`},
+		// The name of this part cannot be read.
+		{Part: "", Line: "Content\x0e-Disposition: form-data; name=\"bad\""},
+	}
+	if !reflect.DeepEqual(r.Parsed.PartHeaders, want) {
+		t.Errorf("part headers =\n%q\nwant\n%q", r.Parsed.PartHeaders, want)
+	}
+	// Go's reader stops at the bad header, the scan of the lines does not.
+	if r.Status.Body != BodyPartlyInspected {
+		t.Errorf("status = %+v", r.Status)
+	}
+	if got := bodyRequest("application/x-www-form-urlencoded", body).Parsed.PartHeaders; got != nil {
+		t.Errorf("a form body has part headers: %q", got)
+	}
+}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 )
 
@@ -30,15 +31,40 @@ import (
 // |41 42| inside a phrase. That form is rejected here.
 type pm struct {
 	nodes []pmNode
+	// root gives the next state from the start state for every byte, or 0
+	// to stay there. The start state is the one visited most, so it gets a
+	// full table.
+	root *[256]int32
 }
 
 // pmNode is one state of the automaton.
 type pmNode struct {
-	next map[byte]int32 // the state after reading a byte
-	fail int32          // where to continue when no next state fits
+	next map[byte]int32 // the state after reading a byte; used while building
+	// edges is next as a list sorted by byte, which is quicker to search
+	// than a map for the few bytes most states have.
+	edges []pmEdge
+	fail  int32 // where to continue when no next state fits
 	// length is the length of the longest phrase that ends in this state,
 	// taking the fail links into account; 0 if none ends here.
 	length int32
+}
+
+type pmEdge struct {
+	c    byte
+	next int32
+}
+
+// step returns the state after reading c in state, or -1.
+func (n *pmNode) step(c byte) int32 {
+	for _, e := range n.edges {
+		if e.c == c {
+			return e.next
+		}
+		if e.c > c {
+			break
+		}
+	}
+	return -1
 }
 
 func newPm(argument string) (Operator, error) {
@@ -135,7 +161,19 @@ func buildPm(phrases []string) pm {
 			queue = append(queue, child)
 		}
 	}
-	return pm{nodes: nodes}
+	// Turn the maps into sorted lists and the start state into a table.
+	root := new([256]int32)
+	for c, next := range nodes[0].next {
+		root[c] = next
+	}
+	for i := range nodes {
+		for c, next := range nodes[i].next {
+			nodes[i].edges = append(nodes[i].edges, pmEdge{c: c, next: next})
+		}
+		slices.SortFunc(nodes[i].edges, func(a, b pmEdge) int { return int(a.c) - int(b.c) })
+		nodes[i].next = nil
+	}
+	return pm{nodes: nodes, root: root}
 }
 
 func (o pm) Match(value string, _ func(string) string) Result {
@@ -143,11 +181,12 @@ func (o pm) Match(value string, _ func(string) string) Result {
 	for i := 0; i < len(value); i++ {
 		c := lowerASCII(value[i])
 		for {
-			if next, ok := o.nodes[state].next[c]; ok {
-				state = next
+			if state == 0 {
+				state = o.root[c]
 				break
 			}
-			if state == 0 {
+			if next := o.nodes[state].step(c); next >= 0 {
+				state = next
 				break
 			}
 			state = o.nodes[state].fail

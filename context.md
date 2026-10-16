@@ -1,6 +1,6 @@
 # IDS — Current Working Context
 
-Last updated: 12 October 2026  
+Last updated: 16 October 2026  
 Product directory: `/home/esip/Documents/ids-system`  
 Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.md)
 
@@ -12,7 +12,7 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 
 ## 2. What we have made
 
-**The rule layer runs every CRS request rule file except 922 (multipart), at all four paranoia levels:** 905 (common exceptions), 911 (method enforcement), 913 (scanner detection), 920 (protocol enforcement), 921 (protocol attacks), 930 (path traversal and file access), 931 (remote file inclusion), 932 (remote command execution), 933 (PHP), 934 (generic attacks), 941 (XSS), 942 (SQL injection), 943 (session fixation), and 944 (Java attacks), 282 detection rules in all, from the unmodified CRS files, with the setup, gate, and scoring rules they depend on. The other request rule files are the work in progress; see section 3.
+**The rule layer runs every CRS 4.30.0 request rule file, at all four paranoia levels:** 905 (common exceptions), 911 (method enforcement), 913 (scanner detection), 920 (protocol enforcement), 921 (protocol attacks), 922 (multipart attacks), 930 (path traversal and file access), 931 (remote file inclusion), 932 (remote command execution), 933 (PHP), 934 (generic attacks), 941 (XSS), 942 (SQL injection), 943 (session fixation), and 944 (Java attacks), 286 detection rules in all, from the unmodified CRS files, with the setup, gate, and scoring rules they depend on. The rule part is finished; response rules wait for the proxy decision. See section 3.
 
 Run it:
 
@@ -40,12 +40,12 @@ Other files:
 
 | Path | Content |
 | --- | --- |
-| `configs/crs-first-engine.json` | The product configuration. Loads eighteen CRS files; 449 of 453 rules active, 4 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1 |
-| `testdata/requests/` | Example requests: starter file, the 5,025 converted CRS tests of the finished rule files (`crs/`), the 47 of file 922 (`crs-pending/`), examples for file 905, 1,300 generated variants (`generated/`); see its README |
+| `configs/crs-first-engine.json` | The product configuration. Loads nineteen CRS files; 456 of 460 rules active, 4 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1 |
+| `testdata/requests/` | Example requests: starter file, all 5,072 converted CRS request tests (`crs/`), examples for file 905, 1,300 generated variants (`generated/`); see its README |
 | `testdata/crs-tests.json`, `testdata/crs-test-setup.conf` | The configuration the CRS tests are written for: the product configuration plus CRS's test setup rule 900005, at level 4 |
 | `testdata/reference/` | What Coraza found for those requests; see its README |
 | `tools/` | Python scripts that generate the test data, and `coraza-reference/`, a separate Go module that runs Coraza. Coraza is not a dependency of the IDS |
-| `docs/development-plan-all-request-rules.md` | **The plan in progress:** six plans, A to F, with results after each |
+| `docs/development-plan-all-request-rules.md` | The plan for all request rules (finished 16 October 2026): plans A to F, with results after each |
 | `docs/development-plan-rule-layer.md` | The earlier plan (finished 11 October), with results per stage in its section 8 |
 | `docs/crs-4.30.0-ruleset.md` | Reference for the CRS files and our scope |
 | `docs/go-learning-plan.md` | The user's Go learning plan |
@@ -53,23 +53,23 @@ Other files:
 ### 2.2. What was checked (16 October 2026)
 
 1. `go vet ./...`, `go test ./...`, and `go test -race ./...` pass for all eight packages.
-2. **CRS regression tests:** all 5,025 tests of the fifteen finished rule files pass with the CRS test setup at paranoia level 4, the level the CRS project runs them at. At levels 1 to 3 a test passes when its rule belongs to the level, and a rule above the level never matches.
-3. **Against Coraza v3.8.1:** 6,330 requests compared at level 1 (3,788 with a match) and at level 4 (5,952 with a match). Rules, match places, match counts, and scores are identical, with four explained classes, each checked by its own rule: invalid UTF-8 (`utf8toUnicode`), bodies without a reader (Coraza splits them into parameters; we, like ModSecurity, do not), targets that Go's URL parser changes (Coraza re-encodes `REQUEST_URI`; ModSecurity and we use it as sent), and HTTP/0.9 request lines. The reference is produced with Coraza's build option `coraza.rule.no_regex_multiline`; see `testdata/reference/README.md` for why.
+2. **CRS regression tests:** all 5,072 convertible tests of the request rule files pass with the CRS test setup at paranoia level 4, the level the CRS project runs them at. At levels 1 to 3 a test passes when its rule belongs to the level, and a rule above the level never matches.
+3. **Against Coraza v3.8.1:** 6,372 requests compared at level 1 (3,813 with a match) and at level 4 (5,994 with a match). Rules, match places, match counts, and scores are identical, with five explained classes, each checked by its own rule: invalid UTF-8 (`utf8toUnicode`), bodies without a reader (Coraza splits them into parameters; we, like ModSecurity, do not), targets that Go's URL parser changes (Coraza re-encodes `REQUEST_URI`; ModSecurity and we use it as sent), HTTP/0.9 request lines, and the order of multipart headers. The reference is produced with Coraza's build option `coraza.rule.no_regex_multiline`; see `testdata/reference/README.md` for why.
 4. **Transformations:** 12 agree with 10,829 results recorded from the ModSecurity v2 C code; the 4 that follow Coraza agree with 4,901 results recorded from Coraza's Go code.
 5. **M21:** attack and normal requests alternate against one rule set, in sequence and in eight goroutines, without affecting each other.
 6. **M11:** the default text and JSON output contain none of the payloads of the example file.
-7. **Fuzzing** of the transformations (16 October) and (11 October) of the whole rule layer, the transformations, and the body parsers found no crash.
+7. **Fuzzing** (16 October 2026) of the whole rule layer, the prefilter, the transformations, and the body parsers found no crash.
 
 ### 2.3. Two measurements, and what they do not show
 
-1. **Pilot records:** of the 1,000 CSIC records of the ML pilot, flagged normal / anomalous: level 1: 96 / 176; levels 2 to 4: 500 / 500. At level 1 rule 920250 flags Latin-1 text, which is not valid UTF-8 (CRS checks UTF-8 by default); at level 2 rule 920451 flags the `Accept-Charset` header that every 2010 record carries. Coraza flags the same numbers. These are settings for one application (profiles, K10), not engine errors; the data is also far from today's traffic. This is not a false-positive rate or a detection rate for real traffic: the data is old and synthetic, and "anomalous" there includes many requests outside our three attack types.
-2. **Speed** on the development laptop, with all request rule files but one: about 1.2 to 2.1 ms per ordinary request on one core, about 57 ms for a request with a 9.4 kB field. With three rule files it was 0.4 to 0.7 ms and 18.5 ms. It grows with the number of rules, because every pattern reads every value. Measured, not optimised; plan F deals with it.
+1. **Pilot records:** of the 1,000 CSIC records of the ML pilot, flagged normal / anomalous: level 1: 96 / 176; levels 2 to 4: 500 / 500. At level 1 rule 920250 flags Latin-1 text, which is not valid UTF-8 (CRS checks UTF-8 by default); with CRS's setting for non-UTF-8 applications level 1 flags 0 / 116. At level 2 rule 920451 flags the `Accept-Charset` header that every 2010 record carries. Coraza flags the same numbers at every level. These are settings for one application (profiles, K10), not engine errors; the data is also far from today's traffic. This is not a false-positive rate or a detection rate for real traffic: the data is old and synthetic, and "anomalous" there includes many requests outside our three attack types.
+2. **Speed** on the development laptop, with all request rule files: 0.55 ms for an ordinary GET and 19 ms for a request with a 9.4 kB field on one core; on 12 threads one ordinary request every 0.12 ms, about 8,000 per second. Plan F made it two to three times faster without changing a result (word prefilter for patterns, values built once per request).
 
 ### 2.4. What it does not do
 
 1. It reads requests from files only. There is no proxy integration.
 2. There is no ML layer, profile layer, decision mechanism, or stored record. A finding of the rule layer is not an alert decision.
-3. All request rule files but 922 (multipart). The others are planned; see section 3.1. No response rules.
+3. Request rules only; no response rules (they need a copy of each response, K8).
 4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
 5. Passing the CRS tests is not full CRS compatibility, and no request has been run through ModSecurity itself.
 
@@ -77,11 +77,11 @@ Other files:
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: everything up to and including plan D is on `main` and pushed to GitHub (16 October 2026). The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to and including plan F is on `main` and pushed to GitHub (16 October 2026). The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
-### 3.1. In progress: all CRS request rules, all paranoia levels
+### 3.1. Finished: all CRS request rules, all paranoia levels
 
 On 12 October 2026 the user decided to finish the rule part before any other layer (decisions K1–K11, main plan section 11.16). The work follows [docs/development-plan-all-request-rules.md](docs/development-plan-all-request-rules.md). **The user wants one plan at a time: do it, report, stop.**
 
@@ -91,10 +91,10 @@ On 12 October 2026 the user decided to finish the rule part before any other lay
 | B | Request variables, small operators, engine items; files 911, 931, 943, 944 | 1,273 | **Done 12 October 2026** |
 | C | `normalizePath`, `escapeSeqDecode`, `base64Decode`; files 932, 933, 934 | 1,818 | **Done 16 October 2026** |
 | D | Protocol rules; files 920, 921, 905, and the tests of 901 and 949 | 546 | **Done 16 October 2026** |
-| E | Multipart rules; file 922 | 47 | Next; not started |
-| F | Checks on the whole set: Coraza, normal traffic, speed, documents | all 5,072 | Not started |
+| E | Multipart rules; file 922 | 47 | **Done 16 October 2026** |
+| F | Checks on the whole set: Coraza, normal traffic, speed, documents | all 5,072 | **Done 16 October 2026** |
 
-Do not start plan E before the user says so.
+The plan is finished. The next step in the user's order is records and alerts (section 3.3); it needs its own decisions first.
 
 Response rules (CRS files 950–980) are not part of this; they wait for the proxy decision (K8).
 
@@ -102,8 +102,9 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
 
 | # | Point | Why it matters |
 | --- | --- | --- |
-| 1 | Speed on long values | 18.5 ms for 9.4 kB. Two candidate improvements are named in the rule-layer plan, section 8.7 |
-| 2 | User review | The user has not read the code. Reading order: [docs/go-learning-plan.md](docs/go-learning-plan.md), then `internal/engine/transaction.go` |
+| 1 | Speed on long values | 19 ms for 9.4 kB after plan F. Most of the rest is in patterns without a fixed word, mostly the command-evasion rules of file 932 |
+| 2 | Realistic normal traffic (A07) | The only normal traffic so far is the 500 CSIC records from 2010, which CRS flags heavily for reasons of that one application (Latin-1 text, an old header). False-alarm numbers need recent, real traffic of a target application |
+| 3 | User review | The user has not read the code. Reading order: [docs/go-learning-plan.md](docs/go-learning-plan.md), then `internal/engine/transaction.go` |
 
 ### 3.3. After the rule part (order decided by the user, 12 October 2026)
 
@@ -119,7 +120,7 @@ Each still needs its own decisions before work starts.
 
 1. Read this file and the main plan first; verify status against existing files. Do not treat approved architecture as implemented features.
 2. Communicate in English using numbered points, and maintain plans in English until the user requests otherwise. Explain decisions and their reasons one at a time; do not approve open proposals on the user's behalf.
-3. Working mode for code: small packages with tests and an explanation of each. For the current plan the user wants one plan (A to F) at a time, with a report and a stop after each. The user knows Python and finished a Go course.
+3. Working mode for code: small packages with tests and an explanation of each. For the request-rule plan the user asked for one plan at a time, then for E and F together; that plan is finished, so return to one step at a time with a pause for review unless told otherwise. The user knows Python and finished a Go course.
 4. Check behaviour against a source before writing it down. Expected values in tests must come from the rule files, a reference implementation, or an independent count, not from a guess. Several times in this project a guessed value or a remembered behaviour was wrong and only a reference caught it.
 5. Approved Go dependencies may be downloaded by the assistant. Propose a new dependency first.
 6. Do not commit unless the user asks.

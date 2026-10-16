@@ -18,8 +18,8 @@ Related decisions: M15, M17, M18, M19, M20, M21 in the [main plan](../ids-system
 | Path | Content | Used by us |
 | --- | --- | --- |
 | `crs-setup.conf.example` | Settings template: paranoia level, thresholds, default actions | Yes, loaded first |
-| `rules/*.conf` | 27 rule files | Selected files only, see section 6 |
-| `rules/*.data` | 20 word lists read by `@pmFromFile` rules | Three of them, later |
+| `rules/*.conf` | 27 rule files | All request files (since 16 October 2026); response files not yet, see section 6 |
+| `rules/*.data` | 20 word lists read by `@pmFromFile` rules | Those that request rules read |
 | `tests/regression/tests/` | 326 YAML files with 5,260 test cases, grouped per rule | Yes, as acceptance examples |
 | `regex-assembly/` | Sources from which the long regexes are generated | No, reference only |
 | `plugins/` | Empty placeholders for optional plugins | No |
@@ -110,21 +110,21 @@ Rule roles: **setup** (write defaults to `TX`), **gate** (skip higher PL rules),
 
 ## 6. Our scope
 
-### 6.1. Approved product scope (M19, M20)
+### 6.1. Scope after the decisions of 12 October 2026 (K6, K7)
 
-PL1 only, in three groups:
+M19 and M20 first limited the scope to the PL1 rules of files 930, 941, and 942. On 12 October 2026 the user extended it (main plan, section 11.16): all request attack groups (K6) and all four paranoia levels, chosen in the configuration with PL1 as the default (K7). Response rules wait for the proxy decision (K8).
 
-| Group | File | PL1 rules in the file | Note |
-| --- | --- | --- | --- |
-| Path traversal | 930 | 5 | M19 names 930100 and 930110 as the starting references. The other three (930120, 930130, 930140) are file-access checks; whether they are in scope is still open (A11) |
-| XSS | 941 | 26 | |
-| SQLi | 942 | 20 | |
+| Part | Files | Status on 16 October 2026 |
+| --- | --- | --- |
+| Request rules | 901, 905, 911, 913, 920, 921, 922, 930–934, 941–944, 949, 999 | All run, at levels 1 to 4. 456 of 460 rules active; 4 setup rules of 901 excluded with reasons |
+| Response rules | 950–956, 959, 980 | Not loaded; they need a copy of each response |
 
-That is 48 to 51 detection rules out of 214 PL1 rules, plus the control rules they depend on (`crs-setup`, 901, the gates inside each file, 949). File 999 changes the targets of rules in 941 and 942, so it becomes a dependency when those groups are implemented. Everything else in section 3 is outside Phase 1.
+The work followed `docs/development-plan-all-request-rules.md`.
 
-### 6.2. First engine
+### 6.2. Earlier stages
 
-Detection rules 930100 and 930110 only, with their real dependencies. See the approved plan for this step.
+1. **First engine (5–11 October 2026):** detection rules 930100 and 930110, with their real dependencies.
+2. **Rule layer for the first scope (11 October 2026):** the 51 PL1 rules of files 930, 941, and 942. Sections 6.3 to 6.5 and 7 below describe that scope and are kept as a reference.
 
 ### 6.3. PL1 rules in file 930
 
@@ -211,13 +211,7 @@ Points to keep in mind:
 
 1. Location: `tests/regression/tests/<rule file name>/<rule id>.yaml`.
 2. Each test describes a request (`method`, `uri`, `headers`, `data`) and the expected result (`expect_ids` or `no_expect_ids`).
-3. Counts for our scope:
-
-   | Group | Files | Test cases |
-   | --- | --- | --- |
-   | 930 | 6 | 83 |
-   | 941 | 33 | 263 |
-   | 942 | 60 | 1,032 |
+3. Counts (converted on 16 October 2026, all request files): 5,094 test requests; 22 of them only check the web server's answer and are left out; the other 5,072 are converted to `testdata/requests/crs/` and all pass with the test configuration `testdata/crs-tests.json`. The first scope had 83 in file 930, 263 in 941, and 1,033 in 942 (1,032 in the first count of 5 October, which missed one).
 
 4. These tests were written for reference engines running the complete ruleset. Some expectations may depend on rules or engine behaviour outside our scope, so each group has to be reviewed before it is used as an acceptance set.
 

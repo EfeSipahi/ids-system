@@ -28,7 +28,7 @@ func TestTextOutput(t *testing.T) {
 		t.Fatalf("exit %d, stderr %q", code, errOut)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 449 active, 4 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 456 active, 4 excluded",
 		"[2] CRS 930110-2: traversal in the query string",
 		"930110  CRITICAL  ARGS:arg ",
 		// Six matches of 5 points: 930100 and 930110 twice, 930120 and
@@ -121,7 +121,7 @@ func TestJSONOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &doc); err != nil {
 		t.Fatalf("output is not JSON: %v\n%s", err, out)
 	}
-	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 449 || len(doc.Startup.ExcludedRules) != 4 || doc.Startup.ExcludedRules[3].ID != 901450 {
+	if doc.Startup.Ruleset != "OWASP_CRS/4.30.0" || doc.Startup.ActiveRules != 456 || len(doc.Startup.ExcludedRules) != 4 || doc.Startup.ExcludedRules[3].ID != 901450 {
 		t.Errorf("startup = %+v", doc.Startup)
 	}
 	if len(doc.Requests) != 6 {
@@ -145,7 +145,7 @@ func TestStartupOnly(t *testing.T) {
 		t.Fatalf("exit %d", code)
 	}
 	for _, want := range []string{
-		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 449 active, 4 excluded",
+		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 456 active, 4 excluded",
 		"excluded 901350 (REQUEST-901-INITIALIZATION.conf:387): Body processor control",
 		"excluded 901450 (REQUEST-901-INITIALIZATION.conf:517): Sampling is not implemented",
 	} {
@@ -270,8 +270,8 @@ func TestSummaryOfCRSTests(t *testing.T) {
 	if doc.Requests != nil {
 		t.Error("the summary also lists the requests")
 	}
-	if len(doc.Summary) != 286 {
-		t.Fatalf("%d files, want 286", len(doc.Summary))
+	if len(doc.Summary) != 290 {
+		t.Fatalf("%d files, want 290", len(doc.Summary))
 	}
 	tests := map[string]int{}
 	for _, g := range doc.Summary {
@@ -283,7 +283,7 @@ func TestSummaryOfCRSTests(t *testing.T) {
 			t.Errorf("rule %s: %+v", g.Source, g)
 		}
 	}
-	want := map[string]int{"901": 18, "911": 8, "913": 9, "920": 407, "921": 116, "930": 83, "931": 42, "932": 1089, "933": 442, "934": 287, "941": 263, "942": 1033, "943": 47, "944": 1176, "949": 5}
+	want := map[string]int{"901": 18, "911": 8, "913": 9, "920": 407, "921": 116, "922": 47, "930": 83, "931": 42, "932": 1089, "933": 442, "934": 287, "941": 263, "942": 1033, "943": 47, "944": 1176, "949": 5}
 	if !reflect.DeepEqual(tests, want) {
 		t.Errorf("tests per rule file = %v, want %v", tests, want)
 	}

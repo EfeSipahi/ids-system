@@ -30,8 +30,8 @@ Document role: Primary reference for current architecture decisions, implementat
 | Goal | A general-purpose, open-source HTTP IDS that is useful in practice and customizable through application profiles |
 | Phase 1 | Detect SQLi, XSS carried in HTTP requests, and path traversal attempts; no automatic blocking |
 | Product architecture | Go core; ML development in Python; integration with an existing TLS reverse proxy; rule, ML, and application-profile layers |
-| Rule engine | Our own Go SecLang engine; CRS 4.30.0; initially PL1 within the selected attack groups |
-| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs all 51 PL1 rules of CRS files 930, 941, and 942 on offline requests through the `ids-offline` command (sections 11.9–11.14) |
+| Rule engine | Our own Go SecLang engine; CRS 4.30.0; all request rule groups, paranoia level 1 to 4 by configuration, default 1 (M19 and M20 as amended on 12 October 2026) |
+| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20) |
 | Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the profile layer, the decision mechanism, and persistent records |
 | Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
 | Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions |
@@ -188,8 +188,8 @@ The following index is for navigation. The detailed rationale, examples, and bou
 | [M16](#m16) | Three HTTP information groups | A02, A03 |
 | [M17](#m17) | Phase 1 HTTP content scope | A02, A08, A11 |
 | [M18](#m18) | Pin CRS to version 4.30.0 | A11 |
-| [M19](#m19) | SQLi, XSS, and path traversal groups | A11 |
-| [M20](#m20) | Initially PL1 | A11 |
+| [M19](#m19) | SQLi, XSS, and path traversal groups; amended 12 October 2026: all request rule groups | A11 |
+| [M20](#m20) | Initially PL1; amended 12 October 2026: levels 1 to 4 by configuration, default 1 | A11 |
 | [M21](#m21) | Rules prepared at startup; separate per-request execution state | A08, A11 |
 
 <a id="m01"></a>
@@ -522,7 +522,7 @@ These three decisions supersede the earlier Python-core and separate live Python
 <a id="m15"></a>
 ### 5.15. M15 — Our own CRS-supporting rule engine
 
-**Implementation / verification status:** Implemented for the Phase 1 rule scope on 11 October 2026: 179 of the 186 rules in the seven loaded CRS files are active, the 7 others are excluded with reasons, and loading fails on anything unsupported. Verified by the 687 CRS regression tests of the 51 PL1 rules and by comparison with Coraza (section 11.14). This is not full CRS compatibility.
+**Implementation / verification status:** Implemented for the request side of CRS on 16 October 2026: 456 of the 460 rules in the eighteen loaded CRS files are active, the 4 others are excluded with reasons, and loading fails on anything unsupported. Verified by all 5,072 convertible CRS regression tests of the request files and by comparison with Coraza (section 11.20). Response rules are not run, so this is not full CRS compatibility. (On 11 October 2026: 179 of 186 rules in seven files, 687 tests.)
 
 **Scope and open boundaries:** Coraza is not the product engine; exact supported behavior and libraries remain open.
 
@@ -638,15 +638,15 @@ Reference: [OWASP CRS v4.30.0 release](https://github.com/coreruleset/corerulese
 <a id="m19"></a>
 ### 5.19. M19 — Initial rule groups and expansion direction
 
-**Amended on 12 October 2026 (K6, section 11.16):** all request attack groups are in scope; work in progress.
+**Amendment of 12 October 2026 (K6, section 11.16):** the rule part supports all request rule groups of CRS 4.30.0, not only SQLi, XSS, and path traversal: method and protocol enforcement, protocol attacks, multipart, scanners, remote file inclusion, command execution, PHP, generic attacks, session fixation, and Java. Response rules (files 950–980) are not part of this amendment; they wait for the proxy decision (K8, A01). The product goals of section 3.1 are unchanged; the extra groups are detection the engine runs, not new commitments about detection quality.
 
-**Implementation / verification status:** Implemented on 11 October 2026: all PL1 rules of files 930 (5), 941 (26), and 942 (20) run. The user decided that all five PL1 rules of file 930 are in scope (section 11.13).
+**Implementation / verification status:** Implemented on 16 October 2026 (sections 11.16 to 11.20): all 16 request rule files with detection rules run, 456 of the 460 rules of the product configuration are active, and all 5,072 convertible CRS regression tests of those files pass with the CRS test setup. Results agree with Coraza v3.8.1 on 6,372 requests, apart from explained classes. Before the amendment: on 11 October 2026 the 51 PL1 rules of files 930, 941, and 942 ran.
 
-**Scope and open boundaries:** Groups 942, 941, and the path traversal subset of 930; exact IDs remain open.
+**Scope and open boundaries:** all request rule groups (amended). Response rule groups are open.
 
 **Related decisions:** M15, M17, M18, M20. **Open detail records:** A11.
 
-**Status: Approved; rule-engine support has not yet been developed.**
+**Status: Approved, amended on 12 October 2026, implemented for the request side.** The text below is the original decision.
 
 **Decision:** CRS 4.30.0 engine development will start with support for executing SQLi, request-borne XSS, and path traversal rules, including the common setup and execution operations they require. Expansion toward the full CRS scope is a later goal; full compatibility is neither achieved nor committed for Phase 1.
 
@@ -669,15 +669,15 @@ M17's HTTP content scope applies. XML, response bodies, and other deferred conte
 <a id="m20"></a>
 ### 5.20. M20 — Initially PL1, with expansion to higher levels
 
-**Amended on 12 October 2026 (K7, section 11.16):** all four levels are supported and chosen with `paranoia_level` in the configuration; the default is 1 and any other value than 1 to 4 is an error at startup. Implemented for files 913, 930, 941, and 942.
+**Amendment of 12 October 2026 (K7, section 11.16):** all four paranoia levels are supported. The level is chosen with `paranoia_level` in the configuration (or `-paranoia-level` of `ids-offline`); the default is 1. Any value other than 1 to 4 stops the start with an error, which fulfils point 1 below. A higher level includes the lower ones, as point 3 says. Points 2 and 4 stand: higher levels flag more normal requests, and the pilot records show how much (section 11.20); the level is not a phase, severity, or threshold.
 
-**Implementation / verification status (before the amendment):** Implemented on 11 October 2026. The level is the CRS default of 1; the PL2–PL4 rules of the loaded files are compiled and skipped by the CRS gates. The configuration has no option to change the level, so point 1 of this decision (an explicit error for an unsupported level) has nothing to act on yet.
+**Implementation / verification status:** Implemented on 16 October 2026 for all request rule files. The CRS tests run at level 4, as the CRS project runs them, and again at levels 1 to 3, where a rule above the level never matches.
 
-**Scope and open boundaries:** PL1 within selected groups; PL2–PL4 will be considered as development progresses.
+**Scope and open boundaries:** levels 1 to 4 (amended). Which level a deployment should use is a question for the profile work (K10): at levels 2 and above the old CSIC data is flagged heavily.
 
 **Related decisions:** M15, M18, M19. **Open detail records:** A11.
 
-**Status: Approved; engine support is not yet implemented or verified.**
+**Status: Approved, amended on 12 October 2026, implemented.** The text below is the original decision.
 
 **Decision:** Initially target only **PL1** for CRS 4.30.0. This applies to M19's SQLi, request-borne XSS, and path traversal scope; it does not mean supporting every CRS PL1 rule. Common setup, variables, scoring, and execution controls required by the selected rules will also be supported.
 
@@ -1168,7 +1168,7 @@ The rule-layer plan ([docs/development-plan-rule-layer.md](docs/development-plan
 5. Pilot records unchanged: 0 of 500 normal and 80 of 500 anomalous flagged.
 6. `go vet`, `go test`, and `go test -race` pass for all eight packages; 20 seconds of fuzzing found nothing.
 
-Not committed.
+Committed and pushed to GitHub on 11 October 2026.
 
 ### 11.16. Decision to finish the rule part first, and plan A — 12 October 2026
 
@@ -1224,3 +1224,19 @@ Plan D is done: the protocol rule files 905, 920, and 921 run, with the operator
 5. **False positives (A04, A07):** with the protocol rules, the old CSIC data is flagged heavily: 96 of 500 normal records at level 1 (Latin-1 text, which the default UTF-8 check flags) and all 500 at level 2 (an `Accept-Charset` header in every record). Coraza flags the same. Both are application settings, for the profile work (K10).
 
 Details are in the progress section of the plan.
+
+### 11.20. Plans E and F of the request-rule plan; the request side of CRS is complete — 16 October 2026
+
+**Plan E:** rule file 922 (multipart attacks) runs, with the variable `MULTIPART_PART_HEADERS`. Its header lines are read as ModSecurity v2 reads them, except that a line with characters outside the allowed range is kept, so that rule 922130 can find it.
+
+**Plan F, the checks on the whole set:**
+
+1. **CRS tests:** 5,072 of 5,072 pass at level 4 with the CRS test setup; at levels 1 to 3 a rule above the level never matches.
+2. **Coraza v3.8.1:** 6,372 requests compared at levels 1 and 4, 0 unexplained differences. The explained classes are listed in `testdata/reference/README.md`.
+3. **Normal traffic, the 1,000 CSIC records:** flagged normal / anomalous: level 1: 96 / 176; levels 2 to 4: 500 / 500. Coraza flags exactly the same at every level. At level 1 all 96 normal records come from rule 920250, because the application sends Latin-1 text; with CRS's documented setting for such applications (`tx.crs_validate_utf8_encoding=0`) level 1 flags 0 normal and 116 anomalous records. At level 2 every record is flagged because each carries an `Accept-Charset` header, which CRS restricts at that level.
+4. **Speed** (one core of the development laptop): an ordinary GET 0.55 ms (1.2 ms before plan F), the request with a 9.4 kB field 19 ms (57 ms before); on 12 threads one ordinary request every 0.12 ms, about 8,000 per second. Three changes, none of which changes a result: a pattern is first asked whether it matches and only then for its groups; a word prefilter skips values a pattern cannot match; the values of a variable are built once per request. The prefilter is checked on all CRS patterns against about 30,000 values each and by fuzzing.
+5. **Fuzzing, race detector, M11, M21:** pass.
+
+**What this does and does not mean:** the engine runs the whole request side of CRS 4.30.0 and agrees with the CRS tests and with Coraza. It is still not full CRS compatibility: response rules are not run, no request has been run through ModSecurity itself, and the CRS tests do not measure detection or false-positive rates on real traffic. The CSIC data shows that levels 2 to 4, and even level 1 for a non-UTF-8 application, need settings per application.
+
+Committed and pushed to GitHub on 16 October 2026.

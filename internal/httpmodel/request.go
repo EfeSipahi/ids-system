@@ -102,14 +102,26 @@ type Parsed struct {
 	Query    []Param
 	BodyArgs []Param
 
-	// Files lists the files of a multipart body. Only their names are
-	// kept; file contents are not read.
+	// Files lists the files of a multipart body. Only their names and
+	// sizes are kept; file contents are not.
 	Files []File
+
+	// PartHeaders holds the header lines of every part of a multipart
+	// body, as received, in order.
+	PartHeaders []PartHeader
 
 	// XMLText holds the text between the tags of an XML body, one entry
 	// per piece, and XMLAttributes the values of all attributes.
 	XMLText       []string
 	XMLAttributes []string
+}
+
+// PartHeader is one header line of one part of a multipart body, such as
+// "Content-Type: text/plain". Part is the name of the part, from its
+// Content-Disposition header, or "" when that cannot be read.
+type PartHeader struct {
+	Part string
+	Line string
 }
 
 // File is one uploaded file of a multipart body.

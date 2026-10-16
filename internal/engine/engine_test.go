@@ -865,6 +865,29 @@ SecRule REQUEST_PROTOCOL "@rx ." "id:2,phase:1,pass,nolog,setvar:tx.protocol=%{M
 	wantVars(t, rs.Evaluate(get("/a")), map[string]string{"line": "GET /a HTTP/1.1", "protocol": "HTTP/1.1"})
 }
 
+// MULTIPART_PART_HEADERS gives every header line of every part, keyed by
+// the name of the part.
+func TestMultipartPartHeaders(t *testing.T) {
+	rs := loadRules(t, `
+SecRule MULTIPART_PART_HEADERS "@rx ^content-type" "id:1,phase:2,pass,log,t:lowercase"
+SecRule &MULTIPART_PART_HEADERS:_charset_ "@eq 1" "id:2,phase:2,pass,log"
+`)
+	body := "--b\r\nContent-Disposition: form-data; name=\"_charset_\"\r\n\r\nutf-8\r\n" +
+		"--b\r\nContent-Disposition: form-data; name=\"f\"; filename=\"a.txt\"\r\nContent-Type: text/plain\r\n\r\nx\r\n--b--\r\n"
+	req := httpmodel.New(httpmodel.Received{
+		Method: "POST", Target: "/", Version: "HTTP/1.1", Body: []byte(body),
+		Headers: []httpmodel.Header{{Name: "Content-Type", Value: "multipart/form-data; boundary=b"}},
+	})
+	var got []string
+	for _, m := range rs.Evaluate(req).Matches {
+		got = append(got, fmt.Sprintf("%d %s=%s", m.RuleID, m.VarName, m.Value))
+	}
+	want := []string{"1 MULTIPART_PART_HEADERS:f=content-type: text/plain", "2 &MULTIPART_PART_HEADERS:_charset_=1"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("matches = %q\nwant      %q", got, want)
+	}
+}
+
 func TestRegexSelectors(t *testing.T) {
 	rs := loadRules(t, `
 SecRule REQUEST_COOKIES:/^_ga/ "@rx ." "id:1,phase:2,log,pass"

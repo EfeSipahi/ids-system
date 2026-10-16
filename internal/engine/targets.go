@@ -37,6 +37,7 @@ const (
 	colFilesCombinedSize
 	colRequestBodyLength
 	colReqbodyProcessor
+	colMultipartPartHeaders
 	colRequestCookies
 	colRequestCookiesNames
 	colRequestURIRaw
@@ -55,37 +56,38 @@ var collections = map[string]struct {
 	col    collection
 	single bool
 }{
-	"ARGS":                  {col: colArgs},
-	"ARGS_NAMES":            {col: colArgsNames},
-	"ARGS_GET":              {col: colArgsGet},
-	"ARGS_GET_NAMES":        {col: colArgsGetNames},
-	"ARGS_POST":             {col: colArgsPost},
-	"ARGS_POST_NAMES":       {col: colArgsPostNames},
-	"REQUEST_HEADERS":       {col: colRequestHeaders},
-	"REQUEST_HEADERS_NAMES": {col: colRequestHeadersNames},
-	"REQUEST_METHOD":        {col: colRequestMethod, single: true},
-	"REQUEST_PROTOCOL":      {col: colRequestProtocol, single: true},
-	"REQUEST_LINE":          {col: colRequestLine, single: true},
-	"REQUEST_URI":           {col: colRequestURI, single: true},
-	"QUERY_STRING":          {col: colQueryString, single: true},
-	"REQUEST_BODY":          {col: colRequestBody, single: true},
-	"MATCHED_VAR":           {col: colMatchedVar, single: true},
-	"MATCHED_VAR_NAME":      {col: colMatchedVarName, single: true},
-	"REMOTE_ADDR":           {col: colRemoteAddr, single: true},
-	"ARGS_COMBINED_SIZE":    {col: colArgsCombinedSize, single: true},
-	"FILES_COMBINED_SIZE":   {col: colFilesCombinedSize, single: true},
-	"REQUEST_BODY_LENGTH":   {col: colRequestBodyLength, single: true},
-	"REQBODY_PROCESSOR":     {col: colReqbodyProcessor, single: true},
-	"REQUEST_COOKIES":       {col: colRequestCookies},
-	"REQUEST_COOKIES_NAMES": {col: colRequestCookiesNames},
-	"REQUEST_URI_RAW":       {col: colRequestURIRaw, single: true},
-	"REQUEST_FILENAME":      {col: colRequestFilename, single: true},
-	"REQUEST_BASENAME":      {col: colRequestBasename, single: true},
-	"FILES":                 {col: colFiles},
-	"FILES_NAMES":           {col: colFilesNames},
-	"XML":                   {col: colXML},
-	"MATCHED_VARS":          {col: colMatchedVars},
-	"TX":                    {col: colTX},
+	"ARGS":                   {col: colArgs},
+	"ARGS_NAMES":             {col: colArgsNames},
+	"ARGS_GET":               {col: colArgsGet},
+	"ARGS_GET_NAMES":         {col: colArgsGetNames},
+	"ARGS_POST":              {col: colArgsPost},
+	"ARGS_POST_NAMES":        {col: colArgsPostNames},
+	"REQUEST_HEADERS":        {col: colRequestHeaders},
+	"REQUEST_HEADERS_NAMES":  {col: colRequestHeadersNames},
+	"REQUEST_METHOD":         {col: colRequestMethod, single: true},
+	"REQUEST_PROTOCOL":       {col: colRequestProtocol, single: true},
+	"REQUEST_LINE":           {col: colRequestLine, single: true},
+	"REQUEST_URI":            {col: colRequestURI, single: true},
+	"QUERY_STRING":           {col: colQueryString, single: true},
+	"REQUEST_BODY":           {col: colRequestBody, single: true},
+	"MATCHED_VAR":            {col: colMatchedVar, single: true},
+	"MATCHED_VAR_NAME":       {col: colMatchedVarName, single: true},
+	"REMOTE_ADDR":            {col: colRemoteAddr, single: true},
+	"ARGS_COMBINED_SIZE":     {col: colArgsCombinedSize, single: true},
+	"FILES_COMBINED_SIZE":    {col: colFilesCombinedSize, single: true},
+	"REQUEST_BODY_LENGTH":    {col: colRequestBodyLength, single: true},
+	"REQBODY_PROCESSOR":      {col: colReqbodyProcessor, single: true},
+	"MULTIPART_PART_HEADERS": {col: colMultipartPartHeaders},
+	"REQUEST_COOKIES":        {col: colRequestCookies},
+	"REQUEST_COOKIES_NAMES":  {col: colRequestCookiesNames},
+	"REQUEST_URI_RAW":        {col: colRequestURIRaw, single: true},
+	"REQUEST_FILENAME":       {col: colRequestFilename, single: true},
+	"REQUEST_BASENAME":       {col: colRequestBasename, single: true},
+	"FILES":                  {col: colFiles},
+	"FILES_NAMES":            {col: colFilesNames},
+	"XML":                    {col: colXML},
+	"MATCHED_VARS":           {col: colMatchedVars},
+	"TX":                     {col: colTX},
 }
 
 // target is one compiled entry of a rule's variable list.
@@ -153,13 +155,16 @@ type namedValue struct {
 
 // collect returns the values of a rule's variable list for this request, in
 // the order the variables are written.
+//
+// The list it returns is only valid until the next call: its memory is
+// reused.
 func (tx *transaction) collect(r, first *rule) []namedValue {
-	var out []namedValue
+	out := tx.collected[:0]
 	for _, t := range r.targets {
 		if tx.removedForRequest(first, t) {
 			continue
 		}
-		values := tx.valuesOf(t)
+		values := tx.namedValuesOf(t)
 		if t.count {
 			name := "&" + t.name
 			if t.selector != "" {
@@ -169,10 +174,50 @@ func (tx *transaction) collect(r, first *rule) []namedValue {
 			continue
 		}
 		for _, v := range values {
-			if !excluded(r.excludes, t, v.key) {
-				out = append(out, namedValue{name: t.name + v.suffix(), value: v.value})
+			if len(r.excludes) == 0 || !excluded(r.excludes, t, v.key) {
+				out = append(out, v.namedValue)
 			}
 		}
+	}
+	tx.collected = out
+	return out
+}
+
+// keyedValue is a value with its key and its full name.
+type keyedValue struct {
+	key string
+	namedValue
+}
+
+// targetKey identifies what a target selects, so that two rules naming
+// the same thing share the values.
+type targetKey struct {
+	col      collection
+	selector string
+	re       *regexp.Regexp
+}
+
+// namedValuesOf returns the entries a target selects, with their names.
+// The entries of the request itself are built once per request; the ones
+// that change while the rules run (TX, the matched values, the chosen body
+// reader) are built every time.
+func (tx *transaction) namedValuesOf(t target) []keyedValue {
+	key := targetKey{col: t.col, selector: strings.ToLower(t.selector), re: t.re}
+	if cached, ok := tx.valueCache[key]; ok {
+		return cached
+	}
+	values := tx.valuesOf(t)
+	out := make([]keyedValue, len(values))
+	for i, v := range values {
+		out[i] = keyedValue{key: v.key, namedValue: namedValue{name: t.name + v.suffix(), value: v.value}}
+	}
+	switch t.col {
+	case colTX, colMatchedVars, colMatchedVar, colMatchedVarName, colReqbodyProcessor:
+	default:
+		if tx.valueCache == nil {
+			tx.valueCache = map[targetKey][]keyedValue{}
+		}
+		tx.valueCache[key] = out
 	}
 	return out
 }
@@ -293,6 +338,11 @@ func (tx *transaction) valuesOf(t target) []keyValue {
 		out = append(out, keyValue{value: strconv.Itoa(size)})
 	case colRequestBodyLength:
 		out = append(out, keyValue{value: strconv.Itoa(len(req.Received.Body))})
+	case colMultipartPartHeaders:
+		// The key is the name of the part, the value one header line.
+		for _, h := range req.Parsed.PartHeaders {
+			add(h.Part, h.Line)
+		}
 	case colReqbodyProcessor:
 		format := req.DeclaredBodyFormat()
 		if tx.bodyFormat != "" {

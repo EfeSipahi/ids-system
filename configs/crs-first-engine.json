@@ -7,6 +7,7 @@
     "../coreruleset-4.30.0/rules/REQUEST-913-SCANNER-DETECTION.conf",
     "../coreruleset-4.30.0/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf",
     "../coreruleset-4.30.0/rules/REQUEST-921-PROTOCOL-ATTACK.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-922-MULTIPART-ATTACK.conf",
     "../coreruleset-4.30.0/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf",
     "../coreruleset-4.30.0/rules/REQUEST-931-APPLICATION-ATTACK-RFI.conf",
     "../coreruleset-4.30.0/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf",

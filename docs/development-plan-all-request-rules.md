@@ -130,7 +130,7 @@ Response rules (950–980), records and alerts, profiles, proxy, ML, the decisio
 2. **Rule file 913** (scanner detection) is loaded. 188 of 195 rules are active; the 7 excluded ones are unchanged.
 3. **Test converter** (`tools/convert_crs_tests.py`) reads all tests of a rule file at all levels. New: a request given as raw bytes (`encoded_request`), a body that is not text (`body_base64`), and tests that look at log text (`match_regex` becomes `expect_log`). Tests that expect only a web-server status are left out and counted.
 4. **Example format:** `expect_log`, `no_expect_log`, `body_base64`. A log line has the form `[id "930110"] [msg "..."] [data "..."]`.
-5. **Test folders:** `testdata/requests/crs/` holds the tests of finished rule files, which must all pass: 100 files, 1,388 tests. `testdata/requests/crs-pending/` holds the others: 190 files, 3,685 tests. A file moves from the second to the first when its plan is done.
+5. **Test folders:** `testdata/requests/crs/` holds the tests of finished rule files, which must all pass: 100 files, 1,388 tests. `testdata/requests/crs-pending/` holds the others: 190 files, 3,685 tests. A file moves from the second to the first when its plan is done. (`crs-pending/` was removed after plan E, when it was empty.)
 6. **Coraza helper** got a `-paranoia-level` option. There are now two reference files, for levels 1 and 4.
 
 **What the CRS source says about the test level:** the CRS test setup runs all regression tests at level 4 (`BLOCKING_PARANOIA: 4` in `tests/docker-compose.yml`, and `setvar:tx.blocking_paranoia_level=4` in `tests/regression/README.md`). Ours run the same way.
@@ -328,6 +328,65 @@ Rule files 905, 920 and 921 are loaded. 449 of 453 rules are active. Three exclu
 
 **Race detector.** With all these tests, the engine package takes longer than Go's default limit of 10 minutes under `-race`; it then stops with a timeout, not with a race. Run again with `-timeout 60m`, it passed in 639 seconds.
 
-### Plan E — not started
+### Plan E — done on 16 October 2026
 
-### Plan F — not started
+**What was added:** the variable `MULTIPART_PART_HEADERS` and rule file 922 (multipart attacks). 456 of the 460 rules of the product configuration are active. All 16 request rule files of CRS 4.30.0 now run.
+
+**How the part headers are read.** As in ModSecurity v2 (`apache2/msc_multipart.c`): every header line of every part, as received, in order, keyed by the name of the part; a folded line is joined to the one before with one space. They are collected by a small scan of their own, because Go's multipart reader rejects some header lines and rewrites the others. One difference from ModSecurity: a header name with a character outside 33 to 126 stops ModSecurity with a parse error, which the CRS test 922130 accepts in place of a match of rule 922130. The engine has no such parse-error message, so it keeps the line and rule 922130 finds it.
+
+**Results**
+
+| Check | Result |
+| --- | --- |
+| CRS tests of all 16 request rule files, with the test setup at level 4 | **5,072 of 5,072 pass** (47 new) |
+| Comparison with Coraza, level 1 | 6,372 requests, 3,813 with a match, 0 unexplained differences |
+| Comparison with Coraza, level 4 | 6,372 requests, 5,994 with a match, 0 unexplained differences |
+| `go vet`, `go test` | Pass |
+
+One more name is compared without a detail: rule 922150 numbers the multipart header lines in the order it sees them (`tx.multipart_headers_content_types_N`). Coraza goes through the headers of a part in Go map order, which is random, so its N differs between runs; ours follow the order received, as ModSecurity's do. The rule and the score were the same in every case.
+
+10 requests are not compared because their body is broken on purpose: the 5 of plan D and 5 tests of 922130.
+
+### Plan F — done on 16 October 2026
+
+**1. Comparison with Coraza on the whole set.** Done at the end of plan E with all request rule files: 6,372 requests at level 1 (3,813 with a match) and at level 4 (5,994 with a match), 0 unexplained differences. The explained classes, each checked by its own rule in `internal/engine/reference_test.go` and listed in `testdata/reference/README.md`: invalid UTF-8, bodies without a reader, targets Go's URL parser changes, HTTP/0.9 request lines, and the order of multipart headers.
+
+**2. Normal traffic, the 1,000 CSIC records**
+
+| Level | Normal flagged (of 500) | Anomalous flagged (of 500) | Coraza, normal / anomalous |
+| --- | --- | --- | --- |
+| 1 | 96 | 176 | 96 / 176 |
+| 2 | 500 | 500 | 500 / 500 |
+| 3 | 500 | 500 | 500 / 500 |
+| 4 | 500 | 500 | 500 / 500 |
+
+At level 1, rule 920250 causes all 96: the application sends Latin-1 text, which is not valid UTF-8. With the setting that `crs-setup.conf.example` documents for such applications (`tx.crs_validate_utf8_encoding=0`), level 1 flags 0 normal and 116 anomalous records. At level 2 every record is flagged by rule 920451, because each carries an `Accept-Charset` header. These are settings for one application, which is what profiles are for (K10).
+
+**3. Speed** (development laptop, Ryzen 5 7530U)
+
+| Request | Before plan F | After |
+| --- | --- | --- |
+| Ordinary GET, one core | 1.20 ms | 0.55 ms |
+| Form POST, one core | 1.36 ms | 0.75 ms |
+| JSON POST, one core | 2.10 ms | 1.04 ms |
+| POST with a 9.4 kB field, one core | 57 ms | 19 ms |
+| Ordinary GET, 12 threads | — | 0.12 ms per request (about 8,000 per second) |
+| Memory per ordinary GET | 283 kB | 54 kB |
+
+Profiling showed that over 90 % of the time was spent inside Go's regular-expression matcher, not in the transformations, so the transformation cache named in this plan was not built. Three other changes were made, none of which changes a result:
+
+1. **Match first, groups later.** A pattern is first asked only whether it matches; the groups are looked for only when it does. Go's matcher does much more work when it has to track groups, and most values do not match.
+2. **A word prefilter** (`internal/engine/operator/prefilter.go`). When a pattern is loaded, its syntax tree gives a set of words of which every match must contain one; a value with none of them is not run through the pattern. It is used only for values that are pure ASCII, because with `(?i)` Go also lets a few other letters stand for ASCII ones. 144 of the 268 `@rx` patterns of the request rules get one. `TestPrefilterNeverHidesAMatch` runs every pattern on about 30,000 values from all example requests, raw and transformed, with and without the prefilter: of about 4 million values skipped, none was a match. A fuzz test checks the same on random input.
+3. **Values built once per request.** The values of a variable, with their names, are built once per request and shared by all rules that name the same variable. Values that change while the rules run (TX, the matched values, the chosen body reader) are not shared, and the shared ones are dropped when a rule makes the body be read again. The phrase automaton of `@pm` and of the prefilter also looks up transitions in sorted lists instead of maps.
+
+All 5,072 CRS tests and the Coraza comparison were run again after these changes, with the same results.
+
+**4. Fuzzing, race detector, M11, M21.** Fuzzing of the prefilter (60 s), the rule layer (60 s), the body parsers and the transformations (30 s each) found nothing. `go test -race` of all packages passed (with `-timeout 90m`; the engine package took 544 s and the operator package, because of the prefilter check, 527 s). M11 (no request content in the default output) and M21 (requests do not share state, also in 8 goroutines) are covered by tests that pass.
+
+**5. Documents.** M19 and M20 are amended in the main plan (sections 5.19 and 5.20; history in sections 11.16 to 11.20), and `context.md` and `docs/crs-4.30.0-ruleset.md` are updated.
+
+## Result of the whole plan
+
+The goal of section 1 is reached: every rule of the request files of CRS 4.30.0 loads from the unmodified files and runs, at paranoia levels 1 to 4, and all 5,072 convertible request-side CRS regression tests pass.
+
+It is still not full CRS compatibility. Response rules are not run; no request has been run through ModSecurity itself; and the CRS tests show agreement with CRS's expectations, not detection or false-positive rates on real traffic.

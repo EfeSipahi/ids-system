@@ -78,19 +78,19 @@ func TestCRSStartupReport(t *testing.T) {
 	}
 
 	// 1 rule in crs-setup, 33 in 901, 2 in 905, 9 in 911, 9 in 913, 68 in
-	// 920, 26 in 921, 14 in 930, 13 in 931, 56 in 932, 29 in 933, 22 in
+	// 920, 26 in 921, 7 in 922, 14 in 930, 13 in 931, 56 in 932, 29 in 933, 22 in
 	// 934, 42 in 941, 68 in 942, 11 in 943, 22 in 944 and 28 in 949: every
 	// one has a status.
 	statuses := rs.Statuses()
-	if len(statuses) != 453 {
-		t.Errorf("%d statuses, want 453", len(statuses))
+	if len(statuses) != 460 {
+		t.Errorf("%d statuses, want 460", len(statuses))
 	}
 	if rs.ParanoiaLevel() != 1 {
 		t.Errorf("paranoia level = %d, want the default 1", rs.ParanoiaLevel())
 	}
 	// Detection rules per level, counted from the tags in the CRS files:
 	// 911 has 1; 913 has 1; 920 has 40, 9, 5 and 5; 921 has 11, 2, 3 and
-	// 1; 930 has 5 and 1; 931 has 3 and 2; 932 has 19, 19 and 10; 933 has
+	// 1; 922 has 4; 930 has 5 and 1; 931 has 3 and 2; 932 has 19, 19 and 10; 933 has
 	// 13, 3 and 5; 934 has 8, 5 and 1; 941 has 26 and 7; 942 has 20, 31, 7
 	// and 2; 943 has 3; 944 has 6, 6, 1 and 1.
 	perLevel := map[int]int{}
@@ -99,7 +99,7 @@ func TestCRSStartupReport(t *testing.T) {
 			perLevel[s.ParanoiaLevel]++
 		}
 	}
-	if want := map[int]int{1: 156, 2: 85, 3: 32, 4: 9}; !reflect.DeepEqual(perLevel, want) {
+	if want := map[int]int{1: 160, 2: 85, 3: 32, 4: 9}; !reflect.DeepEqual(perLevel, want) {
 		t.Errorf("detection rules per level = %v, want %v", perLevel, want)
 	}
 	// File 999 holds one update, for rule 932240 of file 932. That file is
@@ -291,8 +291,8 @@ func TestCRSStarterExamples(t *testing.T) {
 // switched off there.
 func TestCRSRegression(t *testing.T) {
 	files, err := filepath.Glob("../../testdata/requests/crs/*.json")
-	if err != nil || len(files) != 286 {
-		t.Fatalf("found %d test files (%v), want 286", len(files), err)
+	if err != nil || len(files) != 290 {
+		t.Fatalf("found %d test files (%v), want 290", len(files), err)
 	}
 	// The level of each rule, from the tags in the CRS files.
 	levelOfRule := map[int]int{}
@@ -317,12 +317,12 @@ func TestCRSRegression(t *testing.T) {
 				t.Run(fmt.Sprintf("PL%d/%s", level, ex.Name), func(t *testing.T) {
 					// A body of a type that has no reader is not split into
 					// fields; the rules see it as one text (REQUEST_BODY).
-					// A broken body is read as far as it goes. Five CRS
+					// A broken body is read as far as it goes. Ten CRS
 					// tests send one on purpose, and they must still pass;
 					// if a test with a broken body fails, the reason is
 					// named.
 					if !ex.Request.Status.Body.Complete() && ex.Request.Status.BodyFormat != "" {
-						if !brokenBodies[ex.Name] {
+						if !brokenBodies[testID(ex.Name)] {
 							t.Errorf("unexpected broken body: %s", ex.Request.Status.BodyReason)
 						}
 						defer func() {
@@ -342,23 +342,35 @@ func TestCRSRegression(t *testing.T) {
 			}
 		}
 		// 18 tests in file 901, 8 in 911, 9 in 913, 407 in 920, 116 in
-		// 921, 83 in 930, 42 in 931, 1,089 in 932, 442 in 933, 287 in 934,
-		// 263 in 941, 1,033 in 942, 47 in 943, 1,176 in 944 and 5 in 949,
-		// counted from the converted files.
-		if total != 5025 {
-			t.Errorf("%d tests, want 5025", total)
+		// 921, 47 in 922, 83 in 930, 42 in 931, 1,089 in 932, 442 in 933,
+		// 287 in 934, 263 in 941, 1,033 in 942, 47 in 943, 1,176 in 944 and
+		// 5 in 949, counted from the converted files: every CRS request
+		// test that an offline engine can check.
+		if total != 5072 {
+			t.Errorf("%d tests, want 5072", total)
 		}
 	}
 }
 
 // brokenBodies are the CRS tests that send a body that cannot be read to
-// its end, on purpose.
+// its end, on purpose, by test id.
 var brokenBodies = map[string]bool{
-	"CRS 920240-4": true, // XML that is not well-formed
-	"CRS 920400-1": true, // a multipart part without an empty line after its headers
-	"CRS 920400-2": true, // the same
-	"CRS 920420-9": true, // JSON that is not valid
-	"CRS 932180-3: File upload - negative test": true, // a multipart part without headers
+	"920240-4": true, // XML that is not well-formed
+	"920400-1": true, // a multipart part without an empty line after its headers
+	"920400-2": true, // the same
+	"920420-9": true, // JSON that is not valid
+	"922130-1": true, // a multipart header name with a character outside 33 to 126
+	"922130-2": true, // the same
+	"922130-5": true, // a header name with "!", which Go's reader does not allow
+	"922130-7": true, // a header name with DEL
+	"922130-8": true, // multipart parts without headers
+	"932180-3": true, // a multipart part without headers
+}
+
+// testID returns "922130-1" for a test named "CRS 922130-1: ...".
+func testID(name string) string {
+	id, _, _ := strings.Cut(strings.TrimPrefix(name, "CRS "), ":")
+	return id
 }
 
 // checkExample runs one example and compares the result with what the

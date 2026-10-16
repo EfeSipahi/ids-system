@@ -3,6 +3,7 @@ package operator
 import (
 	"errors"
 	"regexp"
+	"regexp/syntax"
 )
 
 // maxCaptures is the number of TX.0 to TX.9 slots.
@@ -35,6 +36,8 @@ type rx struct {
 	// matching, which makes "one character" mean "one byte" on both
 	// sides, as it does in PCRE.
 	byteMode bool
+	// pre is a quick word test that comes first, or nil; see prefilter.
+	pre *prefilter
 }
 
 // highByteEscape finds \x80 to \xff in a pattern, also in the form \x{80}.
@@ -51,12 +54,24 @@ func newRx(pattern string) (Operator, error) {
 	if err != nil {
 		return nil, err
 	}
-	return rx{re: re, byteMode: highByteEscape.MatchString(pattern)}, nil
+	o := rx{re: re, byteMode: highByteEscape.MatchString(pattern)}
+	if tree, err := syntax.Parse("(?s)"+pattern, syntax.Perl); err == nil {
+		o.pre = newPrefilter(tree)
+	}
+	return o, nil
 }
 
 func (o rx) Match(value string, _ func(string) string) Result {
-	if o.byteMode && !isASCII(value) {
-		m := o.re.FindStringSubmatch(bytesAsRunes(value))
+	ascii := isASCII(value)
+	if o.pre != nil && ascii && !o.pre.mayMatch(value) {
+		return Result{}
+	}
+	if o.byteMode && !ascii {
+		value := bytesAsRunes(value)
+		if !o.re.MatchString(value) {
+			return Result{}
+		}
+		m := o.re.FindStringSubmatch(value)
 		if m == nil {
 			return Result{}
 		}
@@ -67,6 +82,12 @@ func (o rx) Match(value string, _ func(string) string) Result {
 			m[i] = runesAsBytes(m[i])
 		}
 		return Result{Matched: true, Captures: m}
+	}
+	// Most values do not match. Finding that out without keeping track of
+	// the groups is much cheaper; the groups are only looked for when
+	// there is a match.
+	if !o.re.MatchString(value) {
+		return Result{}
 	}
 	m := o.re.FindStringSubmatch(value)
 	if m == nil {
