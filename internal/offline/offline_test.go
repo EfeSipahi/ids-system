@@ -134,8 +134,29 @@ func TestRemoteAddrAndVersion(t *testing.T) {
 	if rec := examples[1].Request.Received; rec.RemoteAddr != "" || rec.Version != "HTTP/1.1" {
 		t.Errorf("second = %+v", rec)
 	}
-	if _, err := Load(strings.NewReader(`[{"method": "GET", "uri": "/", "remote_addr": "host.example"}]`)); err == nil || !strings.Contains(err.Error(), "remote_addr") {
-		t.Errorf("error = %v", err)
+	for _, bad := range []struct{ field, src string }{
+		{"remote_addr", `"remote_addr": "host.example"`},
+		{"server_addr", `"server_addr": "10.0.0.300"`},
+		{"remote_port", `"remote_port": 70000`},
+		{"server_port", `"server_port": -1`},
+	} {
+		_, err := Load(strings.NewReader(`[{"method": "GET", "uri": "/", ` + bad.src + `}]`))
+		if err == nil || !strings.Contains(err.Error(), bad.field) {
+			t.Errorf("%s: error = %v", bad.field, err)
+		}
+	}
+}
+
+// Ports and the server address are kept as given.
+func TestPortsAndServerAddr(t *testing.T) {
+	src := `[{"method": "GET", "uri": "/", "remote_addr": "203.0.113.7", "remote_port": 51234, "server_addr": "10.0.0.5", "server_port": 443}]`
+	examples, err := Load(strings.NewReader(src))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec := examples[0].Request.Received
+	if rec.RemoteAddr != "203.0.113.7" || rec.RemotePort != 51234 || rec.LocalAddr != "10.0.0.5" || rec.LocalPort != 443 {
+		t.Errorf("received = %+v", rec)
 	}
 }
 

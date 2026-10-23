@@ -1,0 +1,36 @@
+{{define "content"}}
+<form class="filters" id="filters">
+  <label>Fired in
+    <select name="range">
+      <option value="1h">Last hour</option>
+      <option value="24h" selected>Last 24 hours</option>
+      <option value="7d">Last 7 days</option>
+      <option value="all">Everything kept</option>
+    </select>
+  </label>
+  <label>Status
+    <select name="status">
+      <option value="">All rules</option>
+      <option value="active">Active</option>
+      <option value="excluded">Excluded</option>
+      <option value="fired">Fired</option>
+    </select>
+  </label>
+  <label>Paranoia level
+    <select name="level">
+      <option value="">Any</option>
+      <option value="0">None (setup, scoring)</option>
+      <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+    </select>
+  </label>
+  <label>Search <input name="q" size="18" placeholder="id, file or group"></label>
+  <label>Sort by
+    <select name="sort">
+      <option value="id">Rule id</option>
+      <option value="fired">Times fired</option>
+    </select>
+  </label>
+  <span class="updated muted" id="updated"></span>
+</form>
+<div id="view" class="stack"></div>
+{{end}}

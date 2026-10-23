@@ -35,7 +35,18 @@ type Received struct {
 
 	// RemoteAddr is the IP address of the client, such as "203.0.113.7"
 	// or "::1", without a port. It is empty when it is not known.
+	//
+	// It comes from the connection, or from a proxy the IDS trusts; never
+	// from a header the client sends, such as X-Forwarded-For, which
+	// anyone can write.
 	RemoteAddr string
+
+	// RemotePort is the client's port, and LocalAddr and LocalPort the
+	// address of the server the request was sent to. They are 0 or empty
+	// when not known.
+	RemotePort int
+	LocalAddr  string
+	LocalPort  int
 }
 
 // Origin says which part of the request a parameter came from.

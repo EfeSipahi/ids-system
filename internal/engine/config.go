@@ -65,17 +65,22 @@ func LoadConfig(path string) (Config, error) {
 	if _, err := dec.Token(); err != io.EOF {
 		return Config{}, fmt.Errorf("%s: invalid JSON: unexpected content after the configuration", path)
 	}
-
-	dir := filepath.Dir(path)
-	for i, file := range cfg.Files {
-		if !filepath.IsAbs(file) {
-			cfg.Files[i] = filepath.Join(dir, file)
-		}
-	}
-	if err := cfg.validate(); err != nil {
+	if err := cfg.Prepare(filepath.Dir(path)); err != nil {
 		return Config{}, fmt.Errorf("%s: %w", path, err)
 	}
 	return cfg, nil
+}
+
+// Prepare finishes a configuration that was read from a file in dir: it
+// makes relative paths in Files start at dir, and checks the settings. It
+// is for a caller that reads the engine settings as part of a larger file.
+func (c *Config) Prepare(dir string) error {
+	for i, file := range c.Files {
+		if !filepath.IsAbs(file) {
+			c.Files[i] = filepath.Join(dir, file)
+		}
+	}
+	return c.validate()
 }
 
 func (c Config) validate() error {

@@ -1,0 +1,209 @@
+{
+  "type": "request",
+  "schema": 1,
+  "id": "id1",
+  "run": "run1",
+  "time": "2026-10-23T10:15:02Z",
+  "alert": true,
+  "decided_by": "rule layer only",
+  "client": {
+    "ip": "203.0.113.7",
+    "port": 51234
+  },
+  "server": {
+    "host": "shop.example.com",
+    "ip": "10.0.0.5",
+    "port": 443
+  },
+  "request": {
+    "method": "POST",
+    "path": "/login",
+    "query": "q=1+union+select+2\u0026password=[masked]\u0026api_key=[masked]",
+    "version": "HTTP/1.1",
+    "user_agent": "sqlmap/1.8",
+    "referer": "https://shop.example.com/reset?token=[masked]\u0026page=2",
+    "content_type": "application/x-www-form-urlencoded",
+    "body_length": 76,
+    "header_names": [
+      "Host",
+      "User-Agent",
+      "Referer",
+      "Cookie",
+      "Authorization",
+      "X-Forwarded-For",
+      "Content-Type"
+    ],
+    "cookies": [
+      {
+        "name": "sid",
+        "hash": "9725b0a5aec5"
+      },
+      {
+        "name": "lang",
+        "hash": "b5f82daaf2fc"
+      }
+    ]
+  },
+  "analysis": {
+    "complete": true,
+    "body": "inspected",
+    "body_format": "form"
+  },
+  "findings": [
+    {
+      "rule_id": 4,
+      "message": "Scanner",
+      "location": "REQUEST_HEADERS:User-Agent",
+      "matched": "sqlmap/1.8",
+      "action": "pass"
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "SQL in ARGS:q: 1 union select 2",
+      "location": "ARGS:q",
+      "matched": "1 union select 2",
+      "data": "Matched Data: union select found within ARGS:q: 1 union select 2",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "ARGS:password",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "ARGS:api_key",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "ARGS:pwd",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "ARGS:pin_code",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "REQUEST_COOKIES:sid",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "REQUEST_HEADERS:Authorization",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 3,
+      "message": "Union in the whole text",
+      "location": "QUERY_STRING",
+      "matched": "q=1+union+select+2\u0026password=[masked]\u0026api_key=[masked]",
+      "data": "q=1+union+select+2\u0026password=[masked]\u0026api_key=[masked]",
+      "action": "pass"
+    },
+    {
+      "rule_id": 3,
+      "message": "Union in the whole text",
+      "location": "REQUEST_BODY",
+      "matched": "user=ali\u0026pwd=[masked]\u0026pin_code=[masked]\u0026note=hello",
+      "data": "user=ali\u0026pwd=[masked]\u0026pin_code=[masked]\u0026note=hello",
+      "action": "pass"
+    }
+  ],
+  "score": {
+    "total": 35,
+    "threshold": 5,
+    "exceeded": true,
+    "categories": {
+      "sql_injection": 35
+    }
+  },
+  "engine": {
+    "version": "test",
+    "crs": "TEST/1",
+    "paranoia_level": 1,
+    "config": "sha256:test"
+  },
+  "full": {
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "sqlmap/1.8"
+      ],
+      [
+        "Referer",
+        "https://shop.example.com/reset?token=[masked]\u0026page=2"
+      ],
+      [
+        "Cookie",
+        "[masked]"
+      ],
+      [
+        "Authorization",
+        "[masked]"
+      ],
+      [
+        "X-Forwarded-For",
+        "198.51.100.1"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ]
+    ],
+    "body": "user=ali\u0026pwd=[masked]\u0026pin_code=[masked]\u0026note=hello"
+  }
+}
+

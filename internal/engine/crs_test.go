@@ -1,7 +1,10 @@
 package engine
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -20,6 +23,32 @@ import (
 // gate and evaluation rules.
 
 const firstEngineConfig = "../../configs/crs-first-engine.json"
+
+// readConfig reads the engine settings of a configuration file. The
+// product configuration also has a "records" section, which belongs to the
+// parts around the engine and is read by package config (which imports
+// this package, so these tests cannot use it). It is skipped here; every
+// other unknown field is still an error.
+func readConfig(path string) (Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return Config{}, err
+	}
+	var file struct {
+		Config
+		Records json.RawMessage `json:"records"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&file); err != nil {
+		return Config{}, fmt.Errorf("%s: %w", path, err)
+	}
+	cfg := file.Config
+	if err := cfg.Prepare(filepath.Dir(path)); err != nil {
+		return Config{}, fmt.Errorf("%s: %w", path, err)
+	}
+	return cfg, nil
+}
 
 func loadCRS(t *testing.T) *RuleSet {
 	t.Helper()
@@ -40,7 +69,7 @@ func loadCRSAt(t *testing.T, level int) *RuleSet {
 // loadConfigAt loads a configuration at the given paranoia level.
 func loadConfigAt(t *testing.T, path string, level int) *RuleSet {
 	t.Helper()
-	cfg, err := LoadConfig(path)
+	cfg, err := readConfig(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +174,7 @@ func TestCRSStartupReport(t *testing.T) {
 // with a message that names each rule and what it lacks. The file used here
 // inspects responses, which is outside Phase 1.
 func TestCRSUnsupportedRuleStopsLoading(t *testing.T) {
-	cfg, err := LoadConfig(firstEngineConfig)
+	cfg, err := readConfig(firstEngineConfig)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -169,7 +198,7 @@ func TestCRSUnsupportedRuleStopsLoading(t *testing.T) {
 	}
 
 	// Taking a rule off the exclusion list has the same effect.
-	cfg, _ = LoadConfig(firstEngineConfig)
+	cfg, _ = readConfig(firstEngineConfig)
 	var kept []Exclusion
 	for _, ex := range cfg.Exclude {
 		if ex.ID != 901320 {

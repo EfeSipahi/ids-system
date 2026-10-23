@@ -187,8 +187,8 @@ func TestPrintable(t *testing.T) {
 		{"\x1b[31mred", `\x1b[31mred`},
 	}
 	for _, tt := range tests {
-		if got := printable(tt.in); got != tt.want {
-			t.Errorf("printable(%q) = %q, want %q", tt.in, got, tt.want)
+		if got := Printable(tt.in); got != tt.want {
+			t.Errorf("Printable(%q) = %q, want %q", tt.in, got, tt.want)
 		}
 	}
 

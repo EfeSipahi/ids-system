@@ -20,3 +20,7 @@ proje-dersi-tanitim-formu-EfeSipahioğlu-AhmetcanZengin.docx
 
 # Built helper program
 tools/coraza-reference/coraza-reference
+
+# Records and dashboard state written by local runs
+records/
+dashboard-state/

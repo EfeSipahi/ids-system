@@ -1,0 +1,12 @@
+{{define "content"}}
+<section class="login card">
+  <h1>Log in</h1>
+  <p class="muted">IDS dashboard</p>
+  {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
+  <form method="post" action="/login">
+    <label>User name <input name="user" autocomplete="username" required autofocus maxlength="64"></label>
+    <label>Password <input name="password" type="password" autocomplete="current-password" required maxlength="256"></label>
+    <button type="submit" class="primary">Log in</button>
+  </form>
+</section>
+{{end}}

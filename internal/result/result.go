@@ -152,26 +152,26 @@ var categories = []string{
 func NewRecord(req *httpmodel.Request, res *engine.Result, opt Options) Record {
 	rec := Record{
 		Method:   req.Received.Method,
-		Analysis: newAnalysis(req),
+		Analysis: NewAnalysis(req),
 		Findings: []Finding{},
-		Score:    newScore(res),
+		Score:    NewScore(res),
 	}
 	if opt.ShowValues {
-		rec.URI = printable(req.Received.Target)
+		rec.URI = Printable(req.Received.Target)
 	}
 	for _, m := range res.Matches {
 		f := Finding{
 			RuleID:   m.RuleID,
 			Severity: m.Severity,
 			Message:  m.Message,
-			Location: printable(m.VarName),
+			Location: Printable(m.VarName),
 			Action:   m.Action,
 			Tags:     m.Tags,
 		}
 		switch {
 		case opt.ShowValues:
-			value, data := printable(m.Value), printable(m.Data)
-			f.Message = printable(m.Message)
+			value, data := Printable(m.Value), Printable(m.Data)
+			f.Message = Printable(m.Message)
 			f.Value = &value
 			if m.Data != "" {
 				f.Data = &data
@@ -184,7 +184,8 @@ func NewRecord(req *httpmodel.Request, res *engine.Result, opt Options) Record {
 	return rec
 }
 
-func newAnalysis(req *httpmodel.Request) Analysis {
+// NewAnalysis says how far the request was inspected (M05).
+func NewAnalysis(req *httpmodel.Request) Analysis {
 	a := Analysis{
 		Complete:   req.Status.Body.Complete(),
 		Body:       req.Status.Body.String(),
@@ -197,7 +198,8 @@ func newAnalysis(req *httpmodel.Request) Analysis {
 	return a
 }
 
-func newScore(res *engine.Result) Score {
+// NewScore reads the anomaly scores the CRS rules left in the TX variables.
+func NewScore(res *engine.Result) Score {
 	s := Score{
 		Total:     res.Score("blocking_inbound_anomaly_score"),
 		Threshold: res.Score("inbound_anomaly_score_threshold"),
@@ -214,10 +216,10 @@ func newScore(res *engine.Result) Score {
 	return s
 }
 
-// printable returns s unchanged when it is valid, printable text. Otherwise
+// Printable returns s unchanged when it is valid, printable text. Otherwise
 // it returns s with control characters and invalid bytes written as escapes
 // such as \x00, so that nothing is lost or silently replaced on output.
-func printable(s string) string {
+func Printable(s string) string {
 	clean := utf8.ValidString(s)
 	if clean {
 		for _, r := range s {

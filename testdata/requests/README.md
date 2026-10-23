@@ -3,6 +3,7 @@
 | Path | Content |
 | --- | --- |
 | `path-traversal.json` | Hand-picked starter examples: four CRS cases and two normal requests |
+| `secrets.json` | Seven requests with a secret in each place a secret can be (form, cookie, Authorization, Proxy-Authorization, token parameter, JSON, multipart, Referer), each carrying an attack so that CRS rules match right at the secret. Used by the masking test of the records (R4); every secret contains `S3CR3T` |
 | `common-exceptions.json` | Hand-written examples for rule file 905, which has no CRS tests: the exceptions for Apache's own health-check requests |
 | `crs/` | The CRS 4.30.0 regression tests of all request rule files, at all paranoia levels: 290 files, one per rule, 5,072 tests. All must pass with `testdata/crs-tests.json` |
 | `generated/` | 1,300 generated requests without expectations, used to compare our engine with a reference engine: path traversal, file access, and SQLi/XSS variants. Written by the three `tools/generate_*_variants.py` scripts |

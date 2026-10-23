@@ -61,8 +61,13 @@ type fileExample struct {
 	Body       string `json:"body"`
 	BodyBase64 string `json:"body_base64"`
 
-	// RemoteAddr is the IP address of the client. It may be left out.
+	// RemoteAddr and RemotePort are the address of the client, ServerAddr
+	// and ServerPort the address the request was sent to. Each may be left
+	// out.
 	RemoteAddr  string `json:"remote_addr"`
+	RemotePort  int    `json:"remote_port"`
+	ServerAddr  string `json:"server_addr"`
+	ServerPort  int    `json:"server_port"`
 	ExpectIDs   []int  `json:"expect_ids"`
 	NoExpectIDs []int  `json:"no_expect_ids"`
 	ExpectLog   string `json:"expect_log"`
@@ -124,10 +129,24 @@ func (fe fileExample) toExample() (Example, error) {
 		Target:     fe.URI,
 		Version:    defaultVersion,
 		RemoteAddr: fe.RemoteAddr,
+		RemotePort: fe.RemotePort,
+		LocalAddr:  fe.ServerAddr,
+		LocalPort:  fe.ServerPort,
 	}
-	if rec.RemoteAddr != "" {
-		if _, err := netip.ParseAddr(rec.RemoteAddr); err != nil {
-			return Example{}, fmt.Errorf("remote_addr: %w", err)
+	for _, addr := range []struct {
+		field, ip, portField string
+		port                 int
+	}{
+		{"remote_addr", fe.RemoteAddr, "remote_port", fe.RemotePort},
+		{"server_addr", fe.ServerAddr, "server_port", fe.ServerPort},
+	} {
+		if addr.ip != "" {
+			if _, err := netip.ParseAddr(addr.ip); err != nil {
+				return Example{}, fmt.Errorf("%s: %w", addr.field, err)
+			}
+		}
+		if addr.port < 0 || addr.port > 65535 {
+			return Example{}, fmt.Errorf("%s %d is not a port number", addr.portField, addr.port)
 		}
 	}
 	if fe.Version != nil {

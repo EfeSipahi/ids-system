@@ -15,7 +15,7 @@ import (
 
 func benchRuleSet(b *testing.B) *RuleSet {
 	b.Helper()
-	cfg, err := LoadConfig(firstEngineConfig)
+	cfg, err := readConfig(firstEngineConfig)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -80,7 +80,7 @@ func BenchmarkEvaluateParallel(b *testing.B) {
 // BenchmarkLoad measures what happens once at startup: reading and
 // compiling every rule file.
 func BenchmarkLoad(b *testing.B) {
-	cfg, err := LoadConfig(firstEngineConfig)
+	cfg, err := readConfig(firstEngineConfig)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func FuzzEvaluate(f *testing.F) {
 	f.Add("/x", "=;;", "<a b='c'>d</a", "application/xml")
 	f.Add("/", "a", "--B\r\nContent-Disposition: form-data; name=\"f\"; filename=\"../x\"\r\n\r\nz\r\n--B--", "multipart/form-data; boundary=B")
 
-	cfg, err := LoadConfig(firstEngineConfig)
+	cfg, err := readConfig(firstEngineConfig)
 	if err != nil {
 		f.Fatal(err)
 	}

@@ -31,11 +31,11 @@ Document role: Primary reference for current architecture decisions, implementat
 | Phase 1 | Detect SQLi, XSS carried in HTTP requests, and path traversal attempts; no automatic blocking |
 | Product architecture | Go core; ML development in Python; integration with an existing TLS reverse proxy; rule, ML, and application-profile layers |
 | Rule engine | Our own Go SecLang engine; CRS 4.30.0; all request rule groups, paranoia level 1 to 4 by configuration, default 1 (M19 and M20 as amended on 12 October 2026) |
-| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20) |
-| Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the profile layer, the decision mechanism, and persistent records |
+| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20). Records and alerts written by `ids-offline`, and the read-only `ids-dashboard` behind a login over HTTPS (section 11.23) |
+| Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the profile layer, the decision mechanism, webhook and syslog alerts |
 | Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
-| Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions |
-| Next step | To be chosen with the user. The rule-layer plan is finished; its open points are in section 11.14 |
+| Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions. Two ideas from the user, I1 and I2: [section 6.15](#fikirler) |
+| Next step | Hand-written application profiles (A04), the second step of the user's order; its decisions come first. Records, alerts, and the dashboard were built on 23 October 2026 (section 11.23) |
 
 **For the next agent:** First verify the current status in this document against the relevant files. Then continue from the first unfinished step in section 7.4. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
 
@@ -108,7 +108,7 @@ This section is based on reading existing files. While editing this document, we
 | --- | --- | --- |
 | First working rule engine | An initial engine that accepts offline HTTP examples and executes selected real CRS rules | Proposed first development step; exact rules, input/output, and acceptance criteria remain open. This is not all of Phase 1 or all PL1 rules |
 | Phase 1 product | TLS/proxy integration, HTTP analysis, rule/ML/profile layers, decisions, and protected records/alerts | Architectural boundaries M01–M20 are approved; technical details remain open in A01–A11 |
-| Later stages | Prevention, PL2–PL4, broader CRS support, traffic-based profile learning, and other protocols | Not completed work or scheduled first-release commitments; prevention transition criteria will be chosen separately |
+| Later stages | Prevention, PL2–PL4, broader CRS support, traffic-based profile learning, and other protocols; an MCP server for configuration and false-positive correction (idea I1, section 6.15) | Not completed work or scheduled first-release commitments; prevention transition criteria will be chosen separately. PL2–PL4 and the request side of CRS were brought forward and are done (sections 11.16–11.20) |
 
 ### 3.3. Interpreting HTTP scope
 
@@ -821,7 +821,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 <a id="a09"></a>
 ### 6.9. A09 — Sensitive data, records, access, and retention
 
-**Status:** Open.
+**Status:** Partly decided; the decided part is built. Records, alerts, and the dashboard: decisions R1–R7 and V1–V7 of 23 October 2026 (section 11.22), implemented the same day (section 11.23); the record format is in `docs/records-format.md`. Still open: sensitive fields per application (with A04), roles and permissions once the dashboard can change settings, and what a block record contains (with K4).
 
 **Known / approved basis:** M11: actual content is analyzed; recorded values are masked or omitted; no complete raw-request recording by default.
 
@@ -867,8 +867,8 @@ This decision does not select worker counts, parallel execution of all layers, o
 | Coraza as the product engine | Superseded by our own SecLang engine in M15; may be a learning/reference source | M15; A11 |
 | NGINX | Existing-proxy requirement approved; NGINX itself not selected | A01 |
 | YAML/Pydantic profiles | Manual profiles approved; format and validation technology not selected | A04 |
-| SQLite | Alert storage product not selected | A09 |
-| CLI/API, Jinja2, or another dashboard | Presentation and service technologies not selected; the old Python-framework proposal does not override the Go decision | A03/A09 |
+| SQLite | Not selected. Records are stored as JSON Lines files first (R3, 23 October 2026); a database may follow later | A09 |
+| CLI/API, Jinja2, or another dashboard | Replaced: the dashboard is written in Go with the standard library (V3, 23 October 2026) | A03/A09 |
 | Docker Compose, a single Linux machine | Earlier draft proposal/assumption, not an approved deployment standard or platform decision | A01/A08/A10 |
 | HTTPX, Locust, or other test tools | Product-testing candidates, separate from existing Python experiment tests; product test tools not selected | A07/A08/A11 |
 
@@ -887,6 +887,36 @@ These are not newly approved requirements. They are questions linked to open top
 1. **Success measurement:** Build on the user's proposal to evaluate individual layers and final decisions. In addition to overall accuracy, measure attack recall, false positive rate on normal traffic, precision of generated alerts, analysis coverage, and latency. Evaluate each layer within its responsibilities and attack scope. On the same evaluation data, inspect separate layer results, the combined result, and the difference when a layer is removed. Numeric success targets have not been defined.
 
 This proposal will be discussed under A07 and A06; its inclusion here does not approve a numeric acceptance threshold or evaluation policy.
+
+<a id="fikirler"></a>
+### 6.15. Ideas from the user — 16 October 2026
+
+The user added these two ideas to the plan. They are recorded so that they are not forgotten; apart from what is marked as decided, none of their details is decided.
+
+**I1 — An MCP server for the IDS.** An MCP (Model Context Protocol) server through which an AI assistant can work with the IDS: configure it and correct false positives. On 23 October 2026 the user confirmed that this is one server for both tasks.
+
+1. **Timing, as the user stated it:** after a dashboard exists and the IDS is usable. Since 23 October 2026 the dashboard is built together with records and alerts (section 11.22). The exact place of I1 in the order is not decided.
+2. **What it might do:** read the state (records, alerts, rule statuses), and change the configuration: paranoia level, rule exclusions, application profiles, and, once prevention exists (K4), its settings.
+3. **Questions to answer before building it:**
+   - Which actions only read, and which change something.
+   - Whether every change needs a person's approval before it takes effect. A change the AI makes on its own could switch off a rule that stops a real attack.
+   - How a change is checked, recorded, and undone. A changed configuration should pass the same startup validation (M15) and be stored as a new version.
+   - What the AI may see. M11 keeps request content out of records; the MCP must not become a way around that.
+   - Who may connect to it (trust boundary, section 6.13, item 1), and whether the AI model runs locally, as the project proposal suggests for the AI-supported decision component, or as a remote service.
+   - Technology: not chosen.
+4. **Related records:** A03, A04, A06, A09; section 6.13, items 1 and 2.
+
+**I2 — Correct the false positives found on the CSIC 2010 records.** These were measured on the 500 normal records (main plan sections 11.18–11.20):
+
+| Level | Rule | Cause | Flagged normal records | Possible correction |
+| --- | --- | --- | --- | --- |
+| 1 | 920250 | The application sends Latin-1 text, which is not valid UTF-8 | 96 | CRS setting `tx.crs_validate_utf8_encoding=0` (`crs-setup.conf.example`, about line 912); measured with it: 0 normal, 116 anomalous flagged at level 1 |
+| 2 | 920451 | Every record carries an `Accept-Charset` header | 500 | CRS setting `tx.restricted_headers_extended` (rule 900255 in `crs-setup.conf.example`) |
+| 2 | 932200, 932236, 932240 | Command-execution patterns in normal values | 18 (measured before the protocol rules) | To be examined |
+| 3 | 932350 | Parameters named `pwd` and `id`, which are also Unix commands | 221 (measured before the protocol rules) | An exception for these parameters of this application |
+
+1. **Open:** whether these are corrected by hand with the profile work (K10, A04), before an MCP server exists, or later through I1, with these records as its first test case.
+2. **A condition for either way:** once the rules are adjusted to the CSIC normal records, those records no longer measure false positives independently, in the same way as the already observed ML test set (section 2.1, item 5). Measuring the false-positive rate afterwards needs other normal traffic (A07).
 
 <a id="ilk-motor"></a>
 ## 7. Proposed starting decisions for the first engine
@@ -1240,3 +1270,110 @@ Details are in the progress section of the plan.
 **What this does and does not mean:** the engine runs the whole request side of CRS 4.30.0 and agrees with the CRS tests and with Coraza. It is still not full CRS compatibility: response rules are not run, no request has been run through ModSecurity itself, and the CRS tests do not measure detection or false-positive rates on real traffic. The CSIC data shows that levels 2 to 4, and even level 1 for a non-UTF-8 application, need settings per application.
 
 Committed and pushed to GitHub on 16 October 2026.
+
+### 11.21. Two ideas from the user added to the plan — 16 October 2026
+
+The user asked for two ideas to be added to the plan. They are recorded in [section 6.15](#fikirler) as ideas, not decisions:
+
+1. **I1:** an MCP server through which an AI assistant can configure the IDS and correct false positives, after a dashboard exists and the IDS is usable.
+2. **I2:** correcting the false positives found on the CSIC 2010 normal records (rules 920250, 920451, 932350, and others), with the condition that those records no longer measure false positives independently afterwards.
+
+Open: whether the CSIC false positives are corrected by hand with the profile work (K10) or later through I1, and where the dashboard comes in the order. The order of 12 October 2026 is unchanged.
+
+### 11.22. Decisions on records and alerts; the dashboard is placed — 23 October 2026
+
+**Decisions (user, 23 October 2026).** The user accepted the assistant's recommendations R1–R5 and R7 for records and alerts (A09) and changed R6:
+
+| # | Decision |
+| --- | --- |
+| R1 | A record is written for every request with a finding or an incomplete analysis (M05). Other requests are only counted |
+| R2 | For now an alert is a request whose rule-layer score is at or above the CRS threshold. It is labelled "rule layer only"; the decision mechanism replaces this rule later (K3) |
+| R3 | Records are stored as JSON Lines files, one record per line. A database may follow later |
+| R4 | First: records keep today's M11 rule, no request content. **Replaced the same day** by the revised R4 below |
+| R5 | Record files are rotated by size; the number of kept files is set in the configuration |
+| R6 | **Changed by the user:** alerts are shown in a dashboard, developed in the same step as the records. The record files are designed for the dashboard to read. Sending alerts by webhook and syslog comes after the proxy (decided by the user the same day) |
+| R7 | Each record carries an ID, the time, the engine and CRS versions, the paranoia level, and a fingerprint of the configuration |
+
+**Order.** The user confirmed that the dashboard comes before the MCP server (I1) and is built together with records and alerts. The first step of the order of 12 October 2026 (section 11.16) therefore becomes "records, alerts, and a dashboard"; the other steps are unchanged. Sending alerts by webhook (an HTTP request to a chat or automation service) and by syslog (the system log, or a central log system or SIEM) is added after the proxy step, because it only matters with live traffic. What is sent follows M11, like the records, and the alert record is kept self-contained so that these senders need no new format.
+
+**I1.** The user confirmed that I1 is one MCP server, both to configure the IDS and to correct false positives.
+
+**Dashboard decisions (user, 23 October 2026).** The assistant proposed V1–V7; the user decided five of them:
+
+| # | Decision |
+| --- | --- |
+| V1 | Six pages for now: login; overview (counts for a chosen time range, a chart over time, the most frequent rules, attack groups, and match locations); alerts (a filtered list, which can also show records below the threshold or with an incomplete analysis); alert detail (all findings, scores, analysis status, and the R7 fields of one record); rules (every rule with its level, status, exclusion reason, and how often it fired); engine (versions, paranoia level, threshold, configuration fingerprint, record files). Pages for profiles, settings, alert marking, users, and MCP approvals come later |
+| V2 | The dashboard is read-only in this step. Changing settings through it comes after this step, with the profiles and possibly the MCP server (I1) |
+| V3 | It is written in Go with the standard library (`net/http`, `html/template`, `embed`), a little hand-written JavaScript, and charts drawn as SVG. No new dependency |
+| V6 | Pages ask for new data every few seconds through a small read-only JSON API, which I1 may also read later |
+| V7 | Marking alerts (for example "false positive" or "confirmed") comes later, with the profiles |
+
+**Further points from the user (23 October 2026):**
+
+1. **Prevention (K4), the user's direction:** requests are not held back. The IDS lets a request through, and once it has seen that the request is abnormal, the IP address or other identifiers are blocked for later requests. M09 therefore stays valid when prevention comes. The details are decided in the prevention step.
+2. **R4 to be revised:** the user wants every detail about an attacker that prevention needs to be recorded, following what other IDSs record. The assistant compared Suricata, Zeek, ModSecurity and Coraza, CrowdSec, and the OWASP Logging Cheat Sheet.
+3. **V5:** the user wants a login in this step and only one way of providing HTTPS, the more usable one.
+
+**Revised R4, V4, and V5 (user, 23 October 2026).** The user accepted the assistant's final recommendations:
+
+| # | Decision |
+| --- | --- |
+| R4 | **Always recorded:** the client IP address and port (only an address from the connection or from a trusted proxy, never from a header the client sends, such as `X-Forwarded-For`); host name, server address and port; method, path, query string, HTTP version; User-Agent, Referer, content type, body length, and the header names without values; for each finding the matched part, cut to a fixed length; later, with the proxy, the response status. **Always masked:** the values of `Cookie` and `Authorization`, and of parameters with secret-looking names (`password`, `pwd`, `token`, `secret`, `session`, and similar; profiles may add more, A04); cookie values are replaced by a short hash so that one session's requests can be linked. **Off by default, with a setting:** all header values and the full body of alerts. The IP address is not shortened, because a shortened address cannot be blocked later (K4) |
+| V4 | The dashboard is a separate program, `ids-dashboard`, that only reads the record files. `ids-offline` now and the `ids` service after the proxy write them; each writes a start record with versions, settings, and rule statuses. Both run on the same machine |
+| V5 | A login in this step, with HTTPS built into the dashboard and always on. Login on every page and API call; passwords stored only as PBKDF2 hashes (Go standard library), users added with a command; the dashboard uses the given certificate files or creates its own on first start; sessions in protected cookies with an idle timeout and a logout; a growing wait after five wrong passwords for a username; cross-origin protection (`http.CrossOriginProtection`); a log of logins without passwords; one role for now |
+
+**M11 after the revised R4.** M11 says that recorded values are masked or omitted and that a complete raw request is not recorded by default. The revised R4 stays within that wording: request parts are recorded with secrets masked, and the full request is recorded only when the setting is turned on. It replaces the stricter rule of the first engine (section 11.10, item 2), whose output held no request content at all. Records now contain personal data, such as IP addresses, so access to them is limited by the login, file permissions, and rotation.
+
+**Still open:** whether the CSIC false positives (I2) are corrected by hand with the profile work or later through I1. Next: the development plan for this step.
+
+### 11.23. Records, alerts, and the dashboard built — 23 October 2026
+
+The user approved the development plan ([docs/development-plan-records-dashboard.md](docs/development-plan-records-dashboard.md)) and asked for it to be done in one move. All five stages were done the same day.
+
+**What exists now:**
+
+1. **Records** (`internal/record`): `ids-offline` writes JSON Lines records when the product configuration has a `records` section (it now has one) or `-records DIR` is given. The format, masking, and known limits are in [docs/records-format.md](docs/records-format.md), the contract for the dashboard and for the webhook, syslog, and MCP readers that come later.
+2. **Alerts:** a request record with `"alert": true` when the score reaches the CRS threshold, labelled `"rule layer only"` (R2). The text output says `ALERT (rule layer only)`.
+3. **Dashboard** (`cmd/ids-dashboard`, `internal/dashboard`): login, overview, alerts, alert detail, rules, and engine pages over a read-only JSON API, refreshed every 5 seconds. It uses the Go standard library only, and the HTTPS, login, session, and cross-origin rules of V5.
+4. **Product configuration** (`internal/config`): the engine settings plus the optional `records` section, and the configuration fingerprint (R7). The engine's own `LoadConfig` stays strict for engine-only files.
+
+**Checks:**
+
+1. **Secrets (R4, M11).** The real CRS configuration ran on seven requests with a secret in each place: form, cookie, `Authorization`, `Proxy-Authorization`, token parameter, JSON, multipart, Referer (`testdata/requests/secrets.json`). Each carried an attack, so rules matched at the secret. No secret appeared in the record files, any API answer, or any page, with `full_requests` off or on. The test fails when masking is switched off. A fuzz test with any secret and any request around it found no leak in about a million runs.
+2. **Attack text.** `<script>` in the User-Agent, path, query, and matched part is escaped in every API answer, also from a hand-written record line that holds a raw `<script>`. The pages put record text into the page only as text, and a Content-Security-Policy allows no inline script.
+3. **Login and HTTPS.**
+   - Every route without a session gives 401 or a redirect.
+   - The cookie flags are set.
+   - The wait after five wrong passwords works.
+   - Idle and 12-hour limits are checked with a fake clock.
+   - Cross-origin posts are refused.
+   - Plain HTTP and TLS 1.1 are refused.
+4. **Dashboard against the command line.**
+   - On the 5,072 CRS tests with the product configuration (level 1), the dashboard shows 5,072 analysed, 2,916 alerts, 154 incomplete, and 2,967 records, the same as `ids-offline -summary`.
+   - On the 1,000 CSIC records it shows 272 alerts (96 normal and 176 anomalous, as in section 11.20), 0 incomplete, and 552 records.
+   - Every page was opened in a headless browser in light and dark mode and at phone width. There were no script errors and no CSP reports.
+5. **Speed.** Writing one record costs about 0.037 ms (0.043 ms with `full_requests`), next to about 0.62 ms for the analysis of the same request (benchmarks in `internal/record/bench_test.go`). That is about 6 % for a recorded request. A request without a finding is only counted.
+6. `go vet`, `go test`, `go test -race` (all packages), the golden test of the record line, and fuzzing of the record masking and of the dashboard's reader with any file content.
+
+**Found and fixed during the work:**
+
+1. Adding the `records` section to the product configuration broke the engine package's tests, which read that file with the strict engine loader. The tests now read only its engine part.
+2. Secret values shorter than four characters, such as a three-digit card code (`cvv=731`), were masked in their own place but not inside a finding that holds the whole query string or body, nor in the full body. They are now removed from such whole texts too.
+3. The dashboard listed a rule twice when it matched in two places, and counted the score rule's `TX:BLOCKING_INBOUND_ANOMALY_SCORE` as a place in the request. Both were fixed.
+
+**Small choices made inside the decisions** (open to change):
+
+1. `-reset-password` ends the user's current logins, as removing the user does.
+2. Chart bars have round widths, so they start on round times.
+3. A page is redrawn only when its data changed, so an open table or a tooltip is not reset every 5 seconds.
+
+**Known limits** (in `docs/records-format.md`):
+
+1. A secret in the path is recorded.
+2. A secret transformed by a rule, or captured in part, can remain in a finding at a place that is not secret.
+3. Masking can be wider than needed. Example: a password `test` in a CRS test masks the word in that request's User-Agent.
+4. Sessions end when the dashboard restarts.
+5. One role.
+6. No marking of alerts (V7).
+
+**Still open:** I2 (see 11.22). Next in the order: hand-written application profiles (A04), whose decisions come first.

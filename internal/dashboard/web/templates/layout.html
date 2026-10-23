@@ -1,0 +1,32 @@
+{{define "layout"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} · IDS dashboard</title>
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/app.css">
+<script src="/static/app.js" defer></script>
+</head>
+<body data-page="{{.Page}}" data-id="{{.ID}}" data-poll="{{.Poll}}">
+{{if .User}}
+<header class="top">
+  <a class="brand" href="/">IDS dashboard</a>
+  <nav>
+    <a href="/" {{if eq .Page "overview"}}aria-current="page"{{end}}>Overview</a>
+    <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
+    <a href="/rules" {{if eq .Page "rules"}}aria-current="page"{{end}}>Rules</a>
+    <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine</a>
+  </nav>
+  <form class="logout" method="post" action="/logout">
+    <span class="who">{{.User}}</span>
+    <button type="submit">Log out</button>
+  </form>
+</header>
+{{end}}
+<main>
+{{template "content" .}}
+</main>
+<footer class="foot">IDS {{.Version}} · read-only · alerts are decided by the rule layer only</footer>
+</body>
+</html>{{end}}

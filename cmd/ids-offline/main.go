@@ -14,6 +14,12 @@
 //
 // Matched values are not printed unless -show-values is given (M11).
 //
+// When the configuration has a "records" section, or -records names a
+// directory, the requests with a finding or an incomplete analysis are also
+// written to record files there (R1), for the dashboard. Records follow
+// their own rule for request content (R4): they keep who sent a request
+// and what matched, with secrets masked, whatever -show-values says.
+//
 // Exit status: 0 on success, 1 when an example's expect_ids or
 // no_expect_ids is not met, 2 when the rules or the requests cannot be
 // loaded.
@@ -32,8 +38,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/EfeSipahi/ids-system/internal/config"
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/offline"
+	"github.com/EfeSipahi/ids-system/internal/record"
 	"github.com/EfeSipahi/ids-system/internal/result"
 )
 
@@ -47,6 +55,16 @@ type output struct {
 	// Requests is left out with -summary, and Summary without it.
 	Requests []requestOutput `json:"requests,omitempty"`
 	Summary  []groupSummary  `json:"summary,omitempty"`
+	// Records says where records were written, when they were.
+	Records *recordsOutput `json:"records,omitempty"`
+}
+
+// recordsOutput says what was written to the record files.
+type recordsOutput struct {
+	Dir      string `json:"dir"`
+	Run      string `json:"run"`
+	Analysed int    `json:"analysed"`
+	Written  int    `json:"written"`
 }
 
 // requestOutput is the record of one example with its test expectation.
@@ -107,6 +125,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	asJSON := flags.Bool("json", false, "print JSON instead of text")
 	showValues := flags.Bool("show-values", false, "also print matched values and the request URI (may reveal sensitive content)")
 	level := flags.Int("paranoia-level", 0, "CRS paranoia `level` 1 to 4, in place of the one in the configuration")
+	recordsDir := flags.String("records", "", "write records to this `directory`, in place of the one in the configuration")
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}
@@ -115,7 +134,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 2
 	}
 
-	cfg, err := engine.LoadConfig(*configPath)
+	cfg, err := config.Load(*configPath)
 	if err != nil {
 		fmt.Fprintf(stderr, "ids-offline: %v\n", err)
 		return 2
@@ -123,7 +142,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	if *level != 0 {
 		cfg.ParanoiaLevel = *level
 	}
-	rules, err := engine.Load(cfg)
+	rules, err := engine.Load(cfg.Config)
 	if err != nil {
 		fmt.Fprintf(stderr, "ids-offline: the rules cannot be loaded:\n%v\n", err)
 		return 2
@@ -136,15 +155,28 @@ func run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "ids-offline: %v\n", err)
 			return 2
 		}
-		opt := result.Options{ShowValues: *showValues}
+		var examples [][]offline.Example
 		for _, file := range files {
-			examples, err := offline.LoadFile(file)
+			ex, err := offline.LoadFile(file)
 			if err != nil {
 				fmt.Fprintf(stderr, "ids-offline: %v\n", err)
 				return 2
 			}
+			examples = append(examples, ex)
+		}
+		recorder, err := openRecords(cfg, *recordsDir, rules)
+		if err != nil {
+			fmt.Fprintf(stderr, "ids-offline: %v\n", err)
+			return 2
+		}
+		if recorder != nil {
+			out.Records = &recordsOutput{Dir: recordsDirOf(cfg, *recordsDir), Run: recorder.Run()}
+		}
+
+		opt := result.Options{ShowValues: *showValues}
+		for i, file := range files {
 			source := strings.TrimSuffix(filepath.Base(file), ".json")
-			for _, ex := range examples {
+			for _, ex := range examples[i] {
 				res := rules.Evaluate(ex.Request)
 				out.Requests = append(out.Requests, requestOutput{
 					Index:       len(out.Requests) + 1,
@@ -153,6 +185,24 @@ func run(args []string, stdout, stderr io.Writer) int {
 					Record:      result.NewRecord(res.Request, res, opt),
 					Expectation: check(ex, res),
 				})
+				if recorder == nil {
+					continue
+				}
+				if err := recorder.Add(res.Request, res); err != nil {
+					recorder.Close()
+					fmt.Fprintf(stderr, "ids-offline: %v\n", err)
+					return 2
+				}
+				out.Records.Analysed++
+				if record.Wanted(res.Request, res) {
+					out.Records.Written++
+				}
+			}
+		}
+		if recorder != nil {
+			if err := recorder.Close(); err != nil {
+				fmt.Fprintf(stderr, "ids-offline: %v\n", err)
+				return 2
 			}
 		}
 	}
@@ -182,6 +232,34 @@ func run(args []string, stdout, stderr io.Writer) int {
 		writeText(stdout, out)
 	}
 	return exit
+}
+
+// openRecords starts the record files of this run, or returns nil when no
+// records are to be written: the configuration has no "records" section
+// and -records was not given.
+func openRecords(cfg *config.Product, dir string, rules *engine.RuleSet) (*record.Recorder, error) {
+	if cfg.Records == nil && dir == "" {
+		return nil, nil
+	}
+	rc := record.Config{}
+	if cfg.Records != nil {
+		rc = *cfg.Records
+	}
+	rc.Dir = recordsDirOf(cfg, dir)
+	fingerprint, err := cfg.Fingerprint(rules.ParanoiaLevel())
+	if err != nil {
+		return nil, err
+	}
+	return record.Open(rc, record.NewEngine(rules, fingerprint), rules.Statuses())
+}
+
+// recordsDirOf returns the directory records are written to: the one of
+// -records, or else the one of the configuration.
+func recordsDirOf(cfg *config.Product, dir string) string {
+	if dir != "" || cfg.Records == nil {
+		return dir
+	}
+	return cfg.Records.Dir
 }
 
 // requestFiles returns path itself, or the *.json files in it when path is
@@ -272,6 +350,7 @@ func writeSummary(w io.Writer, out output) {
 	fmt.Fprintln(w, "\nflagged: the anomaly score reached the threshold")
 	fmt.Fprintln(w, "failed: the expectation was not met although the whole request was inspected")
 	fmt.Fprintln(w, "not inspected: the expectation was not met and the body could not be read")
+	writeRecords(w, out.Records)
 }
 
 // check compares the matched rule ids with what an example expects. It
@@ -364,7 +443,7 @@ func writeText(w io.Writer, out output) {
 
 		verdict := "below threshold"
 		if r.Score.Exceeded {
-			verdict = "THRESHOLD EXCEEDED"
+			verdict = "ALERT (" + record.DecidedBy + ")"
 		}
 		fmt.Fprintf(w, "    score %d, threshold %d: %s\n", r.Score.Total, r.Score.Threshold, verdict)
 
@@ -393,6 +472,14 @@ func writeText(w io.Writer, out output) {
 
 	if len(out.Requests) > 0 {
 		fmt.Fprintf(w, "\n%d requests, %d with an expectation that was not met\n", len(out.Requests), failed)
+	}
+	writeRecords(w, out.Records)
+}
+
+// writeRecords says where the records of this run went.
+func writeRecords(w io.Writer, r *recordsOutput) {
+	if r != nil {
+		fmt.Fprintf(w, "\nRecords: %d of %d requests written to %s (run %s)\n", r.Written, r.Analysed, r.Dir, r.Run)
 	}
 }
 

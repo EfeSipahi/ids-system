@@ -6,24 +6,30 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 )
 
 const (
-	config   = "../../configs/crs-first-engine.json"
-	examples = "../../testdata/requests/path-traversal.json"
+	productConfig = "../../configs/crs-first-engine.json"
+	examples      = "../../testdata/requests/path-traversal.json"
 )
 
+// runTool runs the tool. Unless the arguments name a records directory, the
+// records go to a temporary one, not to the one of the configuration.
 func runTool(t *testing.T, args ...string) (code int, stdout, stderr string) {
 	t.Helper()
+	if !slices.Contains(args, "-records") {
+		args = append([]string{"-records", t.TempDir()}, args...)
+	}
 	var out, errOut bytes.Buffer
 	code = run(args, &out, &errOut)
 	return code, out.String(), errOut.String()
 }
 
 func TestTextOutput(t *testing.T) {
-	code, out, errOut := runTool(t, "-config", config, "-requests", examples)
+	code, out, errOut := runTool(t, "-config", productConfig, "-requests", examples)
 	if code != 0 || errOut != "" {
 		t.Fatalf("exit %d, stderr %q", code, errOut)
 	}
@@ -34,7 +40,7 @@ func TestTextOutput(t *testing.T) {
 		// Six matches of 5 points: 930100 and 930110 twice, 930120 and
 		// 932160 once. Coraza gives the same total.
 		"Inbound Anomaly Score Exceeded (Total Score: 30)",
-		"score 30, threshold 5: THRESHOLD EXCEEDED",
+		"score 30, threshold 5: ALERT (rule layer only)",
 		"[5] normal: search with a repeated parameter",
 		"no findings",
 		"score 0, threshold 5: below threshold",
@@ -57,7 +63,7 @@ func TestOutputHidesRequestContent(t *testing.T) {
 	// "Path Traversal Attack (/../) or (/.../)", contains it.
 	secrets := []string{"etc/passwd", "master.passwd", "win.ini", "../..", "WINDOWS", "kitap", "gizli", "/get", "/giris"}
 	for _, format := range [][]string{nil, {"-json"}} {
-		args := append([]string{"-config", config, "-requests", examples}, format...)
+		args := append([]string{"-config", productConfig, "-requests", examples}, format...)
 		code, out, _ := runTool(t, args...)
 		if code != 0 {
 			t.Fatalf("%v: exit %d", format, code)
@@ -69,7 +75,7 @@ func TestOutputHidesRequestContent(t *testing.T) {
 		}
 	}
 
-	_, out, _ := runTool(t, "-config", config, "-requests", examples, "-show-values")
+	_, out, _ := runTool(t, "-config", productConfig, "-requests", examples, "-show-values")
 	for _, want := range []string{
 		"request: GET /get?arg=../../../etc/passwd, body empty",
 		"value: ../../../etc/passwd",
@@ -82,7 +88,7 @@ func TestOutputHidesRequestContent(t *testing.T) {
 }
 
 func TestJSONOutput(t *testing.T) {
-	code, out, _ := runTool(t, "-config", config, "-requests", examples, "-json")
+	code, out, _ := runTool(t, "-config", productConfig, "-requests", examples, "-json")
 	if code != 0 {
 		t.Fatalf("exit %d", code)
 	}
@@ -140,13 +146,13 @@ func TestJSONOutput(t *testing.T) {
 }
 
 func TestStartupOnly(t *testing.T) {
-	code, out, _ := runTool(t, "-config", config)
+	code, out, _ := runTool(t, "-config", productConfig)
 	if code != 0 {
 		t.Fatalf("exit %d", code)
 	}
 	for _, want := range []string{
 		"Rules: OWASP_CRS/4.30.0, paranoia level 1, 456 active, 4 excluded",
-		"excluded 901350 (REQUEST-901-INITIALIZATION.conf:387): Body processor control",
+		"excluded 901350 (REQUEST-901-INITIALIZATION.conf:387): Left out on purpose",
 		"excluded 901450 (REQUEST-901-INITIALIZATION.conf:517): Sampling is not implemented",
 	} {
 		if !strings.Contains(out, want) {
@@ -174,7 +180,7 @@ func TestExpectationNotMet(t *testing.T) {
 		{"name": "fine", "method": "GET", "uri": "/?q=../../x", "expect_ids": [930110]},
 		{"name": "expects nothing", "method": "GET", "uri": "/"}
 	]`)
-	code, out, _ := runTool(t, "-config", config, "-requests", requests)
+	code, out, _ := runTool(t, "-config", productConfig, "-requests", requests)
 	if code != 1 {
 		t.Errorf("exit %d, want 1", code)
 	}
@@ -199,7 +205,7 @@ func TestLogExpectations(t *testing.T) {
 		{"name": "does not find it", "method": "GET", "uri": "/?q=kitap", "expect_log": "found within ARGS:q"},
 		{"name": "finds what it must not", "method": "GET", "uri": "/?q=../../x", "no_expect_log": "Path Traversal"}
 	]`)
-	code, out, _ := runTool(t, "-config", config, "-requests", requests)
+	code, out, _ := runTool(t, "-config", productConfig, "-requests", requests)
 	if code != 1 {
 		t.Errorf("exit %d, want 1", code)
 	}
@@ -223,7 +229,7 @@ func TestIncompleteAnalysisIsShown(t *testing.T) {
 		{"name": "JSON that breaks off", "method": "POST", "uri": "/", "headers": [["Content-Type", "application/json"]], "body": "{\"file\": \"../../x\", \"more\": ", "expect_ids": [930110]},
 		{"name": "complete JSON", "method": "POST", "uri": "/", "headers": [["Content-Type", "application/json"]], "body": "{\"file\": \"../../x\"}", "expect_ids": [930110]}
 	]`)
-	code, out, _ := runTool(t, "-config", config, "-requests", requests)
+	code, out, _ := runTool(t, "-config", productConfig, "-requests", requests)
 	// The first payload cannot be seen. The second is found in the part
 	// that was read, and the output still says the rest was not.
 	if code != 1 {
@@ -296,16 +302,16 @@ func TestSummaryOfCRSTests(t *testing.T) {
 // their tests fail and the tool says so with exit code 1. An unsupported
 // level stops the tool before any request is read.
 func TestParanoiaLevelFlag(t *testing.T) {
-	code, out, _ := runTool(t, "-config", config, "-requests", "../../testdata/requests/crs/942200.json", "-summary")
+	code, out, _ := runTool(t, "-config", productConfig, "-requests", "../../testdata/requests/crs/942200.json", "-summary")
 	if code != 1 || !strings.Contains(out, "paranoia level 1") {
 		t.Errorf("level 1: exit %d, output:\n%s", code, out)
 	}
-	code, out, _ = runTool(t, "-config", config, "-requests", "../../testdata/requests/crs/942200.json", "-summary", "-paranoia-level", "2")
+	code, out, _ = runTool(t, "-config", productConfig, "-requests", "../../testdata/requests/crs/942200.json", "-summary", "-paranoia-level", "2")
 	if code != 0 || !strings.Contains(out, "paranoia level 2") {
 		t.Errorf("level 2: exit %d, output:\n%s", code, out)
 	}
 	for _, level := range []string{"5", "-1"} {
-		code, _, errOut := runTool(t, "-config", config, "-paranoia-level", level)
+		code, _, errOut := runTool(t, "-config", productConfig, "-paranoia-level", level)
 		if code != 2 || !strings.Contains(errOut, "paranoia level "+level+" is not supported") {
 			t.Errorf("level %s: exit %d, error output: %s", level, code, errOut)
 		}
@@ -324,7 +330,7 @@ func TestSummaryText(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	code, out, _ := runTool(t, "-config", config, "-requests", dir, "-summary")
+	code, out, _ := runTool(t, "-config", productConfig, "-requests", dir, "-summary")
 	if code != 1 {
 		t.Errorf("exit %d, want 1", code)
 	}
@@ -349,12 +355,12 @@ func TestSummaryText(t *testing.T) {
 	}
 
 	// Without -summary the same directory gives every request.
-	_, out, _ = runTool(t, "-config", config, "-requests", dir)
+	_, out, _ = runTool(t, "-config", productConfig, "-requests", dir)
 	if !strings.Contains(out, "4 requests, 2 with an expectation that was not met") {
 		t.Errorf("output:\n%s", out)
 	}
 
-	if code, _, errOut := runTool(t, "-config", config, "-requests", t.TempDir()); code != 2 || !strings.Contains(errOut, "no .json files") {
+	if code, _, errOut := runTool(t, "-config", productConfig, "-requests", t.TempDir()); code != 2 || !strings.Contains(errOut, "no .json files") {
 		t.Errorf("empty directory: exit %d, stderr %q", code, errOut)
 	}
 }
@@ -370,10 +376,10 @@ func TestLoadFailures(t *testing.T) {
 	}{
 		{"missing config", []string{"-config", "no-such-file.json"}, "no-such-file.json"},
 		{"unsupported rule", []string{"-config", badRules}, "rule 7: operator @rbl is not supported"},
-		{"missing requests", []string{"-config", config, "-requests", "no-such-file.json"}, "no-such-file.json"},
-		{"bad requests", []string{"-config", config, "-requests", write(t, "r.json", `[{"uri": "/"}]`)}, "method is missing"},
+		{"missing requests", []string{"-config", productConfig, "-requests", "no-such-file.json"}, "no-such-file.json"},
+		{"bad requests", []string{"-config", productConfig, "-requests", write(t, "r.json", `[{"uri": "/"}]`)}, "method is missing"},
 		{"unknown flag", []string{"-nope"}, "flag provided but not defined"},
-		{"stray argument", []string{"-config", config, "extra"}, `unexpected argument "extra"`},
+		{"stray argument", []string{"-config", productConfig, "extra"}, `unexpected argument "extra"`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -385,5 +391,73 @@ func TestLoadFailures(t *testing.T) {
 				t.Errorf("stdout = %q, want nothing", out)
 			}
 		})
+	}
+}
+
+// R1: with a records directory, the requests with a finding or an
+// incomplete analysis are written there, after a start record and before
+// the counts. The text and JSON output say how many.
+func TestRecordsAreWritten(t *testing.T) {
+	dir := t.TempDir()
+	code, out, _ := runTool(t, "-records", dir, "-config", productConfig, "-requests", examples)
+	if code != 0 {
+		t.Fatalf("exit %d", code)
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "records.jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var types []string
+	var alerts int
+	for _, line := range strings.Split(strings.TrimSuffix(string(data), "\n"), "\n") {
+		var rec struct {
+			Type      string `json:"type"`
+			Alert     bool   `json:"alert"`
+			DecidedBy string `json:"decided_by"`
+			Engine    struct {
+				CRS    string `json:"crs"`
+				Config string `json:"config"`
+			} `json:"engine"`
+			Analysed int `json:"analysed"`
+			Recorded int `json:"recorded"`
+		}
+		if err := json.Unmarshal([]byte(line), &rec); err != nil {
+			t.Fatalf("%v: %s", err, line)
+		}
+		types = append(types, rec.Type)
+		switch rec.Type {
+		case "request":
+			if rec.Alert {
+				alerts++
+			}
+			if rec.DecidedBy != "rule layer only" || rec.Engine.CRS != "OWASP_CRS/4.30.0" || !strings.HasPrefix(rec.Engine.Config, "sha256:") {
+				t.Errorf("record = %s", line)
+			}
+		case "counts":
+			if rec.Analysed != 6 || rec.Recorded != 4 {
+				t.Errorf("counts = %s", line)
+			}
+		}
+	}
+	// The example file holds four attacks, each with an expected match,
+	// and two normal requests, which get no record.
+	if want := []string{"start", "request", "request", "request", "request", "counts"}; !reflect.DeepEqual(types, want) {
+		t.Errorf("types = %v, want %v", types, want)
+	}
+	// All four reach the threshold; the text output shows their scores.
+	if alerts != 4 {
+		t.Errorf("%d alerts, want 4", alerts)
+	}
+	if !strings.Contains(out, "Records: 4 of 6 requests written to "+dir+" (run ") {
+		t.Errorf("output:\n%s", out)
+	}
+
+	// Without -requests nothing is written.
+	empty := t.TempDir()
+	if code, _, _ := runTool(t, "-records", empty, "-config", productConfig); code != 0 {
+		t.Fatalf("exit %d", code)
+	}
+	if entries, _ := os.ReadDir(empty); len(entries) != 0 {
+		t.Errorf("startup report wrote %d files", len(entries))
 	}
 }

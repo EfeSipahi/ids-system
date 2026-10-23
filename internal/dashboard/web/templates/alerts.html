@@ -1,0 +1,28 @@
+{{define "content"}}
+<form class="filters" id="filters">
+  <label>Period
+    <select name="range">
+      <option value="1h">Last hour</option>
+      <option value="24h" selected>Last 24 hours</option>
+      <option value="7d">Last 7 days</option>
+      <option value="all">Everything kept</option>
+    </select>
+  </label>
+  <label>Show
+    <select name="kind">
+      <option value="alerts" selected>Alerts</option>
+      <option value="all">All records</option>
+      <option value="incomplete">Incomplete analyses</option>
+    </select>
+  </label>
+  <label>Rule <input name="rule" inputmode="numeric" pattern="[0-9]*" size="7"></label>
+  <label>Attack group <select name="group" id="group"><option value="">Any</option></select></label>
+  <label>Client IP <input name="ip" size="15"></label>
+  <label>Location <input name="location" size="16" placeholder="ARGS:id"></label>
+  <label>Minimum score <input name="min_score" inputmode="numeric" pattern="[0-9]*" size="4"></label>
+  <button type="submit">Apply</button>
+  <button type="reset" id="clear">Clear</button>
+  <span class="updated muted" id="updated"></span>
+</form>
+<div id="view" class="stack"></div>
+{{end}}

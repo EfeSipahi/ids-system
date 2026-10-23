@@ -1,0 +1,8 @@
+{
+  "listen": "127.0.0.1:8443",
+  "records_dir": "../records",
+  "state_dir": "../dashboard-state",
+  "tls_cert": "",
+  "tls_key": "",
+  "session_idle_minutes": 60
+}

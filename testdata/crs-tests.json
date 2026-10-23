@@ -23,7 +23,7 @@
   ],
   "exclude": [
     {"id": 901320, "reason": "Persistent collections (initcol) are not implemented. The rule only acts when tx.enable_default_collections is 1, which is not set."},
-    {"id": 901350, "reason": "Body processor control (ctl:requestBodyProcessor) is not implemented. The rule only acts when tx.enforce_bodyproc_urlencoded is 1; the default is 0. The user decided on 16 October 2026 that a body without a reader stays one text."},
+    {"id": 901350, "reason": "Left out on purpose: the rule makes the form reader read bodies of unknown types, and the user decided on 16 October 2026 that a body without a reader stays one text. The rule only acts when tx.enforce_bodyproc_urlencoded is 1; the default is 0."},
     {"id": 901410, "reason": "Sampling is not implemented (UNIQUE_ID, sha1). Rule 901400 skips this rule at the default sampling percentage of 100."},
     {"id": 901450, "reason": "Sampling is not implemented (ctl). Rule 901400 skips this rule at the default sampling percentage of 100."}
   ],
