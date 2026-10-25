@@ -6,14 +6,16 @@ import (
 
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
+	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/result"
 )
 
-// Wanted reports whether a request gets a record: when a rule matched, or
-// when the request could not be inspected completely (R1, M05). Other
-// requests are only counted.
-func Wanted(req *httpmodel.Request, res *engine.Result) bool {
-	return len(res.Matches) > 0 || !req.Status.Body.Complete()
+// Wanted reports whether a request gets a record: when a rule matched, when
+// the profile found something, or when the request could not be inspected
+// completely (R1, F9, M05). Other requests are only counted. prof is nil
+// when the configuration has no applications.
+func Wanted(req *httpmodel.Request, res *engine.Result, prof *profile.Result) bool {
+	return len(res.Matches) > 0 || !req.Status.Body.Complete() || prof != nil && len(prof.Findings) > 0
 }
 
 // builder turns the engine's result for one request into a record.
@@ -23,9 +25,16 @@ type builder struct {
 	engine Engine
 }
 
-// build makes the record of req. res must be the result of evaluating req.
-func (b builder) build(req *httpmodel.Request, res *engine.Result, id, run string, now time.Time) Request {
-	s := b.collect(req)
+// build makes the record of req. res must be the result of evaluating req,
+// and prof, when the configuration has applications, the result of checking
+// it against its application's profile.
+func (b builder) build(req *httpmodel.Request, res *engine.Result, prof *profile.Result, id, run string, now time.Time) Request {
+	var secretPath []int
+	var pathValues []string
+	if prof != nil {
+		secretPath, pathValues = prof.SecretPath, prof.SecretValues
+	}
+	s := b.collect(req, pathValues...)
 	rec := Request{
 		Type:      TypeRequest,
 		Schema:    Schema,
@@ -39,13 +48,23 @@ func (b builder) build(req *httpmodel.Request, res *engine.Result, id, run strin
 			IP:   req.Received.LocalAddr,
 			Port: req.Received.LocalPort,
 		},
-		HTTP:     b.http(req, s),
+		HTTP:     b.http(req, s, secretPath),
 		Analysis: result.NewAnalysis(req),
 		Findings: []Finding{},
 		Score:    result.NewScore(res),
 		Engine:   b.engine,
 	}
 	rec.Alert = rec.Score.Exceeded
+	if prof != nil {
+		app := result.NewApplication(prof.App, b.engine.ParanoiaLevel)
+		rec.Application = &app
+		rec.Profile = newProfile(*prof, s)
+		rec.AlertBy = result.AlertBy(rec.Score, *prof)
+		rec.Alert = len(rec.AlertBy) > 0
+		if prof.App != nil && prof.App.Profile.Mode == profile.ModeAlert {
+			rec.DecidedBy = DecidedByProfile
+		}
+	}
 	for _, m := range res.Matches {
 		rec.Findings = append(rec.Findings, b.finding(m, s))
 	}
@@ -55,10 +74,10 @@ func (b builder) build(req *httpmodel.Request, res *engine.Result, id, run strin
 	return rec
 }
 
-func (b builder) http(req *httpmodel.Request, s secrets) HTTP {
+func (b builder) http(req *httpmodel.Request, s secrets, secretPath []int) HTTP {
 	h := HTTP{
 		Method:      s.text(req.Received.Method, maxHeaderName),
-		Path:        s.text(req.Parsed.Path, maxPath),
+		Path:        s.text(maskPath(req.Parsed.Path, secretPath), maxPath),
 		Query:       s.text(b.maskQuery(req.Parsed.RawQuery), maxQuery),
 		Version:     s.text(req.Received.Version, maxHeaderName),
 		UserAgent:   s.text(first(req.HeaderValues("User-Agent")), maxUserAgent),
@@ -118,7 +137,7 @@ func (b builder) fullRequest(req *httpmodel.Request, s secrets) *Full {
 	full := &Full{Headers: [][2]string{}}
 	for _, h := range req.Received.Headers {
 		value := Masked
-		if !isSecretHeader(h.Name) {
+		if !b.secretHeader(h.Name) {
 			value = s.text(h.Value, maxHeaderValue)
 		}
 		full.Headers = append(full.Headers, [2]string{s.text(h.Name, maxHeaderName), value})
@@ -127,15 +146,39 @@ func (b builder) fullRequest(req *httpmodel.Request, s secrets) *Full {
 	return full
 }
 
-// maskBody returns the body with the values of secret form fields masked.
-// Secret values in other body formats are removed by the secrets pass,
-// which knows them from the parsed fields.
+// maskBody returns the body with the values of secret form and JSON fields
+// masked. Secret values in other body formats are removed by the secrets
+// pass, which knows them from the parsed fields.
 func (b builder) maskBody(req *httpmodel.Request) string {
 	body := string(req.Received.Body)
-	if req.Status.BodyFormat == "form" {
+	switch req.Status.BodyFormat {
+	case "form":
 		return b.maskQuery(body)
+	case "json":
+		return b.maskJSON(req.Received.Body)
 	}
 	return body
+}
+
+// newProfile returns the profile part of a record, or nil for a request
+// of no application without a finding.
+func newProfile(res profile.Result, s secrets) *Profile {
+	if res.App == nil && len(res.Findings) == 0 {
+		return nil
+	}
+	p := &Profile{Findings: []profile.Finding{}, BodyChecked: res.BodyChecked}
+	for i, f := range res.Findings {
+		if i == maxProfileFindings {
+			p.Omitted = len(res.Findings) - i
+			break
+		}
+		p.Findings = append(p.Findings, profile.Finding{
+			Kind:     f.Kind,
+			Location: s.text(f.Location, maxHeaderName),
+			Message:  s.text(f.Message, maxMessage),
+		})
+	}
+	return p
 }
 
 func first(values []string) string {

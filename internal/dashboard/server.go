@@ -316,7 +316,12 @@ func (s *Server) apiRules(w http.ResponseWriter, r *http.Request) {
 		badRequest(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, s.store.rulesPage(rng))
+	p, err := s.store.rulesPage(rng, strings.TrimSpace(r.URL.Query().Get("app")))
+	if err != nil {
+		badRequest(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, p)
 }
 
 func (s *Server) apiEngine(w http.ResponseWriter, r *http.Request) {

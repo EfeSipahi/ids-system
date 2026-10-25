@@ -35,7 +35,7 @@
 <main>
 {{template "content" .}}
 </main>
-<footer class="foot">IDS {{.Version}}{{if .User}} · read-only · alerts are decided by the rule layer only<span id="zone"></span>{{end}}</footer>
+<footer class="foot">IDS {{.Version}}{{if .User}} · read-only · alerts are decided by the rules and by profiles in alert mode<span id="zone"></span>{{end}}</footer>
 </body>
 </html>{{end}}
 

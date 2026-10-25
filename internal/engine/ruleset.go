@@ -44,6 +44,12 @@ type RuleSet struct {
 	// ignoredUpdates are the rule ids of SecRuleUpdateTargetById lines
 	// whose rule is not active, one entry per line.
 	ignoredUpdates []int
+
+	// byID holds the first rule of every active chain, and chains counts
+	// them. A rule's index is its place among them; a Tuning's tables are
+	// indexed by it.
+	byID   map[int]*rule
+	chains int
 }
 
 // item is one step of a phase: a rule to run, or a marker to jump to.
@@ -58,6 +64,9 @@ type rule struct {
 	id    int
 	pos   seclang.Position
 	phase int
+	// index is the place of a chain's first rule among the first rules of
+	// all active chains, from 0. It is not set on chained rules.
+	index int
 
 	// always is true for a SecAction: there is nothing to test.
 	always   bool

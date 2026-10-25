@@ -175,7 +175,13 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
 
    **Done on 23 October 2026** following [docs/development-plan-records-dashboard.md](docs/development-plan-records-dashboard.md); results in main plan section 11.23. The UI was reworked on 24 October ([docs/development-plan-dashboard-ui.md](docs/development-plan-dashboard-ui.md), main plan section 11.24).
    - **Decided 24 October:** the rules page's file sections all start closed (the user changed U2). A second browser check the same day fixed cut chips, the filter row, rules filters in the address, chart labels and the category sum (UI plan, note 5).
-2. **Next:** hand-written application profiles (A04). Its decisions come first.
+2. **Now:** hand-written application profiles (A04). **Decided on 25 October 2026** (F1–F11, main plan section 11.25) and being built following [docs/development-plan-profiles.md](docs/development-plan-profiles.md); its Progress section says which stage is done.
+   - JSON profiles, one per application, chosen by host and path prefix (later the proxy route), never by a client header.
+   - An allow list of endpoints, parameters, cookies and headers; findings are recorded (`monitor`) or alerts (`alert`).
+   - Rule exceptions per application (a CRS setting, a rule skipping targets, a rule off), applied per request on one shared rule set (option B, measured against one copy per application). Rules of files 901 and 949 can't be excepted.
+   - A paranoia level per application.
+   - The CSIC profile is the first one (I2), written from the training records only.
+   - Stages 1–7 were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18). Left: stage 8, the project history and the main plan's results.
 3. Proxy and TLS (A01, A08), then response rules, and alerts sent by webhook and syslog (decided 23 October 2026).
 4. Transfer of the ML model, which the user improves in the separate project, and the decision mechanism (A10, A05, A07, A06).
 5. Prevention, learned profiles, other protocols.
@@ -185,7 +191,7 @@ Each still needs its own decisions before work starts.
 **Two ideas from the user (16 October 2026), not yet placed exactly** (main plan section 6.15):
 
 1. **I1:** one MCP server through which an AI assistant configures the IDS and corrects false positives (confirmed by the user on 23 October 2026). The user places it after the dashboard and a usable IDS.
-2. **I2:** correct the false positives found on the CSIC 2010 normal records. Open whether by hand with the profile work (item 2) or later through I1. Afterwards those records no longer measure false positives independently (A07).
+2. **I2:** correct the false positives found on the CSIC 2010 normal records. Decided on 25 October 2026: by hand, with the profile work (item 2, F10). Afterwards the training records no longer measure false positives independently; validation and test are reported separately (A07).
 
 ## 4. Working notes for the next agent
 

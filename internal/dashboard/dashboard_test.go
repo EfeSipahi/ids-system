@@ -470,8 +470,11 @@ func TestRulesAndEnginePages(t *testing.T) {
 	refresh(t, s)
 
 	r, _ := parseRange("all", t0)
-	p := s.rulesPage(r)
-	if p.Run != "run2" || len(p.Rules) != 5 {
+	p, err := s.rulesPage(r, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Run != "run2" || len(p.Rules) != 5 || p.Level != 1 {
 		t.Fatalf("run %q with %d rules", p.Run, len(p.Rules))
 	}
 	fired := map[int]int{}

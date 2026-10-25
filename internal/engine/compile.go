@@ -65,6 +65,7 @@ func Load(cfg Config) (*RuleSet, error) {
 	}
 
 	c.markSensitiveTexts()
+	c.rs.byID, c.rs.chains = c.byID, len(c.rules)
 	return c.rs, nil
 }
 
@@ -242,6 +243,7 @@ func (c *compiler) addRule(chain []seclang.Directive) {
 	status.Active = true
 	c.rs.statuses = append(c.rs.statuses, status)
 	c.rs.phases[head.phase] = append(c.rs.phases[head.phase], item{rule: head})
+	head.index = len(c.rules)
 	c.rules = append(c.rules, head)
 	c.byID[head.id] = head
 	if head.skipAfter != "" {

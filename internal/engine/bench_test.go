@@ -64,6 +64,25 @@ func BenchmarkEvaluate(b *testing.B) {
 	}
 }
 
+// BenchmarkEvaluateTuned is BenchmarkEvaluate with an application's
+// exceptions applied per request (decision F5, option B).
+func BenchmarkEvaluateTuned(b *testing.B) {
+	rs := benchRuleSet(b)
+	tuning, _, err := rs.NewTuning(testSpec(1))
+	if err != nil {
+		b.Fatal(err)
+	}
+	for name, rec := range benchRequests() {
+		b.Run(name, func(b *testing.B) {
+			b.ReportAllocs()
+			b.SetBytes(int64(len(rec.Target) + len(rec.Body)))
+			for i := 0; i < b.N; i++ {
+				rs.EvaluateWith(httpmodel.New(rec), tuning)
+			}
+		})
+	}
+}
+
 // BenchmarkEvaluateParallel runs the same work on all CPUs at once, with one
 // shared rule set, as M21 intends.
 func BenchmarkEvaluateParallel(b *testing.B) {

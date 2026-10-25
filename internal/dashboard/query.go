@@ -11,7 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
+	"github.com/EfeSipahi/ids-system/internal/result"
 )
 
 // timeRange is the period a page shows.
@@ -90,6 +92,11 @@ type overview struct {
 	Recorded   int       `json:"recorded"`
 	Alerts     int       `json:"alerts"`
 	Incomplete int       `json:"incomplete"`
+	// Profiled is true when the newest run has applications, and
+	// NoProfile counts the requests analysed in the period that belonged
+	// to no application, so only the rules checked them (F9).
+	Profiled   bool      `json:"profiled"`
+	NoProfile  int       `json:"no_profile"`
 	Series     []bucket  `json:"series"`
 	BucketSecs int       `json:"bucket_seconds"`
 	Rules      []item    `json:"top_rules"`
@@ -145,6 +152,7 @@ func (s *store) overview(r timeRange) overview {
 	for _, c := range s.counts {
 		if r.contains(c.To) && c.To.After(r.From) {
 			o.Analysed += c.Analysed
+			o.NoProfile += c.NoProfile
 			if b := slot(c.To); b != nil {
 				b.Analysed += c.Analysed
 			}
@@ -192,6 +200,7 @@ func (s *store) overview(r timeRange) overview {
 	}
 	o.Rules = topInts(rules)
 	if st, ok := s.latestRun(); ok {
+		o.Profiled = len(st.Applications) > 0
 		msgs := map[string]string{}
 		for _, rule := range s.rules[st.Run] {
 			msgs[strconv.Itoa(rule.ID)] = rule.Msg
@@ -263,6 +272,9 @@ type filter struct {
 	Group    string
 	IP       string
 	Location string
+	// App is an application's name, or profile.NoApplication for the
+	// requests of none; empty for every request.
+	App      string
 	MinScore int
 	Sort     string // "time" (newest first) or "score" (highest first)
 	Page     int
@@ -273,7 +285,10 @@ func parseFilter(q url.Values, now time.Time) (filter, error) {
 	if err != nil {
 		return filter{}, err
 	}
-	f := filter{Range: r, Kind: q.Get("kind"), Group: q.Get("group"), IP: strings.TrimSpace(q.Get("ip")), Location: strings.TrimSpace(q.Get("location")), Sort: q.Get("sort"), Page: 1}
+	f := filter{Range: r, Kind: q.Get("kind"), Group: q.Get("group"), IP: strings.TrimSpace(q.Get("ip")), Location: strings.TrimSpace(q.Get("location")), App: strings.TrimSpace(q.Get("app")), Sort: q.Get("sort"), Page: 1}
+	if len(f.App) > maxAppName {
+		return filter{}, fmt.Errorf("app is longer than %d characters", maxAppName)
+	}
 	switch f.Sort {
 	case "":
 		f.Sort = "time"
@@ -304,9 +319,22 @@ func parseFilter(q url.Values, now time.Time) (filter, error) {
 	return f, nil
 }
 
+// maxAppName is the longest application name (see profile.NewSet).
+const maxAppName = 64
+
+// sameApp reports whether a record's application is app. A record of a run
+// without applications belongs to none, as a request of no application.
+func sameApp(recordApp, app string) bool {
+	if app == profile.NoApplication {
+		return recordApp == "" || recordApp == profile.NoApplication
+	}
+	return recordApp == app
+}
+
 func (f filter) match(e *entry) bool {
 	switch {
 	case !f.Range.contains(e.time):
+	case f.App != "" && !sameApp(e.app, f.App):
 	case f.Kind == "alerts" && !e.alert:
 	case f.Kind == "incomplete" && !e.incomplete:
 	case f.Rule != 0 && !slices.Contains(e.rules, f.Rule):
@@ -335,6 +363,11 @@ type row struct {
 	Groups     []string  `json:"groups"`
 	Locations  []string  `json:"locations"`
 	Incomplete bool      `json:"incomplete"`
+	// Application, ProfileKinds and AlertBy are left out for a record of
+	// a run without applications.
+	Application  string   `json:"application,omitempty"`
+	ProfileKinds []string `json:"profile_kinds,omitempty"`
+	AlertBy      []string `json:"alert_by,omitempty"`
 }
 
 type list struct {
@@ -342,6 +375,10 @@ type list struct {
 	Page  int   `json:"page"`
 	Pages int   `json:"pages"`
 	Rows  []row `json:"rows"`
+	// Applications are the names the filter can choose: those of the
+	// records and of the newest run, sorted, and "none" last when some
+	// request belonged to no application. Empty without applications.
+	Applications []string `json:"applications"`
 }
 
 const pageSize = 50
@@ -371,9 +408,44 @@ func (s *store) list(f filter) list {
 			ID: e.id, Time: e.time, Alert: e.alert, Score: e.score, IP: e.ip, Method: e.method, Host: e.host,
 			Path: e.path, UserAgent: e.userAgent, Rules: nonNil(e.rules), Groups: nonNil(e.groups),
 			Locations: nonNil(e.locations), Incomplete: e.incomplete,
+			Application: e.app, ProfileKinds: e.profileKinds, AlertBy: e.alertBy,
 		})
 	}
+	l.Applications = s.appNames()
 	return l
+}
+
+// appNames returns the application names of the records and of the newest
+// run, sorted, with "none" last when some request belonged to none. It is
+// empty when nothing has an application. The caller holds s.mu.
+func (s *store) appNames() []string {
+	seen := map[string]bool{}
+	none := false
+	for _, e := range s.entries {
+		switch e.app {
+		case "", profile.NoApplication:
+			none = true
+		default:
+			seen[e.app] = true
+		}
+	}
+	if st, ok := s.latestRun(); ok {
+		for _, a := range st.Applications {
+			seen[a.Name] = true
+		}
+	}
+	names := []string{}
+	if len(seen) == 0 {
+		return names
+	}
+	for name := range seen {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	if none {
+		names = append(names, profile.NoApplication)
+	}
+	return names
 }
 
 func nonNil[T any](s []T) []T {
@@ -388,6 +460,15 @@ type ruleRow struct {
 	record.Rule
 	Group string `json:"group"`
 	Fired int    `json:"fired"`
+
+	// Off and Skips are the chosen application's exception for the rule:
+	// the rule does not run for it, or does not look at these variables.
+	// ExceptionReason is the exception's reason, and NoEffect says why it
+	// changes nothing at the moment, when it does not.
+	Off             bool     `json:"off,omitempty"`
+	Skips           []string `json:"skips,omitempty"`
+	ExceptionReason string   `json:"exception_reason,omitempty"`
+	NoEffect        string   `json:"no_effect,omitempty"`
 }
 
 type rulesPage struct {
@@ -396,6 +477,14 @@ type rulesPage struct {
 	Time   time.Time     `json:"time,omitzero"`
 	Engine record.Engine `json:"engine"`
 	Rules  []ruleRow     `json:"rules"`
+
+	// Applications are those of the run. App is the chosen one, or "none"
+	// for requests of no application; empty when none was chosen. Level
+	// is the paranoia level the statuses are for: the application's, or
+	// the run's.
+	Applications []result.AppStartup `json:"applications,omitempty"`
+	App          string              `json:"app,omitempty"`
+	Level        int                 `json:"level"`
 }
 
 // latestRun returns the run whose start record is the newest.
@@ -411,28 +500,56 @@ func (s *store) latestRun() (record.Start, bool) {
 	return latest, found
 }
 
-func (s *store) rulesPage(r timeRange) rulesPage {
+// rulesPage lists the rules of the newest run with how often each fired in
+// r. With app, the statuses are those of that application (F9, F11): its
+// level, and its exceptions; and only its records are counted.
+func (s *store) rulesPage(r timeRange, app string) (rulesPage, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	p := rulesPage{Range: r, Rules: []ruleRow{}}
+	p := rulesPage{Range: r, Rules: []ruleRow{}, App: app}
+	st, ok := s.latestRun()
+	var chosen *result.AppStartup
+	if ok {
+		p.Applications, p.Level = st.Applications, st.Engine.ParanoiaLevel
+		for i := range st.Applications {
+			if st.Applications[i].Name == app {
+				chosen = &st.Applications[i]
+				p.Level = chosen.ParanoiaLevel
+			}
+		}
+	}
+	if app != "" && app != profile.NoApplication && chosen == nil {
+		return p, fmt.Errorf("app %q is not an application of the newest run", app)
+	}
 	fired := map[int]int{}
 	for _, e := range s.entries {
-		if !r.contains(e.time) {
+		if !r.contains(e.time) || app != "" && !sameApp(e.app, app) {
 			continue
 		}
 		for _, id := range e.rules {
 			fired[id]++
 		}
 	}
-	st, ok := s.latestRun()
 	if !ok {
-		return p
+		return p, nil
 	}
 	p.Run, p.Time, p.Engine = st.Run, st.Time, st.Engine
-	for _, rule := range s.rules[st.Run] {
-		p.Rules = append(p.Rules, ruleRow{Rule: rule, Group: fileGroup(rule.File), Fired: fired[rule.ID]})
+	exceptions := map[int]profile.ExceptionStatus{}
+	if chosen != nil {
+		for _, ex := range chosen.Exceptions {
+			if ex.Rule != 0 {
+				exceptions[ex.Rule] = ex
+			}
+		}
 	}
-	return p
+	for _, rule := range s.rules[st.Run] {
+		row := ruleRow{Rule: rule, Group: fileGroup(rule.File), Fired: fired[rule.ID]}
+		if ex, ok := exceptions[rule.ID]; ok {
+			row.Off, row.Skips, row.ExceptionReason, row.NoEffect = ex.Off, ex.Skip, ex.Reason, ex.NoEffect
+		}
+		p.Rules = append(p.Rules, row)
+	}
+	return p, nil
 }
 
 type runRow struct {
@@ -461,16 +578,19 @@ type enginePage struct {
 	AboveLevel int       `json:"above_level_rules"`
 	Runs       []runRow  `json:"runs"`
 	Files      []fileRow `json:"files"`
-	Records    int       `json:"records"`
-	Oldest     time.Time `json:"oldest_record,omitzero"`
-	Newest     time.Time `json:"newest_record,omitzero"`
-	Unreadable int       `json:"unreadable_lines"`
+	// Applications and RequireProfile are those of the newest run.
+	Applications   []result.AppStartup `json:"applications"`
+	RequireProfile bool                `json:"require_profile"`
+	Records        int                 `json:"records"`
+	Oldest         time.Time           `json:"oldest_record,omitzero"`
+	Newest         time.Time           `json:"newest_record,omitzero"`
+	Unreadable     int                 `json:"unreadable_lines"`
 }
 
 func (s *store) enginePage() enginePage {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	p := enginePage{Runs: []runRow{}, Files: []fileRow{}, Records: len(s.entries), Unreadable: s.broken}
+	p := enginePage{Runs: []runRow{}, Files: []fileRow{}, Applications: []result.AppStartup{}, Records: len(s.entries), Unreadable: s.broken}
 	type done struct{ analysed, records, alerts int }
 	byRun := map[string]*done{}
 	for _, run := range s.runs {
@@ -497,6 +617,10 @@ func (s *store) enginePage() enginePage {
 	sort.SliceStable(p.Runs, func(i, j int) bool { return p.Runs[i].Time.After(p.Runs[j].Time) })
 	if st, ok := s.latestRun(); ok {
 		p.Latest = &runRow{Run: st.Run, Time: st.Time, Engine: st.Engine}
+		if st.Applications != nil {
+			p.Applications = st.Applications
+		}
+		p.RequireProfile = st.RequireProfile
 		for _, rule := range s.rules[st.Run] {
 			switch {
 			case !rule.Active:

@@ -1,0 +1,57 @@
+{
+  "files": [
+    "../coreruleset-4.30.0/crs-setup.conf.example",
+    "../coreruleset-4.30.0/rules/REQUEST-901-INITIALIZATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-905-COMMON-EXCEPTIONS.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-911-METHOD-ENFORCEMENT.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-913-SCANNER-DETECTION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-921-PROTOCOL-ATTACK.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-922-MULTIPART-ATTACK.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-930-APPLICATION-ATTACK-LFI.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-931-APPLICATION-ATTACK-RFI.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-933-APPLICATION-ATTACK-PHP.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-934-APPLICATION-ATTACK-GENERIC.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-943-APPLICATION-ATTACK-SESSION-FIXATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-944-APPLICATION-ATTACK-JAVA.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-949-BLOCKING-EVALUATION.conf",
+    "../coreruleset-4.30.0/rules/REQUEST-999-COMMON-EXCEPTIONS-AFTER.conf"
+  ],
+  "exclude": [
+    {
+      "id": 901320,
+      "reason": "Persistent collections (initcol) are not implemented. The rule only acts when tx.enable_default_collections is 1, which is not set."
+    },
+    {
+      "id": 901350,
+      "reason": "Left out on purpose: the rule makes the form reader read bodies of unknown types, and the user decided on 16 October 2026 that a body without a reader stays one text. The rule only acts when tx.enforce_bodyproc_urlencoded is 1; the default is 0."
+    },
+    {
+      "id": 901410,
+      "reason": "Sampling is not implemented (UNIQUE_ID, sha1). Rule 901400 skips this rule at the default sampling percentage of 100."
+    },
+    {
+      "id": 901450,
+      "reason": "Sampling is not implemented (ctl). Rule 901400 skips this rule at the default sampling percentage of 100."
+    }
+  ],
+  "records": {
+    "dir": "../records",
+    "max_file_mb": 10,
+    "keep_files": 10,
+    "full_requests": false,
+    "secret_names": []
+  },
+  "applications": [
+    {
+      "name": "csic-shop",
+      "hosts": [
+        "localhost:8080"
+      ],
+      "profile": "../profiles/csic-shop.json"
+    }
+  ]
+}

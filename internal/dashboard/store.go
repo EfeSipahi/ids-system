@@ -58,6 +58,13 @@ type entry struct {
 	groups     []string
 	locations  []string
 	incomplete bool
+	// app is the record's application, "none" for a request of no
+	// application, or "" for a record of a run without applications.
+	// profileKinds are the kinds of its profile findings, each once, and
+	// alertBy what made it an alert.
+	app          string
+	profileKinds []string
+	alertBy      []string
 
 	file   *recordFile
 	offset int64
@@ -258,9 +265,20 @@ func (s *store) add(f *recordFile, offset int64, line []byte) {
 			host:       rec.Server.Host,
 			userAgent:  rec.HTTP.UserAgent,
 			incomplete: !rec.Analysis.Complete,
+			alertBy:    rec.AlertBy,
 			file:       f,
 			offset:     offset,
 			length:     len(line),
+		}
+		if rec.Application != nil {
+			e.app = rec.Application.Name
+		}
+		if rec.Profile != nil {
+			for _, finding := range rec.Profile.Findings {
+				if !slices.Contains(e.profileKinds, finding.Kind) {
+					e.profileKinds = append(e.profileKinds, finding.Kind)
+				}
+			}
 		}
 		// Each rule, group and location once, in the order of the
 		// findings. Locations come only from attack rules: the score rule

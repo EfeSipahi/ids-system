@@ -1,0 +1,115 @@
+{
+  "type": "request",
+  "schema": 1,
+  "id": "id2",
+  "run": "run1",
+  "time": "2026-10-25T10:15:02Z",
+  "alert": true,
+  "alert_by": [
+    "rules",
+    "profile"
+  ],
+  "decided_by": "rule and profile layers",
+  "application": {
+    "name": "shop",
+    "paranoia_level": 1,
+    "mode": "alert"
+  },
+  "profile": {
+    "findings": [
+      {
+        "kind": "unknown_param",
+        "location": "ARGS_POST:json.extra",
+        "message": "the endpoint has no such parameter in the profile"
+      },
+      {
+        "kind": "too_long",
+        "location": "ARGS_POST:json.note",
+        "message": "longer than 4 bytes"
+      }
+    ],
+    "body_checked": true
+  },
+  "client": {
+    "ip": "203.0.113.7",
+    "port": 51234
+  },
+  "server": {
+    "host": "shop.example.com"
+  },
+  "request": {
+    "method": "POST",
+    "path": "/api/reset/[masked]",
+    "version": "HTTP/1.1",
+    "content_type": "application/json",
+    "body_length": 123,
+    "header_names": [
+      "Host",
+      "X-Key",
+      "Content-Type"
+    ]
+  },
+  "analysis": {
+    "complete": true,
+    "body": "inspected",
+    "body_format": "json"
+  },
+  "findings": [
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "ARGS:json.card.number",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    },
+    {
+      "rule_id": 2,
+      "severity": "CRITICAL",
+      "message": "[hidden: contains request content]",
+      "location": "ARGS:json.items.0.cvc",
+      "matched": "[masked]",
+      "data": "[masked]",
+      "action": "pass",
+      "tags": [
+        "attack-sqli"
+      ]
+    }
+  ],
+  "score": {
+    "total": 10,
+    "threshold": 5,
+    "exceeded": true,
+    "categories": {
+      "sql_injection": 10
+    }
+  },
+  "engine": {
+    "version": "test",
+    "crs": "TEST/1",
+    "paranoia_level": 1,
+    "config": "sha256:test"
+  },
+  "full": {
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "X-Key",
+        "[masked]"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ]
+    ],
+    "body": "{\"card\":\"[masked]\",\"items\":[{\"cvc\":\"[masked]\"}],\"note\":\"hello\",\"extra\":\"1\"}"
+  }
+}
+

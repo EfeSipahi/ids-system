@@ -45,7 +45,9 @@ func FuzzStoreReadsAnyFile(f *testing.F) {
 			r, _ := parseRange(name, t0)
 			s.overview(r)
 			s.list(filter{Range: r, Kind: "all", Page: 1})
-			s.rulesPage(r)
+			s.rulesPage(r, "")
+			s.rulesPage(r, "none")
+			s.list(filter{Range: r, Kind: "all", App: "none", Page: 1})
 		}
 		s.enginePage()
 	})

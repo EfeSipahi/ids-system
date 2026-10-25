@@ -2,8 +2,9 @@
 // the settings of the parts around it, such as the records.
 //
 // The file is one JSON object. The engine fields ("files", "exclude",
-// "paranoia_level") are at the top, as before; "records" is optional.
-// Unknown fields are an error, so a misspelled setting cannot be ignored.
+// "paranoia_level") are at the top, as before; "records", "applications"
+// and "require_profile" are optional. Unknown fields are an error, so a
+// misspelled setting cannot be ignored.
 package config
 
 import (
@@ -19,6 +20,7 @@ import (
 	"path/filepath"
 
 	"github.com/EfeSipahi/ids-system/internal/engine"
+	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
 )
 
@@ -29,6 +31,13 @@ type Product struct {
 	// Records is nil when the file has no "records" section; then no
 	// records are written.
 	Records *record.Config `json:"records"`
+
+	// Applications are the applications with a hand-written profile (A04,
+	// F2). Their profiles are read by Load; their exceptions are checked
+	// against the rules by profile.NewSet.
+	Applications []profile.AppConfig `json:"applications"`
+	// RequireProfile makes a request of no application a finding (F7).
+	RequireProfile bool `json:"require_profile"`
 
 	// raw is the file as read, for the fingerprint.
 	raw []byte
@@ -63,13 +72,32 @@ func Load(path string) (*Product, error) {
 			return nil, fmt.Errorf("%s: %w", path, err)
 		}
 	}
+	for i := range p.Applications {
+		app := &p.Applications[i]
+		if app.Profile == "" {
+			return nil, fmt.Errorf("%s: applications[%d]: profile is missing; name the application's profile file", path, i)
+		}
+		if !filepath.IsAbs(app.Profile) {
+			app.Profile = filepath.Join(dir, app.Profile)
+		}
+		loaded, err := profile.Load(app.Profile)
+		if err != nil {
+			return nil, fmt.Errorf("%s: applications[%d] (%s): %w", path, i, app.Name, err)
+		}
+		app.Loaded = loaded
+	}
+	if p.RequireProfile && len(p.Applications) == 0 {
+		return nil, fmt.Errorf("%s: require_profile is on, but there are no applications", path)
+	}
 	return p, nil
 }
 
 // Fingerprint identifies the configuration together with every rule file
-// it loads and the paranoia level the rules run at, which a command-line
-// flag may have changed. It is "sha256:" and 64 hex digits. A change to
-// any rule file changes it, even when the configuration file is the same.
+// and profile file it loads and the paranoia level the rules run at, which
+// a command-line flag may have changed. It is "sha256:" and 64 hex digits.
+// A change to any of these files changes it, even when the configuration
+// file is the same. A configuration without applications has the same
+// fingerprint as before profiles existed.
 func (p *Product) Fingerprint(level int) (string, error) {
 	h := sha256.New()
 	part(h, p.raw)
@@ -82,6 +110,14 @@ func (p *Product) Fingerprint(level int) (string, error) {
 		part(h, data)
 	}
 	part(h, binary.BigEndian.AppendUint32(nil, uint32(level)))
+	for _, app := range p.Applications {
+		data, err := os.ReadFile(app.Profile)
+		if err != nil {
+			return "", err
+		}
+		part(h, []byte(app.Name))
+		part(h, data)
+	}
 	return "sha256:" + hex.EncodeToString(h.Sum(nil)), nil
 }
 

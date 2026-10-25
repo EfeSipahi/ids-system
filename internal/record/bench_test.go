@@ -56,7 +56,7 @@ func BenchmarkAdd(b *testing.B) {
 			rc := *cfg.Records
 			rc.Dir = b.TempDir()
 			rc.FullRequests = full
-			rec, err := record.Open(rc, record.NewEngine(rules, "sha256:bench"), rules.Statuses())
+			rec, err := record.Open(rc, record.NewEngine(rules, "sha256:bench"), rules.Statuses(), nil)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -64,7 +64,7 @@ func BenchmarkAdd(b *testing.B) {
 			i := 0
 			for b.Loop() {
 				res := results[i%len(results)]
-				if err := rec.Add(res.Request, res); err != nil {
+				if err := rec.Add(res.Request, res, nil); err != nil {
 					b.Fatal(err)
 				}
 				i++

@@ -75,7 +75,7 @@ func secretRequest() *httpmodel.Request {
 func build(t *testing.T, req *httpmodel.Request, full bool) (Request, []byte) {
 	t.Helper()
 	res := loadRules(t).Evaluate(req)
-	rec := testBuilder(full).build(res.Request, res, "id1", "run1", time.Date(2026, 10, 23, 10, 15, 2, 0, time.UTC))
+	rec := testBuilder(full).build(res.Request, res, nil, "id1", "run1", time.Date(2026, 10, 23, 10, 15, 2, 0, time.UTC))
 	line, err := marshal(rec)
 	if err != nil {
 		t.Fatal(err)
@@ -203,7 +203,7 @@ func TestWanted(t *testing.T) {
 	} {
 		req := httpmodel.New(tt.rec)
 		res := rs.Evaluate(req)
-		if got := Wanted(res.Request, res); got != tt.want {
+		if got := Wanted(res.Request, res, nil); got != tt.want {
 			t.Errorf("%s: Wanted = %v, want %v", tt.name, got, tt.want)
 		}
 	}
@@ -349,13 +349,13 @@ func TestRecorder(t *testing.T) {
 	rs := loadRules(t)
 	dir := filepath.Join(t.TempDir(), "records")
 	c := &clock{t: time.Date(2026, 10, 23, 10, 0, 0, 0, time.UTC)}
-	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), c.now)
+	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), nil, c.now)
 	if err != nil {
 		t.Fatal(err)
 	}
 	add := func(rec httpmodel.Received) {
 		res := rs.Evaluate(httpmodel.New(rec))
-		if err := r.Add(res.Request, res); err != nil {
+		if err := r.Add(res.Request, res, nil); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -412,7 +412,7 @@ func TestRecorder(t *testing.T) {
 // the IDS may read them. The hash key is made once and kept.
 func TestFilesArePrivateAndKeyIsKept(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "records")
-	r, err := Open(Config{Dir: dir}, testEngine, nil)
+	r, err := Open(Config{Dir: dir}, testEngine, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -430,7 +430,7 @@ func TestFilesArePrivateAndKeyIsKept(t *testing.T) {
 			t.Errorf("%q has mode %v, want %v", tt.name, got, tt.mode)
 		}
 	}
-	r, err = Open(Config{Dir: dir}, testEngine, nil)
+	r, err = Open(Config{Dir: dir}, testEngine, nil, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -443,7 +443,7 @@ func TestFilesArePrivateAndKeyIsKept(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(bad, KeyFile), []byte("not hex\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Open(Config{Dir: bad}, testEngine, nil); err == nil || !strings.Contains(err.Error(), KeyFile) {
+	if _, err := Open(Config{Dir: bad}, testEngine, nil, nil); err == nil || !strings.Contains(err.Error(), KeyFile) {
 		t.Errorf("a broken key file gives %v", err)
 	}
 }

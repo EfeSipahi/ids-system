@@ -53,6 +53,13 @@ func (v Variable) String() string {
 	return b.String()
 }
 
+// ParseVariables parses a variable list written as in a SecRule, such as
+// ARGS|!REQUEST_HEADERS:Referer. Application profiles use it to read the
+// variables of their rule exceptions exactly as rule files are read.
+func ParseVariables(s string) ([]Variable, error) {
+	return parseVariables(s)
+}
+
 // parseVariables parses a list such as ARGS|!REQUEST_HEADERS:Referer|XML:/*.
 func parseVariables(s string) ([]Variable, error) {
 	if s == "" {

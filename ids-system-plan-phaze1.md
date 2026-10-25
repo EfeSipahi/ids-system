@@ -35,7 +35,7 @@ Document role: Primary reference for current architecture decisions, implementat
 | Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the profile layer, the decision mechanism, webhook and syslog alerts |
 | Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
 | Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions. Two ideas from the user, I1 and I2: [section 6.15](#fikirler) |
-| Next step | Hand-written application profiles (A04), the second step of the user's order; its decisions come first. Records, alerts, and the dashboard were built on 23 October 2026 (section 11.23) |
+| Next step | Hand-written application profiles (A04), the second step of the user's order: decided on 25 October 2026 (F1–F11, section 11.25) and being built following [docs/development-plan-profiles.md](docs/development-plan-profiles.md). Records, alerts, and the dashboard were built on 23 October 2026 (section 11.23) |
 
 **For the next agent:** First verify the current status in this document against the relevant files. Then continue from the first unfinished step in section 7.4. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
 
@@ -756,7 +756,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 <a id="a04"></a>
 ### 6.4. A04 — Manually defined application profiles
 
-**Status:** Open.
+**Status:** Decided by the user on 25 October 2026, decisions F1–F11 (section 11.25); being built following [docs/development-plan-profiles.md](docs/development-plan-profiles.md). In short: JSON profiles read strictly with the standard library; one file per application, chosen by the application that receives the request (host and path prefix offline, the proxy route later), never by a client header; an allow list of endpoints, parameters, cookies and headers; per-application rule exceptions applied per request on one shared rule set; a paranoia level per application; a broken profile stops the start, a missing one means CRS only.
 
 **Known / approved basis:** M06/M07: application settings are separate; no automatic traffic learning initially. M11: profiles may identify sensitive fields.
 
@@ -866,7 +866,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 | Python core, FastAPI/Uvicorn, Python workers | Superseded as the current architecture by the Go product-core decision; live Python inference service is not the default | M12–M14; A03/A08/A10 |
 | Coraza as the product engine | Superseded by our own SecLang engine in M15; may be a learning/reference source | M15; A11 |
 | NGINX | Existing-proxy requirement approved; NGINX itself not selected | A01 |
-| YAML/Pydantic profiles | Manual profiles approved; format and validation technology not selected | A04 |
+| YAML/Pydantic profiles | Replaced: profiles are JSON, read and validated with Go's standard library (F1, 25 October 2026) | A04 |
 | SQLite | Not selected. Records are stored as JSON Lines files first (R3, 23 October 2026); a database may follow later | A09 |
 | CLI/API, Jinja2, or another dashboard | Replaced: the dashboard is written in Go with the standard library (V3, 23 October 2026) | A03/A09 |
 | Docker Compose, a single Linux machine | Earlier draft proposal/assumption, not an approved deployment standard or platform decision | A01/A08/A10 |
@@ -876,7 +876,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 
 These are not newly approved requirements. They are questions linked to open topics so they are not forgotten when implementation begins:
 
-1. **Trust boundary — A01/A04/A09:** Who can access the copy-ingestion service? How will application/profile identity come from the trusted integration, and how will a client be prevented from selecting another profile through a header?
+1. **Trust boundary — A01/A04/A09:** Who can access the copy-ingestion service? How will application/profile identity come from the trusted integration, and how will a client be prevented from selecting another profile through a header? *Profile part decided on 25 October 2026 (F3):* the profile follows the application that receives the request (the proxy's route; offline the Host and a path prefix), and no client header is ever read for it. The access question stays open.
 2. **Rule and configuration lifecycle — A08/A11:** What happens if startup validation fails? Will changes initially require a restart, or is later reloading needed? Remote rule loading from users must not be assumed to exist.
 3. **Incompatible component versions — A03/A10:** How will the system report mismatches between model, feature-definition, and configuration versions?
 4. **Deployment and operations — A01/A08/A09/A10:** What are the target OS/architecture, native ONNX dependency, installation format, health/capacity indicators, and access-management approach?
@@ -915,8 +915,9 @@ The user added these two ideas to the plan. They are recorded so that they are n
 | 2 | 932200, 932236, 932240 | Command-execution patterns in normal values | 18 (measured before the protocol rules) | To be examined |
 | 3 | 932350 | Parameters named `pwd` and `id`, which are also Unix commands | 221 (measured before the protocol rules) | An exception for these parameters of this application |
 
-1. **Open:** whether these are corrected by hand with the profile work (K10, A04), before an MCP server exists, or later through I1, with these records as its first test case.
+1. **Decided by the user on 25 October 2026 (F10):** they are corrected by hand now, with the profile work. The CSIC profile is the first profile and its test. It is written from the training normal records only (301) and measured on the validation and test records; 932200, 932236 and 932240 are examined first.
 2. **A condition for either way:** once the rules are adjusted to the CSIC normal records, those records no longer measure false positives independently, in the same way as the already observed ML test set (section 2.1, item 5). Measuring the false-positive rate afterwards needs other normal traffic (A07).
+3. **Done on 25 October 2026** ([docs/development-plan-profiles.md](docs/development-plan-profiles.md), notes 17–18). `profiles/csic-shop.json` and `configs/csic-shop.json`, written from the 301 training normal records, run the shop at level 2. They have three exceptions accepted by the user: `crs_validate_utf8_encoding` = 0, `restricted_headers_extended` = "", and 932350 skipping the parameter names `pwd` and `id`. 932200, 932236 and 932240 were examined and kept. On the test records, false alarms went from 30 of 100 (rules alone, level 1) to 3 of 100. The rules flag 30 of 99 anomalous records, and 74 of 99 are flagged by the rules or have a profile finding. Coraza gives the same results with the exceptions written in SecLang. Training was tuned; validation and test were measured once.
 
 <a id="ilk-motor"></a>
 ## 7. Proposed starting decisions for the first engine
@@ -1454,3 +1455,35 @@ The user asked for the dashboard to be opened in a browser, every page checked, 
 **Second check, same day.** The user reported that problems persisted. A new browser round with screenshots of every page found more, all fixed: cut attack-group chips (now whole chips with "+N"), alert filters on two rows, rules filters not kept in the address, rule columns jumping between sections, chart labels on uneven times, and categories that did not add up to the score (CRS files 911, 913, 922 and most of 920 raise only the total; shown as "No category"). Details: [docs/development-plan-dashboard-ui.md](docs/development-plan-dashboard-ui.md), note 5.
 
 **Next in the order:** hand-written application profiles (A04), whose decisions come first.
+
+### 11.25. Decisions on hand-written application profiles (A04) — 25 October 2026
+
+The UI work of 24 October was committed (`dbc6338`). The user then discussed the profile decisions one by one and approved the plan [docs/development-plan-profiles.md](docs/development-plan-profiles.md).
+
+**Decisions:**
+
+| # | Decision |
+| --- | --- |
+| F1 | Profiles are JSON, read strictly with Go's standard library; a `note` field for explanations. No new dependency |
+| F2 | One profile file per application, listed under `applications` in the product configuration; the fingerprint covers the profile files |
+| F3 | A request gets the profile of the application that receives it: offline the Host (with port) and an optional path prefix, later the proxy's route. Never a header the client chooses. `ids-offline -application NAME` forces one profile |
+| F4 | An allow list: endpoints (exact paths, `{name}` parts, `*` at the end), parameters from the query, form and JSON bodies with types (`string`, `integer`, `number`, `boolean`, `enum`), required and repeated parameters, cookies, and header checks the profile names. Unknown endpoints and parameters are findings. `ids-offline -endpoints` lists what a file contains and writes nothing (M07) |
+| F5 | Rule exceptions with a reason: a CRS setting, a rule skipping named targets, or a rule off. Written in our JSON form, for the whole application. Rules of files 901 and 949 can't be excepted, with an understandable error. A rule that doesn't run at the level is a note; an unknown rule is an error. **Option B:** one shared rule set, with the exceptions applied per request |
+| F6 | The profile result is separate from the CRS score (M10). Mode `monitor` (default) records findings; mode `alert` makes them alerts labelled "profile" |
+| F7 | A broken profile stops the start. A host without a profile gets the CRS rules only; that is not "incomplete" (M05). Optional `require_profile`, off by default |
+| F8 | Profiles can mark parameters, cookies and path parts as secret; records mask them |
+| F9 | Optional application and profile fields in the records (schema 1); an application filter, profile findings, exceptions per application and "without a profile" in the dashboard, which stays read-only |
+| F10 | I2 is done now, by hand, with the CSIC profile written from the training records only |
+| F11 | A paranoia level per application; the configuration's level is the default |
+
+**Measured for 5e** (a prototype in a separate copy of the code, removed afterwards). Option A means one copy of the rules per application; option B means one shared copy with per-request exceptions.
+
+1. The two options gave the same matched rules and scores on 8 requests at levels 1–4.
+2. One copy of the rules keeps 13.4 MB and takes 217 ms to build. B's tables take about 13 KB per application.
+3. In alternating rounds, B's median time differed from A's by −3.2 % to +1.3 %, within the noise of the machine. Counted directly, B adds 1,800–5,400 checks of at most 2.6 ns per request, so at most 0.2–0.4 %.
+4. B was chosen. The user first preferred A's separate copies, which keep one profile's mistakes away from other applications. The plan gives B the same assurance through tests: B must equal A on all CRS tests, and one application's exceptions must never change another's results.
+
+**Corrected during the discussion:**
+
+1. The paranoia level does not decide which rules are loaded. All rules are loaded; the level is a starting variable of each request, and CRS's own gate rules skip the higher levels. This is why a level per application (F11) needs no copy of the rules.
+2. The first estimate of B's cost (about 500 checks, under 0.1 %) was too low. The counted value is in point 3 above.

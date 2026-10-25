@@ -202,6 +202,8 @@ details.card[open] > summary { margin-bottom: 12px; }
 .badge.active::before { background: var(--good); }
 .badge.above::before { background: transparent; border: 2px solid var(--muted); width: 5px; height: 5px; }
 .badge.excluded::before { background: var(--muted); border-radius: 1px; }
+.badge.off::before { background: var(--muted); width: 10px; height: 2px; border-radius: 1px; }
+.badge.profile::before { background: transparent; border: 2px solid var(--accent); border-radius: 1px; width: 5px; height: 5px; transform: rotate(45deg); }
 .badges { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; vertical-align: middle; }
 
 /* Severity of a finding: a word with a mark */
@@ -236,6 +238,12 @@ table.list col.status { width: 8.75rem; }
 table.list col.client { width: 8.75rem; }
 table.list col.groups { width: 15rem; }
 table.list col.rules { width: 11rem; }
+table.list col.app { width: 7.5rem; }
+/* With both Status and Application, the request keeps some room. */
+table.list.many col.client { width: 8rem; }
+table.list.many col.app { width: 7rem; }
+table.list.many col.groups { width: 13rem; }
+table.list.many col.rules { width: 9.5rem; }
 table.list td > a { text-decoration: none; }
 table.list tr:hover td > a, table.list td > a:focus-visible { text-decoration: underline; }
 
@@ -243,7 +251,7 @@ table.list tr:hover td > a, table.list td > a:focus-visible { text-decoration: u
 table.rules { table-layout: fixed; }
 table.rules col.id { width: 6.5rem; }
 table.rules col.line, table.rules col.phase, table.rules col.level, table.rules col.fired { width: 5rem; }
-table.rules col.status { width: 10rem; }
+table.rules col.status { width: 12rem; }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 /* One line of whole chips (fitChips in app.js); only a chip left alone
    that is still too wide is cut short */

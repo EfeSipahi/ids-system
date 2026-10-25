@@ -7,8 +7,9 @@
 // themselves, and any rule text built from them, are left out unless the
 // caller asks for them with Options.ShowValues.
 //
-// A record carries the findings of the rule layer only. It is not an alert
-// decision; combining layers is a later component (M04, M10).
+// A record carries the findings of the rule layer and, for a request of an
+// application with a profile, those of the profile layer, side by side
+// (M10). It is not a combined decision; that is a later component (M04).
 package result
 
 import (
@@ -19,6 +20,7 @@ import (
 
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
+	"github.com/EfeSipahi/ids-system/internal/profile"
 )
 
 // Hidden replaces a rule text that contains request content.
@@ -43,6 +45,29 @@ type Startup struct {
 	// lines that changed nothing, because the rule is not loaded or is
 	// excluded.
 	IgnoredTargetUpdates []int `json:"ignored_target_updates"`
+
+	// Applications are set when the configuration has applications (F9,
+	// F11), and RequireProfile when a request of no application is a
+	// finding (F7).
+	Applications   []AppStartup `json:"applications,omitempty"`
+	RequireProfile bool         `json:"require_profile,omitempty"`
+}
+
+// AppStartup describes one application: where its requests come from, its
+// profile, and what its exceptions change in the rules.
+type AppStartup struct {
+	Name  string   `json:"name"`
+	Hosts []string `json:"hosts"`
+	Paths []string `json:"paths,omitempty"`
+	// Profile is the profile's file name.
+	Profile       string `json:"profile"`
+	Mode          string `json:"mode"`
+	ParanoiaLevel int    `json:"paranoia_level"`
+	// Exceptions are the profile's rule exceptions, each with its reason
+	// and, when it changes nothing at the moment, why not.
+	Exceptions []profile.ExceptionStatus `json:"exceptions"`
+	// Notes name exceptions that change nothing, as text for people.
+	Notes []string `json:"notes,omitempty"`
 }
 
 // ExcludedRule is one rule that is in the loaded files but does not run.
@@ -77,6 +102,35 @@ func NewStartup(rs *engine.RuleSet) Startup {
 		})
 	}
 	return s
+}
+
+// SetApplications adds the applications of set to the report.
+func (s *Startup) SetApplications(set *profile.Set) {
+	s.RequireProfile = set.RequireProfile()
+	s.Applications = AppStartups(set)
+}
+
+// AppStartups describes the applications of set, or returns nil when it
+// has none.
+func AppStartups(set *profile.Set) []AppStartup {
+	var apps []AppStartup
+	for _, a := range set.Apps() {
+		app := AppStartup{
+			Name:          a.Name,
+			Hosts:         a.Hosts,
+			Paths:         a.Paths,
+			Profile:       filepath.Base(a.Profile.Path),
+			Mode:          a.Profile.Mode,
+			ParanoiaLevel: a.ParanoiaLevel(),
+			Exceptions:    a.Exceptions,
+			Notes:         a.Notes,
+		}
+		if app.Exceptions == nil {
+			app.Exceptions = []profile.ExceptionStatus{}
+		}
+		apps = append(apps, app)
+	}
+	return apps
 }
 
 // Record is the outcome for one request.
@@ -140,6 +194,72 @@ type Score struct {
 	// Categories holds the scores per attack type that are above zero,
 	// for example "lfi".
 	Categories map[string]int `json:"categories,omitempty"`
+}
+
+// Application is the application a request belongs to (F9, F11). It is
+// given only when the configuration has applications.
+type Application struct {
+	// Name is the application's name, or profile.NoApplication ("none")
+	// when no application has the request's host and path.
+	Name string `json:"name"`
+	// ParanoiaLevel is the level the request's rules ran at.
+	ParanoiaLevel int `json:"paranoia_level"`
+	// Mode is the profile's mode, "monitor" or "alert". It is left out
+	// for a request of no application.
+	Mode string `json:"mode,omitempty"`
+}
+
+// NewApplication describes the application of a request; app is nil for
+// a request of no application, whose rules ran at the configuration's
+// level, defaultLevel.
+func NewApplication(app *profile.App, defaultLevel int) Application {
+	if app == nil {
+		return Application{Name: profile.NoApplication, ParanoiaLevel: defaultLevel}
+	}
+	return Application{Name: app.Name, ParanoiaLevel: app.ParanoiaLevel(), Mode: app.Profile.Mode}
+}
+
+// Profile is what the profile layer found in one request (F6). It is kept
+// apart from the rule findings and the score (M10).
+type Profile struct {
+	// Findings never hold a value of the request (M11).
+	Findings []profile.Finding `json:"findings"`
+	// BodyChecked is false when the body was not read to its end, so its
+	// parameters were not judged (M05).
+	BodyChecked bool `json:"body_checked"`
+}
+
+// NewProfile returns the profile part of a record, or nil when there is
+// nothing to say: the request has no application and no finding.
+func NewProfile(res profile.Result) *Profile {
+	if res.App == nil && len(res.Findings) == 0 {
+		return nil
+	}
+	p := &Profile{Findings: res.Findings, BodyChecked: res.BodyChecked}
+	if p.Findings == nil {
+		p.Findings = []profile.Finding{}
+	}
+	return p
+}
+
+// What made a request an alert (F6): the rules' anomaly score, and the
+// profile's findings when the profile's mode is "alert".
+const (
+	AlertByRules   = "rules"
+	AlertByProfile = "profile"
+)
+
+// AlertBy names what made the request an alert, or returns nil when it is
+// not one.
+func AlertBy(score Score, prof profile.Result) []string {
+	var by []string
+	if score.Exceeded {
+		by = append(by, AlertByRules)
+	}
+	if prof.Alert() {
+		by = append(by, AlertByProfile)
+	}
+	return by
 }
 
 // categories are the per-attack score variables that CRS keeps, without

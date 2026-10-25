@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/result"
 )
 
@@ -32,8 +33,13 @@ const Schema = 1
 
 // DecidedBy says which layers an alert decision is based on. Until the
 // decision mechanism exists (K3) an alert is the rule layer's score at or
-// above its threshold (R2).
-const DecidedBy = "rule layer only"
+// above its threshold (R2). DecidedByProfile is for a request of an
+// application whose profile is in "alert" mode: a profile finding makes it
+// an alert too (F6).
+const (
+	DecidedBy        = "rule layer only"
+	DecidedByProfile = "rule and profile layers"
+)
 
 // The record types.
 const (
@@ -66,6 +72,13 @@ type Start struct {
 	Engine Engine    `json:"engine"`
 	// Rules lists every rule of the loaded files, active or not.
 	Rules []Rule `json:"rules"`
+
+	// Applications are the applications with a profile, with their level
+	// and their rule exceptions (F9, F11), and RequireProfile says whether
+	// a request of no application is a finding (F7). Both are left out
+	// when the configuration has no applications.
+	Applications   []result.AppStartup `json:"applications,omitempty"`
+	RequireProfile bool                `json:"require_profile,omitempty"`
 }
 
 // Rule is the status of one rule.
@@ -92,9 +105,18 @@ type Request struct {
 	Run    string    `json:"run"`
 	Time   time.Time `json:"time"`
 
-	// Alert is true when the score reached the threshold (R2).
-	Alert     bool   `json:"alert"`
-	DecidedBy string `json:"decided_by"`
+	// Alert is true when the score reached the threshold (R2), or when
+	// the application's profile is in "alert" mode and found something
+	// (F6). AlertBy names which: "rules", "profile" or both.
+	Alert     bool     `json:"alert"`
+	AlertBy   []string `json:"alert_by,omitempty"`
+	DecidedBy string   `json:"decided_by"`
+
+	// Application and Profile are set when the configuration has
+	// applications (F9). Application.ParanoiaLevel is the level the
+	// request's rules ran at (F11).
+	Application *result.Application `json:"application,omitempty"`
+	Profile     *Profile            `json:"profile,omitempty"`
 
 	Client   Client          `json:"client"`
 	Server   Server          `json:"server"`
@@ -162,6 +184,16 @@ type Finding struct {
 	Tags    []string `json:"tags,omitempty"`
 }
 
+// Profile is what the profile layer found in one request (F6). Findings
+// never hold a value of the request (M11). At most 64 are kept; Omitted
+// counts the rest. BodyChecked is false when the body was not read to its
+// end, so its parameters were not judged (M05).
+type Profile struct {
+	Findings    []profile.Finding `json:"findings"`
+	Omitted     int               `json:"omitted,omitempty"`
+	BodyChecked bool              `json:"body_checked"`
+}
+
 // Full is the whole request, for an investigation. Secret header values
 // are masked here too.
 type Full struct {
@@ -177,12 +209,15 @@ type Counts struct {
 	From     time.Time `json:"from"`
 	To       time.Time `json:"to"`
 	Analysed int       `json:"analysed"`
-	// Recorded counts the requests that got a record, Alerts those whose
-	// score reached the threshold, and Incomplete those that could not be
-	// inspected completely.
+	// Recorded counts the requests that got a record, Alerts those that
+	// are alerts, and Incomplete those that could not be inspected
+	// completely.
 	Recorded   int `json:"recorded"`
 	Alerts     int `json:"alerts"`
 	Incomplete int `json:"incomplete"`
+	// NoProfile counts the requests of no application, when the
+	// configuration has applications.
+	NoProfile int `json:"no_profile,omitempty"`
 }
 
 // Config is the "records" section of the configuration.

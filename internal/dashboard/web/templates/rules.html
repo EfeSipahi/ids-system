@@ -4,12 +4,16 @@
   <div class="tools"><span class="tools-label">Fired in</span>{{template "period"}}{{template "live"}}</div>
 </div>
 <form class="filters" id="filters" autocomplete="off">
+  <label id="app-field" hidden>Application
+    <select name="app" id="app"><option value="">The run's level</option></select>
+  </label>
   <label>Status
     <select name="status">
       <option value="">All rules</option>
       <option value="runs">Runs at this level</option>
       <option value="above">Above the level</option>
       <option value="excluded">Excluded</option>
+      <option value="off">Off for the application</option>
       <option value="fired">Fired</option>
     </select>
   </label>

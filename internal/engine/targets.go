@@ -160,6 +160,15 @@ type namedValue struct {
 // reused.
 func (tx *transaction) collect(r, first *rule) []namedValue {
 	out := tx.collected[:0]
+	// The application's exceptions replace the exclusions of a chain's
+	// first rule with a longer list made by NewTuning. Like CRS's own
+	// target exclusions, they do not reach the chained rules.
+	excludes := r.excludes
+	if r == first && tx.tuning != nil && tx.tuning.excludes != nil {
+		if ex := tx.tuning.excludes[r.index]; ex != nil {
+			excludes = ex
+		}
+	}
 	for _, t := range r.targets {
 		if tx.removedForRequest(first, t) {
 			continue
@@ -174,7 +183,7 @@ func (tx *transaction) collect(r, first *rule) []namedValue {
 			continue
 		}
 		for _, v := range values {
-			if len(r.excludes) == 0 || !excluded(r.excludes, t, v.key) {
+			if len(excludes) == 0 || !excluded(excludes, t, v.key) {
 				out = append(out, v.namedValue)
 			}
 		}

@@ -28,7 +28,7 @@
   }
 
   function append(node, children) {
-    for (const c of children.flat()) {
+    for (const c of children.flat(Infinity)) {
       if (c === undefined || c === null || c === false) continue;
       node.appendChild(c instanceof Node ? c : document.createTextNode(String(c)));
     }
@@ -330,9 +330,25 @@
 
   function badge(rec, incomplete = true) {
     return el("span", { class: "badges" },
-      rec.alert ? el("span", { class: "badge alert" }, "Alert") : el("span", { class: "badge" }, "Below threshold"),
+      rec.alert ? el("span", { class: "badge alert", title: alertBy(rec.alert_by) || null }, "Alert") : el("span", { class: "badge" }, "Below threshold"),
       incomplete && rec.incomplete ? el("span", { class: "badge incomplete" }, "Incomplete") : null);
   }
+
+  // alertBy says what made a record an alert (F6): "by the rules and the
+  // profile". It is empty for a run without applications.
+  function alertBy(by) {
+    const names = { rules: "the rules", profile: "the profile" };
+    return by && by.length ? "Alert by " + by.map((b) => names[b] || b).join(" and ") : "";
+  }
+
+  // profileBadge says that the profile found something (F9); its tooltip
+  // names the kinds of finding.
+  function profileBadge(kinds) {
+    return kinds && kinds.length ? el("span", { class: "badge profile", title: "Profile findings: " + kinds.join(", ") }, "Profile") : null;
+  }
+
+  // appName is how an application is named on the pages.
+  const appName = (name) => (name === "none" ? "No application" : name);
 
   function severity(s) {
     const kind = { CRITICAL: "critical", ERROR: "error", WARNING: "warning", NOTICE: "notice" }[String(s || "").toUpperCase()] || "none";
@@ -589,22 +605,29 @@
     // out of the card.
     const cols = [["Time", "", "time"], ["Score", "num", "score"]];
     if (opts.status) cols.push(["Status", "", "status"]);
-    cols.push(["Client", "", "client"], ["Request", "", "request"], ["Attack groups", "", "groups"]);
+    cols.push(["Client", "", "client"]);
+    if (opts.apps) cols.push(["Application", "", "app"]);
+    cols.push(["Request", "", "request"], ["Attack groups", "", "groups"]);
     if (opts.rules) cols.push(["Rules", "", "rules"]);
     const remember = () => store("sessionStorage", "ids.list", JSON.stringify({ url: location.pathname + location.search, ids: rows.map((r) => r.id) }));
-    return el("div", { class: "table-wrap" }, el("table", { class: "wide rows list" },
+    return el("div", { class: "table-wrap" }, el("table", { class: "wide rows list" + (opts.status && opts.apps ? " many" : "") },
       el("colgroup", {}, cols.map(([, , c]) => el("col", { class: c }))),
       el("thead", {}, el("tr", {}, cols.map(([h, c]) => el("th", { class: c }, h)))),
       el("tbody", {}, rows.map((r) => {
         const link = "/alerts/" + encodeURIComponent(r.id);
         const target = `${r.method} ${r.host || ""}${r.path}`;
+        // With the Application column, the application stands for the
+        // host, and the cell keeps its room for the path.
+        const host = opts.apps && r.application && r.application !== "none" ? "" : r.host || "";
         return el("tr", { class: "linked", onclick: (e) => { if (e.target.closest("a") === null) { remember(); location.assign(link); } } },
           el("td", {}, el("a", { href: link, onclick: remember }, fmtTime(r.time))),
-          el("td", { class: "num" }, r.incomplete ? el("span", { class: "badge incomplete", title: "The analysis could not inspect every part" }, "Incomplete") : null, " ", nf.format(r.score)),
+          el("td", { class: "num" }, r.incomplete ? el("span", { class: "badge incomplete", title: "The analysis could not inspect every part" }, "Incomplete") : null,
+            profileBadge(r.profile_kinds), " ", nf.format(r.score)),
           opts.status ? el("td", {}, badge(r, false)) : null,
           el("td", { class: "mono", title: r.ip || null }, r.ip || "–"),
+          opts.apps ? el("td", { title: appName(r.application || "none") }, appName(r.application || "none")) : null,
           el("td", {}, el("span", { class: "clip", title: target + (r.user_agent ? "\nUser-Agent: " + r.user_agent : "") },
-            el("span", { class: "mono" }, r.method + " "), (r.host || "") + r.path)),
+            el("span", { class: "mono" }, r.method + " "), host + r.path)),
           el("td", {}, chips(r.groups, null, 3)),
           opts.rules ? el("td", {}, chips(r.rules.filter((id) => !scoring(id)), opts.rules, 3)) : null);
       }))));
@@ -630,7 +653,7 @@
         el("div", { class: "tiles" },
           tile("Alerts", o.alerts, o.analysed > 0 || o.last_alert ? [share(o.alerts), o.last_alert ? "last alert " + ago(o.last_alert) : ""] : "score reached the threshold", true),
           tile("Records", o.recorded, "a finding or an incomplete analysis"),
-          tile("Requests analysed", o.analysed, "from the counts of the IDS"),
+          tile("Requests analysed", o.analysed, o.profiled ? ["from the counts of the IDS", `${nf.format(o.no_profile)} of no application: the rules only, no profile`] : "from the counts of the IDS"),
           tile("Incomplete analyses", o.incomplete, share(o.incomplete) || "parts that could not be inspected")),
         card("Records over time",
           el("div", { class: "legend" },
@@ -640,7 +663,7 @@
           nothing ? el("p", { class: "empty" }, "No records in this period. Run the IDS with records, or choose a longer period.") : columns(o, pick)),
         el("section", { class: "card" },
           el("div", { class: "card-head" }, el("h2", {}, "Latest alerts"), latest.total ? el("a", { href: alertsLink({}) }, `All ${nf.format(latest.total)} alerts →`) : null),
-          newest.length ? listTable(newest, {}) : el("p", { class: "empty" }, "No alerts in this period.")),
+          newest.length ? listTable(newest, { apps: latest.applications.length > 1 }) : el("p", { class: "empty" }, "No alerts in this period.")),
         el("div", { class: "grid-2x2" },
           card("Rules that fired most", toplist(o.top_rules, ruleName, (i) => alertsLink({ kind: "all", rule: i.key }))),
           card("Attack groups", toplist(o.top_groups, (i) => i.key, (i) => alertsLink({ kind: "all", group: i.key }))),
@@ -663,6 +686,20 @@
     const activeBox = document.getElementById("active");
     for (const g of attackGroups) form.elements.group.append(el("option", { value: g }, g));
     const params = new URLSearchParams(location.search);
+    // The application filter appears once the records have applications;
+    // its choices come with each answer (F9).
+    const appField = document.getElementById("app-field");
+    let appChoices = null; // not "": the first call, with no names yet, must still add the chosen one
+    const showApps = (names) => {
+      if (names.join("\n") === appChoices) return;
+      appChoices = names.join("\n");
+      const chosen = form.elements.app.value || params.get("app") || "";
+      refill(form.elements.app, el("option", { value: "" }, "Any"), names.map((n) => el("option", { value: n }, appName(n))));
+      if (chosen && !names.includes(chosen)) form.elements.app.append(el("option", { value: chosen }, appName(chosen)));
+      form.elements.app.value = chosen;
+      appField.hidden = names.length === 0 && !chosen;
+    };
+    if (params.get("app")) showApps([]);
     const state = {
       range: period.value,
       from: params.get("from") || "",
@@ -671,7 +708,7 @@
       page: Number(params.get("page")) || 1,
     };
     if (!state.from || !state.to) state.from = state.to = "";
-    const fields = ["rule", "group", "ip", "location", "min_score", "sort"];
+    const fields = ["rule", "group", "app", "ip", "location", "min_score", "sort"];
     for (const f of fields) if (params.has(f)) form.elements[f].value = params.get(f);
     if (!form.elements.sort.value) form.elements.sort.value = "time";
 
@@ -728,13 +765,14 @@
       fresh.hidden = true;
       const ruleLink = (id) => "/alerts?" + query({ ...current(), rule: id });
       replace(card(null,
-        l.rows.length ? [pager(l, "top"), listTable(l.rows, { status: state.kind === "all", rules: ruleLink }), l.pages > 1 ? pager(l, "bottom") : null]
+        l.rows.length ? [pager(l, "top"), listTable(l.rows, { status: state.kind === "all", rules: ruleLink, apps: l.applications.length > 1 }), l.pages > 1 ? pager(l, "bottom") : null]
           : el("p", { class: "empty" }, `No ${what()} match these filters.`)), false);
     };
 
     const load = async () => {
       const url = "/api/alerts?" + query({ ...current(), page: state.page });
       const l = await api(url);
+      showApps(l.applications);
       if (l.pages < state.page && state.page > 1) {
         state.page = l.pages;
         sync();
@@ -753,10 +791,10 @@
     const showActive = () => {
       const items = [];
       if (state.from) items.push([`Period ${fmtSpan(state.from, state.to)}`, () => { state.from = state.to = ""; period.show(); }]);
-      const labels = { rule: "Rule", group: "Group", ip: "IP", location: "Location", min_score: "Score at least" };
+      const labels = { rule: "Rule", group: "Group", app: "Application", ip: "IP", location: "Location", min_score: "Score at least" };
       for (const [f, label] of Object.entries(labels)) {
         const v = form.elements[f].value.trim();
-        if (v) items.push([`${label} ${v}`, () => { form.elements[f].value = ""; }]);
+        if (v) items.push([`${label} ${f === "app" ? appName(v) : v}`, () => { form.elements[f].value = ""; }]);
       }
       activeBox.hidden = items.length === 0;
       refill(activeBox,
@@ -868,11 +906,32 @@
     const uncategorised = (s.total || 0) - categoryList.reduce((n, [, v]) => n + v, 0);
     const json = JSON.stringify(r, null, 2);
     const clientCount = el("span", { class: "muted" }, "…");
+
+    // The application and its profile's findings (F9), apart from the
+    // rule findings and the score (M10).
+    const app = r.application, prof = r.profile;
+    const modes = { alert: "alert: a profile finding makes the request an alert", monitor: "monitor: profile findings are recorded, not alerts" };
+    const profileCard = app ? card("Application and profile", kv([
+      ["Application", app.name === "none" ? "No application: only the rules checked this request"
+        : el("a", { href: "/alerts?" + query({ kind: "all", app: app.name, range: "all" }), title: "Every record of this application" }, app.name)],
+      ["Profile mode", modes[app.mode] || app.mode],
+      ["Paranoia level", app.paranoia_level !== e.paranoia_level ? `${app.paranoia_level} (the application's; the configuration's is ${e.paranoia_level})` : String(app.paranoia_level)],
+      ["Body checked", prof && !prof.body_checked ? "no — the body was not read to its end, so its parameters were not checked" : ""]]),
+    prof ? (prof.findings.length
+      ? el("div", { class: "table-wrap" }, el("table", {},
+        el("thead", {}, el("tr", {}, el("th", {}, "Finding"), el("th", {}, "Where"), el("th", {}, "What"))),
+        el("tbody", {}, prof.findings.map((f) => el("tr", {},
+          el("td", { class: "nowrap" }, f.kind), el("td", { class: "mono loc" }, f.location), el("td", { class: "wrap" }, f.message))))))
+      : el("p", { class: "muted" }, "The request is what the profile allows.")) : null,
+    prof && prof.omitted ? el("p", { class: "muted" }, `${nf.format(prof.omitted)} more findings are not kept in the record.`) : null) : null;
     replace(el("div", { class: "stack" },
       el("div", { class: "detail-head" },
         el("h1", { class: "request-title" }, el("span", { class: "method" }, (req.method || "?") + " "), short(`${req.path || ""}${req.query ? "?" + req.query : ""}`, 200)),
         el("p", { class: "summary" },
-          badge({ alert: r.alert, incomplete: !a.complete }),
+          badge({ alert: r.alert, alert_by: r.alert_by, incomplete: !a.complete }),
+          r.alert_by ? el("span", {}, alertBy(r.alert_by)) : null,
+          // "Alert by the profile" already says it.
+          prof && prof.findings.length && !(r.alert_by || []).includes("profile") ? profileBadge([...new Set(prof.findings.map((f) => f.kind))]) : null,
           el("span", {}, fmtTime(r.time)),
           el("span", {}, "from ", ip || "an unknown address"),
           hitGroups.length ? el("span", {}, hitGroups.join(", ")) : null,
@@ -885,6 +944,7 @@
               el("li", {}, categories[k] || k, " ", el("strong", {}, String(v)), " ", el("span", { class: "muted" }, `(${k})`))),
             uncategorised > 0 ? el("li", { title: "These rules add to the total score only, such as most protocol rules (CRS files 911, 913, 920 and 922)." },
               "No category ", el("strong", {}, String(uncategorised)), " ", el("span", { class: "muted" }, "(rules that add to the total only)")) : null) : ""],
+          ["Alert by", r.alert_by ? r.alert_by.join(", ") : ""],
           ["Decided by", r.decided_by],
           ["Record", [el("code", {}, r.id), copyButton(r.id, "the record ID")]],
           ["Run", el("code", {}, r.run)]])),
@@ -907,9 +967,11 @@
         ["Complete", a.complete ? "yes" : "no — a clean result does not cover the parts that were not inspected"],
         ["Body", `${a.body}${a.body_format ? " as " + a.body_format : ""}${a.body_reason ? " (" + a.body_reason + ")" : ""}`],
         ["Notes", (a.issues || []).map((i) => `${i.part}: ${i.message}`).join("; ")]])),
+      profileCard,
       el("section", { class: "card" },
-        el("h2", {}, `Findings: ${byRule.size} ${byRule.size === 1 ? "rule" : "rules"}, ${attack.length} ${attack.length === 1 ? "place" : "places"}`),
-        ruleEntries.length ? el("div", { class: "findings" }, ruleEntries) : el("p", { class: "muted" }, "No rule matched; the record was written because the analysis is incomplete."),
+        el("h2", {}, `Rule findings: ${byRule.size} ${byRule.size === 1 ? "rule" : "rules"}, ${attack.length} ${attack.length === 1 ? "place" : "places"}`),
+        ruleEntries.length ? el("div", { class: "findings" }, ruleEntries)
+          : el("p", { class: "muted" }, prof && prof.findings.length ? "No rule matched; the record was written for the profile's findings." : "No rule matched; the record was written because the analysis is incomplete."),
         scores.map((f) => el("p", { class: "muted" }, `Score rule ${f.rule_id}: ${f.message}`))),
       r.full ? card("Full request (full_requests is on)",
         el("div", { class: "table-wrap" }, el("table", {}, el("tbody", {}, r.full.headers.map(([n, v]) => el("tr", {}, el("th", {}, n), el("td", { class: "mono wrap" }, v)))))),
@@ -920,7 +982,7 @@
       el("details", { class: "card", "data-key": "engine" }, el("summary", {}, "Engine"), kv([
         ["Version", `${e.version}${e.revision ? " (" + e.revision.slice(0, 12) + ")" : ""}`],
         ["Rules", e.crs],
-        ["Paranoia level", e.paranoia_level],
+        ["Paranoia level", app ? `${app.paranoia_level} for this request; the configuration's is ${e.paranoia_level}` : e.paranoia_level],
         ["Configuration", el("code", { class: "wrap" }, e.config)]]))));
 
     // How often this client appears: records and alerts of the last day.
@@ -944,18 +1006,45 @@
     const form = document.getElementById("filters");
     let data = null;
     let own = true; // the user changed the filters: sections open as the filters say
-    const status = (r, level) => (!r.active ? "excluded" : (r.paranoia_level || 0) > level ? "above" : "runs");
+    const status = (r, level) => (!r.active ? "excluded" : r.off ? "off" : (r.paranoia_level || 0) > level ? "above" : "runs");
 
-    const statusCell = (r, level) => {
+    // An application's exception of the rule, below its status (F9).
+    const exceptionNote = (r) => [
+      r.skips ? el("div", { class: "sub" }, "Skips " + r.skips.join(", ") + ": " + r.exception_reason) : null,
+      r.no_effect ? el("div", { class: "sub" }, r.no_effect) : null];
+
+    const statusCell = (r, level, app) => {
       switch (status(r, level)) {
         case "excluded":
-          return [el("span", { class: "badge excluded" }, "Excluded"), el("div", { class: "sub" }, r.reason)];
+          return [el("span", { class: "badge excluded" }, "Excluded"), el("div", { class: "sub" }, r.reason), exceptionNote(r)];
+        case "off":
+          return [el("span", { class: "badge off" }, "Off for " + app), el("div", { class: "sub" }, r.exception_reason), exceptionNote(r)];
         case "above":
-          return el("span", { class: "badge above", title: `Its paranoia level ${r.paranoia_level} is above the level the rules run at (${level}), so the CRS gate rule skips it.` }, `Above level ${level}`);
+          return [el("span", { class: "badge above", title: `Its paranoia level ${r.paranoia_level} is above the level the rules run at (${level}), so the CRS gate rule skips it.` }, `Above level ${level}`), exceptionNote(r)];
         default:
-          return el("span", { class: "badge active" }, "Runs");
+          return [el("span", { class: "badge active" }, "Runs"), exceptionNote(r)];
       }
     };
+
+    // The application selector appears when the run has applications. A
+    // choice shows that application's level and exceptions (F11).
+    const appField = document.getElementById("app-field");
+    let appChoices = "";
+    const showApps = (d) => {
+      const names = (d.applications || []).map((a) => `${a.name}\t${a.paranoia_level}`).concat(d.applications && d.applications.length ? [`none\t${d.engine.paranoia_level}`] : []);
+      if (names.join("\n") === appChoices) return;
+      appChoices = names.join("\n");
+      const chosen = form.elements.app.value;
+      refill(form.elements.app, el("option", { value: "" }, "The run's level"),
+        names.map((n) => { const [name, level] = n.split("\t"); return el("option", { value: name }, `${appName(name)} (level ${level})`); }));
+      form.elements.app.value = chosen;
+      appField.hidden = names.length === 0;
+    };
+
+    const are = (n) => `${nf.format(n)} ${n === 1 ? "is" : "are"}`;
+
+    // exceptionText says what an exception changes.
+    const exceptionText = (ex) => ex.setting ? `Setting ${ex.setting} = "${ex.value}"` : ex.off ? `Rule ${ex.rule} off` : `Rule ${ex.rule} skips ${ex.skip.join(", ")}`;
 
     const draw = () => {
       if (!data) return;
@@ -965,8 +1054,12 @@
       }
       const f = Object.fromEntries(new FormData(form));
       const q = (f.q || "").trim().toLowerCase();
-      const level = data.engine.paranoia_level;
-      const counts = { runs: 0, above: 0, excluded: 0 };
+      const level = data.level;
+      const chosen = (data.applications || []).find((a) => a.name === data.app);
+      // "Off for the application" only means something for an application.
+      form.elements.status.querySelector('option[value="off"]').hidden = !chosen;
+      const appLabel = data.app ? appName(data.app) : "";
+      const counts = { runs: 0, above: 0, excluded: 0, off: 0 };
       for (const r of data.rules) counts[status(r, level)]++;
       const match = (r) =>
         (f.status === "" || f.status === status(r, level) || (f.status === "fired" && r.fired > 0)) &&
@@ -1009,13 +1102,23 @@
             el("td", {}, String(r.line)),
             el("td", {}, String(r.phase)),
             el("td", {}, r.paranoia_level ? String(r.paranoia_level) : "–"),
-            el("td", { class: "wrap" }, statusCell(r, level)),
+            el("td", { class: "wrap" }, statusCell(r, level, appLabel)),
             el("td", { class: "num" }, nf.format(r.fired))))))));
 
       replace(el("div", { class: "stack" },
-        el("p", { class: "muted" }, `${nf.format(data.rules.length)} rules of ${data.engine.crs} at paranoia level ${level}: ` +
-          `${nf.format(counts.runs)} run, ${nf.format(counts.above)} are above the level and skipped, ${nf.format(counts.excluded)} are excluded. ` +
-          `Showing ${nf.format(shownCount)}. From the run that started ${fmtTime(data.time)}.`),
+        el("p", { class: "muted" }, `${nf.format(data.rules.length)} rules of ${data.engine.crs} at paranoia level ${level}` +
+          (data.app ? ` for ${data.app === "none" ? "requests of no application" : "the application " + data.app}` : "") + ": " +
+          `${nf.format(counts.runs)} run, ${are(counts.above)} above the level and skipped, ${are(counts.excluded)} excluded` +
+          (counts.off ? `, ${are(counts.off)} off for the application` : "") + ". " +
+          `Showing ${nf.format(shownCount)}; fired counts ${data.app ? "this application's records only" : "every record"}. From the run that started ${fmtTime(data.time)}.`),
+        chosen ? card(`Exceptions of ${chosen.name}`,
+          chosen.exceptions.length ? el("ul", { class: "plain" }, chosen.exceptions.map((ex) => el("li", {},
+            el("strong", {}, exceptionText(ex)), ": ", ex.reason,
+            ex.note ? el("div", { class: "sub" }, ex.note) : null,
+            ex.no_effect ? el("div", { class: "sub" }, "No effect now: " + ex.no_effect) : null)))
+            : el("p", { class: "muted" }, "This application's profile has no rule exceptions."),
+          el("p", { class: "muted" }, `Profile ${chosen.profile}, mode ${chosen.mode}, paranoia level ${chosen.paranoia_level}. ` +
+            `Hosts ${chosen.hosts.join(", ")}${chosen.paths ? ", paths " + chosen.paths.join(", ") : ""}.`)) : null,
         sections.length ? sections.map(section) : card(null, el("p", { class: "empty" }, "No rule matches these filters."))), !own);
       own = false;
     };
@@ -1026,7 +1129,8 @@
     // The filters are kept in the address, as on the alerts page, so that
     // a link or the back button shows the same rules.
     const params = new URLSearchParams(location.search);
-    const fields = ["status", "level", "q", "sort"];
+    const fields = ["app", "status", "level", "q", "sort"];
+    if (params.get("app")) form.elements.app.append(el("option", { value: params.get("app") }, appName(params.get("app"))));
     for (const f of fields) if (params.has(f)) form.elements[f].value = params.get(f);
     const sync = () => {
       const p = { range: period.value };
@@ -1035,8 +1139,9 @@
       history.replaceState(null, "", "/rules?" + query(p));
     };
     const run = every(async () => {
-      const url = "/api/rules?" + query({ range: period.value });
+      const url = "/api/rules?" + query({ range: period.value, app: form.elements.app.value });
       const d = await api(url);
+      showApps(d);
       if (same(url, d)) return;
       data = d;
       draw();
@@ -1048,7 +1153,16 @@
       run();
     });
     form.addEventListener("submit", (e) => e.preventDefault());
-    form.addEventListener("input", () => { own = true; sync(); draw(); });
+    form.addEventListener("input", (e) => {
+      own = true;
+      sync();
+      if (e.target.name !== "app") {
+        draw();
+        return;
+      }
+      view.classList.add("loading");
+      run();
+    });
     const openAll = (open) => () => { for (const d of view.querySelectorAll("details.section")) d.open = open; };
     document.getElementById("open-all").addEventListener("click", openAll(true));
     document.getElementById("close-all").addEventListener("click", openAll(false));
@@ -1082,11 +1196,25 @@
           ["Run", el("code", {}, l.run)],
           ["Engine", `${l.engine.version}${l.engine.revision ? " (" + l.engine.revision.slice(0, 12) + ")" : ""}`],
           ["Rules", l.engine.crs],
-          ["Paranoia level", l.engine.paranoia_level],
+          ["Paranoia level", p.applications.length ? `${l.engine.paranoia_level} by default; an application may have its own` : l.engine.paranoia_level],
           ["Rule status", el("a", { href: "/rules" }, `${nf.format(p.active_rules - p.above_level_rules)} run, ` +
             `${nf.format(p.above_level_rules)} above level ${level}, ${nf.format(p.excluded_rules)} excluded`)],
           ["Configuration", [el("code", { class: "wrap" }, l.engine.config), copyButton(l.engine.config, "the fingerprint")]]]))
           : card("Running configuration", el("p", { class: "empty" }, "No start record has been read yet.")),
+        p.applications.length ? card("Applications",
+          el("p", { class: "muted" }, "Each application's requests are checked against its profile and run with its own level and rule exceptions. " +
+            (p.require_profile ? "A request of another host gets a no_profile finding (require_profile)." : "A request of another host gets the rules only, at the configuration's level.")),
+          el("div", { class: "table-wrap" }, el("table", { class: "wide" },
+            el("thead", {}, el("tr", {}, [["Application", ""], ["Hosts", ""], ["Paths", ""], ["Profile", ""], ["Mode", ""], ["Level", ""], ["Exceptions", "num"], ["Notes", ""]].map(([h, c]) => el("th", { class: c }, h)))),
+            el("tbody", {}, p.applications.map((a) => el("tr", {},
+              el("td", {}, el("a", { href: "/alerts?" + query({ kind: "all", app: a.name }), title: "The records of this application" }, a.name)),
+              el("td", { class: "mono nowrap" }, a.hosts.map((h) => el("div", {}, h))),
+              el("td", { class: "mono nowrap" }, a.paths ? a.paths.map((x) => el("div", {}, x)) : "every path"),
+              el("td", { class: "mono nowrap" }, a.profile),
+              el("td", {}, a.mode),
+              el("td", {}, String(a.paranoia_level)),
+              el("td", { class: "num" }, el("a", { href: "/rules?" + query({ app: a.name }), title: "The rules and exceptions of this application" }, nf.format(a.exceptions.length))),
+              el("td", { class: "wrap sub" }, a.notes && a.notes.length ? a.notes.map((n) => el("div", {}, n)) : "–"))))))) : null,
         card("Runs", el("p", { class: "muted" }, "Each start of the IDS, newest first. A new configuration fingerprint means the rules or settings changed. Records and alerts count what is still kept."),
           el("div", { class: "table-wrap" }, el("table", { class: "wide" },
             el("thead", {}, el("tr", {}, [["Started", ""], ["Run", ""], ["Rules", ""], ["Level", ""], ["Analysed", "num"], ["Records", "num"], ["Alerts", "num"], ["Configuration", ""]].map(([h, c]) => el("th", { class: c }, h)))),

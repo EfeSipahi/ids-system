@@ -1,0 +1,256 @@
+{
+  "note": "The shop of the CSIC 2010 data set (I2, F10). Written by hand from the 301 normal requests of the training split of ids-model's http-mini-splits-v1 only; validation and test are measured, not used. Rules used: the 13 endpoints seen, by exact path; the shop takes the same fields in the query of a GET and the body of a POST, so parameters are 'args'; one modo value per endpoint; integer fields are integers of at least 0; the dni, postal code (cp), card number (ntc) and session cookie each had one format in every training value, which is also the field's known format; free text is at most 64 bytes, the longest value the data set keeps (its e-mail values are cut at 64). Text fields have no pattern: the shop sends Latin-1 bytes, which a JSON profile cannot list. Passwords, the card number and the dni are secret.",
+  "mode": "monitor",
+  "paranoia_level": 2,
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/tienda1/imagenes/logo.gif"
+    },
+    {
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "path": "/tienda1/miembros/editar.jsp",
+      "content_type": [
+        "application/x-www-form-urlencoded"
+      ],
+      "params": {
+        "B1": {
+          "max_length": 64
+        },
+        "modo": {
+          "type": "enum",
+          "values": [
+            "registro"
+          ]
+        },
+        "login": {
+          "max_length": 64
+        },
+        "password": {
+          "max_length": 64,
+          "secret": true
+        },
+        "nombre": {
+          "max_length": 64
+        },
+        "apellidos": {
+          "max_length": 64
+        },
+        "email": {
+          "max_length": 64
+        },
+        "dni": {
+          "pattern": "[0-9]{8}[A-Z]",
+          "secret": true
+        },
+        "direccion": {
+          "max_length": 64
+        },
+        "ciudad": {
+          "max_length": 64
+        },
+        "cp": {
+          "pattern": "[0-9]{5}"
+        },
+        "provincia": {
+          "max_length": 64
+        },
+        "ntc": {
+          "pattern": "[0-9]{16}",
+          "secret": true
+        }
+      }
+    },
+    {
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "path": "/tienda1/publico/anadir.jsp",
+      "content_type": [
+        "application/x-www-form-urlencoded"
+      ],
+      "params": {
+        "B1": {
+          "max_length": 64
+        },
+        "id": {
+          "type": "integer",
+          "min": 0
+        },
+        "nombre": {
+          "max_length": 64
+        },
+        "precio": {
+          "type": "integer",
+          "min": 0
+        },
+        "cantidad": {
+          "type": "integer",
+          "min": 0
+        }
+      }
+    },
+    {
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "path": "/tienda1/publico/autenticar.jsp",
+      "content_type": [
+        "application/x-www-form-urlencoded"
+      ],
+      "params": {
+        "B1": {
+          "max_length": 64
+        },
+        "modo": {
+          "type": "enum",
+          "values": [
+            "entrar"
+          ]
+        },
+        "login": {
+          "max_length": 64
+        },
+        "pwd": {
+          "max_length": 64,
+          "secret": true
+        },
+        "remember": {
+          "type": "enum",
+          "values": [
+            "on",
+            "off"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tienda1/publico/carrito.jsp"
+    },
+    {
+      "method": "POST",
+      "path": "/tienda1/publico/entrar.jsp",
+      "content_type": [
+        "application/x-www-form-urlencoded"
+      ],
+      "params": {
+        "errorMsg": {
+          "max_length": 64
+        }
+      }
+    },
+    {
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "path": "/tienda1/publico/pagar.jsp",
+      "content_type": [
+        "application/x-www-form-urlencoded"
+      ],
+      "params": {
+        "B1": {
+          "max_length": 64
+        },
+        "modo": {
+          "type": "enum",
+          "values": [
+            "insertar"
+          ]
+        },
+        "precio": {
+          "type": "integer",
+          "min": 0
+        }
+      }
+    },
+    {
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "path": "/tienda1/publico/registro.jsp",
+      "content_type": [
+        "application/x-www-form-urlencoded"
+      ],
+      "params": {
+        "B1": {
+          "max_length": 64
+        },
+        "modo": {
+          "type": "enum",
+          "values": [
+            "registro"
+          ]
+        },
+        "login": {
+          "max_length": 64
+        },
+        "password": {
+          "max_length": 64,
+          "secret": true
+        },
+        "nombre": {
+          "max_length": 64
+        },
+        "apellidos": {
+          "max_length": 64
+        },
+        "email": {
+          "max_length": 64
+        },
+        "dni": {
+          "pattern": "[0-9]{8}[A-Z]",
+          "secret": true
+        },
+        "direccion": {
+          "max_length": 64
+        },
+        "ciudad": {
+          "max_length": 64
+        },
+        "cp": {
+          "pattern": "[0-9]{5}"
+        },
+        "provincia": {
+          "max_length": 64
+        },
+        "ntc": {
+          "pattern": "[0-9]{16}",
+          "secret": true
+        }
+      }
+    }
+  ],
+  "cookies": {
+    "JSESSIONID": {
+      "pattern": "[0-9A-F]{32}"
+    }
+  },
+  "exceptions": [
+    {
+      "setting": "crs_validate_utf8_encoding",
+      "value": "0",
+      "reason": "The shop sends its form text in Latin-1, not UTF-8 (ñ is %F1). crs-setup.conf.example says to turn this check off for a site that sends parameters in another encoding. Rule 920250 flagged 151 of the 301 training normal requests for it."
+    },
+    {
+      "setting": "restricted_headers_extended",
+      "value": "",
+      "reason": "Every request of the shop sends Accept-Charset, the only header of CRS's extended list, which crs-setup.conf.example says gives too many false positives to forbid by default. Rule 920451 flagged all 301 training normal requests from level 2."
+    },
+    {
+      "rule": 932350,
+      "skip": [
+        "ARGS_NAMES:pwd",
+        "ARGS_NAMES:id"
+      ],
+      "reason": "pwd and id are the names of the shop's own form fields (login and product), not Unix commands; the names are fixed by its forms and their values are still checked. Rule 932350 flagged 126 of the 301 training normal requests at level 3."
+    }
+  ]
+}

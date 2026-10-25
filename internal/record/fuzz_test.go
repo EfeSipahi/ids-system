@@ -102,7 +102,7 @@ func FuzzSecretsAreMasked(f *testing.F) {
 			Body: []byte(extra + "&pwd=" + escaped),
 		})
 		res := rules.Evaluate(req)
-		line, err := marshal(b.build(res.Request, res, "id", "run", time.Time{}))
+		line, err := marshal(b.build(res.Request, res, nil, "id", "run", time.Time{}))
 		if err != nil {
 			t.Fatal(err)
 		}

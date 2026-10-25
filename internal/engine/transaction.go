@@ -127,13 +127,28 @@ type transaction struct {
 	// that collect reuses.
 	valueCache map[targetKey][]keyedValue
 	collected  []namedValue
+
+	// tuning holds the exceptions of the request's application, or nil.
+	tuning *Tuning
 }
 
 // Evaluate runs the rules on one request. It does not change the RuleSet or
 // the request, and it may be called from many goroutines at once.
 func (rs *RuleSet) Evaluate(req *httpmodel.Request) *Result {
-	tx := &transaction{rs: rs, req: req, vars: make(map[string]string, len(rs.initial))}
-	for name, value := range rs.initial {
+	return rs.EvaluateWith(req, nil)
+}
+
+// EvaluateWith runs the rules on one request with the exceptions of the
+// request's application, made by NewTuning from this RuleSet. A nil t is
+// the same as Evaluate. Neither the RuleSet nor t is changed, so both may
+// be used by many goroutines at once.
+func (rs *RuleSet) EvaluateWith(req *httpmodel.Request, t *Tuning) *Result {
+	initial := rs.initial
+	if t != nil {
+		initial = t.initial
+	}
+	tx := &transaction{rs: rs, req: req, vars: make(map[string]string, len(initial)), tuning: t}
+	for name, value := range initial {
 		tx.vars[name] = value
 	}
 	tx.runPhase(phaseRequestHeaders)
@@ -271,9 +286,12 @@ func (tx *transaction) onMatch(r, first *rule, captures []string) {
 	tx.matches = append(tx.matches, m)
 }
 
-// isRemoved reports whether a ctl action that ran earlier in this request
-// took the rule out.
+// isRemoved reports whether the application's exceptions switch the rule
+// off, or a ctl action that ran earlier in this request took it out.
 func (tx *transaction) isRemoved(r *rule) bool {
+	if tx.tuning != nil && tx.tuning.off != nil && tx.tuning.off[r.index] {
+		return true
+	}
 	for _, rr := range tx.removedRules {
 		if rr.removes(r) {
 			return true

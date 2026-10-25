@@ -13,6 +13,8 @@ import (
 
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
+	"github.com/EfeSipahi/ids-system/internal/profile"
+	"github.com/EfeSipahi/ids-system/internal/result"
 	"github.com/EfeSipahi/ids-system/internal/version"
 )
 
@@ -28,10 +30,15 @@ const countsInterval = time.Minute
 // Recorder writes the records of one run of the IDS. It is safe for use by
 // many goroutines.
 type Recorder struct {
-	w   *writer
-	b   builder
-	run string
-	now func() time.Time
+	w *writer
+	b builder
+	// apps holds the builder of each application, whose masker also knows
+	// the profile's secrets (F8). profiled is true when there are
+	// applications.
+	apps     map[*profile.App]builder
+	profiled bool
+	run      string
+	now      func() time.Time
 
 	mu     sync.Mutex
 	counts Counts
@@ -50,12 +57,13 @@ func NewEngine(rs *engine.RuleSet, fingerprint string) Engine {
 }
 
 // Open starts a run: it opens the record files of cfg.Dir and writes the
-// start record, with the status of every rule.
-func Open(cfg Config, eng Engine, statuses []engine.RuleStatus) (*Recorder, error) {
-	return open(cfg, eng, statuses, time.Now)
+// start record, with the status of every rule and the applications of
+// apps. apps may be nil when the configuration has no applications.
+func Open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set) (*Recorder, error) {
+	return open(cfg, eng, statuses, apps, time.Now)
 }
 
-func open(cfg Config, eng Engine, statuses []engine.RuleStatus, now func() time.Time) (*Recorder, error) {
+func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, now func() time.Time) (*Recorder, error) {
 	cfg = cfg.WithDefaults()
 	if err := cfg.Validate(); err != nil {
 		return nil, err
@@ -76,6 +84,17 @@ func open(cfg Config, eng Engine, statuses []engine.RuleStatus, now func() time.
 		now: now,
 	}
 	start := Start{Type: TypeStart, Schema: Schema, Run: r.run, Time: now().UTC(), Engine: eng, Rules: []Rule{}}
+	if apps != nil && len(apps.Apps()) > 0 {
+		r.profiled = true
+		r.apps = map[*profile.App]builder{}
+		for _, a := range apps.Apps() {
+			b := r.b
+			b.masker = b.masker.forProfile(a.Profile)
+			r.apps[a] = b
+		}
+		start.Applications = result.AppStartups(apps)
+		start.RequireProfile = apps.RequireProfile()
+	}
 	for _, st := range statuses {
 		start.Rules = append(start.Rules, Rule{
 			ID:            st.ID,
@@ -103,13 +122,25 @@ func (r *Recorder) Run() string {
 
 // Add counts one analysed request and writes its record when it gets one
 // (R1). req must be the request as the rules of phase 2 saw it, which is
-// res.Request.
-func (r *Recorder) Add(req *httpmodel.Request, res *engine.Result) error {
+// res.Request. prof is the result of checking req against its application's
+// profile; it is nil when the configuration has no applications.
+func (r *Recorder) Add(req *httpmodel.Request, res *engine.Result, prof *profile.Result) error {
+	if r.profiled && prof == nil {
+		prof = &profile.Result{BodyChecked: req.Status.Body.Complete()}
+	}
+	b := r.b
+	if prof != nil && prof.App != nil {
+		if ab, ok := r.apps[prof.App]; ok {
+			b = ab
+		} else {
+			b.masker = b.masker.forProfile(prof.App.Profile)
+		}
+	}
 	now := r.now()
-	wanted := Wanted(req, res)
+	wanted := Wanted(req, res, prof)
 	var rec Request
 	if wanted {
-		rec = r.b.build(req, res, newID(), r.run, now)
+		rec = b.build(req, res, prof, newID(), r.run, now)
 		if err := r.w.write(rec); err != nil {
 			return fmt.Errorf("records: %w", err)
 		}
@@ -126,6 +157,9 @@ func (r *Recorder) Add(req *httpmodel.Request, res *engine.Result) error {
 	}
 	if !req.Status.Body.Complete() {
 		r.counts.Incomplete++
+	}
+	if prof != nil && prof.App == nil {
+		r.counts.NoProfile++
 	}
 	if now.Sub(r.counts.From) >= countsInterval {
 		return r.flushLocked(now)

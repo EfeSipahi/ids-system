@@ -15,6 +15,7 @@ import (
 	"github.com/EfeSipahi/ids-system/internal/config"
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/offline"
+	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
 )
 
@@ -37,7 +38,7 @@ func writeRecords(t *testing.T, rules *engine.RuleSet, cfg *config.Product, requ
 	if err != nil {
 		t.Fatal(err)
 	}
-	rec, err := record.Open(rc, record.NewEngine(rules, fingerprint), rules.Statuses())
+	rec, err := record.Open(rc, record.NewEngine(rules, fingerprint), rules.Statuses(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +48,7 @@ func writeRecords(t *testing.T, rules *engine.RuleSet, cfg *config.Product, requ
 	}
 	for _, ex := range examples {
 		res := rules.Evaluate(ex.Request)
-		if err := rec.Add(res.Request, res); err != nil {
+		if err := rec.Add(res.Request, res, nil); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -252,5 +253,115 @@ func TestScriptBuildsNoHTML(t *testing.T) {
 				t.Errorf("%s has %s", e.Name(), bad)
 			}
 		}
+	}
+}
+
+// profileSecrets is a profile that marks a path part, two JSON fields whose
+// names are not secret by themselves, and a header as secret (F8).
+const profileSecrets = `{
+  "mode": "alert",
+  "endpoints": [
+    {"method": "POST", "path": "/reset/{token}", "path_params": {"token": {"secret": true}},
+     "params": {"iban": {"in": "json", "secret": true}, "items.*.code": {"in": "json", "secret": true}}}
+  ],
+  "headers": [{"name": "X-Shop-Key", "secret": true}]
+}`
+
+// profileSecretRequests carry a secret, with "S3CR3T" in it, in each of
+// those places, and an attack at the JSON fields and the header so that
+// CRS rules match right at them.
+const profileSecretRequests = `[
+  {"name": "profile secrets", "method": "POST", "uri": "/reset/S3CR3T-path-token",
+   "headers": [["Host", "shop.example.com"], ["X-Shop-Key", "S3CR3T/../../../etc/passwd"], ["Content-Type", "application/json"]],
+   "body": "{\"iban\": \"S3CR3T' union select password from users --\", \"items\": [{\"code\": \"S3CR3T<script>alert(1)</script>\"}], \"q\": \"x\"}"}
+]`
+
+// F8: a profile's secrets reach neither the records nor the dashboard.
+func TestNoProfileSecretReachesTheDashboard(t *testing.T) {
+	if testing.Short() {
+		t.Skip("loads the CRS rules")
+	}
+	rules, cfg := loadProduct(t)
+	tmp := t.TempDir()
+	profilePath := filepath.Join(tmp, "shop.json")
+	requests := filepath.Join(tmp, "requests.json")
+	for path, text := range map[string]string{profilePath: profileSecrets, requests: profileSecretRequests} {
+		if err := os.WriteFile(path, []byte(text), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	p, err := profile.Load(profilePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	set, err := profile.NewSet(rules, []profile.AppConfig{{Name: "shop", Hosts: []string{"shop.example.com"}, Loaded: p}}, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, full := range []bool{false, true} {
+		t.Run(fmt.Sprintf("full_requests=%v", full), func(t *testing.T) {
+			rc := *cfg.Records
+			rc.Dir, rc.FullRequests = t.TempDir(), full
+			rec, err := record.Open(rc, record.NewEngine(rules, "sha256:test"), rules.Statuses(), set)
+			if err != nil {
+				t.Fatal(err)
+			}
+			examples, err := offline.LoadFile(requests)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, ex := range examples {
+				app := set.Match(ex.Request)
+				res := rules.EvaluateWith(ex.Request, app.Tuning)
+				prof := set.Check(res.Request, app)
+				if err := rec.Add(res.Request, res, &prof); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := rec.Close(); err != nil {
+				t.Fatal(err)
+			}
+			data, err := os.ReadFile(filepath.Join(rc.Dir, record.CurrentFile))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if hasSecret(string(data)) {
+				t.Fatalf("a secret is in the record file:\n%s", data)
+			}
+			var locations []string
+			for line := range strings.Lines(string(data)) {
+				var r record.Request
+				if json.Unmarshal([]byte(line), &r) != nil || r.Type != record.TypeRequest {
+					continue
+				}
+				if r.HTTP.Path != "/reset/"+record.Masked || r.Application == nil || r.Application.Name != "shop" {
+					t.Errorf("path %q, application %+v", r.HTTP.Path, r.Application)
+				}
+				for _, f := range r.Findings {
+					locations = append(locations, f.Location)
+				}
+			}
+			for _, want := range []string{"ARGS:json.iban", "ARGS:json.items.0.code", "REQUEST_HEADERS:X-Shop-Key"} {
+				if !slices.Contains(locations, want) {
+					t.Errorf("no rule matched at %s; found %v", want, locations)
+				}
+			}
+
+			d := newDashboard(t, rc.Dir)
+			d.clock.set(time.Now())
+			session := d.login(t, "admin", d.password)
+			var l list
+			decode(t, d.do("GET", "/api/alerts?range=all&kind=all", nil, session), &l)
+			if l.Total != 1 {
+				t.Fatalf("the dashboard lists %d records", l.Total)
+			}
+			for _, path := range []string{"/api/overview?range=all", "/api/alerts?range=all&kind=all&app=shop", "/api/rules?range=all&app=shop",
+				"/api/engine", "/api/records/" + l.Rows[0].ID, "/alerts/" + l.Rows[0].ID} {
+				w := d.do("GET", path, nil, session)
+				if w.Code != http.StatusOK || hasSecret(w.Body.String()) {
+					t.Errorf("%s: %d, secret shown %v", path, w.Code, hasSecret(w.Body.String()))
+				}
+			}
+		})
 	}
 }
