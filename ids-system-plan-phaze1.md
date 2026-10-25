@@ -31,11 +31,11 @@ Document role: Primary reference for current architecture decisions, implementat
 | Phase 1 | Detect SQLi, XSS carried in HTTP requests, and path traversal attempts; no automatic blocking |
 | Product architecture | Go core; ML development in Python; integration with an existing TLS reverse proxy; rule, ML, and application-profile layers |
 | Rule engine | Our own Go SecLang engine; CRS 4.30.0; all request rule groups, paranoia level 1 to 4 by configuration, default 1 (M19 and M20 as amended on 12 October 2026) |
-| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20). Records and alerts written by `ids-offline`, and the read-only `ids-dashboard` behind a login over HTTPS (section 11.23) |
-| Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the profile layer, the decision mechanism, webhook and syslog alerts |
+| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20). Records and alerts written by `ids-offline`, and the read-only `ids-dashboard` behind a login over HTTPS (section 11.23). Hand-written application profiles with per-application rule exceptions and levels, and the CSIC shop's profile (section 11.26) |
+| Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the decision mechanism, webhook and syslog alerts, learned profiles |
 | Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
 | Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions. Two ideas from the user, I1 and I2: [section 6.15](#fikirler) |
-| Next step | Hand-written application profiles (A04), the second step of the user's order: decided on 25 October 2026 (F1–F11, section 11.25) and being built following [docs/development-plan-profiles.md](docs/development-plan-profiles.md). Records, alerts, and the dashboard were built on 23 October 2026 (section 11.23) |
+| Next step | Proxy and TLS integration (A01, A08), the third step of the user's order; its decisions come first. Hand-written application profiles (A04) were decided and built on 25 October 2026 (sections 11.25 and 11.26); records, alerts, and the dashboard on 23 October 2026 (section 11.23) |
 
 **For the next agent:** First verify the current status in this document against the relevant files. Then continue from the first unfinished step in section 7.4. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
 
@@ -756,7 +756,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 <a id="a04"></a>
 ### 6.4. A04 — Manually defined application profiles
 
-**Status:** Decided by the user on 25 October 2026, decisions F1–F11 (section 11.25); being built following [docs/development-plan-profiles.md](docs/development-plan-profiles.md). In short: JSON profiles read strictly with the standard library; one file per application, chosen by the application that receives the request (host and path prefix offline, the proxy route later), never by a client header; an allow list of endpoints, parameters, cookies and headers; per-application rule exceptions applied per request on one shared rule set; a paranoia level per application; a broken profile stops the start, a missing one means CRS only.
+**Status:** Decided by the user on 25 October 2026, decisions F1–F11 (section 11.25), and built the same day following [docs/development-plan-profiles.md](docs/development-plan-profiles.md) (section 11.26); the profile contract is [docs/profile-format.md](docs/profile-format.md). Learned profiles stay for a later step. In short: JSON profiles read strictly with the standard library; one file per application, chosen by the application that receives the request (host and path prefix offline, the proxy route later), never by a client header; an allow list of endpoints, parameters, cookies and headers; per-application rule exceptions applied per request on one shared rule set; a paranoia level per application; a broken profile stops the start, a missing one means CRS only.
 
 **Known / approved basis:** M06/M07: application settings are separate; no automatic traffic learning initially. M11: profiles may identify sensitive fields.
 
@@ -1487,3 +1487,36 @@ The UI work of 24 October was committed (`dbc6338`). The user then discussed the
 
 1. The paranoia level does not decide which rules are loaded. All rules are loaded; the level is a starting variable of each request, and CRS's own gate rules skip the higher levels. This is why a level per application (F11) needs no copy of the rules.
 2. The first estimate of B's cost (about 500 checks, under 0.1 %) was too low. The counted value is in point 3 above.
+
+### 11.26. Application profiles built; the CSIC shop's profile — 25 October 2026
+
+All eight stages of [docs/development-plan-profiles.md](docs/development-plan-profiles.md) were done the same day; its notes 1–18 hold the details. The profile contract is [docs/profile-format.md](docs/profile-format.md).
+
+**What exists now:**
+
+1. **Engine, option B** (`internal/engine/tuning.go`): one shared rule set; each application's exceptions (CRS settings, rules skipping variables, rules off) and paranoia level are applied per request. A rule without an exception costs two pointer checks.
+2. **Profiles** (`internal/profile`): strict JSON; the application is chosen by Host and the longest path prefix, never by a client header; an allow list of endpoints, parameters (query, form, multipart, JSON), cookies and headers with types, lengths, patterns and lists; secret fields; modes `monitor` and `alert`.
+3. **Configuration and `ids-offline`:** `applications`, `require_profile`, `-application`, `-endpoints`; the startup report lists each application's exceptions with notes for those that change nothing at its level.
+4. **Records:** `application`, `profile` and `alert_by` fields (schema 1); one masker per application; `no_profile` counts. `decided_by` is "rule and profile layers" only when the profile is in `alert` mode.
+5. **Dashboard:** an application filter, an "Application and profile" card, the Rules page per application with its level and exceptions, a "no application" note on the overview, and an Applications table on the Engine page.
+6. **The CSIC shop's profile (I2):** `profiles/csic-shop.json` and `configs/csic-shop.json`, written from the 301 training normal records only; the shop runs at level 2.
+
+**Decided by the user during the work:**
+
+1. Exceptions for the CSIC shop: `crs_validate_utf8_encoding` = 0 (Latin-1 text), `restricted_headers_extended` = "" (`Accept-Charset`), and rule 932350 skipping the parameter names `pwd` and `id`. 932200, 932236 and 932240 were examined and kept, and 920272 and 920273 got no exception. Level 2.
+2. After a question from the user: levels 3 and 4 flag about half and almost all of the shop's normal requests through rules 920272 and 920273, which allow only plain ASCII or a very small character set. CRS describes these levels as needing much tuning. The profile does the strict checking per field instead.
+
+**Checks:**
+
+1. **Option B equals configure-time SecLang** on all 5,072 CRS tests at levels 1–4: matches, values, messages and every TX variable. One application's exceptions never changed another's results in 8 goroutines. Its measured cost is about 0.2–0.3 % of the time.
+2. **Without applications nothing changed:** 2,916 alerts on the CRS tests at level 1, and 96 normal / 176 anomalous CSIC records flagged; the old golden record is unchanged.
+3. **Secrets (M11):** a profile's secret parameters, JSON fields, headers and path parts reach no record, API answer or page. A fuzz test found a real gap that also existed before profiles: a JSON body written in full kept a secret that the client had written with JSON escapes. Such a body is now written again with the secret field masked.
+4. **Dashboard:** Go tests and two browser rounds on demo records with two applications; the browser rounds found and fixed an application filter that did not work from an address, a squeezed request column, a stray comma in the Rules statuses, and a broken Engine table.
+5. **CSIC shop, measured once on validation and test after the profile was final.** On the test records, false alarms went from 30 of 100 (rules alone at level 1, the best setting without a profile) to 3 of 100. The rules flag 30 of 99 anomalous records, and 74 of 99 are flagged by the rules or have a profile finding. On validation: 13 to 5 false alarms (and 1 normal record with a profile finding), 27 of 98 anomalous flagged by the rules, 73 of 98 by the rules or the profile.
+6. **Coraza** v3.8.1, with the same exceptions written in SecLang, gave the same rule results on all 396 validation and test records at levels 1–4. On 2 records with Latin-1 values it counts one rule more often, the known `utf8toUnicode` difference; both engines flag both.
+7. `gofmt`, `go vet`, `go test ./...` and the race tests pass.
+
+**Conditions of these numbers (I2):** the CSIC training records were used to write the profile and are tuned; validation and test were run once and nothing was changed after. The ML test set had already been observed (section 2.1, item 5), and all records come from one generated shop, so a false-alarm rate for other applications needs other normal traffic (A07).
+
+**Next in the order:** proxy and TLS integration (A01, A08), whose decisions come first; then the response rules, and alerts by webhook and syslog.
+

@@ -1,8 +1,8 @@
 # Project history: what was done and how
 
-Written: 16 October 2026, for the project report; updated 24 October 2026  
-Covers: 27 September 2026 (ML pilot) to 24 October 2026 (dashboard UI reworked)  
-Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md) (history in section 11), the two development plans in this folder, [context.md](../context.md), the git history, and the README of the separate ML project `ids-model`. Every number below comes from one of these or from a run of the code on 16, 23 or 24 October 2026.
+Written: 16 October 2026, for the project report; updated 25 October 2026  
+Covers: 27 September 2026 (ML pilot) to 25 October 2026 (application profiles)  
+Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md) (history in section 11), the two development plans in this folder, [context.md](../context.md), the git history, and the README of the separate ML project `ids-model`. Every number below comes from one of these or from a run of the code on 16, 23, 24 or 25 October 2026.
 
 ## 1. The project in short
 
@@ -16,15 +16,16 @@ Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md)
    - HTTPS traffic arriving as request copies from an existing reverse proxy.
 4. **Design points named in the proposal:** each layer's findings stay separate; a request that could not be fully inspected is reported as incomplete, never counted as normal; training and live use share one feature extractor; sensitive fields are masked in stored records.
 
-**What exists on 24 October 2026:**
+**What exists on 25 October 2026:**
 
 | Part | State |
 | --- | --- |
 | Rule layer (Go) | **Done for the request side of CRS.** Runs every CRS 4.30.0 request rule file at paranoia levels 1 to 4, on requests read from files |
-| Records and alerts (Go) | **Done.** Every request with a finding or an incomplete analysis is written to a record file, with secrets masked; an alert is a score at the CRS threshold ("rule layer only") |
+| Records and alerts (Go) | **Done.** Every request with a finding or an incomplete analysis is written to a record file, with secrets masked; an alert is a score at the CRS threshold, or a profile finding of an application in `alert` mode |
 | Dashboard (Go) | **Done, read-only.** A separate program shows the records in a browser, behind a login, over HTTPS only. Its UI was reworked on 24 October after a check of every page |
 | ML layer | A pilot in the separate Python project `ids-model` (Random Forest and logistic regression on 1,000 CSIC 2010 records). Not yet moved into Go |
-| Profiles, decision mechanism, proxy/TLS | Designed and approved (decisions M01–M21), not built yet |
+| Application profiles (Go) | **Done, written by hand.** A JSON profile per application: an allow list of endpoints and parameters with types, rule exceptions, and a paranoia level of its own. The first profile is for the CSIC 2010 shop |
+| Decision mechanism, proxy/TLS | Designed and approved (decisions M01–M21), not built yet |
 
 ## 2. Final numbers at a glance
 
@@ -39,7 +40,9 @@ Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md)
 | Operators | 19 |
 | Speed (one laptop core) | 0.55 ms for an ordinary request; about 8,000 requests per second on 12 threads |
 | Records and dashboard | Dashboard counts equal the command line (5,072 CRS tests: 2,916 alerts, 154 incomplete); no secret in record files, API answers, or pages; a record costs about 0.04 ms next to 0.6 ms of analysis |
-| Code | About 9,700 lines of Go product code and 8,200 lines of Go tests (195 test functions, 6 fuzz tests, 5 benchmarks); 1,600 lines of dashboard HTML, CSS, and JavaScript (850 on 23 October); 714 lines of Python tools; one Go dependency (`libinjection-go`). On 16 October: 6,100 and 5,350 lines |
+| Application profiles | Per-application exceptions give the same results as the same changes written in SecLang, on all 5,072 CRS tests at levels 1–4; they cost about 0.2–0.3 % of the time |
+| CSIC shop with its profile (test records) | False alarms 3 of 100, against 30 of 100 with the rules alone at level 1; 74 of 99 anomalous records flagged by the rules or the profile; Coraza gives the same rule results |
+| Code | About 12,400 lines of Go product code and 10,300 lines of Go tests (235 test functions, 7 fuzz tests, 6 benchmarks); 1,850 lines of dashboard HTML, CSS, and JavaScript; 733 lines of Python tools; one Go dependency (`libinjection-go`). On 24 October: 9,700 and 8,200 lines; on 16 October: 6,100 and 5,350 |
 
 ## 3. Timeline
 
@@ -62,6 +65,8 @@ Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md)
 | 23 October | Decisions for records, alerts, and the dashboard (R1–R7, V1–V7), after a comparison of what other IDSs record | Development plan in five stages |
 | 23 October | Records, alerts, and the dashboard built | Dashboard counts equal the command line; no secret leaks in any test |
 | 24 October | Dashboard checked in a browser page by page; UI plan with decisions U1–U8, done the same day | 37 problems fixed, among them one bug that wiped the page on a failed update |
+| 25 October | Decisions on application profiles (F1–F11); a measured choice between one rule copy per application and one shared copy | Shared copy chosen (option B): same results, about 0.2–0.3 % slower |
+| 25 October | Profiles built in eight stages; the CSIC shop's profile written from its training records | Test records: false alarms 30 → 3 of 100; Coraza agrees |
 
 ## 4. What was done, step by step
 
@@ -207,12 +212,60 @@ The team decided eight points (U1–U8, main plan section 11.24) and the work fo
 
    The user also decided that the rules page starts with every file section closed, which shortened it from 17,325 to 1,581 pixels.
 
+### 4.8. Application profiles (25 October)
+
+Until then every request got the same rules at the same level. The CSIC results of section 4.5 showed why that is not enough: one application's normal habits, such as Latin-1 text, set off rules that are right for other sites.
+
+1. **Decisions (F1–F11, main plan section 11.25).** Examples:
+   - a profile is a JSON file per application (F1, F2);
+   - the application is chosen by the address that receives the request, never by a header the client could set (F3);
+   - an allow list of endpoints and parameters, where anything unknown is a finding (F4);
+   - rule exceptions with a written reason (F5);
+   - profile findings kept apart from the rule score, and alerts only in `alert` mode (F6);
+   - a paranoia level per application (F11).
+2. **A measured choice (5e).** The team first preferred one copy of the rules per application, so that one profile's mistake could never touch another application. A prototype measured both ways: same results; one copy costs 13.4 MB and 217 ms to build; the shared copy with exceptions applied per request costs about 13 KB per application and no measurable time. The user chose the shared copy, and the plan gave it the same safety through tests.
+3. **The work** followed an eight-stage plan ([development-plan-profiles.md](development-plan-profiles.md)): the engine part, the profile package, the configuration and command line, records, the dashboard, the CSIC profile, and the close. The profile contract is [profile-format.md](profile-format.md).
+
+**How it was checked:**
+
+1. **Same as SecLang.** On all 5,072 CRS tests at levels 1–4, exceptions applied per request gave exactly the matches, values and scores of the same changes written in SecLang. The exceptions changed 577–999 tests per level, so the comparison could see a difference.
+2. **Isolation.** Eight goroutines mixed requests of an application with exceptions, one without, and requests of no application; each got exactly its own result.
+3. **Nothing changed without profiles.** The CRS summary and the CSIC numbers stayed the same, and so did the old golden record.
+4. **Secrets.** The secret fields a profile names reach no record, API answer, or page. A fuzz test also found an older gap: a JSON body written in full could keep a secret that the client had written with JSON escapes, which the masking pass did not recognise. Such a body is now written again with the secret field replaced.
+5. **Dashboard.** Two browser rounds on demo records with two applications found four bugs, all fixed; one was an application filter that did nothing when it came from a link.
+
+**The CSIC shop's profile (I2).** It was written by hand from the 301 normal records of the training split only:
+
+- the 13 endpoints those records use;
+- one value of `modo` per page;
+- the formats of the national ID number, the postal code, the card number and the session cookie;
+- a length limit on free text;
+- passwords, card number and ID number marked secret.
+
+The user accepted three exceptions, each with a reason in the file:
+
+- the CRS setting for sites that do not send UTF-8 text;
+- allowing the `Accept-Charset` header;
+- rule 932350 not reading the shop's parameter names `pwd` and `id`.
+
+Three rules the plan asked to examine (932200, 932236, 932240) were kept: they match an address that the data set's conversion damaged, two names, and a password, and skipping them would hide command injection in those fields. The shop runs at level 2.
+
+Validation and test were run once, after the profile was final:
+
+| Test records (100 normal, 99 anomalous) | Rules alone, level 1 | With the profile, level 2 |
+| --- | --- | --- |
+| False alarms (normal records flagged by the rules) | 30 | 3 |
+| Anomalous records flagged by the rules | 37 | 30 |
+| Anomalous records flagged by the rules or with a profile finding | 37 | 74 |
+
+Without a profile, every level from 2 up flags every record, normal or not. On validation the numbers are similar (13 → 5 false alarms; 33 → 73 anomalous). Coraza, given the same exceptions in SecLang, found the same rule results on all 396 records at levels 1–4. Levels 3 and 4 stay unsuitable for this shop: their rules 920272 and 920273 allow only plain ASCII or a very small character set, so Spanish letters, spaces, `@` and `/` in ordinary forms set them off. The profile does that strict checking per field instead.
+
 ## 5. How the work was done
 
 ### 5.1. Decisions before code
 
 1. The assistant proposed options in numbered points, each with a reason and a small example; the team chose. Nothing open was treated as decided.
-2. Each decision got an ID and was written down with its date and reason: M (architecture), A (open topics), D (rule-layer plan), K (whole rule part). The history is in section 11 of the main plan.
+2. Each decision got an ID and was written down with its date and reason: M (architecture), A (open topics), D (rule-layer plan), K (whole rule part), R and V (records and dashboard), U (dashboard UI), F (application profiles). The history is in section 11 of the main plan.
 3. Work was split into plans with a number to reach (tests that must pass), and a report followed each plan. From plan A on, the team asked for one plan at a time with a stop for review. Code was committed and pushed only when the team asked.
 
 ### 5.2. Behaviour taken from a source, never guessed
@@ -234,6 +287,7 @@ Several times a value written from memory turned out wrong, and only a reference
 | Comparison with Coraza on whole requests | Same rules, places, match counts, and score as an independent engine, at levels 1 and 4 | `tools/coraza-reference/`, `testdata/reference/`, `internal/engine/reference_test.go` |
 | Fuzzing and Go's race detector | No crash on random input; requests running at the same time do not share state | `go test -fuzz`, `go test -race` |
 | Requirement tests | M11 (no request content in the output) and M21 (separate state per request, also in 8 goroutines) | `cmd/ids-offline`, `internal/engine` tests |
+| Per-application exceptions against SecLang | The same exceptions applied per request and written as SecLang give the same results on all CRS tests at levels 1–4 | `internal/engine/tuning_test.go` |
 
 Generated requests were added where the CRS tests had too few cases: 400 path traversal, 400 file access, and 500 SQLi/XSS variants with different encodings (`testdata/requests/generated/`).
 
@@ -281,16 +335,27 @@ internal/httpmodel    received content -> parsed view (path, query, cookies,
                       form, JSON, multipart, XML) + analysis status
         |
         v
+internal/profile      the application of the request (Host and path),
+                      with its exceptions and paranoia level
+        |
+        v
 internal/engine       for each rule in phase 1, then phase 2:
                       variables -> transformations -> operator -> actions
-                      (score, chain, skip, ctl); TX state is per request
+                      (score, chain, skip, ctl); TX state is per request;
+                      the application's exceptions applied on the way
         |
         v
-internal/result       findings (rule, severity, location), score, status;
-                      no request content by default (M11)
+internal/profile      the request against the profile's allow list:
+                      profile findings, kept apart from the score
         |
         v
-cmd/ids-offline       text, JSON, or per-file test summary
+internal/result       findings (rule, severity, location), score,
+internal/record       profile findings, status; records with secrets
+                      masked; no request content in the output (M11)
+        |
+        v
+cmd/ids-offline       text, JSON, or per-file test summary;
+cmd/ids-dashboard     the records in a browser
 ```
 
 A real run (`go run ./cmd/ids-offline -requests testdata/requests/path-traversal.json`), one of the starter requests, `GET /get?arg=../../../etc/passwd`:
@@ -330,26 +395,31 @@ The output names where each rule matched but not the matched text (M11). Coraza 
 | Speed fell to 57 ms on long values as rules were added | Benchmarks in plans B–D | Profiling, then the three changes of section 5.5 |
 | Race-detector run longer than Go's 10-minute default | Timeout, not a race | Run with a longer limit; passes |
 | The fuzzer broke a property in our own test (`\/..` becomes empty) | Fuzzing, plan C | The property was wrong (Coraza does the same); corrected, input kept as a seed |
+| A JSON body written in full could keep a secret written with JSON escapes | A new fuzz test (25 October) | A JSON body with a secret field is written again with that field masked |
+| A setup rule that sets a CRS setting on every request would silently replace an application's value | Reading the CRS test setup (rule 900005) | The profile is refused, naming that rule |
+| Paths with `..` could fit an allowed folder in a profile while the application resolves them elsewhere | Writing the path matcher | Such paths are unknown endpoints |
+| Two scanner probes on the CSIC shop's host fell outside its path prefix and skipped the profile | The training records (25 October) | The prefix was removed: the host serves only the shop |
+| Coraza refuses an empty `setvar` value | The Coraza comparison of the CSIC profile | A single space, which has the same effect for that setting |
 
 ## 8. What the results do not show
 
 1. **Not full CRS compatibility.** Response rules (CRS files 950–980) are not run; they need a copy of each response and wait for the proxy decision.
 2. **No request has been run through ModSecurity itself.** ModSecurity behaviour comes from its source code and from running single C functions.
 3. **The CRS tests are not detection or false-alarm rates.** They show agreement with CRS's expectations on its own test requests.
-4. **The CSIC data is old and synthetic** (one shop application from 2010), and its "anomalous" label includes many requests that are not attacks of these types. The numbers in section 4.5 are not rates for real traffic.
-5. **The engine reads requests from files only.** There is no live traffic yet. An alert is the rule layer's score at the CRS threshold, not the planned decision of all layers.
+4. **The CSIC data is old and synthetic** (one shop application from 2010), and its "anomalous" label includes many requests that are not attacks of these types. The numbers in sections 4.5 and 4.8 are not rates for real traffic. The shop's profile was written from its training records, which therefore no longer measure false alarms; the ML test set had been looked at before.
+5. **The engine reads requests from files only.** There is no live traffic yet. An alert is the rule layer's score at the CRS threshold, or a profile finding of an application in `alert` mode, not the planned decision of all layers.
 
 ## 9. What comes next
 
 The order the team decided on 12 October 2026, with the first step widened on 23 October:
 
 1. Records, alerts, and a dashboard (A09), built as one step: **done on 23 October** (section 4.6); the dashboard UI was reworked on 24 October (section 4.7).
-2. **Next:** hand-written application profiles (A04). The CSIC results show why they are needed.
-3. Proxy and TLS integration (A01, A08), then the response rules, and alerts sent by webhook and syslog (decided on 23 October).
+2. Hand-written application profiles (A04): **done on 25 October** (section 4.8).
+3. **Next:** proxy and TLS integration (A01, A08), then the response rules, and alerts sent by webhook and syslog (decided on 23 October).
 4. Moving the ML model into Go through ONNX, and the decision mechanism (A10, A05, A07, A06).
 5. Prevention, learned profiles, other protocols.
 
-On 16 October the team added two ideas (main plan section 6.15): an MCP server through which an AI assistant configures the IDS and corrects false positives, after the dashboard exists and the IDS is usable; and correcting the false positives found on the CSIC 2010 records.
+On 16 October the team added two ideas (main plan section 6.15): an MCP server through which an AI assistant configures the IDS and corrects false positives, after the dashboard exists and the IDS is usable; and correcting the false positives found on the CSIC 2010 records, which was done by hand with the profiles on 25 October.
 
 Each step needs its own decisions before work starts. Other open points: realistic normal traffic for measuring false alarms (A07), and the remaining slow patterns on long values.
 
@@ -362,6 +432,8 @@ Each step needs its own decisions before work starts. Other open points: realist
 | [development-plan-all-request-rules.md](development-plan-all-request-rules.md) | Plans A–F, with results per plan |
 | [development-plan-records-dashboard.md](development-plan-records-dashboard.md) | The plan for records, alerts, and the dashboard, with notes per stage |
 | [development-plan-dashboard-ui.md](development-plan-dashboard-ui.md) | The dashboard UI plan: problems, decisions U1–U8, notes and checks |
+| [development-plan-profiles.md](development-plan-profiles.md) | The profile plan: decisions F1–F11, stages, notes with every measurement, the CSIC results |
+| [profile-format.md](profile-format.md) | The profile format, exceptions, findings, and known limits |
 | [records-format.md](records-format.md) | The record format, masking rules, and known limits |
 | [crs-4.30.0-ruleset.md](crs-4.30.0-ruleset.md) | The CRS files and what the engine supports |
 | [context.md](../context.md) | Short current state |
@@ -381,5 +453,7 @@ Commits on `main`:
 | `3c1b6bf` | 16 Oct | Plan D |
 | `c8bcab7` | 16 Oct | Plans E and F |
 | `df0ecdc` | 23 Oct | Records, alerts, and the read-only dashboard |
+| `dbc6338` | 24 Oct | Dashboard UI reworked |
+| `68b42c8` | 25 Oct | Application profiles and the CSIC shop's profile |
 
-The UI work of 24 October is not committed yet.
+The closing documents of 25 October are not committed yet.

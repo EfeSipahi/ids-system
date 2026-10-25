@@ -257,7 +257,7 @@ Each stage ends with its tests passing and a progress entry in `docs/development
 | 5. Records | Done 25 October 2026 (notes 11–13) |
 | 6. Dashboard | Done 25 October 2026 (notes 14–16) |
 | 7. CSIC profile (F10, I2) | Done 25 October 2026 (notes 17–18) |
-| 8. Close | Open |
+| 8. Close | Done 25 October 2026 (note 19) |
 
 ### Notes from the work
 
@@ -423,3 +423,8 @@ Each stage ends with its tests passing and a progress entry in `docs/development
       - All 1,000 CSIC records come from one generated application. A false-positive rate that holds elsewhere needs other normal traffic (A07).
     - `TestCSICShopConfiguration` (ids-offline) checks that the repository's CSIC configuration and profile load with level 2, the three exceptions and the 932350 note. The CSIC records belong to ids-model, so the measurements are not repository tests.
     - **To repeat it:** `python3 tools/csic_to_examples.py --splits --out DIR`, then `ids-offline -config configs/csic-shop.json -requests DIR/csic-validation-normal.json -summary` (and the other files). For Coraza, see the comments of `tools/coraza-reference/main.go`, with a configuration that adds the two SecLang files above.
+19. **Stage 8, the close.**
+    - `docs/project-history.md` has a new section 4.8 and updated numbers, timeline, problems and commits. The main plan has section 11.26 and an updated starting summary and A04 status. `context.md` is updated.
+    - Rechecked with a fresh build, without applications: 2,916 alerts on the CRS tests at level 1, and 96 normal / 176 anomalous CSIC records flagged, as before.
+    - `gofmt -l .` (nothing), `go vet ./...`, `go test ./...`, `go test -race ./internal/dashboard/... ./cmd/...` and `go test -race -timeout 60m` on the engine, record, profile, config and result packages: all pass. The race run of the engine package took 29 minutes.
+

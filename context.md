@@ -1,6 +1,6 @@
 # IDS — Current Working Context
 
-Last updated: 24 October 2026  
+Last updated: 25 October 2026  
 Product directory: `/home/esip/Documents/ids-system`  
 Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.md)
 
@@ -8,7 +8,7 @@ Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.
 
 A general-purpose, open-source HTTP intrusion detection system (IDS), customizable through application profiles. Phase 1 started with SQLi, request-borne XSS, and path traversal; since 12 October 2026 the rule part is being extended to all request rules of CRS (decision K6). It produces alerts and does not block requests.
 
-Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a configurable paranoia level, an ML layer, manually defined application profiles, and a decision mechanism that combines them. HTTPS traffic arrives as request copies from an existing reverse proxy. **Of these, the rule layer exists**, working on offline requests, with records, alerts, and a read-only dashboard (since 23 October 2026, its UI reworked on 24 October). The rest is approved design (M01–M21), not working features.
+Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a configurable paranoia level, an ML layer, manually defined application profiles, and a decision mechanism that combines them. HTTPS traffic arrives as request copies from an existing reverse proxy. **Of these, the rule layer and hand-written application profiles exist**, working on offline requests, with records, alerts, and a read-only dashboard (records and dashboard since 23 October 2026, UI reworked on 24 October, profiles since 25 October). The rest is approved design (M01–M21), not working features.
 
 ## 2. What we have made
 
@@ -26,11 +26,20 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 - the rules page is grouped by file, shows rule descriptions (new optional `msg` in the `start` record) and three statuses;
 - a theme switch.
 
+**Application profiles (25 October 2026):** built following [docs/development-plan-profiles.md](docs/development-plan-profiles.md), decisions F1–F11 (main plan sections 11.25 and 11.26); the contract is [docs/profile-format.md](docs/profile-format.md).
+- A JSON profile per application, listed under `applications` in the product configuration and chosen by Host and path prefix, never by a client header.
+- An allow list of endpoints, parameters, cookies and headers; findings are recorded (`monitor`) or alerts (`alert`), apart from the rule score.
+- Rule exceptions per application (a CRS setting, a rule skipping variables, a rule off) and a paranoia level per application, applied per request on one shared rule set (option B).
+- Records carry `application`, `profile` and `alert_by`; the dashboard filters by application and shows each application's exceptions and level.
+- The CSIC shop's profile (`profiles/csic-shop.json`, `configs/csic-shop.json`), written from the training records only, level 2, three exceptions accepted by the user. Test records: false alarms 30 → 3 of 100; Coraza gives the same rule results.
+
 Run it:
 
 ```
 go run ./cmd/ids-offline -requests testdata/requests/path-traversal.json      # also writes records/ (gitignored)
 go run ./cmd/ids-offline -config testdata/crs-tests.json -requests testdata/requests/crs -summary
+go run ./cmd/ids-offline -config configs/csic-shop.json                     # the CSIC shop's applications and exceptions
+go run ./cmd/ids-offline -endpoints -requests FILE                            # endpoints and parameters of a file, for writing a profile
 go run ./cmd/ids-dashboard -add-user admin                                    # prints the password once
 go run ./cmd/ids-dashboard                                                    # https://127.0.0.1:8443
 ```
@@ -48,13 +57,14 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/offline` | Reads example requests from JSON, with optional `expect_ids` / `no_expect_ids` |
 | `internal/engine/transform` | 17 transformations. 12 are ports of the ModSecurity v2 functions, `length` counts bytes; `normalizePath`, `normalizePathWin`, `htmlEntityDecode`, and `base64Decode` follow Coraza (main plan sections 11.15 and 11.18); `normalizePathWin` leaves out Coraza's cut at a colon, which could hide a file name |
 | `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@within`, `@beginsWith`, `@endsWith`, `@validateByteRange`, `@validateUrlEncoding`, `@validateUtf8Encoding`, `@ipMatch`, `@eq`, `@lt`, `@ge`, `@gt`, `@unconditionalMatch` |
-| `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21) |
+| `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21). `NewTuning` and `EvaluateWith` apply one application's exceptions and level per request (`tuning.go`) |
+| `internal/profile` | Application profiles: strict reading, the choice of application, the allow-list checks, secrets, the exception policy, and the `-endpoints` survey |
 | `internal/result` | Output records: analysis status, findings, score. Request content is left out of the terminal output by default (M11) |
-| `internal/config` | The product configuration: engine settings plus the optional `records` section, and the configuration fingerprint (R7) |
+| `internal/config` | The product configuration: engine settings plus the optional `records`, `applications` and `require_profile` sections, and the configuration fingerprint (R7), which covers the profiles |
 | `internal/record` | Record files (R1–R7): building and masking request records, `start` and `counts` records, rotation, file permissions, cookie hashes |
 | `internal/dashboard` | The dashboard: reader of the record files, JSON API, pages (embedded HTML, CSS, JS), users, login, sessions, its own certificate |
 | `internal/version` | The program version `0.1.0-dev` and the Git revision of the build |
-| `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level`, `-records DIR` |
+| `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level`, `-records DIR`, `-application NAME`, `-endpoints` |
 | `cmd/ids-dashboard` | The dashboard: `-config` (default `configs/dashboard.json`), `-add-user`, `-reset-password`, `-remove-user` |
 
 Other files:
@@ -62,21 +72,33 @@ Other files:
 | Path | Content |
 | --- | --- |
 | `configs/crs-first-engine.json` | The product configuration. Loads nineteen CRS files; 456 of 460 rules active, 4 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1. Its `records` section writes records to `records/` |
+| `configs/csic-shop.json`, `profiles/csic-shop.json` | The product configuration with the CSIC shop as an application, and its profile |
 | `configs/dashboard.json` | The dashboard configuration: listen address `127.0.0.1:8443`, records folder, state folder `dashboard-state/` (users, certificate, login log), optional certificate files, idle limit |
 | `docs/records-format.md` | The record format: the contract between the IDS and its readers, masking rules, known limits |
 | `docs/development-plan-records-dashboard.md` | The plan for records, alerts, and the dashboard (finished 23 October 2026), with notes per stage |
 | `docs/development-plan-dashboard-ui.md` | The dashboard UI plan (finished 24 October 2026): problems P1–P37, decisions U1–U8, notes and checks |
+| `docs/development-plan-profiles.md` | The profile plan (finished 25 October 2026): decisions F1–F11, stages, notes 1–18 with every measurement and the CSIC results |
+| `docs/profile-format.md` | The profile format: applications, endpoints, values, exceptions, findings, known limits |
 | `testdata/requests/` | Example requests: starter file, all 5,072 converted CRS request tests (`crs/`), examples for file 905, 1,300 generated variants (`generated/`); see its README |
 | `testdata/crs-tests.json`, `testdata/crs-test-setup.conf` | The configuration the CRS tests are written for: the product configuration plus CRS's test setup rule 900005, at level 4 |
 | `testdata/reference/` | What Coraza found for those requests; see its README |
 | `tools/` | Python scripts that generate the test data, and `coraza-reference/`, a separate Go module that runs Coraza. Coraza is not a dependency of the IDS |
 | `docs/development-plan-all-request-rules.md` | The plan for all request rules (finished 16 October 2026): plans A to F, with results after each |
 | `docs/development-plan-rule-layer.md` | The earlier plan (finished 11 October), with results per stage in its section 8 |
-| `docs/project-history.md` | What was done and how, 27 September to 24 October 2026, written for the project report |
+| `docs/project-history.md` | What was done and how, 27 September to 25 October 2026, written for the project report |
 | `docs/crs-4.30.0-ruleset.md` | Reference for the CRS files and our scope |
 | `docs/go-learning-plan.md` | The user's Go learning plan |
 
-### 2.2. What was checked (16 October 2026, records and dashboard on 23 October, dashboard UI on 24 October)
+### 2.2. What was checked (16 October 2026, records and dashboard on 23 October, dashboard UI on 24 October, profiles on 25 October)
+
+**25 October, application profiles** (details in the profile plan, notes 4, 7, 10, 13, 16 and 18):
+
+1. Per-application exceptions equal the same changes written in SecLang on all 5,072 CRS tests at levels 1–4; one application's exceptions never change another's results (8 goroutines); about 0.2–0.3 % slower.
+2. Without applications nothing changed: CRS summary 2,916 alerts at level 1; CSIC 96 / 176 flagged; the old golden record is unchanged.
+3. No profile secret reaches records, API answers or pages; a fuzz test found and closed an older gap with JSON-escaped secrets in full JSON bodies.
+4. The dashboard was checked in two browser rounds on demo records with two applications; four bugs found and fixed.
+5. The CSIC profile was measured once on validation and test, and compared with Coraza on all 396 of those records at levels 1–4: the same rule results.
+6. `gofmt`, `go vet ./...`, `go test ./...` and the race tests pass.
 
 **24 October, dashboard UI:**
 
@@ -127,7 +149,7 @@ Other files:
 ### 2.4. What it does not do
 
 1. It reads requests from files only. There is no proxy integration.
-2. There is no ML layer, profile layer, or decision mechanism. An alert is the rule layer's score at the CRS threshold ("rule layer only"), not the planned decision. The dashboard only reads; alerts cannot be marked yet (V7), and there is one user role.
+2. There is no ML layer, learned profile, or decision mechanism. An alert is the rule layer's score at the CRS threshold, or a profile finding of an application in `alert` mode, not the planned decision. The dashboard only reads; alerts cannot be marked yet (V7), and there is one user role.
 3. Request rules only; no response rules (they need a copy of each response, K8).
 4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
 5. Passing the CRS tests is not full CRS compatibility, and no request has been run through ModSecurity itself.
@@ -136,7 +158,7 @@ Other files:
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: everything up to and including the records and dashboard of 23 October is on `main` and pushed to GitHub (commit `df0ecdc`). The UI work of 24 October is **not committed yet**; the user decides when. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to and including the application profiles of 25 October is on `main` and pushed to GitHub (commit `68b42c8`; the UI work of 24 October is `dbc6338`). The closing documents of stage 8 are not committed yet; the user decides when. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -175,14 +197,14 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
 
    **Done on 23 October 2026** following [docs/development-plan-records-dashboard.md](docs/development-plan-records-dashboard.md); results in main plan section 11.23. The UI was reworked on 24 October ([docs/development-plan-dashboard-ui.md](docs/development-plan-dashboard-ui.md), main plan section 11.24).
    - **Decided 24 October:** the rules page's file sections all start closed (the user changed U2). A second browser check the same day fixed cut chips, the filter row, rules filters in the address, chart labels and the category sum (UI plan, note 5).
-2. **Now:** hand-written application profiles (A04). **Decided on 25 October 2026** (F1–F11, main plan section 11.25) and being built following [docs/development-plan-profiles.md](docs/development-plan-profiles.md); its Progress section says which stage is done.
+2. Hand-written application profiles (A04). **Decided and built on 25 October 2026** (F1–F11, main plan sections 11.25 and 11.26) following [docs/development-plan-profiles.md](docs/development-plan-profiles.md).
    - JSON profiles, one per application, chosen by host and path prefix (later the proxy route), never by a client header.
    - An allow list of endpoints, parameters, cookies and headers; findings are recorded (`monitor`) or alerts (`alert`).
    - Rule exceptions per application (a CRS setting, a rule skipping targets, a rule off), applied per request on one shared rule set (option B, measured against one copy per application). Rules of files 901 and 949 can't be excepted.
    - A paranoia level per application.
    - The CSIC profile is the first one (I2), written from the training records only.
-   - Stages 1–7 were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18). Left: stage 8, the project history and the main plan's results.
-3. Proxy and TLS (A01, A08), then response rules, and alerts sent by webhook and syslog (decided 23 October 2026).
+   - All eight stages were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18).
+3. **Next:** proxy and TLS (A01, A08), then response rules, and alerts sent by webhook and syslog (decided 23 October 2026). Its decisions come first.
 4. Transfer of the ML model, which the user improves in the separate project, and the decision mechanism (A10, A05, A07, A06).
 5. Prevention, learned profiles, other protocols.
 
@@ -191,7 +213,7 @@ Each still needs its own decisions before work starts.
 **Two ideas from the user (16 October 2026), not yet placed exactly** (main plan section 6.15):
 
 1. **I1:** one MCP server through which an AI assistant configures the IDS and corrects false positives (confirmed by the user on 23 October 2026). The user places it after the dashboard and a usable IDS.
-2. **I2:** correct the false positives found on the CSIC 2010 normal records. Decided on 25 October 2026: by hand, with the profile work (item 2, F10). Afterwards the training records no longer measure false positives independently; validation and test are reported separately (A07).
+2. **I2:** correct the false positives found on the CSIC 2010 normal records. **Done on 25 October 2026** by hand, with the profile work (item 2, F10). The training records no longer measure false positives independently; validation and test are reported separately (A07).
 
 ## 4. Working notes for the next agent
 
