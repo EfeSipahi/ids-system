@@ -1,6 +1,6 @@
 # IDS — Current Working Context
 
-Last updated: 23 October 2026  
+Last updated: 24 October 2026  
 Product directory: `/home/esip/Documents/ids-system`  
 Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.md)
 
@@ -8,13 +8,23 @@ Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.
 
 A general-purpose, open-source HTTP intrusion detection system (IDS), customizable through application profiles. Phase 1 started with SQLi, request-borne XSS, and path traversal; since 12 October 2026 the rule part is being extended to all request rules of CRS (decision K6). It produces alerts and does not block requests.
 
-Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a configurable paranoia level, an ML layer, manually defined application profiles, and a decision mechanism that combines them. HTTPS traffic arrives as request copies from an existing reverse proxy. **Of these, the rule layer exists**, working on offline requests, with records, alerts, and a read-only dashboard (since 23 October 2026). The rest is approved design (M01–M21), not working features.
+Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a configurable paranoia level, an ML layer, manually defined application profiles, and a decision mechanism that combines them. HTTPS traffic arrives as request copies from an existing reverse proxy. **Of these, the rule layer exists**, working on offline requests, with records, alerts, and a read-only dashboard (since 23 October 2026, its UI reworked on 24 October). The rest is approved design (M01–M21), not working features.
 
 ## 2. What we have made
 
 **The rule layer runs every CRS 4.30.0 request rule file, at all four paranoia levels:** 905 (common exceptions), 911 (method enforcement), 913 (scanner detection), 920 (protocol enforcement), 921 (protocol attacks), 922 (multipart attacks), 930 (path traversal and file access), 931 (remote file inclusion), 932 (remote command execution), 933 (PHP), 934 (generic attacks), 941 (XSS), 942 (SQL injection), 943 (session fixation), and 944 (Java attacks), 286 detection rules in all, from the unmodified CRS files, with the setup, gate, and scoring rules they depend on. The rule part is finished; response rules wait for the proxy decision. See section 3.
 
 **Records, alerts, and a dashboard (23 October 2026):** `ids-offline` writes a JSON Lines record for every request with a finding or an incomplete analysis, with secrets masked (R4), and marks alerts (score at or above the CRS threshold, "rule layer only"). `ids-dashboard` shows them behind a login over HTTPS. Format and masking: [docs/records-format.md](docs/records-format.md).
+
+**Dashboard UI (24 October 2026):** after a browser check of every page, 37 UI problems were fixed following [docs/development-plan-dashboard-ui.md](docs/development-plan-dashboard-ui.md), with decisions U1–U8 (main plan section 11.24). Among them:
+- the period is kept between pages, and updates can be paused;
+- a failed update no longer wipes the page;
+- after logging in, the user returns to the page they were on;
+- a chart bar opens the records of its period;
+- one-line alert rows, sorting by score, and a bar for new alerts;
+- the alert page has named categories, findings grouped by rule, copy buttons and the record as JSON;
+- the rules page is grouped by file, shows rule descriptions (new optional `msg` in the `start` record) and three statuses;
+- a theme switch.
 
 Run it:
 
@@ -55,17 +65,32 @@ Other files:
 | `configs/dashboard.json` | The dashboard configuration: listen address `127.0.0.1:8443`, records folder, state folder `dashboard-state/` (users, certificate, login log), optional certificate files, idle limit |
 | `docs/records-format.md` | The record format: the contract between the IDS and its readers, masking rules, known limits |
 | `docs/development-plan-records-dashboard.md` | The plan for records, alerts, and the dashboard (finished 23 October 2026), with notes per stage |
+| `docs/development-plan-dashboard-ui.md` | The dashboard UI plan (finished 24 October 2026): problems P1–P37, decisions U1–U8, notes and checks |
 | `testdata/requests/` | Example requests: starter file, all 5,072 converted CRS request tests (`crs/`), examples for file 905, 1,300 generated variants (`generated/`); see its README |
 | `testdata/crs-tests.json`, `testdata/crs-test-setup.conf` | The configuration the CRS tests are written for: the product configuration plus CRS's test setup rule 900005, at level 4 |
 | `testdata/reference/` | What Coraza found for those requests; see its README |
 | `tools/` | Python scripts that generate the test data, and `coraza-reference/`, a separate Go module that runs Coraza. Coraza is not a dependency of the IDS |
 | `docs/development-plan-all-request-rules.md` | The plan for all request rules (finished 16 October 2026): plans A to F, with results after each |
 | `docs/development-plan-rule-layer.md` | The earlier plan (finished 11 October), with results per stage in its section 8 |
-| `docs/project-history.md` | What was done and how, 27 September to 23 October 2026, written for the project report |
+| `docs/project-history.md` | What was done and how, 27 September to 24 October 2026, written for the project report |
 | `docs/crs-4.30.0-ruleset.md` | Reference for the CRS files and our scope |
 | `docs/go-learning-plan.md` | The user's Go learning plan |
 
-### 2.2. What was checked (16 October 2026, records and dashboard on 23 October)
+### 2.2. What was checked (16 October 2026, records and dashboard on 23 October, dashboard UI on 24 October)
+
+**24 October, dashboard UI:**
+
+1. **Go checks.** `gofmt`, `go vet ./...` and `go test ./...` pass. `go test -race` passes for the dashboard, engine and record packages.
+2. **New tests:**
+   - the 404 page;
+   - the kept login name;
+   - `next` against open redirects;
+   - `sort` and `from`/`to`;
+   - counts per run;
+   - rule descriptions checked against the CRS files.
+3. **Numbers.** The dashboard still equals `-summary` on the CRS records: 5,072 analysed, 2,967 records, 2,916 alerts, 154 incomplete.
+4. **Browser.** browser-use went through every page and action at 1440 px, dark and light: no sideways overflow and no script errors. The full list is in the plan's Progress section.
+5. **Second check.** Screenshots of every page found cut chips, two-row filters, rules filters missing from the address, jumping rule columns, uneven chart labels and categories not adding up to the score. All fixed and checked again in the browser; dashboard tests pass.
 
 **23 October, records and dashboard:**
 
@@ -111,7 +136,7 @@ Other files:
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: everything up to and including plan F is on `main` and pushed to GitHub (16 October 2026). The work of 23 October (decisions, plan, records, dashboard) is **not committed yet**; the user decides when. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to and including the records and dashboard of 23 October is on `main` and pushed to GitHub (commit `df0ecdc`). The UI work of 24 October is **not committed yet**; the user decides when. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -148,7 +173,8 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
    - V1–V7: a separate read-only program `ids-dashboard` that reads the record files; six pages; Go standard library; pages poll a read-only JSON API; login with PBKDF2 password hashes; HTTPS built in and always on; alert marking later.
    - The user's direction for prevention (K4): let requests through, then block the IP or other identifiers after an abnormal request.
 
-   **Done on 23 October 2026** following [docs/development-plan-records-dashboard.md](docs/development-plan-records-dashboard.md); results in main plan section 11.23.
+   **Done on 23 October 2026** following [docs/development-plan-records-dashboard.md](docs/development-plan-records-dashboard.md); results in main plan section 11.23. The UI was reworked on 24 October ([docs/development-plan-dashboard-ui.md](docs/development-plan-dashboard-ui.md), main plan section 11.24).
+   - **Decided 24 October:** the rules page's file sections all start closed (the user changed U2). A second browser check the same day fixed cut chips, the filter row, rules filters in the address, chart labels and the category sum (UI plan, note 5).
 2. **Next:** hand-written application profiles (A04). Its decisions come first.
 3. Proxy and TLS (A01, A08), then response rules, and alerts sent by webhook and syslog (decided 23 October 2026).
 4. Transfer of the ML model, which the user improves in the separate project, and the decision mechanism (A10, A05, A07, A06).

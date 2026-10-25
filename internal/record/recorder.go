@@ -83,6 +83,7 @@ func open(cfg Config, eng Engine, statuses []engine.RuleStatus, now func() time.
 			Line:          st.Pos.Line,
 			Phase:         st.Phase,
 			ParanoiaLevel: st.ParanoiaLevel,
+			Msg:           st.Msg,
 			Active:        st.Active,
 			Reason:        st.Reason,
 		})

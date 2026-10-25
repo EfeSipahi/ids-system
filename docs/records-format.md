@@ -49,7 +49,7 @@ Written when `ids-offline` (later `ids`) starts writing records.
 | `engine.crs` | Rule set signature, for example `OWASP_CRS/4.30.0` |
 | `engine.paranoia_level` | Paranoia level the rules run at, 1–4 |
 | `engine.config` | Fingerprint: `sha256:` over the configuration file, every rule file it loads and the paranoia level (R7). It changes when any of these changes |
-| `rules[]` | Every rule: `id`, `file` (base name), `line`, `phase`, `paranoia_level` (left out when the rule has none), `active`, and `reason` when it is excluded |
+| `rules[]` | Every rule: `id`, `file` (base name), `line`, `phase`, `paranoia_level` (left out when the rule has none), `msg` (the rule's `msg` text as written in its file, macros such as `%{MATCHED_VAR}` not expanded; left out when the rule has none; added 24 October 2026), `active`, and `reason` when it is excluded |
 
 ## 4. `request`: one per request with a finding or an incomplete analysis (R1)
 

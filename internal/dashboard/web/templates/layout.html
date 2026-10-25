@@ -6,27 +6,50 @@
 <title>{{.Title}} · IDS dashboard</title>
 <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/static/app.css">
+<script src="/static/theme.js"></script>
 <script src="/static/app.js" defer></script>
 </head>
 <body data-page="{{.Page}}" data-id="{{.ID}}" data-poll="{{.Poll}}">
 {{if .User}}
 <header class="top">
-  <a class="brand" href="/">IDS dashboard</a>
-  <nav>
-    <a href="/" {{if eq .Page "overview"}}aria-current="page"{{end}}>Overview</a>
-    <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
-    <a href="/rules" {{if eq .Page "rules"}}aria-current="page"{{end}}>Rules</a>
-    <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine</a>
-  </nav>
-  <form class="logout" method="post" action="/logout">
-    <span class="who">{{.User}}</span>
-    <button type="submit">Log out</button>
-  </form>
+  <div class="bar">
+    <a class="brand" href="/"><img src="/static/icon.svg" alt="" width="20" height="20">IDS dashboard</a>
+    <nav aria-label="Pages">
+      <a href="/" {{if eq .Page "overview"}}aria-current="page"{{end}}>Overview</a>
+      <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
+      <a href="/rules" {{if eq .Page "rules"}}aria-current="page"{{end}}>Rules</a>
+      <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine</a>
+    </nav>
+    <div class="account">
+      <select id="theme" aria-label="Colour theme">
+        <option value="">System theme</option>
+        <option value="light">Light theme</option>
+        <option value="dark">Dark theme</option>
+      </select>
+      <span class="who">{{.User}}</span>
+      <form method="post" action="/logout"><button type="submit">Log out</button></form>
+    </div>
+  </div>
 </header>
 {{end}}
 <main>
 {{template "content" .}}
 </main>
-<footer class="foot">IDS {{.Version}} · read-only · alerts are decided by the rule layer only</footer>
+<footer class="foot">IDS {{.Version}}{{if .User}} · read-only · alerts are decided by the rule layer only<span id="zone"></span>{{end}}</footer>
 </body>
 </html>{{end}}
+
+{{define "period"}}<div class="seg" role="group" aria-label="Period" id="period">
+  <button type="button" data-value="1h">1 hour</button>
+  <button type="button" data-value="24h">24 hours</button>
+  <button type="button" data-value="7d">7 days</button>
+  <button type="button" data-value="all">All kept</button>
+</div>{{end}}
+
+{{define "live"}}<div class="live" id="live">
+  <span class="dot" aria-hidden="true"></span>
+  <span id="updated">Loading…</span>
+  <button type="button" id="pause" class="small" aria-pressed="false">Pause</button>
+</div>{{end}}
+
+{{define "notice"}}<div id="notice" class="notice-bar" role="status" hidden></div>{{end}}

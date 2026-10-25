@@ -168,6 +168,18 @@ func TestCRSStartupReport(t *testing.T) {
 	if s := byID[949110]; !s.Active {
 		t.Errorf("status of 949110 = %+v", s)
 	}
+	// Each rule's msg as written in its file, a macro left as it is; an
+	// excluded rule keeps its msg too, and a rule without one has "".
+	for id, want := range map[int]string{
+		942100: "SQL Injection Attack Detected via libinjection",
+		920450: "HTTP header is restricted by policy (%{MATCHED_VAR})",
+		901350: "Enabling forced body inspection for ASCII content",
+		901320: "",
+	} {
+		if got := byID[id].Msg; got != want {
+			t.Errorf("msg of %d = %q, want %q", id, got, want)
+		}
+	}
 }
 
 // A rule file with rules the engine cannot run must stop it from starting,

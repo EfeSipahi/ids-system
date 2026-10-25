@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -77,10 +78,13 @@ func startRecord(run string, at time.Time, config string) record.Start {
 	return record.Start{
 		Type: record.TypeStart, Schema: record.Schema, Run: run, Time: at,
 		Engine: record.Engine{Version: "test", CRS: "OWASP_CRS/4.30.0", ParanoiaLevel: 1, Config: config},
+		// As in CRS at level 1: a level-2 rule is loaded and active, and
+		// its file's gate rule skips it.
 		Rules: []record.Rule{
-			{ID: 930100, File: "REQUEST-930-APPLICATION-ATTACK-LFI.conf", Line: 10, Phase: 2, Active: true},
-			{ID: 942100, File: "REQUEST-942-APPLICATION-ATTACK-SQLI.conf", Line: 20, Phase: 2, Active: true},
-			{ID: 942101, File: "REQUEST-942-APPLICATION-ATTACK-SQLI.conf", Line: 30, Phase: 2, ParanoiaLevel: 2, Reason: "paranoia level 2 is above 1"},
+			{ID: 901320, File: "REQUEST-901-INITIALIZATION.conf", Line: 5, Phase: 1, Reason: "not implemented"},
+			{ID: 930100, File: "REQUEST-930-APPLICATION-ATTACK-LFI.conf", Line: 10, Phase: 2, ParanoiaLevel: 1, Msg: "Path Traversal Attack (/../) or (/.../)", Active: true},
+			{ID: 942100, File: "REQUEST-942-APPLICATION-ATTACK-SQLI.conf", Line: 20, Phase: 2, ParanoiaLevel: 1, Msg: "SQL Injection Attack Detected via libinjection", Active: true},
+			{ID: 942101, File: "REQUEST-942-APPLICATION-ATTACK-SQLI.conf", Line: 30, Phase: 1, ParanoiaLevel: 2, Msg: "SQL Injection Attack Detected via libinjection", Active: true},
 			{ID: 949110, File: "REQUEST-949-BLOCKING-EVALUATION.conf", Line: 40, Phase: 2, Active: true},
 		},
 	}
@@ -182,7 +186,7 @@ func TestStoreIndexesRecords(t *testing.T) {
 	if !s.byID["d"].incomplete || s.byID["a"].incomplete {
 		t.Error("incomplete is not taken from the analysis")
 	}
-	if len(s.rules["run1"]) != 4 || s.starts["run1"].Rules != nil {
+	if len(s.rules["run1"]) != 5 || s.starts["run1"].Rules != nil {
 		t.Error("the rule list belongs in s.rules only")
 	}
 	if s.broken != 0 {
@@ -325,7 +329,10 @@ func TestOverview(t *testing.T) {
 	}
 	// 942100 fired in b and c, 930100 in a (twice, counted once); the
 	// score rule is not listed.
-	wantRules := []item{{"942100", "SQL injection", 2}, {"930100", "Path traversal and file access", 1}}
+	wantRules := []item{
+		{Key: "942100", Label: "SQL injection", Msg: "SQL Injection Attack Detected via libinjection", Count: 2},
+		{Key: "930100", Label: "Path traversal and file access", Msg: "Path Traversal Attack (/../) or (/.../)", Count: 1},
+	}
 	if !reflect.DeepEqual(o.Rules, wantRules) {
 		t.Errorf("top rules = %v", o.Rules)
 	}
@@ -337,8 +344,9 @@ func TestOverview(t *testing.T) {
 	if !reflect.DeepEqual(o.IPs, wantIPs) {
 		t.Errorf("top IPs = %v", o.IPs)
 	}
-	if !o.LastRecord.Equal(t0.Add(-4 * time.Minute)) {
-		t.Errorf("last record %v", o.LastRecord)
+	// d is the newest record; b is the newest alert.
+	if !o.LastRecord.Equal(t0.Add(-4*time.Minute)) || !o.LastAlert.Equal(t0.Add(-20*time.Minute)) {
+		t.Errorf("last record %v, last alert %v", o.LastRecord, o.LastAlert)
 	}
 
 	// One hour in bars of 2 minutes, starting on a round time.
@@ -415,12 +423,23 @@ func TestFilters(t *testing.T) {
 		{"kind=all&min_score=5", []string{"b", "a"}},
 		{"kind=all&range=1h&ip=+203.0.113.2+", []string{"b"}},
 		{"kind=all&page=2", nil},
+		// The highest score first: a 10, b 5, c 3, d 0.
+		{"kind=all&sort=score", []string{"a", "b", "c", "d"}},
+		{"sort=time", []string{"b", "a"}},
+		// A bar of the chart: its end is left out, so c, 10 minutes
+		// before t0, belongs to the next bar only.
+		{"kind=all&from=2026-10-23T11:35:00Z&to=2026-10-23T11:50:00Z", []string{"b"}},
+		{"kind=all&from=2026-10-23T11:50:00Z&to=2026-10-23T12:00:00Z", []string{"d", "c"}},
+		// from and to win over range.
+		{"kind=all&range=1h&from=2026-10-23T09:00:00Z&to=2026-10-23T10:00:00Z", nil},
 	} {
 		if got := listIDs(t, s, tc.query); !reflect.DeepEqual(got, tc.want) {
 			t.Errorf("%q: %v, want %v", tc.query, got, tc.want)
 		}
 	}
-	for _, bad := range []string{"kind=some", "rule=x", "min_score=-1", "page=0", "range=2d"} {
+	for _, bad := range []string{"kind=some", "rule=x", "min_score=-1", "page=0", "range=2d", "sort=size",
+		"from=2026-10-23T11:00:00Z", "to=2026-10-23T11:00:00Z", "from=yesterday&to=today",
+		"from=2026-10-23T12:00:00Z&to=2026-10-23T11:00:00Z", "from=2026-10-23T11:00:00Z&to=2026-10-23T11:00:00Z"} {
 		q, _ := url.ParseQuery(bad)
 		if _, err := parseFilter(q, t0); err == nil {
 			t.Errorf("%q was accepted", bad)
@@ -452,32 +471,59 @@ func TestRulesAndEnginePages(t *testing.T) {
 
 	r, _ := parseRange("all", t0)
 	p := s.rulesPage(r)
-	if p.Run != "run2" || len(p.Rules) != 4 {
+	if p.Run != "run2" || len(p.Rules) != 5 {
 		t.Fatalf("run %q with %d rules", p.Run, len(p.Rules))
 	}
 	fired := map[int]int{}
 	for _, rule := range p.Rules {
 		fired[rule.ID] = rule.Fired
 	}
-	if want := map[int]int{930100: 1, 942100: 2, 942101: 0, 949110: 2}; !reflect.DeepEqual(fired, want) {
+	if want := map[int]int{901320: 0, 930100: 1, 942100: 2, 942101: 0, 949110: 2}; !reflect.DeepEqual(fired, want) {
 		t.Errorf("fired = %v", fired)
 	}
-	if p.Rules[1].Group != "SQL injection" {
-		t.Errorf("group = %q", p.Rules[1].Group)
+	if p.Rules[2].Group != "SQL injection" || p.Rules[2].Msg != "SQL Injection Attack Detected via libinjection" {
+		t.Errorf("rule %+v", p.Rules[2])
 	}
 
 	e := s.enginePage()
-	if e.Latest == nil || e.Latest.Run != "run2" || e.Active != 3 || e.Excluded != 1 {
-		t.Fatalf("latest %+v, active %d, excluded %d", e.Latest, e.Active, e.Excluded)
+	// 942101 is active and above level 1; 901320 is excluded.
+	if e.Latest == nil || e.Latest.Run != "run2" || e.Active != 4 || e.AboveLevel != 1 || e.Excluded != 1 {
+		t.Fatalf("latest %+v, active %d, above level %d, excluded %d", e.Latest, e.Active, e.AboveLevel, e.Excluded)
 	}
 	if len(e.Runs) != 2 || e.Runs[0].Run != "run2" || e.Runs[1].Engine.Config != "sha256:one" {
 		t.Errorf("runs = %+v", e.Runs)
+	}
+	// run1 analysed 100 requests (its counts record) and wrote the four
+	// records, two of them alerts; run2 nothing yet.
+	if r := e.Runs[1]; r.Analysed != 100 || r.Records != 4 || r.Alerts != 2 {
+		t.Errorf("run1 did %+v", r)
+	}
+	if r := e.Runs[0]; r.Analysed != 0 || r.Records != 0 || r.Alerts != 0 {
+		t.Errorf("run2 did %+v", r)
 	}
 	if e.Records != 4 || len(e.Files) != 1 || e.Files[0].Name != record.CurrentFile || e.Files[0].Size == 0 {
 		t.Errorf("records %d, files %+v", e.Records, e.Files)
 	}
 	if !e.Oldest.Equal(t0.Add(-30*time.Minute)) || !e.Newest.Equal(t0.Add(-4*time.Minute)) {
 		t.Errorf("oldest %v, newest %v", e.Oldest, e.Newest)
+	}
+}
+
+// TestScriptKnowsEveryGroup checks that the copy of the group table in
+// app.js, which names the groups of a record's rules, is the one in
+// store.go.
+func TestScriptKnowsEveryGroup(t *testing.T) {
+	data, err := webFiles.ReadFile("web/static/app.js")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for n, g := range groups {
+		if want := fmt.Sprintf("%d: %q", n, g.name); !strings.Contains(string(data), want) {
+			t.Errorf("app.js lacks %s", want)
+		}
+	}
+	if n := strings.Count(string(data), `: "`); n < len(groups) {
+		t.Errorf("app.js has %d names", n)
 	}
 }
 

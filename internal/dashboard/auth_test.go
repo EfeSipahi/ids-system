@@ -51,8 +51,13 @@ func TestEveryRouteNeedsALogin(t *testing.T) {
 			}
 			switch w.Code {
 			case http.StatusSeeOther:
-				if loc := w.Header().Get("Location"); loc != "/login" {
-					t.Errorf("%s %s: redirect to %q", tc.method, tc.path, loc)
+				// A page asked for with GET comes back after the login.
+				want := "/login"
+				if tc.method == "GET" && tc.path != "/" {
+					want += "?next=" + url.QueryEscape(tc.path)
+				}
+				if loc := w.Header().Get("Location"); loc != want {
+					t.Errorf("%s %s: redirect to %q, want %q", tc.method, tc.path, loc, want)
 				}
 			case http.StatusUnauthorized:
 				if !strings.Contains(w.Body.String(), "login required") || strings.Contains(w.Body.String(), "203.0.113") {
@@ -97,12 +102,17 @@ func TestLoginAndLogout(t *testing.T) {
 	if w.Code != http.StatusUnauthorized || !strings.Contains(w.Body.String(), "Wrong user name or password") {
 		t.Fatalf("wrong password: %d", w.Code)
 	}
+	// The form comes back with the user name, never with the password.
+	if body := w.Body.String(); !strings.Contains(body, `name="user" value="admin"`) || strings.Contains(body, "wrong") {
+		t.Errorf("form after a wrong password: %s", body)
+	}
 	if len(w.Result().Cookies()) != 0 {
 		t.Error("a failed login set a cookie")
 	}
-	// An unknown name gets the same answer.
+	// An unknown name gets the same answer; only the name typed into the
+	// form comes back.
 	w2 := d.do("POST", "/login", url.Values{"user": {"nobody"}, "password": {"wrong"}}, nil)
-	if w2.Code != w.Code || w2.Body.String() != w.Body.String() {
+	if w2.Code != w.Code || strings.Replace(w2.Body.String(), `value="nobody"`, `value="admin"`, 1) != w.Body.String() {
 		t.Error("an unknown user name is answered differently")
 	}
 
@@ -407,5 +417,66 @@ func TestPasswordWorkFactor(t *testing.T) {
 	u, _ := openUsers(dir)
 	if _, ok := u.check("admin", password); !ok {
 		t.Error("a user with another iteration count cannot log in")
+	}
+}
+
+func TestLoginGoesBack(t *testing.T) {
+	d := newDashboard(t, "")
+
+	// The login page carries next in its form, escaped by html/template.
+	w := d.do("GET", "/login?next="+url.QueryEscape("/alerts?range=7d&kind=all"), nil, nil)
+	if !strings.Contains(w.Body.String(), `name="next" value="/alerts?range=7d&amp;kind=all"`) {
+		t.Errorf("login page: %s", w.Body)
+	}
+	w = d.do("POST", "/login", url.Values{"user": {"admin"}, "password": {d.password}, "next": {"/alerts?range=7d&kind=all"}}, nil)
+	if w.Code != http.StatusSeeOther || w.Header().Get("Location") != "/alerts?range=7d&kind=all" {
+		t.Errorf("login with next: %d to %q", w.Code, w.Header().Get("Location"))
+	}
+	session := w.Result().Cookies()[0]
+	// Logged in already, the login page goes on to next at once.
+	if w := d.do("GET", "/login?next=%2Frules", nil, session); w.Header().Get("Location") != "/rules" {
+		t.Errorf("login page when logged in: to %q", w.Header().Get("Location"))
+	}
+	// Somewhere else is never a target: the overview instead.
+	w = d.do("POST", "/login", url.Values{"user": {"admin"}, "password": {d.password}, "next": {"//evil.example/"}}, nil)
+	if w.Header().Get("Location") != "/" {
+		t.Errorf("login with an outside next: to %q", w.Header().Get("Location"))
+	}
+}
+
+func TestAfterLogin(t *testing.T) {
+	for next, want := range map[string]string{
+		"":                                 "/",
+		"/":                                "/",
+		"/alerts":                          "/alerts",
+		"/alerts?range=7d&ip=1":            "/alerts?range=7d&ip=1",
+		"/alerts/abc":                      "/alerts/abc",
+		"//evil.example":                   "/",
+		"//evil.example/alerts":            "/",
+		`/\evil.example`:                   "/",
+		`/alerts\..\x`:                     "/",
+		"/\t/evil.example":                 "/",
+		"/\n/evil.example":                 "/",
+		"https://evil.example/":            "/",
+		"javascript:alert(1)":              "/",
+		"evil.example":                     "/",
+		"/login":                           "/",
+		"/login?next=/x":                   "/",
+		"/logout":                          "/",
+		"/" + strings.Repeat("a", maxNext): "/",
+	} {
+		if got := afterLogin(next); got != want {
+			t.Errorf("afterLogin(%q) = %q, want %q", next, got, want)
+		}
+	}
+}
+
+func TestNotFoundPage(t *testing.T) {
+	d := newDashboard(t, "")
+	session := d.login(t, "admin", d.password)
+	w := d.do("GET", "/nothing/here", nil, session)
+	body := w.Body.String()
+	if w.Code != http.StatusNotFound || !strings.Contains(body, "Page not found") || !strings.Contains(body, `href="/alerts"`) || !strings.Contains(body, `data-page="notfound"`) {
+		t.Errorf("%d %s", w.Code, body)
 	}
 }

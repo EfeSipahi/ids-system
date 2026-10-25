@@ -19,6 +19,9 @@ type timeRange struct {
 	Name string    `json:"name"`
 	From time.Time `json:"from"`
 	To   time.Time `json:"to"`
+	// endOpen leaves To itself out, as a bar of the chart does: a record
+	// at the end of one bar belongs to the next.
+	endOpen bool
 }
 
 // ranges are the periods a user can choose. "all" starts at the zero time.
@@ -42,13 +45,34 @@ func parseRange(v string, now time.Time) (timeRange, error) {
 }
 
 func (r timeRange) contains(t time.Time) bool {
+	if r.endOpen && !t.Before(r.To) {
+		return false
+	}
 	return !t.Before(r.From) && !t.After(r.To)
+}
+
+// parsePeriod reads the period of the alerts list: a range name, or from
+// and to (RFC 3339) for a bar picked on the chart. Such a period is named
+// "custom" and leaves its end out.
+func parsePeriod(q url.Values, now time.Time) (timeRange, error) {
+	from, to := q.Get("from"), q.Get("to")
+	if from == "" && to == "" {
+		return parseRange(q.Get("range"), now)
+	}
+	f, errFrom := time.Parse(time.RFC3339Nano, from)
+	t, errTo := time.Parse(time.RFC3339Nano, to)
+	if errFrom != nil || errTo != nil || !f.Before(t) {
+		return timeRange{}, fmt.Errorf("from %q and to %q are not two RFC 3339 times, the first before the second", from, to)
+	}
+	return timeRange{Name: "custom", From: f.UTC(), To: t.UTC(), endOpen: true}, nil
 }
 
 // item is one line of a "top" list.
 type item struct {
 	Key   string `json:"key"`
 	Label string `json:"label,omitempty"`
+	// Msg is a rule's msg text, from the newest start record.
+	Msg   string `json:"msg,omitempty"`
 	Count int    `json:"count"`
 }
 
@@ -73,6 +97,7 @@ type overview struct {
 	Locations  []item    `json:"top_locations"`
 	IPs        []item    `json:"top_ips"`
 	LastRecord time.Time `json:"last_record,omitzero"`
+	LastAlert  time.Time `json:"last_alert,omitzero"`
 }
 
 const (
@@ -140,6 +165,9 @@ func (s *store) overview(r timeRange) overview {
 			if b != nil {
 				b.Alerts++
 			}
+			if e.time.After(o.LastAlert) {
+				o.LastAlert = e.time
+			}
 		}
 		if e.incomplete {
 			o.Incomplete++
@@ -163,6 +191,15 @@ func (s *store) overview(r timeRange) overview {
 		}
 	}
 	o.Rules = topInts(rules)
+	if st, ok := s.latestRun(); ok {
+		msgs := map[string]string{}
+		for _, rule := range s.rules[st.Run] {
+			msgs[strconv.Itoa(rule.ID)] = rule.Msg
+		}
+		for i := range o.Rules {
+			o.Rules[i].Msg = msgs[o.Rules[i].Key]
+		}
+	}
 	o.Groups = top(groupCounts)
 	o.Locations = top(locations)
 	o.IPs = top(ips)
@@ -227,15 +264,23 @@ type filter struct {
 	IP       string
 	Location string
 	MinScore int
+	Sort     string // "time" (newest first) or "score" (highest first)
 	Page     int
 }
 
 func parseFilter(q url.Values, now time.Time) (filter, error) {
-	r, err := parseRange(q.Get("range"), now)
+	r, err := parsePeriod(q, now)
 	if err != nil {
 		return filter{}, err
 	}
-	f := filter{Range: r, Kind: q.Get("kind"), Group: q.Get("group"), IP: strings.TrimSpace(q.Get("ip")), Location: strings.TrimSpace(q.Get("location")), Page: 1}
+	f := filter{Range: r, Kind: q.Get("kind"), Group: q.Get("group"), IP: strings.TrimSpace(q.Get("ip")), Location: strings.TrimSpace(q.Get("location")), Sort: q.Get("sort"), Page: 1}
+	switch f.Sort {
+	case "":
+		f.Sort = "time"
+	case "time", "score":
+	default:
+		return filter{}, fmt.Errorf("sort %q is not one of time, score", f.Sort)
+	}
 	switch f.Kind {
 	case "":
 		f.Kind = "alerts"
@@ -310,8 +355,14 @@ func (s *store) list(f filter) list {
 			matched = append(matched, e)
 		}
 	}
-	// Newest first; records of the same moment in the order written.
-	sort.SliceStable(matched, func(i, j int) bool { return matched[i].time.After(matched[j].time) })
+	// Newest first, or the highest score first and then the newest;
+	// records of the same moment in the order written.
+	sort.SliceStable(matched, func(i, j int) bool {
+		if f.Sort == "score" && matched[i].score != matched[j].score {
+			return matched[i].score > matched[j].score
+		}
+		return matched[i].time.After(matched[j].time)
+	})
 	l := list{Total: len(matched), Page: f.Page, Pages: max(1, (len(matched)+pageSize-1)/pageSize), Rows: []row{}}
 	start := (f.Page - 1) * pageSize
 	for i := start; i < len(matched) && i < start+pageSize; i++ {
@@ -388,6 +439,11 @@ type runRow struct {
 	Run    string        `json:"run"`
 	Time   time.Time     `json:"time"`
 	Engine record.Engine `json:"engine"`
+	// What the run did: requests analysed (from its counts records), and
+	// the request records and alerts that are still kept.
+	Analysed int `json:"analysed"`
+	Records  int `json:"records"`
+	Alerts   int `json:"alerts"`
 }
 
 type fileRow struct {
@@ -397,9 +453,12 @@ type fileRow struct {
 }
 
 type enginePage struct {
-	Latest     *runRow   `json:"latest,omitempty"`
-	Active     int       `json:"active_rules"`
-	Excluded   int       `json:"excluded_rules"`
+	Latest   *runRow `json:"latest,omitempty"`
+	Active   int     `json:"active_rules"`
+	Excluded int     `json:"excluded_rules"`
+	// AboveLevel counts the active rules of a paranoia level above the
+	// run's: they are loaded, and the CRS gate rules skip them.
+	AboveLevel int       `json:"above_level_rules"`
 	Runs       []runRow  `json:"runs"`
 	Files      []fileRow `json:"files"`
 	Records    int       `json:"records"`
@@ -412,18 +471,41 @@ func (s *store) enginePage() enginePage {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	p := enginePage{Runs: []runRow{}, Files: []fileRow{}, Records: len(s.entries), Unreadable: s.broken}
+	type done struct{ analysed, records, alerts int }
+	byRun := map[string]*done{}
+	for _, run := range s.runs {
+		byRun[run] = &done{}
+	}
+	for _, c := range s.counts {
+		if d := byRun[c.Run]; d != nil {
+			d.analysed += c.Analysed
+		}
+	}
+	for _, e := range s.entries {
+		if d := byRun[e.run]; d != nil {
+			d.records++
+			if e.alert {
+				d.alerts++
+			}
+		}
+	}
 	for i := len(s.runs) - 1; i >= 0; i-- {
 		st := s.starts[s.runs[i]]
-		p.Runs = append(p.Runs, runRow{Run: st.Run, Time: st.Time, Engine: st.Engine})
+		d := byRun[st.Run]
+		p.Runs = append(p.Runs, runRow{Run: st.Run, Time: st.Time, Engine: st.Engine, Analysed: d.analysed, Records: d.records, Alerts: d.alerts})
 	}
 	sort.SliceStable(p.Runs, func(i, j int) bool { return p.Runs[i].Time.After(p.Runs[j].Time) })
 	if st, ok := s.latestRun(); ok {
 		p.Latest = &runRow{Run: st.Run, Time: st.Time, Engine: st.Engine}
 		for _, rule := range s.rules[st.Run] {
-			if rule.Active {
-				p.Active++
-			} else {
+			switch {
+			case !rule.Active:
 				p.Excluded++
+			case rule.ParanoiaLevel > st.Engine.ParanoiaLevel:
+				p.Active++
+				p.AboveLevel++
+			default:
+				p.Active++
 			}
 		}
 	}

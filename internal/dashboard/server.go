@@ -13,6 +13,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -74,16 +75,21 @@ func newServer(cfg Config, logOut io.Writer, now func() time.Time) (*Server, err
 
 // pageData is what a page template gets.
 type pageData struct {
-	Title   string
-	Page    string
-	User    string
-	ID      string
-	Error   string
-	Poll    int
+	Title string
+	Page  string
+	// User is the logged-in user; the header is shown only with one.
+	User  string
+	ID    string
+	Error string
+	Poll  int
+	// Name is the user name typed into the login form, given back after
+	// a wrong password. Next is where to go after logging in.
+	Name    string
+	Next    string
 	Version string
 }
 
-var pageNames = []string{"overview", "alerts", "alert", "rules", "engine", "login"}
+var pageNames = []string{"overview", "alerts", "alert", "rules", "engine", "login", "notfound"}
 
 func (s *Server) loadPages() error {
 	s.pages = map[string]*template.Template{}
@@ -126,8 +132,8 @@ func (s *Server) Handler() http.Handler {
 
 	// Everything else needs a login too, so that the dashboard says
 	// nothing about what exists to someone who is not logged in.
-	mux.Handle("/", s.requirePage(func(w http.ResponseWriter, r *http.Request, _ string) {
-		http.NotFound(w, r)
+	mux.Handle("/", s.requirePage(func(w http.ResponseWriter, r *http.Request, user string) {
+		s.render(w, http.StatusNotFound, "notfound", pageData{Title: "Page not found", Page: "notfound", User: user})
 	}))
 
 	return securityHeaders(http.NewCrossOriginProtection().Handler(mux))
@@ -150,16 +156,46 @@ func securityHeaders(next http.Handler) http.Handler {
 	})
 }
 
-// requirePage sends a browser without a login to the login page.
+// requirePage sends a browser without a login to the login page, which
+// brings it back to the page it asked for (U8).
 func (s *Server) requirePage(h func(http.ResponseWriter, *http.Request, string)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := s.auth.user(sessionToken(r))
 		if user == "" {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			target := "/login"
+			if r.Method == http.MethodGet && r.URL.Path != "/" {
+				target += "?next=" + url.QueryEscape(r.URL.RequestURI())
+			}
+			http.Redirect(w, r, target, http.StatusSeeOther)
 			return
 		}
 		h(w, r, user)
 	})
+}
+
+// maxNext is the longest address the login page goes back to.
+const maxNext = 2048
+
+// afterLogin returns where the login page sends the browser: next when it
+// is a path of this dashboard, else the overview. Anything that a browser
+// could read as another site is refused, so that a link to the login page
+// cannot send a user elsewhere (an open redirect): "//host" and "/\host",
+// which browsers treat as "//host", a scheme or a host, and control
+// characters, which browsers drop from an address ("/\t/host").
+func afterLogin(next string) string {
+	if next == "" || len(next) > maxNext || next[0] != '/' || strings.HasPrefix(next, "//") || strings.Contains(next, `\`) {
+		return "/"
+	}
+	for _, c := range next {
+		if c < 0x20 || c == 0x7f {
+			return "/"
+		}
+	}
+	u, err := url.Parse(next)
+	if err != nil || u.Scheme != "" || u.Host != "" || u.User != nil || u.Path == "/login" || u.Path == "/logout" {
+		return "/"
+	}
+	return next
 }
 
 // requireAPI answers 401 to a request without a login.
@@ -183,11 +219,12 @@ func (s *Server) render(w http.ResponseWriter, status int, name string, data pag
 }
 
 func (s *Server) loginPage(w http.ResponseWriter, r *http.Request) {
+	next := afterLogin(r.URL.Query().Get("next"))
 	if s.auth.user(sessionToken(r)) != "" {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, next, http.StatusSeeOther)
 		return
 	}
-	s.render(w, http.StatusOK, "login", pageData{Title: "Log in", Page: "login"})
+	s.render(w, http.StatusOK, "login", pageData{Title: "Log in", Page: "login", Next: next})
 }
 
 // maxForm is the largest login form that is read.
@@ -199,16 +236,20 @@ func (s *Server) loginPost(w http.ResponseWriter, r *http.Request) {
 		s.render(w, http.StatusBadRequest, "login", pageData{Title: "Log in", Page: "login", Error: "The form could not be read."})
 		return
 	}
-	token, result, wait := s.auth.login(r.PostForm.Get("user"), r.PostForm.Get("password"), clientIP(r))
+	name, next := r.PostForm.Get("user"), afterLogin(r.PostForm.Get("next"))
+	token, result, wait := s.auth.login(name, r.PostForm.Get("password"), clientIP(r))
+	// After a failed try the form keeps the user name, never the password.
+	again := pageData{Title: "Log in", Page: "login", Name: name, Next: next}
 	switch result {
 	case loginOK:
 		setSession(w, token)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, next, http.StatusSeeOther)
 	case loginWait:
-		msg := fmt.Sprintf("Too many wrong passwords for this user. Try again in %d seconds.", int(wait.Seconds()+0.999))
-		s.render(w, http.StatusTooManyRequests, "login", pageData{Title: "Log in", Page: "login", Error: msg})
+		again.Error = fmt.Sprintf("Too many wrong passwords for this user. Try again in %d seconds.", int(wait.Seconds()+0.999))
+		s.render(w, http.StatusTooManyRequests, "login", again)
 	default:
-		s.render(w, http.StatusUnauthorized, "login", pageData{Title: "Log in", Page: "login", Error: "Wrong user name or password."})
+		again.Error = "Wrong user name or password."
+		s.render(w, http.StatusUnauthorized, "login", again)
 	}
 }
 

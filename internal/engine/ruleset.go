@@ -146,6 +146,10 @@ type RuleStatus struct {
 	// least its own; the CRS files decide that with their own gate rules.
 	ParanoiaLevel int
 
+	// Msg is the rule's msg text as written, with any macro such as
+	// %{MATCHED_VAR} left unexpanded. It is "" for a rule without one.
+	Msg string
+
 	// Active is true when the rule runs. Otherwise Reason is the reason
 	// given in the configuration for leaving it out.
 	Active bool

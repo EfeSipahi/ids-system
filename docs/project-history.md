@@ -1,8 +1,8 @@
 # Project history: what was done and how
 
-Written: 16 October 2026, for the project report; updated 23 October 2026  
-Covers: 27 September 2026 (ML pilot) to 23 October 2026 (records, alerts, and dashboard built)  
-Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md) (history in section 11), the two development plans in this folder, [context.md](../context.md), the git history, and the README of the separate ML project `ids-model`. Every number below comes from one of these or from a run of the code on 16 or 23 October 2026.
+Written: 16 October 2026, for the project report; updated 24 October 2026  
+Covers: 27 September 2026 (ML pilot) to 24 October 2026 (dashboard UI reworked)  
+Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md) (history in section 11), the two development plans in this folder, [context.md](../context.md), the git history, and the README of the separate ML project `ids-model`. Every number below comes from one of these or from a run of the code on 16, 23 or 24 October 2026.
 
 ## 1. The project in short
 
@@ -16,13 +16,13 @@ Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md)
    - HTTPS traffic arriving as request copies from an existing reverse proxy.
 4. **Design points named in the proposal:** each layer's findings stay separate; a request that could not be fully inspected is reported as incomplete, never counted as normal; training and live use share one feature extractor; sensitive fields are masked in stored records.
 
-**What exists on 23 October 2026:**
+**What exists on 24 October 2026:**
 
 | Part | State |
 | --- | --- |
 | Rule layer (Go) | **Done for the request side of CRS.** Runs every CRS 4.30.0 request rule file at paranoia levels 1 to 4, on requests read from files |
 | Records and alerts (Go) | **Done.** Every request with a finding or an incomplete analysis is written to a record file, with secrets masked; an alert is a score at the CRS threshold ("rule layer only") |
-| Dashboard (Go) | **Done, read-only.** A separate program shows the records in a browser, behind a login, over HTTPS only |
+| Dashboard (Go) | **Done, read-only.** A separate program shows the records in a browser, behind a login, over HTTPS only. Its UI was reworked on 24 October after a check of every page |
 | ML layer | A pilot in the separate Python project `ids-model` (Random Forest and logistic regression on 1,000 CSIC 2010 records). Not yet moved into Go |
 | Profiles, decision mechanism, proxy/TLS | Designed and approved (decisions M01–M21), not built yet |
 
@@ -39,7 +39,7 @@ Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md)
 | Operators | 19 |
 | Speed (one laptop core) | 0.55 ms for an ordinary request; about 8,000 requests per second on 12 threads |
 | Records and dashboard | Dashboard counts equal the command line (5,072 CRS tests: 2,916 alerts, 154 incomplete); no secret in record files, API answers, or pages; a record costs about 0.04 ms next to 0.6 ms of analysis |
-| Code | About 9,500 lines of Go product code and 8,100 lines of Go tests (190 test functions, 6 fuzz tests, 5 benchmarks); 850 lines of dashboard HTML, CSS, and JavaScript; 714 lines of Python tools; one Go dependency (`libinjection-go`). On 16 October: 6,100 and 5,350 lines |
+| Code | About 9,700 lines of Go product code and 8,200 lines of Go tests (195 test functions, 6 fuzz tests, 5 benchmarks); 1,600 lines of dashboard HTML, CSS, and JavaScript (850 on 23 October); 714 lines of Python tools; one Go dependency (`libinjection-go`). On 16 October: 6,100 and 5,350 lines |
 
 ## 3. Timeline
 
@@ -61,6 +61,7 @@ Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md)
 | 16 October | Two ideas added: an MCP server (I1), correcting the CSIC false positives (I2) | Placed after the dashboard |
 | 23 October | Decisions for records, alerts, and the dashboard (R1–R7, V1–V7), after a comparison of what other IDSs record | Development plan in five stages |
 | 23 October | Records, alerts, and the dashboard built | Dashboard counts equal the command line; no secret leaks in any test |
+| 24 October | Dashboard checked in a browser page by page; UI plan with decisions U1–U8, done the same day | 37 problems fixed, among them one bug that wiped the page on a failed update |
 
 ## 4. What was done, step by step
 
@@ -169,6 +170,42 @@ The work followed a five-stage plan ([development-plan-records-dashboard.md](dev
 2. Records with `<script>` in them are never served as HTML. The pages insert record text only as text, and the browser is told to run no other script.
 3. Every route refuses access without a login. The login limits, session limits, and HTTPS-only rule are tested.
 4. The dashboard's counts were compared with the command line's on the 5,072 CRS tests and the 1,000 CSIC records. They are equal. Each page was opened in a headless browser, in light and dark mode and at phone width, and corrected where it looked wrong.
+
+### 4.7. Dashboard UI and user experience (24 October)
+
+The team then used the dashboard the way an analyst would. The assistant drove a browser with browser-use, opened every page in light and dark mode, and listed 37 problems.
+
+1. **One real bug.** A single failed update wiped the page the analyst was reading.
+2. **Usability problems.** Examples:
+   - The chosen period was lost between pages.
+   - Times came in three styles.
+   - The last chart bar looked like a drop in traffic, though its period had not ended.
+   - Alert rows took two lines.
+   - The attack categories used internal names such as `lfi`.
+   - The rules page was 22,000 pixels long, and level-2 rules were shown as "active" at level 1, where they never run.
+
+The team decided eight points (U1–U8, main plan section 11.24) and the work followed a seven-stage plan ([development-plan-dashboard-ui.md](development-plan-dashboard-ui.md)).
+
+1. **Rule descriptions (U1).** These needed a small change outside the dashboard: every rule in the record file's `start` line now carries its description, taken unchanged from the CRS file. The record format stays at version 1, because it allows new optional fields.
+2. **Login return (U8).** After logging in, the user returns to the page they were on. The return address is checked to be a local path, so a link can't use the login to send someone to another site (an "open redirect").
+3. **Category names.** Names such as "Path traversal and file access" were checked against the CRS files: which file raises which score.
+
+**How it was checked:**
+
+1. New Go tests cover the return address, the kept login name, the 404 page, sorting, periods, and counts per run.
+2. All tests, including the race detector, pass.
+3. The dashboard's numbers still equal the command line's.
+4. A second browser pass went through every page and action and found two more bugs, both fixed:
+   - filter chips that showed "[object HTMLButtonElement]";
+   - a table wider than its card.
+5. The user then reported that problems persisted. A third pass took screenshots of every page and found more, all fixed the same day:
+   - attack-group names cut short in the alert lists (now only whole names, the rest as "+N");
+   - filters on two rows;
+   - rule search not kept in the address;
+   - chart labels on uneven times;
+   - per-category scores that did not add up to the total. The CRS files explain it: protocol rules (files 911, 913, 920 and 922) raise only the total. The page now shows the difference as "No category".
+
+   The user also decided that the rules page starts with every file section closed, which shortened it from 17,325 to 1,581 pixels.
 
 ## 5. How the work was done
 
@@ -306,7 +343,7 @@ The output names where each rule matched but not the matched text (M11). Coraza 
 
 The order the team decided on 12 October 2026, with the first step widened on 23 October:
 
-1. Records, alerts, and a dashboard (A09), built as one step: **done on 23 October** (section 4.6).
+1. Records, alerts, and a dashboard (A09), built as one step: **done on 23 October** (section 4.6); the dashboard UI was reworked on 24 October (section 4.7).
 2. **Next:** hand-written application profiles (A04). The CSIC results show why they are needed.
 3. Proxy and TLS integration (A01, A08), then the response rules, and alerts sent by webhook and syslog (decided on 23 October).
 4. Moving the ML model into Go through ONNX, and the decision mechanism (A10, A05, A07, A06).
@@ -324,6 +361,7 @@ Each step needs its own decisions before work starts. Other open points: realist
 | [development-plan-rule-layer.md](development-plan-rule-layer.md) | The 8-stage plan of 11 October, with results per stage |
 | [development-plan-all-request-rules.md](development-plan-all-request-rules.md) | Plans A–F, with results per plan |
 | [development-plan-records-dashboard.md](development-plan-records-dashboard.md) | The plan for records, alerts, and the dashboard, with notes per stage |
+| [development-plan-dashboard-ui.md](development-plan-dashboard-ui.md) | The dashboard UI plan: problems, decisions U1–U8, notes and checks |
 | [records-format.md](records-format.md) | The record format, masking rules, and known limits |
 | [crs-4.30.0-ruleset.md](crs-4.30.0-ruleset.md) | The CRS files and what the engine supports |
 | [context.md](../context.md) | Short current state |
@@ -342,5 +380,6 @@ Commits on `main`:
 | `1503ee9` | 16 Oct | Plan C |
 | `3c1b6bf` | 16 Oct | Plan D |
 | `c8bcab7` | 16 Oct | Plans E and F |
+| `df0ecdc` | 23 Oct | Records, alerts, and the read-only dashboard |
 
-The work of 23 October is not committed yet.
+The UI work of 24 October is not committed yet.

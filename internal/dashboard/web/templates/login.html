@@ -1,12 +1,16 @@
 {{define "content"}}
-<section class="login card">
-  <h1>Log in</h1>
-  <p class="muted">IDS dashboard</p>
-  {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
-  <form method="post" action="/login">
-    <label>User name <input name="user" autocomplete="username" required autofocus maxlength="64"></label>
-    <label>Password <input name="password" type="password" autocomplete="current-password" required maxlength="256"></label>
-    <button type="submit" class="primary">Log in</button>
-  </form>
-</section>
+<div class="login">
+  <p class="login-brand"><img src="/static/icon.svg" alt="" width="28" height="28">IDS dashboard</p>
+  <section class="card">
+    <h1>Log in</h1>
+    {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
+    <form method="post" action="/login" id="login">
+      <input type="hidden" name="next" value="{{.Next}}">
+      <label>User name <input name="user" value="{{.Name}}" autocomplete="username" required maxlength="64" {{if not .Name}}autofocus{{end}}></label>
+      <label>Password <input name="password" type="password" autocomplete="current-password" required maxlength="256" {{if .Name}}autofocus{{end}}></label>
+      <p class="caps" id="caps" hidden>Caps Lock is on.</p>
+      <button type="submit" class="primary">Log in</button>
+    </form>
+  </section>
+</div>
 {{end}}

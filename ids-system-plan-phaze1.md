@@ -1377,3 +1377,80 @@ The user approved the development plan ([docs/development-plan-records-dashboard
 6. No marking of alerts (V7).
 
 **Still open:** I2 (see 11.22). Next in the order: hand-written application profiles (A04), whose decisions come first.
+
+### 11.24. Dashboard UI and user experience — 24 October 2026
+
+The user asked for the dashboard to be opened in a browser, every page checked, and a plan made for a better general UI. Mobile was left out by the user: the dashboard is used on a desktop. The check, run with browser-use on demo records at 1440 px in dark and light mode, found 37 problems (P1–P37). One was a real bug: a single failed update wiped the page.
+
+**Decisions** (approved by the user the same day, all as recommended):
+
+| # | Decision |
+| --- | --- |
+| U1 | Every rule in the `start` record gets an optional `msg`: its description as written, macros unexpanded. Schema 1 stays, as the record contract allows new optional fields |
+| U2 | The rules page is grouped into one section per rule file, which can be opened and closed |
+| U3 | One line per row in the alert lists; the User-Agent moves to a tooltip and the detail page |
+| U4 | A chart bar can be clicked: the alerts API accepts `from`/`to` next to `range` |
+| U5 | A live sign with Pause; new alerts on page 1 show as a bar instead of moving the rows |
+| U6 | One 24-hour time style everywhere; the time zone is named once in the footer |
+| U7 | A theme switch (System, Light, Dark), kept in the browser |
+| U8 | After logging in, the user returns to the page they were on. `next` must be a local path, so the login can't send anyone to another site |
+
+**Done** the same day, following [docs/development-plan-dashboard-ui.md](docs/development-plan-dashboard-ui.md) (seven stages; notes and checks in its Progress section):
+
+1. **Every page:**
+   - the header box lines up with the content;
+   - a title row with period buttons and the live sign;
+   - the period is kept between pages;
+   - a failed update keeps the data under a notice bar;
+   - a 404 page in the layout.
+2. **Login:**
+   - the name is kept after a wrong password;
+   - "Logging in…" while the form is sent;
+   - a Caps Lock note;
+   - the brand above the card.
+3. **Overview:**
+   - a Latest alerts card;
+   - tile shares, such as "56.7 % of requests analysed · last alert 8 min ago";
+   - a 2 × 2 grid of top lists;
+   - the chart's running period drawn lighter;
+   - tooltips with the period;
+   - one tab stop, with the arrow keys;
+   - a click opens that period's records.
+4. **Alerts list:**
+   - one-line filters that apply while typing;
+   - active-filter chips;
+   - one line per row, with fixed column widths;
+   - a pager above and below;
+   - sorting by score;
+   - the new-alerts bar;
+   - the back link keeps the filters.
+5. **Alert detail:**
+   - the request as the title;
+   - categories with names (checked against the CRS files: which file raises which `tx.*_score`);
+   - findings grouped by rule;
+   - client counts for the last 24 hours;
+   - copy buttons;
+   - the record as JSON;
+   - Newer and Older.
+6. **Rules:**
+   - file sections;
+   - three statuses: Runs, Above level N, Excluded;
+   - descriptions (U1);
+   - search.
+7. **Engine:**
+   - records and alerts per run;
+   - the full fingerprint with a copy button.
+
+**Checks:**
+
+1. **Go tests.** New tests cover the 404 page, the kept login name, `next` against open redirects, `sort` and `from`/`to`, counts per run, and the rule descriptions. `gofmt`, `go vet` and `go test ./...` pass. `go test -race` passes for the dashboard, engine and record packages.
+2. **Numbers.** On the CRS records the dashboard still equals `ids-offline -summary`: 5,072 analysed, 2,967 records, 2,916 alerts, 154 incomplete.
+3. **Browser.** The second check went through every page and action of the plan. It found two more bugs, both fixed and checked again:
+   - the filter chips showed "[object HTMLButtonElement]";
+   - the alerts table was wider than its card.
+
+**Decided by the user (24 October 2026):** U2 opened every section that has a fired rule, 15 of 18 on the demo records, so the rules page was still 17,325 px. **All sections now start closed**; a filter or search opens the matching ones. The page is 1,581 px.
+
+**Second check, same day.** The user reported that problems persisted. A new browser round with screenshots of every page found more, all fixed: cut attack-group chips (now whole chips with "+N"), alert filters on two rows, rules filters not kept in the address, rule columns jumping between sections, chart labels on uneven times, and categories that did not add up to the score (CRS files 911, 913, 922 and most of 920 raise only the total; shown as "No category"). Details: [docs/development-plan-dashboard-ui.md](docs/development-plan-dashboard-ui.md), note 5.
+
+**Next in the order:** hand-written application profiles (A04), whose decisions come first.

@@ -1,4 +1,10 @@
 {{define "content"}}
-<p><a href="/alerts" id="back">← Alerts</a></p>
+<div class="crumbs">
+  <a href="/alerts" id="back">← Alerts</a>
+  <span class="stepper">
+    <a id="newer" class="button small" hidden>← Newer</a>
+    <a id="older" class="button small" hidden>Older →</a>
+  </span>
+</div>
 <div id="view" class="stack"></div>
 {{end}}

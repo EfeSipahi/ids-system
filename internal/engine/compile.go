@@ -216,7 +216,7 @@ func (c *compiler) addRule(chain []seclang.Directive) {
 	}
 	c.ids[first.ID] = first.Pos
 
-	status := RuleStatus{ID: first.ID, Pos: first.Pos, Phase: phaseOf(first), ParanoiaLevel: levelOf(first)}
+	status := RuleStatus{ID: first.ID, Pos: first.Pos, Phase: phaseOf(first), ParanoiaLevel: levelOf(first), Msg: msgOf(first)}
 	if reason, ok := c.excluded[first.ID]; ok {
 		c.usedExcl[first.ID] = true
 		status.Reason = reason
@@ -259,6 +259,14 @@ func levelOf(d seclang.Directive) int {
 		}
 	}
 	return 0
+}
+
+// msgOf returns the text of the rule's msg action, or "" without one.
+func msgOf(d seclang.Directive) string {
+	if values := d.ActionValues("msg"); len(values) > 0 {
+		return values[len(values)-1]
+	}
+	return ""
 }
 
 func phaseOf(d seclang.Directive) int {

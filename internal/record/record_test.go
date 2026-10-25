@@ -382,8 +382,16 @@ func TestRecorder(t *testing.T) {
 	if want := []string{"start", "request", "request", "counts", "counts"}; !reflect.DeepEqual(types, want) {
 		t.Fatalf("types = %v, want %v", types, want)
 	}
-	if rules := lines[0]["rules"].([]any); len(rules) != len(rs.Statuses()) {
-		t.Errorf("start lists %d rules, want %d", len(rules), len(rs.Statuses()))
+	rules := lines[0]["rules"].([]any)
+	if len(rules) != len(rs.Statuses()) {
+		t.Fatalf("start lists %d rules, want %d", len(rules), len(rs.Statuses()))
+	}
+	// A rule's msg as written in testRules, macros unexpanded; rule 1 has none.
+	if _, ok := rules[0].(map[string]any)["msg"]; ok {
+		t.Errorf("rule 1 has a msg: %v", rules[0])
+	}
+	if msg := rules[1].(map[string]any)["msg"]; msg != "SQL in %{MATCHED_VAR_NAME}: %{MATCHED_VAR}" {
+		t.Errorf("msg of rule 2 = %v", msg)
 	}
 	first, last := lines[3], lines[4]
 	if first["analysed"] != 3.0 || first["recorded"] != 2.0 || first["alerts"] != 1.0 || first["incomplete"] != 1.0 {

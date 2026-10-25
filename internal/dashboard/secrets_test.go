@@ -214,7 +214,7 @@ func TestAttackTextIsNeverHTML(t *testing.T) {
 	// address, escaped by html/template.
 	w := d.do("GET", "/alerts/"+url.PathEscape(attackText), nil, session)
 	body := w.Body.String()
-	if strings.Contains(body, "<script>alert") || strings.Contains(body, "<img") || !strings.Contains(body, "&lt;script&gt;") {
+	if strings.Contains(body, "<script>alert") || strings.Contains(body, "<img src=x") || !strings.Contains(body, "&lt;script&gt;") {
 		t.Errorf("alert page: %s", body)
 	}
 	if w := d.do("GET", "/alerts/evil", nil, session); strings.Contains(w.Body.String(), "onerror") {

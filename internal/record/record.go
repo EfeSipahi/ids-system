@@ -76,9 +76,12 @@ type Rule struct {
 	Phase int    `json:"phase"`
 	// ParanoiaLevel is 0 for a rule that belongs to no level, such as a
 	// setup or scoring rule.
-	ParanoiaLevel int    `json:"paranoia_level,omitempty"`
-	Active        bool   `json:"active"`
-	Reason        string `json:"reason,omitempty"`
+	ParanoiaLevel int `json:"paranoia_level,omitempty"`
+	// Msg is the rule's msg text as written in its file, with macros
+	// unexpanded. It is rule text, never request content.
+	Msg    string `json:"msg,omitempty"`
+	Active bool   `json:"active"`
+	Reason string `json:"reason,omitempty"`
 }
 
 // Request is the record of one request.
