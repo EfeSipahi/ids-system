@@ -67,7 +67,7 @@ Written when `ids-offline` (later `ids`) starts writing records.
 | `server.host`, `server.ip`, `server.port` | The `Host` header, and the address and port the request came to |
 | `request.method`, `path`, `query`, `version` | The request line. Secret parameters in `query` are masked by name, and secret path parts of a profile by place: `/reset/[masked]` |
 | `request.user_agent`, `referer`, `content_type` | These headers. Secret parameters in the Referer's query are masked |
-| `request.body_length` | Body size in bytes |
+| `request.body_length` | Body size in bytes, as the client sent it. It can be more than was inspected: see `analysis.body` |
 | `request.header_names` | Header names in order, without values |
 | `request.cookies[]` | `name` and `hash`: the first 12 hex digits of HMAC-SHA256 of the value with `hash.key`. The same session gives the same hash; the value can't be found from it |
 | `analysis` | `complete`, `body` (`empty`, `inspected`, `partly inspected` or `not inspected`), `body_format`, `body_reason`, `issues[]` (M05) |

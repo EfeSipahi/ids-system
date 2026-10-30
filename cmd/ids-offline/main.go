@@ -53,6 +53,7 @@ import (
 
 	"github.com/EfeSipahi/ids-system/internal/config"
 	"github.com/EfeSipahi/ids-system/internal/engine"
+	"github.com/EfeSipahi/ids-system/internal/httpmodel"
 	"github.com/EfeSipahi/ids-system/internal/offline"
 	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
@@ -215,7 +216,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	out := output{Startup: result.NewStartup(rules)}
 	out.Startup.SetApplications(apps)
 	if *requestsPath != "" {
-		files, examples, err := loadExamples(*requestsPath)
+		files, examples, err := loadExamples(*requestsPath, cfg.Parsing())
 		if err != nil {
 			fmt.Fprintf(stderr, "ids-offline: %v\n", err)
 			return 2
@@ -348,14 +349,14 @@ func knownApps(apps *profile.Set) string {
 }
 
 // loadExamples reads the example files of path, as requestFiles finds them.
-func loadExamples(path string) ([]string, [][]offline.Example, error) {
+func loadExamples(path string, opt httpmodel.Options) ([]string, [][]offline.Example, error) {
 	files, err := requestFiles(path)
 	if err != nil {
 		return nil, nil, err
 	}
 	var examples [][]offline.Example
 	for _, file := range files {
-		ex, err := offline.LoadFile(file)
+		ex, err := offline.LoadFileWith(file, opt)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -367,7 +368,7 @@ func loadExamples(path string) ([]string, [][]offline.Example, error) {
 // listEndpoints prints the endpoints and parameters of the examples of
 // path (F4g).
 func listEndpoints(path string, asJSON bool, stdout, stderr io.Writer) int {
-	_, examples, err := loadExamples(path)
+	_, examples, err := loadExamples(path, httpmodel.Options{})
 	if err != nil {
 		fmt.Fprintf(stderr, "ids-offline: %v\n", err)
 		return 2

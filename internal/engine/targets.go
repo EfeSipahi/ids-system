@@ -346,7 +346,7 @@ func (tx *transaction) valuesOf(t target) []keyValue {
 		}
 		out = append(out, keyValue{value: strconv.Itoa(size)})
 	case colRequestBodyLength:
-		out = append(out, keyValue{value: strconv.Itoa(len(req.Received.Body))})
+		out = append(out, keyValue{value: strconv.Itoa(len(req.InspectedBody()))})
 	case colMultipartPartHeaders:
 		// The key is the name of the part, the value one header line.
 		for _, h := range req.Parsed.PartHeaders {
@@ -441,7 +441,8 @@ var bodyFormats = map[string]string{
 }
 
 // rawBody returns the body as one text for the REQUEST_BODY variable, or ""
-// when the variable has no value.
+// when the variable has no value. Of a body longer than the limit it is the
+// first part, as in Coraza.
 //
 // ModSecurity fills REQUEST_BODY for a form body, and CRS rule 901340 asks
 // for it whenever no body reader was chosen, which is the case for a body
@@ -450,7 +451,7 @@ var bodyFormats = map[string]string{
 func rawBody(req *httpmodel.Request) string {
 	switch req.Status.BodyFormat {
 	case "", "form":
-		return string(req.Received.Body)
+		return string(req.InspectedBody())
 	}
 	return ""
 }

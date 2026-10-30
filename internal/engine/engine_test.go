@@ -853,6 +853,33 @@ SecRule REMOTE_ADDR "@ipMatch 192.0.2.0/24" "id:4,phase:1,pass,nolog,setvar:tx.c
 	wantVars(t, rs.Evaluate(get("/")), map[string]string{"args": "0", "files": "0", "body": "0", "client": "<unset>"})
 }
 
+// Of a body longer than the limit, REQUEST_BODY and REQUEST_BODY_LENGTH give
+// the first part, as in Coraza with ProcessPartial: what lies past the limit
+// is not inspected.
+func TestBodyOverTheLimit(t *testing.T) {
+	rs := loadRules(t, `
+SecRule REQUEST_BODY "@contains <script>" "id:1,phase:2,pass,log"
+SecRule REQUEST_BODY_LENGTH "@rx ." "id:2,phase:2,pass,nolog,setvar:tx.body=%{MATCHED_VAR}"
+`)
+	body := strings.Repeat("a", 16) + "<script>"
+	read := func(limit int) *Result {
+		return rs.Evaluate(httpmodel.NewWith(httpmodel.Received{
+			Method: "POST", Target: "/", Version: "HTTP/1.1", Body: []byte(body),
+			Headers: []httpmodel.Header{{Name: "Content-Type", Value: "text/plain"}},
+		}, httpmodel.Options{BodyLimit: limit}))
+	}
+	res := read(16)
+	if len(res.Matches) != 0 {
+		t.Errorf("a match past the limit: %v", res.Matches)
+	}
+	wantVars(t, res, map[string]string{"body": "16"})
+	res = read(len(body))
+	if len(res.Matches) != 1 {
+		t.Errorf("matches within the limit: %v", res.Matches)
+	}
+	wantVars(t, res, map[string]string{"body": strconv.Itoa(len(body))})
+}
+
 // A request line without a version is an HTTP/0.9 request. Like Apache,
 // the engine gives the rules the line as sent.
 func TestHTTP09(t *testing.T) {

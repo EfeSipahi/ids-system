@@ -78,13 +78,18 @@ const defaultVersion = "HTTP/1.1"
 
 // LoadFile reads the examples in the file at path.
 func LoadFile(path string) ([]Example, error) {
+	return LoadFileWith(path, httpmodel.Options{})
+}
+
+// LoadFileWith is LoadFile with the options for reading each request.
+func LoadFileWith(path string, opt httpmodel.Options) ([]Example, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 
-	examples, err := Load(f)
+	examples, err := LoadWith(f, opt)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
@@ -94,6 +99,11 @@ func LoadFile(path string) ([]Example, error) {
 // Load reads a JSON list of examples from r. A field it does not know is an
 // error, so a misspelled name cannot quietly change what is tested.
 func Load(r io.Reader) ([]Example, error) {
+	return LoadWith(r, httpmodel.Options{})
+}
+
+// LoadWith is Load with the options for reading each request.
+func LoadWith(r io.Reader, opt httpmodel.Options) ([]Example, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
 
@@ -107,7 +117,7 @@ func Load(r io.Reader) ([]Example, error) {
 
 	examples := make([]Example, 0, len(raw))
 	for i, fe := range raw {
-		ex, err := fe.toExample()
+		ex, err := fe.toExample(opt)
 		if err != nil {
 			return nil, fmt.Errorf("example %d (%q): %w", i+1, fe.Name, err)
 		}
@@ -116,7 +126,7 @@ func Load(r io.Reader) ([]Example, error) {
 	return examples, nil
 }
 
-func (fe fileExample) toExample() (Example, error) {
+func (fe fileExample) toExample(opt httpmodel.Options) (Example, error) {
 	if fe.Method == "" {
 		return Example{}, errors.New("method is missing")
 	}
@@ -176,7 +186,7 @@ func (fe fileExample) toExample() (Example, error) {
 
 	ex := Example{
 		Name:        fe.Name,
-		Request:     httpmodel.New(rec),
+		Request:     httpmodel.NewWith(rec, opt),
 		ExpectIDs:   fe.ExpectIDs,
 		NoExpectIDs: fe.NoExpectIDs,
 	}

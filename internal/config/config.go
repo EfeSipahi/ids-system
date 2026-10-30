@@ -2,8 +2,8 @@
 // the settings of the parts around it, such as the records.
 //
 // The file is one JSON object. The engine fields ("files", "exclude",
-// "paranoia_level") are at the top, as before; "records", "applications"
-// and "require_profile" are optional. Unknown fields are an error, so a
+// "paranoia_level") are at the top, as before; "request_body_limit",
+// "records", "applications" and "require_profile" are optional. Unknown fields are an error, so a
 // misspelled setting cannot be ignored.
 package config
 
@@ -20,6 +20,7 @@ import (
 	"path/filepath"
 
 	"github.com/EfeSipahi/ids-system/internal/engine"
+	"github.com/EfeSipahi/ids-system/internal/httpmodel"
 	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
 )
@@ -27,6 +28,12 @@ import (
 // Product is the whole configuration.
 type Product struct {
 	engine.Config
+
+	// RequestBodyLimit is the largest part of a request body that is
+	// inspected, in bytes, 1 to httpmodel.MaxBodyLimit (T3). Left out, it
+	// is httpmodel.DefaultBodyLimit. Of a longer body, the first part is
+	// inspected and the request shows "partly inspected".
+	RequestBodyLimit *int `json:"request_body_limit"`
 
 	// Records is nil when the file has no "records" section; then no
 	// records are written.
@@ -60,6 +67,9 @@ func Load(path string) (*Product, error) {
 		return nil, fmt.Errorf("%s: invalid JSON: unexpected content after the configuration", path)
 	}
 
+	if l := p.RequestBodyLimit; l != nil && (*l < 1 || *l > httpmodel.MaxBodyLimit) {
+		return nil, fmt.Errorf("%s: request_body_limit %d is not 1 to %d bytes", path, *l, httpmodel.MaxBodyLimit)
+	}
 	dir := filepath.Dir(path)
 	if err := p.Config.Prepare(dir); err != nil {
 		return nil, fmt.Errorf("%s: %w", path, err)
@@ -126,4 +136,12 @@ func (p *Product) Fingerprint(level int) (string, error) {
 func part(h hash.Hash, data []byte) {
 	h.Write(binary.BigEndian.AppendUint64(nil, uint64(len(data))))
 	h.Write(data)
+}
+
+// Parsing returns the options with which the inputs read each request.
+func (p *Product) Parsing() httpmodel.Options {
+	if p.RequestBodyLimit == nil {
+		return httpmodel.Options{}
+	}
+	return httpmodel.Options{BodyLimit: *p.RequestBodyLimit}
 }

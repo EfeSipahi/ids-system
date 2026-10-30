@@ -33,6 +33,14 @@ type Received struct {
 	Headers []Header
 	Body    []byte
 
+	// BodyLength is how many body bytes the client sent, when that is more
+	// than Body holds: a proxy's copier copies only the first part of a
+	// long body (T3). It is 0 when Body is the whole body.
+	BodyLength int64
+	// BodyUnfinished is true when the body was not received to its end:
+	// the client stopped sending it, or the application stopped reading it.
+	BodyUnfinished bool
+
 	// RemoteAddr is the IP address of the client, such as "203.0.113.7"
 	// or "::1", without a port. It is empty when it is not known.
 	//
@@ -153,9 +161,10 @@ const (
 	// BodyNotInspected: there is a body, but it was not parsed into
 	// fields. Status.BodyReason says why.
 	BodyNotInspected
-	// BodyPartlyInspected: parsing stopped before the end of the body.
-	// What was read up to that point is in Parsed; the rest was not
-	// inspected. Status.BodyReason says why.
+	// BodyPartlyInspected: parsing stopped before the end of the body,
+	// because the parser met an error or the body was longer than the
+	// limit or than what was received. What was read up to that point is
+	// in Parsed; the rest was not inspected. Status.BodyReason says why.
 	BodyPartlyInspected
 )
 
@@ -201,6 +210,8 @@ type Request struct {
 	Received Received
 	Parsed   Parsed
 	Status   Status
+
+	opt Options
 }
 
 // HeaderValues returns the values of every header called name, in the order

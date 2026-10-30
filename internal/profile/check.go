@@ -203,7 +203,7 @@ func (c *checker) checkPath(ep *endpoint, values map[string]string) {
 }
 
 func (c *checker) checkContentType(ep *endpoint) {
-	if len(ep.contentTypes) == 0 || len(c.req.Received.Body) == 0 {
+	if len(ep.contentTypes) == 0 || c.req.BodyLength() == 0 {
 		return
 	}
 	ct := ""

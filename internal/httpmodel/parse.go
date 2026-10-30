@@ -7,12 +7,35 @@ import (
 
 const formContentType = "application/x-www-form-urlencoded"
 
+// DefaultBodyLimit is the largest part of a body that is parsed when
+// Options leave it out: 13,107,200 bytes (12.5 MiB), the SecRequestBodyLimit
+// of Coraza's recommended configuration (T3). Of a longer body, the first
+// part is parsed and the body is reported as partly inspected, as Coraza
+// does with SecRequestBodyLimitAction ProcessPartial. The received body is
+// kept whole.
+const DefaultBodyLimit = 13107200
+
+// MaxBodyLimit is the largest limit that can be set: 1 GiB, as in Coraza.
+const MaxBodyLimit = 1 << 30
+
+// Options change how a request is read. The zero value gives the defaults.
+type Options struct {
+	// BodyLimit is the largest part of a body that is parsed, in bytes. 0
+	// means DefaultBodyLimit.
+	BodyLimit int
+}
+
 // New builds the parsed view and the status for a received request.
 //
 // New never fails. Content it cannot parse stays available in Received and
 // is reported in Status, so the parts that can be inspected still are.
 func New(rec Received) *Request {
-	return build(rec, "")
+	return NewWith(rec, Options{})
+}
+
+// NewWith is New with options.
+func NewWith(rec Received, opt Options) *Request {
+	return build(rec, opt, "")
 }
 
 // WithBodyFormat returns a new request with the same received content, whose
@@ -22,11 +45,11 @@ func New(rec Received) *Request {
 // It is for the rule ctl:requestBodyProcessor, with which CRS chooses the
 // reader for some content types. An unknown format reads nothing.
 func (r *Request) WithBodyFormat(format string) *Request {
-	return build(r.Received, format)
+	return build(r.Received, r.opt, format)
 }
 
-func build(rec Received, forced string) *Request {
-	r := &Request{Received: rec}
+func build(rec Received, opt Options, forced string) *Request {
+	r := &Request{Received: rec, opt: opt}
 
 	// A fragment ("#...") is not part of the request for the server; it
 	// cuts it off before reading path and query. It stays in Target.
@@ -53,14 +76,38 @@ func build(rec Received, forced string) *Request {
 	return r
 }
 
-// DefaultBodyLimit is the largest body that is parsed. A larger body is
-// kept as received and reported as not inspected.
-const DefaultBodyLimit = 1 << 20
+// InspectedBody returns the part of the received body that is inspected:
+// all of it, or its first part when it is longer than the limit.
+func (r *Request) InspectedBody() []byte {
+	limit := r.opt.BodyLimit
+	if limit <= 0 {
+		limit = DefaultBodyLimit
+	}
+	if body := r.Received.Body; len(body) > limit {
+		return body[:limit:limit]
+	}
+	return r.Received.Body
+}
+
+// BodyLength returns the length of the whole body as the client sent it,
+// which is more than Received.Body holds when a copier cut the body.
+func (r *Request) BodyLength() int64 {
+	return max(r.Received.BodyLength, int64(len(r.Received.Body)))
+}
 
 func (r *Request) parseBody(forced string) {
-	body := r.Received.Body
-	if len(body) == 0 {
+	body := r.InspectedBody()
+	total := r.BodyLength()
+	if total == 0 && !r.Received.BodyUnfinished {
 		r.Status.Body = BodyEmpty
+		return
+	}
+	if len(body) == 0 {
+		r.Status.Body = BodyNotInspected
+		r.Status.BodyReason = "the body was not received"
+		if total > 0 {
+			r.Status.BodyReason = fmt.Sprintf("none of the %d bytes of the body were received", total)
+		}
 		return
 	}
 
@@ -96,12 +143,6 @@ func (r *Request) parseBody(forced string) {
 		r.Status.BodyReason = fmt.Sprintf("content type %q is not parsed", media)
 		return
 	}
-	if len(body) > DefaultBodyLimit {
-		r.Status.Body = BodyNotInspected
-		r.Status.BodyReason = fmt.Sprintf("the body has %d bytes, more than the limit of %d", len(body), DefaultBodyLimit)
-		return
-	}
-
 	// Each parser returns an error when it had to stop early. What it
 	// read before that stays in the parsed view.
 	var err error
@@ -118,12 +159,35 @@ func (r *Request) parseBody(forced string) {
 	case "xml":
 		r.Parsed.XMLText, r.Parsed.XMLAttributes, err = parseXML(body)
 	}
-	if err != nil {
+	cut := r.cutReason(len(body), total)
+	switch {
+	case cut != "" && err != nil:
+		// Most parsers stop with an error where a cut body ends.
+		r.Status.Body = BodyPartlyInspected
+		r.Status.BodyReason = fmt.Sprintf("%s, and the %s reader stopped before their end: %v", cut, r.Status.BodyFormat, err)
+	case cut != "":
+		r.Status.Body = BodyPartlyInspected
+		r.Status.BodyReason = cut
+	case err != nil:
 		r.Status.Body = BodyPartlyInspected
 		r.Status.BodyReason = fmt.Sprintf("the %s body could not be read to its end: %v", r.Status.BodyFormat, err)
-		return
+	default:
+		r.Status.Body = BodyInspected
 	}
-	r.Status.Body = BodyInspected
+}
+
+// cutReason says why only the first inspected bytes of a body of total
+// bytes could be inspected, or returns "" when they are the whole body.
+func (r *Request) cutReason(inspected int, total int64) string {
+	switch {
+	case int64(inspected) < total && r.Received.BodyUnfinished:
+		return fmt.Sprintf("only the first %d of %d bytes were inspected, and the body was not received to its end", inspected, total)
+	case int64(inspected) < total:
+		return fmt.Sprintf("only the first %d of %d bytes were inspected", inspected, total)
+	case r.Received.BodyUnfinished:
+		return fmt.Sprintf("the body was not received to its end; the %d bytes received were inspected", inspected)
+	}
+	return ""
 }
 
 // DeclaredBodyFormat returns the body format that the first Content-Type

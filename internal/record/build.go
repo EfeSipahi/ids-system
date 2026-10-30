@@ -83,7 +83,7 @@ func (b builder) http(req *httpmodel.Request, s secrets, secretPath []int) HTTP 
 		UserAgent:   s.text(first(req.HeaderValues("User-Agent")), maxUserAgent),
 		Referer:     s.text(b.maskURL(first(req.HeaderValues("Referer"))), maxReferer),
 		ContentType: s.text(first(req.HeaderValues("Content-Type")), maxContentType),
-		BodyLength:  len(req.Received.Body),
+		BodyLength:  int(req.BodyLength()),
 		HeaderNames: []string{},
 	}
 	for i, header := range req.Received.Headers {

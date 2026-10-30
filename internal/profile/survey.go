@@ -71,7 +71,7 @@ func (s *Survey) Add(req *httpmodel.Request) {
 	if !bodyRead {
 		ep.BodyNotRead++
 	}
-	if len(req.Received.Body) > 0 {
+	if req.BodyLength() > 0 {
 		if v := req.HeaderValues("Content-Type"); len(v) > 0 {
 			if ct, _, err := mime.ParseMediaType(v[0]); err == nil && !slices.Contains(ep.ContentTypes, ct) {
 				ep.ContentTypes = append(ep.ContentTypes, ct)

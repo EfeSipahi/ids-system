@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/EfeSipahi/ids-system/internal/httpmodel"
 )
 
 func write(t *testing.T, dir, name, text string) string {
@@ -54,6 +56,32 @@ func TestRecordsSection(t *testing.T) {
 		path := write(t, dir, "bad.json", text)
 		if _, err := Load(path); err == nil || !strings.Contains(err.Error(), want) {
 			t.Errorf("%s: error %v, want %q", text, err, want)
+		}
+	}
+}
+
+// request_body_limit sets the limit of the parser, within Coraza's bounds.
+func TestRequestBodyLimit(t *testing.T) {
+	dir := t.TempDir()
+	write(t, dir, "rules.conf", `SecAction "id:1,phase:1,pass,nolog"`)
+	p, err := Load(write(t, dir, "ids.json", `{"files": ["rules.conf"]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Parsing() != (httpmodel.Options{}) {
+		t.Errorf("left out: %+v", p.Parsing())
+	}
+	p, err = Load(write(t, dir, "ids.json", `{"files": ["rules.conf"], "request_body_limit": 1048576}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Parsing().BodyLimit != 1048576 {
+		t.Errorf("set: %+v", p.Parsing())
+	}
+	for _, limit := range []string{"0", "-1", "1073741825", "1.5", `"12mb"`} {
+		path := write(t, dir, "bad.json", `{"files": ["rules.conf"], "request_body_limit": `+limit+`}`)
+		if _, err := Load(path); err == nil || !strings.Contains(err.Error(), "request_body_limit") {
+			t.Errorf("%s: error %v", limit, err)
 		}
 	}
 }

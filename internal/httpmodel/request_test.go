@@ -471,19 +471,117 @@ func TestXMLBody(t *testing.T) {
 	}
 }
 
+// Of a body longer than the limit, the first part is parsed, as Coraza does
+// with SecRequestBodyLimitAction ProcessPartial; the received body is kept
+// whole.
 func TestBodyOverTheLimit(t *testing.T) {
-	big := "a=" + strings.Repeat("x", DefaultBodyLimit)
-	r := bodyRequest("application/x-www-form-urlencoded", big)
-	if r.Status.Body != BodyNotInspected || !strings.Contains(r.Status.BodyReason, "more than the limit") || r.Parsed.BodyArgs != nil {
+	if DefaultBodyLimit != 13107200 {
+		t.Errorf("DefaultBodyLimit = %d, want Coraza's recommended 13107200", DefaultBodyLimit)
+	}
+	opt := Options{BodyLimit: 16}
+	body := "a=1&b=22222&c=333333333"
+	form := func(body string) Received {
+		return Received{Method: "POST", Target: "/", Headers: []Header{{"Content-Type", "application/x-www-form-urlencoded"}}, Body: []byte(body)}
+	}
+	r := NewWith(form(body), opt)
+	if r.Status.Body != BodyPartlyInspected || r.Status.BodyReason != "only the first 16 of 23 bytes were inspected" {
 		t.Errorf("status = %+v", r.Status)
 	}
-	if len(r.Received.Body) != len(big) {
-		t.Error("the received body was cut")
+	if got := strings.Join(namesAndValues(r.Parsed.BodyArgs), " "); got != "a=1 b=22222 c=33" {
+		t.Errorf("body args = %q", got)
 	}
-	// Exactly at the limit is still parsed.
-	r = bodyRequest("application/x-www-form-urlencoded", big[:DefaultBodyLimit])
-	if r.Status.Body != BodyInspected || len(r.Parsed.BodyArgs) != 1 {
-		t.Errorf("status = %+v", r.Status)
+	if string(r.Received.Body) != body || string(r.InspectedBody()) != body[:16] || r.BodyLength() != 23 {
+		t.Errorf("received %q, inspected %q, length %d", r.Received.Body, r.InspectedBody(), r.BodyLength())
+	}
+	// Reading the body again with another reader keeps the limit.
+	if again := r.WithBodyFormat("form"); again.Status.Body != BodyPartlyInspected || len(again.Parsed.BodyArgs) != 3 {
+		t.Errorf("again: status = %+v, args %v", again.Status, again.Parsed.BodyArgs)
+	}
+
+	// Exactly at the limit is still parsed whole.
+	r = NewWith(form(body[:16]), opt)
+	if r.Status.Body != BodyInspected || len(r.Parsed.BodyArgs) != 3 {
+		t.Errorf("at the limit: status = %+v", r.Status)
+	}
+
+	// The default limit: a body of 1 MiB and more, over the first limit of
+	// this program, is now parsed whole.
+	big := "a=" + strings.Repeat("x", 1<<20)
+	if r = New(form(big)); r.Status.Body != BodyInspected || len(r.Parsed.BodyArgs) != 1 {
+		t.Errorf("1 MiB: status = %+v", r.Status)
+	}
+	big = "a=" + strings.Repeat("x", DefaultBodyLimit)
+	r = New(form(big))
+	if r.Status.Body != BodyPartlyInspected || len(r.Parsed.BodyArgs) != 1 || len(r.Parsed.BodyArgs[0].Value) != DefaultBodyLimit-2 {
+		t.Errorf("over the default limit: status = %+v", r.Status)
+	}
+}
+
+// A copier sends only the first part of a long body, with the length of the
+// whole body (T3). That first part is parsed, and the body shows as partly
+// inspected, for each kind of body.
+func TestBodyCutByTheCopier(t *testing.T) {
+	cut := func(contentType, part string, length int64, unfinished bool) *Request {
+		return New(Received{
+			Method: "POST", Target: "/", Headers: []Header{{"Content-Type", contentType}},
+			Body: []byte(part), BodyLength: length, BodyUnfinished: unfinished,
+		})
+	}
+
+	r := cut("application/x-www-form-urlencoded", "a=1&b=2&c=xx", 100, false)
+	if r.Status.Body != BodyPartlyInspected || r.Status.BodyReason != "only the first 12 of 100 bytes were inspected" ||
+		strings.Join(namesAndValues(r.Parsed.BodyArgs), " ") != "a=1 b=2 c=xx" || r.BodyLength() != 100 {
+		t.Errorf("form: status = %+v, args %v", r.Status, r.Parsed.BodyArgs)
+	}
+
+	// The JSON reader stops at the cut, inside the string of "b"; what it
+	// read before stays.
+	r = cut("application/json", `{"a":"x","b":"yyy`, 4000, false)
+	if r.Status.Body != BodyPartlyInspected || !strings.HasPrefix(r.Status.BodyReason, "only the first 17 of 4000 bytes were inspected, and the json reader stopped before their end: ") ||
+		strings.Join(namesAndValues(r.Parsed.BodyArgs), " ") != "json.a=x" {
+		t.Errorf("json: status = %+v, args %v", r.Status, r.Parsed.BodyArgs)
+	}
+
+	// The multipart reader keeps the first field and the start of the
+	// second, cut in its content.
+	body := "--b\r\nContent-Disposition: form-data; name=\"note\"\r\n\r\nhello\r\n" +
+		"--b\r\nContent-Disposition: form-data; name=\"text\"\r\n\r\nabcdef"
+	r = cut("multipart/form-data; boundary=b", body, 1000, false)
+	if r.Status.Body != BodyPartlyInspected || !strings.Contains(r.Status.BodyReason, "multipart reader stopped") ||
+		strings.Join(namesAndValues(r.Parsed.BodyArgs), " ") != "note=hello text=abcdef" || len(r.Parsed.PartHeaders) != 2 {
+		t.Errorf("multipart: status = %+v, args %v, part headers %v", r.Status, r.Parsed.BodyArgs, r.Parsed.PartHeaders)
+	}
+
+	// A body whose end never came: the client stopped sending, or the
+	// application stopped reading.
+	r = cut("application/x-www-form-urlencoded", "a=1", 3, true)
+	if r.Status.Body != BodyPartlyInspected || r.Status.BodyReason != "the body was not received to its end; the 3 bytes received were inspected" {
+		t.Errorf("unfinished: status = %+v", r.Status)
+	}
+	r = cut("application/x-www-form-urlencoded", "a=1", 9, true)
+	if r.Status.Body != BodyPartlyInspected || r.Status.BodyReason != "only the first 3 of 9 bytes were inspected, and the body was not received to its end" {
+		t.Errorf("cut and unfinished: status = %+v", r.Status)
+	}
+
+	// Nothing was copied of a body that was sent.
+	r = cut("application/x-www-form-urlencoded", "", 500, false)
+	if r.Status.Body != BodyNotInspected || r.Status.BodyReason != "none of the 500 bytes of the body were received" {
+		t.Errorf("not copied: status = %+v", r.Status)
+	}
+	r = cut("application/x-www-form-urlencoded", "", 0, true)
+	if r.Status.Body != BodyNotInspected || r.Status.BodyReason != "the body was not received" {
+		t.Errorf("not received: status = %+v", r.Status)
+	}
+
+	// A whole body with its length is an ordinary body.
+	r = cut("application/x-www-form-urlencoded", "a=1", 3, false)
+	if r.Status.Body != BodyInspected {
+		t.Errorf("whole: status = %+v", r.Status)
+	}
+	// A body of a type that is not parsed stays not inspected, cut or not.
+	r = cut("text/plain", "abc", 10, false)
+	if r.Status.Body != BodyNotInspected || !strings.Contains(r.Status.BodyReason, "is not parsed") {
+		t.Errorf("text: status = %+v", r.Status)
 	}
 }
 
