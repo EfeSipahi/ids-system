@@ -1,6 +1,6 @@
 # IDS — Current Working Context
 
-Last updated: 25 October 2026  
+Last updated: 26 October 2026  
 Product directory: `/home/esip/Documents/ids-system`  
 Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.md)
 
@@ -60,7 +60,7 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21). `NewTuning` and `EvaluateWith` apply one application's exceptions and level per request (`tuning.go`) |
 | `internal/profile` | Application profiles: strict reading, the choice of application, the allow-list checks, secrets, the exception policy, and the `-endpoints` survey |
 | `internal/result` | Output records: analysis status, findings, score. Request content is left out of the terminal output by default (M11) |
-| `internal/config` | The product configuration: engine settings plus the optional `records`, `applications` and `require_profile` sections, and the configuration fingerprint (R7), which covers the profiles |
+| `internal/config` | The product configuration: engine settings plus the optional `request_body_limit` (default 13,107,200 bytes, as Coraza), `records`, `applications` and `require_profile` sections, and the configuration fingerprint (R7), which covers the profiles |
 | `internal/record` | Record files (R1–R7): building and masking request records, `start` and `counts` records, rotation, file permissions, cookie hashes |
 | `internal/dashboard` | The dashboard: reader of the record files, JSON API, pages (embedded HTML, CSS, JS), users, login, sessions, its own certificate |
 | `internal/version` | The program version `0.1.0-dev` and the Git revision of the build |
@@ -158,7 +158,7 @@ Other files:
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: everything up to and including the application profiles of 25 October is on `main` and pushed to GitHub (commit `68b42c8`; the UI work of 24 October is `dbc6338`). The closing documents of stage 8 are not committed yet; the user decides when. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to and including the application profiles of 25 October and their closing documents is on `main` and pushed to GitHub (commits `68b42c8` and `71ffe71`; the UI work of 24 October is `dbc6338`). The proxy work of 26 October is not committed yet; the user decides when. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -204,16 +204,23 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
    - A paranoia level per application.
    - The CSIC profile is the first one (I2), written from the training records only.
    - All eight stages were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18).
-3. **Next:** proxy and TLS (A01, A08), then response rules, and alerts sent by webhook and syslog (decided 23 October 2026). Its decisions come first.
+3. **Now:** live traffic through Caddy (A01, A08). **Decided on 26 October 2026** (T1–T12, main plan section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md); its progress table says which stage is next.
+   - Caddy with our own Go copier module (`caddy-module/`, its own `go.mod`, the only new dependency); later an Nginx `mirror` input, then an Nginx module.
+   - Copies over a two-way Unix socket in our own frame format (`docs/copy-format.md`) to a new program, `ids-live`, which runs the same engine and profiles as `ids-offline` and writes the records.
+   - Request bodies up to 12.5 MB and text responses up to 512 KB (Coraza's limits), partial past that; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues, drops counted; fail-open with gap records; Caddy terminates TLS.
+   - Still to discuss: whether `ids-offline` keeps its name; the idea I3 below.
+
+   Then response rules, and alerts sent by webhook and syslog (decided 23 October 2026).
 4. Transfer of the ML model, which the user improves in the separate project, and the decision mechanism (A10, A05, A07, A06).
 5. Prevention, learned profiles, other protocols.
 
 Each still needs its own decisions before work starts.
 
-**Two ideas from the user (16 October 2026), not yet placed exactly** (main plan section 6.15):
+**Ideas from the user, not yet placed exactly** (main plan section 6.15):
 
 1. **I1:** one MCP server through which an AI assistant configures the IDS and corrects false positives (confirmed by the user on 23 October 2026). The user places it after the dashboard and a usable IDS.
 2. **I2:** correct the false positives found on the CSIC 2010 normal records. **Done on 25 October 2026** by hand, with the profile work (item 2, F10). The training records no longer measure false positives independently; validation and test are reported separately (A07).
+3. **I3 (26 October 2026):** an installer, plus setup from the dashboard, once everything else is done. Nothing decided; it needs roles, permissions and a change history first, because a dashboard that changes the proxy controls all the traffic.
 
 ## 4. Working notes for the next agent
 

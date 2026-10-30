@@ -34,8 +34,8 @@ Document role: Primary reference for current architecture decisions, implementat
 | Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20). Records and alerts written by `ids-offline`, and the read-only `ids-dashboard` behind a login over HTTPS (section 11.23). Hand-written application profiles with per-application rule exceptions and levels, and the CSIC shop's profile (section 11.26) |
 | Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the decision mechanism, webhook and syslog alerts, learned profiles |
 | Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
-| Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions. Two ideas from the user, I1 and I2: [section 6.15](#fikirler) |
-| Next step | Proxy and TLS integration (A01, A08), the third step of the user's order; its decisions come first. Hand-written application profiles (A04) were decided and built on 25 October 2026 (sections 11.25 and 11.26); records, alerts, and the dashboard on 23 October 2026 (section 11.23) |
+| Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions. Three ideas from the user, I1–I3: [section 6.15](#fikirler) |
+| Next step | Live traffic through Caddy (A01, A08), the third step of the user's order. Its decisions T1–T12 were made on 26 October 2026 (section 11.27); it is built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md). Hand-written application profiles (A04) were decided and built on 25 October 2026 (sections 11.25 and 11.26); records, alerts, and the dashboard on 23 October 2026 (section 11.23) |
 
 **For the next agent:** First verify the current status in this document against the relevant files. Then continue from the first unfinished step in section 7.4. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
 
@@ -717,7 +717,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 <a id="a01"></a>
 ### 6.1. A01 — Proxy, TLS, and copy transfer
 
-**Status:** Open.
+**Status:** Partly decided on 26 October 2026, decisions T1–T12 (section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md). In short: Caddy with our own Go copier module; copies over a two-way Unix socket in our own frame format; request bodies copied while they stream, up to 12.5 MB; responses copied for text types up to 512 KB; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues whose drops are counted; fail-open with gap records; Caddy terminates TLS, and keys never reach the IDS. Still open: the details of the second input, Nginx `mirror`; the Nginx module and its language (C or Rust); a TCP option with TLS and authentication; records from several machines.
 
 **Known / approved basis:** M02 and M09 approve an existing reverse proxy, TLS termination, and request-copy analysis that does not hold up the application.
 
@@ -876,10 +876,10 @@ This decision does not select worker counts, parallel execution of all layers, o
 
 These are not newly approved requirements. They are questions linked to open topics so they are not forgotten when implementation begins:
 
-1. **Trust boundary — A01/A04/A09:** Who can access the copy-ingestion service? How will application/profile identity come from the trusted integration, and how will a client be prevented from selecting another profile through a header? *Profile part decided on 25 October 2026 (F3):* the profile follows the application that receives the request (the proxy's route; offline the Host and a path prefix), and no client header is ever read for it. The access question stays open.
+1. **Trust boundary — A01/A04/A09:** Who can access the copy-ingestion service? How will application/profile identity come from the trusted integration, and how will a client be prevented from selecting another profile through a header? *Profile part decided on 25 October 2026 (F3):* the profile follows the application that receives the request (the proxy's route; offline the Host and a path prefix), and no client header is ever read for it. *Access decided for the Caddy integration on 26 October 2026 (T2, T6):* the copies arrive over a Unix socket whose file permissions admit only the proxy's user, and the application's name comes from the Caddy configuration. A TCP option, for an IDS on another machine, will need TLS and authentication of its own; not decided.
 2. **Rule and configuration lifecycle — A08/A11:** What happens if startup validation fails? Will changes initially require a restart, or is later reloading needed? Remote rule loading from users must not be assumed to exist.
 3. **Incompatible component versions — A03/A10:** How will the system report mismatches between model, feature-definition, and configuration versions?
-4. **Deployment and operations — A01/A08/A09/A10:** What are the target OS/architecture, native ONNX dependency, installation format, health/capacity indicators, and access-management approach?
+4. **Deployment and operations — A01/A08/A09/A10:** What are the target OS/architecture, native ONNX dependency, installation format, health/capacity indicators, and access-management approach? On 26 October 2026 the user raised an installer, plus setup from the dashboard (section 6.15, I3). Two further questions came out of the proxy discussion: how records of several proxy machines are gathered, and how a block list (K4) is shared between them. Coraza leaves the first to a central log system and has no answer to the second.
 5. **Open-source release — A11 and deployment preparation:** Review the project license and CRS/underlying-library notice and distribution requirements before publication; this document does not select a license.
 
 ### 6.14. Retained evaluation proposal — not yet approved
@@ -889,9 +889,9 @@ These are not newly approved requirements. They are questions linked to open top
 This proposal will be discussed under A07 and A06; its inclusion here does not approve a numeric acceptance threshold or evaluation policy.
 
 <a id="fikirler"></a>
-### 6.15. Ideas from the user — 16 October 2026
+### 6.15. Ideas from the user — 16 and 26 October 2026
 
-The user added these two ideas to the plan. They are recorded so that they are not forgotten; apart from what is marked as decided, none of their details is decided.
+The user added these ideas to the plan, I1 and I2 on 16 October 2026 and I3 on 26 October 2026. They are recorded so that they are not forgotten; apart from what is marked as decided, none of their details is decided.
 
 **I1 — An MCP server for the IDS.** An MCP (Model Context Protocol) server through which an AI assistant can work with the IDS: configure it and correct false positives. On 23 October 2026 the user confirmed that this is one server for both tasks.
 
@@ -918,6 +918,15 @@ The user added these two ideas to the plan. They are recorded so that they are n
 1. **Decided by the user on 25 October 2026 (F10):** they are corrected by hand now, with the profile work. The CSIC profile is the first profile and its test. It is written from the training normal records only (301) and measured on the validation and test records; 932200, 932236 and 932240 are examined first.
 2. **A condition for either way:** once the rules are adjusted to the CSIC normal records, those records no longer measure false positives independently, in the same way as the already observed ML test set (section 2.1, item 5). Measuring the false-positive rate afterwards needs other normal traffic (A07).
 3. **Done on 25 October 2026** ([docs/development-plan-profiles.md](docs/development-plan-profiles.md), notes 17–18). `profiles/csic-shop.json` and `configs/csic-shop.json`, written from the 301 training normal records, run the shop at level 2. They have three exceptions accepted by the user: `crs_validate_utf8_encoding` = 0, `restricted_headers_extended` = "", and 932350 skipping the parameter names `pwd` and `id`. 932200, 932236 and 932240 were examined and kept. On the test records, false alarms went from 30 of 100 (rules alone, level 1) to 3 of 100. The rules flag 30 of 99 anomalous records, and 74 of 99 are flagged by the rules or have a profile finding. Coraza gives the same results with the exceptions written in SecLang. Training was tuned; validation and test were measured once.
+
+**I3 — An installer, and setup from the dashboard.** Raised by the user on 26 October 2026, during the proxy decisions: once everything is done, setting the parts up should be an installation process together with the web dashboard. To be discussed; nothing is decided.
+
+1. **Timing, as the user stated it:** after everything else is done.
+2. **Two parts, as discussed:**
+   - an installer for the one-time work that needs administrator rights: installing the programs (with a ready-built Caddy that already contains the copier), a system user, the socket folder and its permissions, the services that start the programs, the first admin password;
+   - setup pages in the dashboard for ongoing changes: applications and their profiles, levels and exceptions, which Caddy sites are copied, and later alert and blocking settings. Caddy's admin API loads a new configuration without downtime and rolls back a configuration that fails.
+3. **Questions to answer before building it:** a dashboard that changes the proxy controls all the traffic, so it needs roles and permissions (A09), a change history, a confirmation before a change takes effect, and Caddy's admin API on a permission-protected Unix socket (Caddy's documentation warns that an exposed admin endpoint lets anyone control the server). The dashboard is read-only today by decision V2.
+4. **Related:** A09, I1 (an MCP server would change the same settings), section 6.13 item 4; whether the commands become one `ids` program at that stage (an open naming question of the proxy step).
 
 <a id="ilk-motor"></a>
 ## 7. Proposed starting decisions for the first engine
@@ -1520,3 +1529,39 @@ All eight stages of [docs/development-plan-profiles.md](docs/development-plan-pr
 
 **Next in the order:** proxy and TLS integration (A01, A08), whose decisions come first; then the response rules, and alerts by webhook and syslog.
 
+
+### 11.27. Decisions on live traffic through Caddy (A01) — 26 October 2026
+
+The profile work was committed (`68b42c8`, `71ffe71`). The proxy research followed, and the user discussed its decisions one by one. The plan is [docs/development-plan-proxy.md](docs/development-plan-proxy.md); its section "Research behind T1 and T2" holds the comparison and the measurements.
+
+**Decisions:**
+
+| # | Decision |
+| --- | --- |
+| T1 | Caddy with our own small Go copier module first; the Nginx `mirror` input second; an Nginx module (C or Rust) later |
+| T2 | A Unix socket, our own frame format, two-way: copies go to the IDS, decisions (K4) come back. The format must not depend on the road, so a TCP option can come later |
+| T3 | Request bodies copied while they stream, up to Coraza's 12.5 MB (`SecRequestBodyLimit` 13,107,200); past it the first part is analysed and the record says "body partial", shown clearly |
+| T4 | Responses: status and headers always; the body only for `text/plain`, `text/html` and `text/xml`, up to Coraza's 512 KB (`SecResponseBodyLimit`), partial past that; the IDS unzips gzip and deflate |
+| T5 | The client IP only from Caddy (`trusted_proxies`, none by default); the IDS never reads `X-Forwarded-For`; records keep the connection address and the client IP |
+| T6 | The application named in the Caddy configuration, with Host and path as the fallback (F3); an unknown name counts as no application and is shown |
+| T7 | Queues with a size limit (1,000 copies or 64 MB, to be measured); drops are counted and shown |
+| T8 | Fail-open; the copier reconnects every second and reports the gap |
+| T9 | A lab on this machine; the 396 CSIC validation and test requests must give the same results live as offline |
+| T10 | Caddy terminates TLS as the front proxy, or listens on plain HTTP on `127.0.0.1` behind Nginx or a load balancer; HTTPS with certificate checks to an app on another machine; keys never reach the IDS; copies stay in memory; TLS version, cipher, SNI and HTTP version are recorded, not ML inputs; no TLS passthrough |
+| T11 | The Caddy dependency only in `caddy-module/` with its own `go.mod`, plus the `xcaddy` tool |
+| T12 | A new command, `cmd/ids-live` |
+
+**Why Caddy and a separate IDS, in short:**
+
+1. Of five proxies, only Envoy's `ext_proc`, a Caddy module and (partly) HAProxy give response copies, which the response rules (K8) need. HAProxy's SPOE makes every request wait for the agent, against M09; Traefik skips large bodies without notice, against M05; Nginx `mirror` gives no responses and can hold kept-alive connections. Caddy is written in Go, terminates TLS itself, and Coraza already runs as a Caddy module.
+2. The analysis stays in a separate program rather than inside Caddy, as Coraza does it: one IDS serves Caddy and the later Nginx input; the ONNX library of the ML step stays out of the proxy; a crash of the analysis does not stop the site. For blocking later, the copier keeps the block list and checks it locally (K4); waiting for a separate IDS over the socket would cost about 0.02–0.03 ms, measured.
+3. Real products follow the same split for Nginx: a thin module plus a separate agent (Fastly's Next-Gen WAF), or a `mirror` copy (Wallarm's out-of-band mode).
+
+**Corrected during the discussion:**
+
+1. The first recommendation put the Nginx mirror input before the Caddy module. It was reversed: the response rules come next in the user's order, and only the Caddy module gives responses; the mirror input reuses part of the same format.
+2. The first measurement of a Unix socket failed because its path was longer than Linux allows (about 108 bytes); the IDS will check the path at start.
+
+**Consequences found while writing the plan** (approved with it, C1–C8 of the plan): the parser's body limit of 1 MiB becomes the setting `request_body_limit` with Coraza's default, for both inputs; Go's server changes header names and order, which the copier rebuilds and the lab checks; a new `gap` record and a lock file for the records folder; unzipping response bodies is built with the response rules.
+
+**Still open, to discuss next:** whether `ids-offline` keeps its name; the user's idea I3 (an installer, and setup from the dashboard, section 6.15); later: records from several machines, a shared block list for K4, the TCP option.

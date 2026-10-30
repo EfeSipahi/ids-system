@@ -455,5 +455,4 @@ Commits on `main`:
 | `df0ecdc` | 23 Oct | Records, alerts, and the read-only dashboard |
 | `dbc6338` | 24 Oct | Dashboard UI reworked |
 | `68b42c8` | 25 Oct | Application profiles and the CSIC shop's profile |
-
-The closing documents of 25 October are not committed yet.
+| `71ffe71` | 25 Oct | Closing documents of the profile plan |
