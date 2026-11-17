@@ -1,7 +1,7 @@
 # IDS — Current Working Context
 
-Last updated: 26 October 2026  
-Product directory: `/home/esip/Documents/ids-system`  
+Last updated: 17 November 2026  
+Product directory: this repository (`/home/esip/Documents/ids-system` on the first development machine)  
 Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.md)
 
 ## 1. What is the project?
@@ -157,8 +157,9 @@ Other files:
 ### 2.5. Other facts
 
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
-- Go version last verified: `go version go1.26.8-X:nodwarf5 linux/amd64`.
-- Git: everything up to and including the application profiles of 25 October and their closing documents is on `main` and pushed to GitHub (commits `68b42c8` and `71ffe71`; the UI work of 24 October is `dbc6338`). The proxy work of 26 October is not committed yet; the user decides when. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Go version last verified: `go version go1.26.10-X:nodwarf5 linux/amd64` (17 November 2026). `go.mod` needs Go 1.26.8 or newer. Fedora's packaged Go is set to `GOTOOLCHAIN=local` and never downloads a newer Go itself, so the distribution must ship one that is new enough.
+- Setting up another machine: clone the ML repository (GitHub `EfeSipahi/Lorica`) as `../ids-model`, next to this one, because `tools/csic_to_examples.py` reads it from there; the Go tests don't need it. `.gitattributes` keeps LF line endings on every system, because tests compare files byte for byte. In WSL2, keep the clone in the Linux file system (`~/...`), not under `/mnt/c`, as Microsoft recommends for speed.
+- Git: everything is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026) and the notes for setting up another machine (17 November 2026). `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -205,6 +206,7 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
    - The CSIC profile is the first one (I2), written from the training records only.
    - All eight stages were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18).
 3. **Now:** live traffic through Caddy (A01, A08). **Decided on 26 October 2026** (T1–T12, main plan section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md); its progress table says which stage is next.
+   - Done and pushed: stage 1 (the plan), stage 2 (the copy frame format, `internal/copyframe`), stage 3 (the request body limit of 13,107,200 bytes and partly inspected bodies). Next: stage 4, live input and records: `internal/live`, `cmd/ids-live`, the `live` configuration section, the new record fields, the `gap` record and the records lock file. Nothing of stage 4 exists yet.
    - Caddy with our own Go copier module (`caddy-module/`, its own `go.mod`, the only new dependency); later an Nginx `mirror` input, then an Nginx module.
    - Copies over a two-way Unix socket in our own frame format (`docs/copy-format.md`) to a new program, `ids-live`, which runs the same engine and profiles as `ids-offline` and writes the records.
    - Request bodies up to 12.5 MB and text responses up to 512 KB (Coraza's limits), partial past that; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues, drops counted; fail-open with gap records; Caddy terminates TLS.

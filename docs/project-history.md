@@ -67,6 +67,7 @@ Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md)
 | 24 October | Dashboard checked in a browser page by page; UI plan with decisions U1–U8, done the same day | 37 problems fixed, among them one bug that wiped the page on a failed update |
 | 25 October | Decisions on application profiles (F1–F11); a measured choice between one rule copy per application and one shared copy | Shared copy chosen (option B): same results, about 0.2–0.3 % slower |
 | 25 October | Profiles built in eight stages; the CSIC shop's profile written from its training records | Test records: false alarms 30 → 3 of 100; Coraza agrees |
+| 26 October | Decisions on live traffic through Caddy (T1–T12); stages 1–3 of its plan built: the plan, the copy frame format, the request body limit | CRS and CSIC results unchanged; `FuzzReadFrame` ran 6.1 million inputs without a failure |
 
 ## 4. What was done, step by step
 
@@ -456,3 +457,6 @@ Commits on `main`:
 | `dbc6338` | 24 Oct | Dashboard UI reworked |
 | `68b42c8` | 25 Oct | Application profiles and the CSIC shop's profile |
 | `71ffe71` | 25 Oct | Closing documents of the profile plan |
+| `659a0f1` | 30 Oct | Copy frame format for live traffic (proxy plan, stage 2) |
+| `2be0781` | 30 Oct | Request body limit of 13,107,200 bytes, partly inspected bodies (stage 3) |
+| `5fba3dc` | 30 Oct | Proxy plan with decisions T1–T12 (stage 1) |
