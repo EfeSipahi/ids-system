@@ -1,0 +1,31 @@
+# The lab's Caddy (proxy plan, T9). lab/lab.sh sets the variables:
+#   LAB_DATA     the lab folder (Caddy's storage, never the home folder)
+#   IDS_SOCKET   ids-live's socket
+#   LAB_TRUSTED  the trusted proxies; by default one address no request
+#                comes from, so that none is trusted (T5)
+#   COPIER_QUEUE the copier's queue, in copies
+{
+	admin off
+	persist_config off
+	storage file_system {$LAB_DATA}/caddy
+	skip_install_trust
+	local_certs
+	auto_https disable_redirects
+	servers {
+		trusted_proxies static {$LAB_TRUSTED:192.0.2.255/32}
+	}
+}
+
+# With the copier: the CSIC requests carry the Host localhost:8080.
+https://localhost:8080 {
+	ids_copy {
+		socket {$IDS_SOCKET}
+		queue_copies {$COPIER_QUEUE:1000}
+	}
+	reverse_proxy 127.0.0.1:9000
+}
+
+# The same application without the copier, to measure the time it adds.
+https://localhost:8443 {
+	reverse_proxy 127.0.0.1:9000
+}

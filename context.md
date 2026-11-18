@@ -64,7 +64,7 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/record` | Record files (R1–R7): building and masking request records, `start`, `counts` and `gap` records, the live fields (proxy, connection, TLS, response), rotation, file permissions, cookie hashes, the folder's lock |
 | `internal/copyframe` | The copy frames between a proxy's copier and `ids-live` (`docs/copy-format.md`) |
 | `internal/live` | The live input (A01): the Unix socket, hello frames, a queue with limits, workers, gap counts, the stop; turns a copy into the common request and analyses it as `ids-offline` does |
-| `internal/dashboard` | The dashboard: reader of the record files, JSON API, pages (embedded HTML, CSS, JS), users, login, sessions, its own certificate |
+| `internal/dashboard` | The dashboard: reader of the record files (also gaps and the live fields), JSON API, pages (embedded HTML, CSS, JS) in the IBM Carbon look with IBM Plex fonts (`web/static/fonts/`, OFL-1.1), users, login, sessions, its own certificate |
 | `internal/version` | The program version `0.1.0-dev` and the Git revision of the build |
 | `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level`, `-records DIR`, `-application NAME`, `-endpoints` |
 | `cmd/ids-live` | The live input as a service: `-config`, `-socket`, `-records`; stops on SIGTERM. Needs a `live` and a `records` section, or the flags |
@@ -152,7 +152,7 @@ Other files:
 
 ### 2.4. What it does not do
 
-1. Live traffic works through Caddy with the `ids_copy` module and `ids-live` (18 November 2026), tested on this machine over plain HTTP only. HTTPS, HTTP/2 and HTTP/3, and the measurements of T9 are the lab's (stage 7). The dashboard does not show gaps or the live fields yet (stage 6).
+1. Live traffic works through Caddy with the `ids_copy` module and `ids-live` (18 November 2026), and the dashboard shows gaps and the live fields. It was run on this machine over HTTP and HTTPS with a few requests; the measurements of T9, HTTP/2 timing and HTTP/3 are the lab's (stage 7).
 2. There is no ML layer, learned profile, or decision mechanism. An alert is the rule layer's score at the CRS threshold, or a profile finding of an application in `alert` mode, not the planned decision. The dashboard only reads; alerts cannot be marked yet (V7), and there is one user role.
 3. Request rules only; no response rules (they need a copy of each response, K8).
 4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
@@ -163,7 +163,7 @@ Other files:
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.10-X:nodwarf5 linux/amd64` (17 November 2026). `go.mod` needs Go 1.26.8 or newer. Fedora's packaged Go is set to `GOTOOLCHAIN=local` and never downloads a newer Go itself, so the distribution must ship one that is new enough.
 - Setting up another machine: clone the ML repository (GitHub `EfeSipahi/Lorica`) as `../ids-model`, next to this one, because `tools/csic_to_examples.py` reads it from there; the Go tests don't need it. `.gitattributes` keeps LF line endings on every system, because tests compare files byte for byte. In WSL2, keep the clone in the Linux file system (`~/...`), not under `/mnt/c`, as Microsoft recommends for speed.
-- Git: everything up to the notes for setting up another machine (17 November 2026) is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026). Stage 4 (18 November 2026) is committed and pushed (`6c376ce`); stage 5 is committed on `main` but not pushed. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to the notes for setting up another machine (17 November 2026) is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026). Stages 4 to 7 of the proxy plan (18 November 2026) are committed and pushed: stage 4 `6c376ce`, stage 5 `353d63e`, then stage 6 and stage 7. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -212,8 +212,10 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
 3. **Now:** live traffic through Caddy (A01, A08). **Decided on 26 October 2026** (T1–T12, main plan section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md); its progress table says which stage is next.
    - Done and pushed: stage 1 (the plan), stage 2 (the copy frame format, `internal/copyframe`), stage 3 (the request body limit of 13,107,200 bytes and partly inspected bodies).
    - Done, committed and pushed 18 November 2026 (`6c376ce`): stage 4, the live input and its records (`internal/live`, `cmd/ids-live`, the `live` section, the record fields, `gap`, the lock); the plan's note 4 has the details and checks. The user decided that live records keep the proxy's request ID and receive time (`proxy`).
-   - Done and committed 18 November 2026, not pushed: stage 5, the Caddy copier (`caddy-module/`), and the format amendment the user decided (revised option A: `ids-live`'s hello gives `max_frame`, and the copier fits each copy into it). The plan's note 5 has the details and checks.
-   - Next: stage 6, the dashboard: gaps, not-analysed totals, unknown application names, the copier status, and the live fields on the detail and Engine pages.
+   - Done, committed and pushed 18 November 2026 (`353d63e`): stage 5, the Caddy copier (`caddy-module/`), and the format amendment the user decided (revised option A: `ids-live`'s hello gives `max_frame`, and the copier fits each copy into it). The plan's note 5 has the details and checks.
+   - Done, committed and pushed 18 November 2026: stage 6, the dashboard (gaps, not-analysed totals, unknown names, the copier status and the user's option A, a warning when `ids-live` stops writing; the live fields on the detail and Engine pages), and the dashboard's new look, IBM Carbon, chosen by the user the same day (UI plan, section "The Carbon look"). The plan's note 6 has the checks.
+   - Done, committed and pushed 18 November 2026: stage 7, the lab (`lab/`) and its measurements; every check of verification item 5 passed, the numbers are in the plan's note 7. In short: the 396 CSIC requests give the same records live as offline; the copier adds about 0.02–0.2 ms at the median and the site never waits for `ids-live`; every dropped copy is counted.
+   - Next: stage 8, the close: the format documents, the project history, the main plan's history 11.28, the full checks.
    - Caddy with our own Go copier module (`caddy-module/`, its own `go.mod`, the only new dependency); later an Nginx `mirror` input, then an Nginx module.
    - Copies over a two-way Unix socket in our own frame format (`docs/copy-format.md`) to a new program, `ids-live`, which runs the same engine and profiles as `ids-offline` and writes the records.
    - Request bodies up to 12.5 MB and text responses up to 512 KB (Coraza's limits), partial past that; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues, drops counted; fail-open with gap records; Caddy terminates TLS.
@@ -242,3 +244,4 @@ Each still needs its own decisions before work starts.
 7. Product outputs belong in `ids-system`. Do not change the data split, model, or experiment records in `ids-model` without a reason; keep source metadata out of model inputs.
 8. Update this short file after meaningful progress: completed work, unfinished work, checks performed, and the next concrete step. Refer to the main plan instead of duplicating architecture details here.
 9. `configs/crs-first-engine.json` and `configs/csic-shop.json` write records to the repository's `records/` folder, which holds the user's own records for the dashboard. For a check run, pass `-records` with a temporary folder.
+10. Browser checks on this machine (WSL distro ids-fedora) use Playwright MCP in local scope, headless, with Fedora's Chromium (`npx -y @playwright/mcp@0.0.85 --headless --isolated --executable-path /usr/bin/chromium-browser`). A whole check round fits one `browser_run_code_unsafe` call. browser-use does not run here (no `uv`).

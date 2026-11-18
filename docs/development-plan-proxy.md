@@ -203,8 +203,8 @@ Each stage ends with its tests passing and a note in the progress section.
 | 3. Body limit | Done 26 October 2026 |
 | 4. Live input and records | Done 18 November 2026 |
 | 5. Copier | Done 18 November 2026 |
-| 6. Dashboard | Not started |
-| 7. Lab and measurements | Not started |
+| 6. Dashboard | Done 18 November 2026 |
+| 7. Lab and measurements | Done 18 November 2026 |
 | 8. Close | Not started |
 
 ### Notes from the work
@@ -296,3 +296,65 @@ Each stage ends with its tests passing and a note in the progress section.
         - a reload that keeps one connection, the sender stopping with the last configuration, and the settings' checks.
       - `TestCaddyToIDSLive`: a real Caddy in the test process, loaded from a Caddyfile with `ids_copy` and no `order` option, in front of the real `ids-live` server and its records. Raw HTTP/1.1 requests with lower-case header names. Without `trusted_proxies` the record's client is 127.0.0.1; after a reload with 127.0.0.1 trusted it is the `X-Forwarded-For` address, and the connection stays 127.0.0.1. Header names come in Go's form, `Host` first. The counts have the unknown application name.
       - `xcaddy build` gives Caddy v2.11.9 with `http.handlers.ids_copy`. The built Caddy and the built `ids-live` with `configs/crs-first-engine.json` ran together on this machine, records in a temporary folder. Of four curl requests, the SQL injection scored 23 (942100, 942190, 942270, 942360) and the path traversal 13 (930100, 930110). All four got 920350, the Host header being a numeric address. `ids-live` said 4 received, 4 analysed, none missed, `copiers` 1, and stopped cleanly on SIGTERM. Its socket path check also refused the first try, a path of 109 bytes, with its message.
+6. Stage 6: the dashboard, 18 November 2026.
+   1. What was built:
+      - The record reader reads `gap` records and the live fields of `start` and `counts`. A record type it does not know is skipped and counted (C4), not counted as unreadable.
+      - The overview answer has `not_analysed` with `not_analysed_by` (source and reason), the newest 10 gaps with `gap_count`, `unknown_applications`, and `live` for a live newest run: its socket, the end of its newest counts record, the copiers that record saw, and `stale`.
+      - The overview page shows:
+        - a "Not analysed" tile;
+        - a card with the totals by reason and the newest gaps;
+        - a card of unknown application names;
+        - two notifications: "ids-live has written nothing since …" when a live run's newest counts record is more than 2 minutes old, and "No copier connected" when its newest counts record says 0.
+      - The detail page shows a Proxy card (the proxy's request ID with a copy button, the time the proxy received the request, the connection, TLS) and a Response card (status, type, encoding, length, what was copied, the note explained).
+      - The Engine page shows the input of the newest run and of each run, and the number of lines of unknown record types.
+   2. Decided by the user on 18 November 2026:
+      - Option A: the overview also warns when `ids-live` has stopped writing. ids-live writes a counts record every minute, so a live run whose newest counts record is more than 2 minutes old is not analysing. Without it a crashed `ids-live` looks like a quiet site.
+      - The dashboard follows the IBM Carbon Design System; see `docs/development-plan-dashboard-ui.md`, section "The Carbon look". The restyle was done in this stage, so that the new parts were built once, in the new style.
+   3. Changes to the design above, made while writing it:
+      - A gap belongs to the period in which it ends, as a counts record does.
+      - "No copier connected" comes from the newest counts record of the live run, which gives the most copiers connected at once in its minute. It shows only while the run is not stale.
+      - The browser checks used Playwright MCP (headless Chromium 157), installed on 18 November 2026 at the user's choice, since browser-use does not run on this machine.
+   4. Checks:
+      - `gofmt -l` is empty; `go vet ./...` and `go test ./...` pass in both modules; `go test -race` passes for `internal/dashboard`, `cmd/ids-dashboard`, `internal/live` and `internal/record`. `FuzzStoreReadsAnyFile` ran 60 seconds without a failure.
+      - New Go tests: the overview of a live run (totals by source and reason, the gaps newest first and their count, the unknown names summed over the period, the live status), staleness at 1 minute, exactly 2, 2 minutes and 1 second, and an hour, and before the first counts record; an offline run without a live status; the Engine page's input; an unknown record type skipped.
+      - Demo records from the real programs in a temporary folder: the built Caddy with `ids_copy` over HTTPS (TLS 1.3) and over HTTP on `localhost:8080` (the CSIC profile), 127.0.0.1 and ::1 as trusted proxies with `X-Forwarded-For`, and the built `ids-live` with `configs/csic-shop.json`. 25 requests were sent, attacks and clean ones: 17 (with a first readiness request), 6 while `ids-live` was stopped, and 2 after it started again. All were answered, also the 6 sent while it was stopped; 19 were analysed. They became one gap record (6, `not connected`, source `copier`) when the copier reconnected. A 404 of `file_server` has the note `handler error`.
+      - Browser, three rounds with Playwright on the demo dashboard (its own certificate accepted in the test browser context only), 1440 px, light and dark: login, overview, alerts, two details, rules, Engine and a missing page. The Plex fonts loaded; no page or table was wider than its space; the only console messages were the deliberate 404 of the missing page. The "No copier connected" and "ids-live has written nothing since 21:54:09" notifications showed. The defects found are listed in the UI plan's Carbon section and were fixed and checked again.
+7. Stage 7: the lab and its measurements, 18 November 2026.
+   1. What was built, in the main module without a new dependency:
+      - `lab/testapp`: the application behind Caddy. `/lab/text`, `/lab/html`, `/lab/image.png`, `/lab/gzip`, `/lab/big?kb=`, `/lab/slow?ms=` and `/lab/ws` (a WebSocket upgrade); every other path, such as the CSIC shop's, gets a short text. It reads every body and echoes no request value.
+      - `lab/replay`: sends example files over TLS as raw HTTP/1.1 bytes, the headers in their order and case, checking Caddy's local root; sequential or parallel, repeated, a part of the list (`-skip`, `-limit`), `-keepalive` (leaves out `Connection`), `-xff`, `-h2` (Go's client over HTTP/2). It prints the statuses, the median, p90, the slowest 1 in 100 and the slowest.
+      - `lab/compare`: compares the request records of two folders as multisets (request line, findings with location and matched value, score, alert, analysis, application, profile finding kinds), and counts the header-name lists that differ, as information (C2).
+      - `lab/Caddyfile`: `https://localhost:8080` with `ids_copy` and `https://localhost:8443` without it, both in front of the test app, settings from environment variables.
+      - `lab/lab.sh`: builds the programs, Caddy (xcaddy) and the CSIC files, and runs each check: `equality`, `timing`, `overload`, `stopstart`, `tls`, `responses`. Everything goes to `$LAB` (default `/tmp/ids-lab`), Caddy's data too (`XDG_DATA_HOME`). `LIVE_CPUS` and `OTHER_CPUS` pin the programs to CPUs.
+   2. Changes to the design above:
+      - `lab/csic-live.json` is not in the repository: `lab.sh build` writes it into `$LAB` from `configs/csic-shop.json`, with absolute paths, and a second one with a small queue for the overload check. The socket and the records folder are flags.
+      - CPU pinning was added after the first timing run, to tell CPU sharing from waiting (item 3 below).
+   3. Measurements, on this machine (WSL2, 4 CPUs, Fedora 44, Go 1.26.10, Caddy v2.11.9), all requests over HTTPS:
+      1. Equality (5.1): the 396 CSIC validation and test requests, sent one at a time through Caddy, give the same request records in `ids-live` as in `ids-offline` on the same files: 162 records each, the same findings, matched values, scores, profile findings and analysis; "analysed" is 396 in both. All 162 header-name lists differ, as C2 says: Go's server writes `Cache-control` as `Cache-Control`, puts `Host` first and sorts the rest. It changed no rule result. All 396 got 200.
+      2. Added time (5.2): 396 requests × 10 (3,960), connections kept, median / slowest 1 in 100:
+
+         | Condition | 1 at a time | 8 at a time |
+         | --- | --- | --- |
+         | without `ids_copy` | 0.85 / 1.08 ms | 1.08 / 2.47 ms |
+         | with `ids_copy`, `ids-live` running | 0.91 / 4.78 ms | 1.66 / 6.62 ms |
+         | with `ids_copy`, `ids-live` hung (SIGSTOP) | 0.86 / 1.06 ms | 1.15 / 3.07 ms |
+         | with `ids_copy`, `ids-live` stopped | 0.87 / 1.17 ms | 1.13 / 2.65 ms |
+
+         With `ids-live` hung or stopped, the times are those without the copier: the site never waits for the IDS (M09). The rise with `ids-live` running was the analysis sharing the 4 CPUs. Run again with `ids-live` alone on CPU 3 and the rest on CPUs 0–2:
+
+         | Condition, pinned | 1 at a time | 8 at a time |
+         | --- | --- | --- |
+         | without `ids_copy` | 0.87 / 1.23 ms | 1.08 / 2.87 ms |
+         | with `ids_copy`, `ids-live` running | 0.89 / 1.38 ms | 1.28 / 4.21 ms |
+         | with `ids_copy`, `ids-live` hung | 0.89 / 1.10 ms | 1.15 / 3.30 ms |
+         | with `ids_copy`, `ids-live` stopped | 0.86 / 1.13 ms | 1.19 / 3.46 ms |
+
+         So the copier itself adds about 0.02 ms (1 at a time) to 0.2 ms (8 at a time) at the median, and up to about 1.3 ms at the slowest 1 in 100 under parallel load; on a shared machine the analysis takes CPU from the site. Every copy was counted: of 23,760 copies, 5,789 analysed and 17,971 in gaps (first run); 3,603 and 20,157 (pinned run). Caddy's peak memory was about 60 MB.
+      3. Overload (5.3): `ids-live` with 1 worker and a queue of 5, the copier's queue 20, a burst of 7,920 requests 16 at a time, `ids-live` paused for 2 s. All 7,920 were answered (median 2.2 ms, slowest 1 in 100 6.7 ms). 235 were analysed; 2,429 were counted by the copier (`queue full`) and 5,256 by `ids-live` (`queue full`): 235 + 2,429 + 5,256 = 7,920. Peak memory: `ids-live` 46.6 MB, Caddy 58.4 MB.
+      4. Stop and start (5.4): 132 requests, `ids-live` stopped, 132 requests, started again, 132 requests. All 396 answered; 264 analysed; one gap of exactly 132, `not connected`, from the copier.
+      5. TLS and client IP (5.5): the records have TLS 1.3, `TLS_AES_128_GCM_SHA256`, SNI `localhost`. With `X-Forwarded-For: 198.51.100.7` and no trusted proxy, the client is 127.0.0.1; with 127.0.0.1 trusted, it is 198.51.100.7 and the connection stays 127.0.0.1. HTTP/2 works (version `HTTP/2.0`, ALPN `h2`), and HTTP/3 too (curl 8.18 with `--http3-only`: version `HTTP/3.0`, ALPN `h3`, client `::1`). The raw replay offers no ALPN, so its records have none.
+      6. Responses (5.6): text and HTML copied whole; the image `type not copied`; 600 KB of text copied up to 524,288 bytes; a gzip answer to a client that takes gzip has `encoding` `gzip` and its 57 compressed bytes copied; the WebSocket `upgraded` (101); the slow response was copied at 10 s, "not finished" with its first 11 bytes, while the request still ran (it ended at 12 s).
+   4. Found during the lab:
+      - Caddy's reverse proxy asks the application for gzip itself when the client did not, and unzips the answer (Go's transport). The copier then sees the plain body and no `Content-Encoding`, which is what the client got.
+      - A mistake in the first version of `lab.sh`: with CPU pinning, the saved process IDs were those of helper shells, so one timing run stopped nothing and its numbers were thrown away; the programs left running were stopped. `lab.sh` now starts `taskset` itself and waits for each `ids-live` run's own "Listening on" line; after every scenario `pgrep` showed no lab program left running.
+   5. Checks: `go vet ./lab/...` and `go test ./lab/...` pass (the raw request bytes of `replay`, the multiset difference of `compare`); `bash -n lab/lab.sh` passes.
