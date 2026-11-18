@@ -81,6 +81,11 @@ type Hello struct {
 	// because it does not speak the copier's format. The IDS closes the
 	// connection after this frame.
 	Error string `json:"error,omitempty"`
+	// MaxFrame is set by the IDS: the longest frame it accepts, in bytes,
+	// as the frame's first 4 bytes count it. A copier fits each copy into
+	// it (see Copy.Fit), because the IDS closes the connection on a longer
+	// frame and the copier could then not tell which copies were lost.
+	MaxFrame int64 `json:"max_frame,omitempty"`
 }
 
 // Copy is one request and its response, as the copier saw them.
@@ -194,6 +199,10 @@ const (
 	// NoteUpgraded: the connection was switched to another protocol, such
 	// as WebSocket; there is no response body.
 	NoteUpgraded = "upgraded"
+	// NoteHandlerError: the application's handler returned an error, and
+	// the proxy wrote the response itself, after the copier's part; the
+	// copier knows the status only.
+	NoteHandlerError = "handler error"
 )
 
 // Missed is the content of a missed frame: Count copies of requests made
@@ -513,6 +522,8 @@ func (h *Hello) validate() error {
 		return errors.New("version must be at most 64 bytes of printable text")
 	case !text(h.Error, 1024, true):
 		return errors.New("error must be at most 1024 bytes of printable text")
+	case h.MaxFrame < 0 || h.MaxFrame > math.MaxUint32:
+		return errors.New("max_frame must be 0 to 4294967295")
 	}
 	return nil
 }
@@ -577,24 +588,12 @@ func AppendCopy(dst []byte, c *Copy) ([]byte, error) {
 	if err := c.Validate(); err != nil {
 		return dst, fmt.Errorf("copy frame: %w", err)
 	}
-	meta, err := json.Marshal(c.Meta)
+	meta, head, respHead, err := c.parts()
 	if err != nil {
 		return dst, err
 	}
-	if len(meta) > MaxMetaSize {
-		return dst, fmt.Errorf("copy frame: metadata of %d bytes is larger than the limit of %d", len(meta), MaxMetaSize)
-	}
-	head := []string{c.Method, c.Target, c.Proto}
-	for _, h := range c.Headers {
-		head = append(head, h.Name, h.Value)
-	}
-	var respHead []string
-	for _, h := range c.ResponseHeaders {
-		respHead = append(respHead, h.Name, h.Value)
-	}
-
-	size := 1 + 4 + len(meta) + listSize(head) + 4 + len(c.Body) + listSize(respHead) + 4 + len(c.ResponseBody)
-	if int64(size) > math.MaxUint32 {
+	size := frameSize(meta, head, respHead, len(c.Body), len(c.ResponseBody))
+	if size > math.MaxUint32 {
 		return dst, fmt.Errorf("copy frame: %d bytes do not fit in a frame", size)
 	}
 	dst = binary.BigEndian.AppendUint32(dst, uint32(size))
@@ -604,6 +603,66 @@ func AppendCopy(dst []byte, c *Copy) ([]byte, error) {
 	dst = appendBytes(dst, c.Body)
 	dst = appendList(dst, respHead)
 	return appendBytes(dst, c.ResponseBody), nil
+}
+
+// parts returns the metadata as JSON and the two heads as lists.
+func (c *Copy) parts() (meta []byte, head, respHead []string, err error) {
+	meta, err = json.Marshal(c.Meta)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	if len(meta) > MaxMetaSize {
+		return nil, nil, nil, fmt.Errorf("copy frame: metadata of %d bytes is larger than the limit of %d", len(meta), MaxMetaSize)
+	}
+	head = []string{c.Method, c.Target, c.Proto}
+	for _, h := range c.Headers {
+		head = append(head, h.Name, h.Value)
+	}
+	for _, h := range c.ResponseHeaders {
+		respHead = append(respHead, h.Name, h.Value)
+	}
+	return meta, head, respHead, nil
+}
+
+// frameSize is the length of a copy frame as its first 4 bytes count it.
+func frameSize(meta []byte, head, respHead []string, body, respBody int) int64 {
+	return int64(1 + 4 + len(meta) + listSize(head) + 4 + body + listSize(respHead) + 4 + respBody)
+}
+
+// Size returns the length of c's frame as the frame's first 4 bytes count
+// it, which is what Hello.MaxFrame limits.
+func (c *Copy) Size() (int64, error) {
+	meta, head, respHead, err := c.parts()
+	if err != nil {
+		return 0, err
+	}
+	return frameSize(meta, head, respHead, len(c.Body), len(c.ResponseBody)), nil
+}
+
+// Fit shortens c so that its frame is at most max bytes long, as the IDS's
+// Hello.MaxFrame asks. It cuts the end of the response body first, which
+// nothing analyses yet (K8), and then the end of the request body. The lengths in
+// the metadata stay those of the whole bodies, so the IDS reports the body
+// as partly inspected (T3). Fit returns false, and leaves c as it was,
+// when even the copy without bodies is longer than max.
+func (c *Copy) Fit(max int64) (bool, error) {
+	meta, head, respHead, err := c.parts()
+	if err != nil {
+		return false, err
+	}
+	bare := frameSize(meta, head, respHead, 0, 0)
+	switch {
+	case bare > max:
+		return false, nil
+	case bare+int64(len(c.Body))+int64(len(c.ResponseBody)) <= max:
+		return true, nil
+	case bare+int64(len(c.Body)) <= max:
+		c.ResponseBody = c.ResponseBody[:max-bare-int64(len(c.Body))]
+	default:
+		c.ResponseBody = nil
+		c.Body = c.Body[:max-bare]
+	}
+	return true, nil
 }
 
 func listSize(items []string) int {

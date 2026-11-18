@@ -77,7 +77,7 @@ Written when `ids-offline` or `ids-live` starts writing records.
 | `request.body_length` | Body size in bytes, as the client sent it. It can be more than was inspected: see `analysis.body` |
 | `request.header_names` | Header names in order, without values. For the live input, Caddy gives them in Go's canonical form (`Cache-Control`), `Host` first and the rest sorted by name (`docs/copy-format.md`, section 4.3) |
 | `request.cookies[]` | `name` and `hash`: the first 12 hex digits of HMAC-SHA256 of the value with `hash.key`. The same session gives the same hash; the value can't be found from it |
-| `response` | Live input only, when the application answered: `status`, `content_type` and `encoding` (its `Content-Type` and `Content-Encoding` headers, left out when absent), `body_length` (bytes the application sent), `body_copied` (bytes the copier copied, T4), `note` (`type not copied`, `not finished` or `upgraded`, left out otherwise). The response body itself is not recorded or analysed until the response rules (K8). Added 18 November 2026 |
+| `response` | Live input only, when the application answered: `status`, `content_type` and `encoding` (its `Content-Type` and `Content-Encoding` headers, left out when absent), `body_length` (bytes the application sent), `body_copied` (bytes the copier copied, T4), `note` (`type not copied`, `not finished`, `upgraded` or `handler error`, left out otherwise; see `docs/copy-format.md`, section 4.2). The response body itself is not recorded or analysed until the response rules (K8). Added 18 November 2026 |
 | `analysis` | `complete`, `body` (`empty`, `inspected`, `partly inspected` or `not inspected`), `body_format`, `body_reason`, `issues[]` (M05) |
 | `findings[]` | `rule_id`, `severity`, `message`, `location` (for example `ARGS:id`), `matched` (the matched value), `data` (the rule's log data), `action`, `tags` |
 | `score` | `total`, `threshold`, `exceeded`, `categories` (score per attack group, for example `sql_injection`) |
@@ -123,7 +123,7 @@ Added 18 November 2026 (T7, T8). Copies that are dropped are never lost without 
 | `run` | The run |
 | `from`, `to` | The first and last time the proxy received one of the requests (UTC) |
 | `missed` | How many requests, 1 or more |
-| `reason` | Why. From the copier: `queue full` (its queue was full), `not connected` (`ids-live` could not be reached), `refused by the IDS` (for example a frame over `max_frame_mb`). From `ids-live`: `queue full` (its own queue was full), `IDS stopped` (still queued when a stop's deadline passed) |
+| `reason` | Why. From the copier: `queue full` (its queue was full), `not connected` (`ids-live` could not be reached), `refused by the IDS` (the copy does not fit into `max_frame_mb` even without its bodies). From `ids-live`: `queue full` (its own queue was full), `IDS stopped` (still queued when a stop's deadline passed) |
 | `source` | Who did not pass the copies on: `copier` or `ids` |
 
 A copier's gap is written when its `missed` frame arrives; for `not connected`, that is after it reconnects. `ids-live`'s gaps are written every minute and at the stop.

@@ -294,3 +294,83 @@ func normal(c *Copy) Copy {
 	}
 	return n
 }
+
+// Size is the length the frame's first 4 bytes give.
+func TestSize(t *testing.T) {
+	cp := sample()
+	frame, err := AppendCopy(nil, cp)
+	if err != nil {
+		t.Fatal(err)
+	}
+	size, err := cp.Size()
+	if err != nil || size != int64(len(frame)-4) {
+		t.Errorf("Size = %d, %v; the frame is %d bytes after its length", size, err, len(frame)-4)
+	}
+}
+
+// Fit cuts the response body first, then the request body, and keeps the
+// lengths of the whole bodies, so the IDS sees a cut body (T3).
+func TestFit(t *testing.T) {
+	base := sample()
+	base.Body = bytes.Repeat([]byte("q"), 1000)
+	base.Meta.Request.BodyLength = 5000
+	base.ResponseBody = bytes.Repeat([]byte("r"), 300)
+	base.Meta.Response.BodyLength = 300
+	full, err := base.Size()
+	if err != nil {
+		t.Fatal(err)
+	}
+	bare := full - 1300
+	for _, tt := range []struct {
+		max            int64
+		fits           bool
+		body, respBody int
+	}{
+		{full, true, 1000, 300},
+		{full + 1, true, 1000, 300},
+		{full - 100, true, 1000, 200},
+		{bare + 1000, true, 1000, 0},
+		{bare + 999, true, 999, 0},
+		{bare, true, 0, 0},
+		{bare - 1, false, 1000, 300}, // left as it was
+	} {
+		cp := *base
+		fits, err := cp.Fit(tt.max)
+		if err != nil || fits != tt.fits || len(cp.Body) != tt.body || len(cp.ResponseBody) != tt.respBody {
+			t.Errorf("Fit(%d) = %v, %v; bodies %d and %d, want %v; %d and %d", tt.max, fits, err, len(cp.Body), len(cp.ResponseBody), tt.fits, tt.body, tt.respBody)
+			continue
+		}
+		if !fits {
+			continue
+		}
+		frame, err := AppendCopy(nil, &cp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if int64(len(frame)-4) > tt.max {
+			t.Errorf("Fit(%d): the frame is %d bytes", tt.max, len(frame)-4)
+		}
+		got, err := NewReader(bytes.NewReader(frame), tt.max).Next()
+		if err != nil {
+			t.Fatalf("Fit(%d): the IDS refuses the frame: %v", tt.max, err)
+		}
+		if got.Copy.Meta.Request.BodyLength != 5000 || got.Copy.Meta.Response.BodyLength != 300 {
+			t.Errorf("Fit(%d) changed the lengths: %+v %+v", tt.max, got.Copy.Meta.Request, got.Copy.Meta.Response)
+		}
+	}
+}
+
+// The IDS's hello gives its frame limit.
+func TestHelloMaxFrame(t *testing.T) {
+	b, err := AppendHello(nil, Hello{Format: 1, Program: "ids-live", MaxFrame: 16 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := NewReader(bytes.NewReader(b), 1<<10).Next()
+	if err != nil || f.Hello.MaxFrame != 16<<20 {
+		t.Errorf("hello: %+v, %v", f.Hello, err)
+	}
+	if _, err := AppendHello(nil, Hello{Format: 1, Program: "x", MaxFrame: -1}); err == nil {
+		t.Error("a negative max_frame was written")
+	}
+}

@@ -48,7 +48,7 @@ The dashboard makes its own certificate on first start and prints its SHA-256 fi
 
 ### 2.1. Code
 
-Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazawaf/libinjection-go`.
+Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazawaf/libinjection-go`. The Caddy copier is a module of its own in `caddy-module/`, the only place Caddy is a dependency (T11).
 
 | Package | What it does |
 | --- | --- |
@@ -68,6 +68,7 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/version` | The program version `0.1.0-dev` and the Git revision of the build |
 | `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level`, `-records DIR`, `-application NAME`, `-endpoints` |
 | `cmd/ids-live` | The live input as a service: `-config`, `-socket`, `-records`; stops on SIGTERM. Needs a `live` and a `records` section, or the flags |
+| `caddy-module/` | The Caddy module `ids_copy` (its own `go.mod`, Caddy v2.11.9): copies each request and response while they pass, and sends the copies to `ids-live`; counts what it can't send. Build: `xcaddy build v2.11.9 --with github.com/EfeSipahi/ids-system/caddy-module=./caddy-module --replace github.com/EfeSipahi/ids-system=.` (xcaddy v0.4.7) |
 | `cmd/ids-dashboard` | The dashboard: `-config` (default `configs/dashboard.json`), `-add-user`, `-reset-password`, `-remove-user` |
 
 Other files:
@@ -151,7 +152,7 @@ Other files:
 
 ### 2.4. What it does not do
 
-1. `ids-live` reads copies of live traffic over a Unix socket (18 November 2026), but no copier exists yet: the Caddy module is stage 5 of the proxy plan, so only tests send copies. The dashboard does not show gaps or the live fields yet (stage 6).
+1. Live traffic works through Caddy with the `ids_copy` module and `ids-live` (18 November 2026), tested on this machine over plain HTTP only. HTTPS, HTTP/2 and HTTP/3, and the measurements of T9 are the lab's (stage 7). The dashboard does not show gaps or the live fields yet (stage 6).
 2. There is no ML layer, learned profile, or decision mechanism. An alert is the rule layer's score at the CRS threshold, or a profile finding of an application in `alert` mode, not the planned decision. The dashboard only reads; alerts cannot be marked yet (V7), and there is one user role.
 3. Request rules only; no response rules (they need a copy of each response, K8).
 4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
@@ -162,7 +163,7 @@ Other files:
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.10-X:nodwarf5 linux/amd64` (17 November 2026). `go.mod` needs Go 1.26.8 or newer. Fedora's packaged Go is set to `GOTOOLCHAIN=local` and never downloads a newer Go itself, so the distribution must ship one that is new enough.
 - Setting up another machine: clone the ML repository (GitHub `EfeSipahi/Lorica`) as `../ids-model`, next to this one, because `tools/csic_to_examples.py` reads it from there; the Go tests don't need it. `.gitattributes` keeps LF line endings on every system, because tests compare files byte for byte. In WSL2, keep the clone in the Linux file system (`~/...`), not under `/mnt/c`, as Microsoft recommends for speed.
-- Git: everything up to the notes for setting up another machine (17 November 2026) is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026). Stage 4 (18 November 2026) is committed on `main` but not pushed. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to the notes for setting up another machine (17 November 2026) is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026). Stage 4 (18 November 2026) is committed and pushed (`6c376ce`); stage 5 is committed on `main` but not pushed. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -210,8 +211,9 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
    - All eight stages were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18).
 3. **Now:** live traffic through Caddy (A01, A08). **Decided on 26 October 2026** (T1–T12, main plan section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md); its progress table says which stage is next.
    - Done and pushed: stage 1 (the plan), stage 2 (the copy frame format, `internal/copyframe`), stage 3 (the request body limit of 13,107,200 bytes and partly inspected bodies).
-   - Done and committed 18 November 2026, not pushed: stage 4, the live input and its records (`internal/live`, `cmd/ids-live`, the `live` section, the record fields, `gap`, the lock); the plan's note 4 has the details and checks. The user decided that live records keep the proxy's request ID and receive time (`proxy`).
-   - Next: stage 5, the Caddy copier (`caddy-module/`, its own `go.mod`; the first new dependency, Caddy, inside that module only), then `xcaddy build`.
+   - Done, committed and pushed 18 November 2026 (`6c376ce`): stage 4, the live input and its records (`internal/live`, `cmd/ids-live`, the `live` section, the record fields, `gap`, the lock); the plan's note 4 has the details and checks. The user decided that live records keep the proxy's request ID and receive time (`proxy`).
+   - Done and committed 18 November 2026, not pushed: stage 5, the Caddy copier (`caddy-module/`), and the format amendment the user decided (revised option A: `ids-live`'s hello gives `max_frame`, and the copier fits each copy into it). The plan's note 5 has the details and checks.
+   - Next: stage 6, the dashboard: gaps, not-analysed totals, unknown application names, the copier status, and the live fields on the detail and Engine pages.
    - Caddy with our own Go copier module (`caddy-module/`, its own `go.mod`, the only new dependency); later an Nginx `mirror` input, then an Nginx module.
    - Copies over a two-way Unix socket in our own frame format (`docs/copy-format.md`) to a new program, `ids-live`, which runs the same engine and profiles as `ids-offline` and writes the records.
    - Request bodies up to 12.5 MB and text responses up to 512 KB (Coraza's limits), partial past that; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues, drops counted; fail-open with gap records; Caddy terminates TLS.

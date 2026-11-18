@@ -227,7 +227,7 @@ func (s *Server) greet(conn *net.UnixConn, r *copyframe.Reader) (string, error) 
 	if f.Hello.Version != "" {
 		name += " " + f.Hello.Version
 	}
-	reply := copyframe.Hello{Format: copyframe.Version, Program: Program, Version: version.Version}
+	reply := copyframe.Hello{Format: copyframe.Version, Program: Program, Version: version.Version, MaxFrame: int64(s.cfg.MaxFrameMB) << 20}
 	if f.Hello.Format != copyframe.Version {
 		reply.Error = fmt.Sprintf("%s speaks copy format %d; the copier speaks %d", Program, copyframe.Version, f.Hello.Format)
 	}

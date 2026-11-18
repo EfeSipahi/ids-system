@@ -235,7 +235,7 @@ func connect(t *testing.T, path string) *copier {
 	c := dial(t, path)
 	c.hello(copyframe.Version)
 	f, err := c.r.Next()
-	if err != nil || f.Type != copyframe.TypeHello || f.Hello.Error != "" || f.Hello.Program != Program {
+	if err != nil || f.Type != copyframe.TypeHello || f.Hello.Error != "" || f.Hello.Program != Program || f.Hello.MaxFrame < 1<<20 {
 		t.Fatalf("hello from the IDS: %+v, %v", f.Hello, err)
 	}
 	return c
@@ -514,7 +514,12 @@ func TestBrokenFrameClosesTheConnection(t *testing.T) {
 // connection closed (docs/copy-format.md, section 2).
 func TestFrameTooLarge(t *testing.T) {
 	h := start(t, options{cfg: Config{MaxFrameMB: 1}})
-	c := connect(t, h.socket)
+	c := dial(t, h.socket)
+	c.hello(copyframe.Version)
+	// The IDS's hello gives its limit, which a copier keeps to.
+	if f, err := c.r.Next(); err != nil || f.Hello.MaxFrame != 1<<20 {
+		t.Fatalf("hello: %+v, %v", f.Hello, err)
+	}
 	header := binary.BigEndian.AppendUint32(nil, 1<<20+1)
 	c.write(append(header, byte(copyframe.TypeCopy)))
 	if !c.closed() {

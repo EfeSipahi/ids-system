@@ -123,9 +123,9 @@ Client ==HTTPS==> [ caddy + ids_copy ] --HTTP--> app
 4. There is one sender per socket path, shared across config reloads with `caddy.UsagePool`, because Caddy's documentation says module instances overlap during reloads. It connects, sends `hello`, then frames. When it can't connect, copies are dropped and counted with their time span, and it retries every second. On reconnecting it first sends a `missed` frame.
 5. Its `go.mod` requires the latest Caddy v2 release at build time (pinned) and this repository, with `replace => ../`. Build:
    ```bash
-   xcaddy build --with github.com/EfeSipahi/ids-system/caddy-module=./caddy-module --with github.com/EfeSipahi/ids-system=.
+   xcaddy build v2.11.9 --with github.com/EfeSipahi/ids-system/caddy-module=./caddy-module --replace github.com/EfeSipahi/ids-system=.
    ```
-   The second `--with` is needed because `replace` lines in a dependency's `go.mod` don't apply.
+   The `--replace` is needed because `replace` lines in a dependency's `go.mod` don't apply. (It was a second `--with` in this plan at first; xcaddy imports every `--with` module as a Caddy plugin, and this repository's root has no Go package, so the build failed. Corrected 18 November 2026.)
 
 ### Dashboard: `internal/dashboard` (read-only, `el()` only, no inline script)
 
@@ -137,7 +137,7 @@ Client ==HTTPS==> [ caddy + ids_copy ] --HTTP--> app
 1. `lab/Caddyfile`:
    - `skip_install_trust`, so the system trust store is not touched;
    - `local_certs`, `auto_https disable_redirects`, `admin off`;
-   - storage in a lab data folder, so nothing goes in the home folder;
+   - storage in a lab data folder, and `XDG_DATA_HOME` set to it too, so nothing goes in the home folder: Caddy writes `caddy/instance.uuid` into its data folder whatever `storage` says (found in stage 5);
    - `https://localhost:8080` with `ids_copy`, and `https://localhost:8443` without it, both in front of the same test app.
 2. `lab/testapp` answers text, HTML, an image, a gzip response, a slow response and a WebSocket upgrade.
 3. `lab/replay` sends offline example files over TLS as raw HTTP/1.1 bytes, exactly as written, with the order and case of headers kept. It trusts Caddy's local root certificate, and runs sequentially or in parallel. A few requests also go over HTTP/2 with Go's client, and over HTTP/3 with curl if this machine's curl supports it.
@@ -202,7 +202,7 @@ Each stage ends with its tests passing and a note in the progress section.
 | 2. Frames | Done 26 October 2026 |
 | 3. Body limit | Done 26 October 2026 |
 | 4. Live input and records | Done 18 November 2026 |
-| 5. Copier | Not started |
+| 5. Copier | Done 18 November 2026 |
 | 6. Dashboard | Not started |
 | 7. Lab and measurements | Not started |
 | 8. Close | Not started |
@@ -259,3 +259,40 @@ Each stage ends with its tests passing and a note in the progress section.
       - `cmd/ids-live`: start errors, and a whole run with a copy, the lock, SIGTERM and the socket removed.
       - `ids-offline`'s output is the same before and after, except the random run IDs, in 10 runs: the startup report alone with both configurations, text, `-show-values`, `-summary` of the CRS tests (2,916 of 5,072 flagged at level 1) and of the generated variants, `-json`, `-application` and `-endpoints`.
       - The 1,000 CSIC requests: 96 of 500 normal and 176 of 500 anomalous flagged with `configs/crs-first-engine.json`; with `configs/csic-shop.json` the numbers of the profile plan's notes 17 and 18 (validation 5 of 99 normal and 27 of 98 anomalous flagged, test 3 of 100 and 30 of 99).
+5. Stage 5: the Caddy copier, 18 November 2026.
+   1. What was built:
+      - `caddy-module/`, the Go module `github.com/EfeSipahi/ids-system/caddy-module` with its own `go.mod`: Caddy v2.11.9 (released 4 November 2026, the latest; it needs Go 1.26.0), and this repository through `replace => ../`. The main `go.mod` is unchanged. The build tool is xcaddy v0.4.7.
+      - The handler `http.handlers.ids_copy` (`module.go`): the settings, the Caddyfile block, its place first among the handlers.
+      - `exchange.go`: what is taken of the request before any handler runs (request line, rebuilt headers, Caddy's request ID and start time, client, connection, server, TLS), the request body reader and the response writer that copy while the bytes pass, and the copy at the end, at `max_wait` or at an upgrade.
+      - `sender.go`: one sender per socket, shared across reloads with `caddy.UsagePool`; the queue, the hello exchange, the missed counts, reconnecting every second.
+   2. Decided by the user on 18 November 2026 (revised option A): `ids-live`'s hello gives its frame limit, `max_frame`, and the copier fits each copy into it. It cuts the response body first, then the end of the request body, keeping the lengths of the whole bodies, so the IDS reports the body as partly inspected. Only a copy whose heads alone don't fit is counted as `refused by the IDS`. Format version 1 was amended, because no copier used it yet (`docs/copy-format.md`, sections 3 and 4.4). The question came from the user: whether a body over 15 MB would go unanalysed. It does not: the copier copies the first 12.5 MB of any body.
+   3. Changes to the design above, made while writing it:
+      1. A handler that returns an error leaves the response to Caddy, which writes it after the copier's part. The copy then has the error's status and the new note `handler error`. This is common: a 404 of `file_server` is such an error.
+      2. The handler registers its place itself, before `tracing`, the first directive of Caddy's standard order. A Caddyfile needs no `order ids_copy first`.
+      3. The build uses `--replace` for this repository (see the design above).
+      4. The queue's limits belong to the socket's sender. The newest configuration's limits hold, so a reload can change them.
+      5. While `ids-live` is not connected, a copy is counted at once instead of queued. When the connection is lost, the copies still queued are counted too, so a copy is either sent soon or counted.
+      6. A response that has not started when `max_wait` ends: the copy is sent without a response part.
+      7. A response body that is not copied keeps the real writer's fast path (`ReadFrom`, sendfile for static files); its bytes are still counted.
+      8. When the application sets no `Content-Type`, the copy has the one Go's server sniffs and sends. Response headers are sorted by name.
+      9. The client's port is in the copy only when the client is the connection; a trusted proxy's header gives no port.
+      10. When Caddy stops, the sender has 3 seconds to send what is queued and the last counts. What it can't report, for example because `ids-live` is down, is written to Caddy's log as a number of copies.
+   4. Known limits:
+      - The copier reads the request body only as far as the application does. A body the application does not read to its end gives `body_complete` false, and the IDS reports it as not received to its end (M05).
+      - The headers and body of a response that Caddy writes for a handler's error are not seen.
+      - HTTP/2, HTTP/3 and TLS have not run through the copier yet; that is the lab's (verification 5.5).
+      - Caddy writes `instance.uuid` into its data folder (`~/.local/share/caddy` by default) whatever `storage` says. The first run of `TestCaddyToIDSLive` made that file in the home folder; it was removed, and the test now sets `XDG_DATA_HOME` to a temporary folder.
+   5. Checks:
+      - `gofmt -l` is empty in both modules. In the main module, `go vet ./...` and `go test ./...` pass, and `go test -race` for `internal/live`, `internal/copyframe`, `internal/record` and `cmd/ids-live`; `FuzzReadFrame` ran 60 seconds without a failure (the hello's rules changed). In `caddy-module/`: `go vet ./...` passes, and `go test -race ./...` passes three times in a row.
+      - `copyframe`: tests of `Size`, `Fit` (each cut, the frame the IDS accepts, the whole lengths kept) and the hello's `max_frame`; `ids-live`'s hello gives its limit (`TestFrameTooLarge`).
+      - Unit tests with a fake `ids-live` on a test socket:
+        - a whole copy (request line, rebuilt headers, body, the ID, client, connection, server, TLS, the response);
+        - request bodies under, at and over the limit, one the application stopped reading, a chunked body with `Transfer-Encoding` restored;
+        - response types (listed, with a charset, in capitals, not listed, sniffed, empty), the response limit, `ReadFrom`;
+        - `max_wait` with nothing sent after it, an upgrade, a handler's error with and without a status;
+        - fitting into a small `max_frame`, and a copy whose headers alone don't fit;
+        - a full queue by count and by bytes;
+        - `ids-live` down, then up (the missed frame comes first), then closing the connection and coming back;
+        - a reload that keeps one connection, the sender stopping with the last configuration, and the settings' checks.
+      - `TestCaddyToIDSLive`: a real Caddy in the test process, loaded from a Caddyfile with `ids_copy` and no `order` option, in front of the real `ids-live` server and its records. Raw HTTP/1.1 requests with lower-case header names. Without `trusted_proxies` the record's client is 127.0.0.1; after a reload with 127.0.0.1 trusted it is the `X-Forwarded-For` address, and the connection stays 127.0.0.1. Header names come in Go's form, `Host` first. The counts have the unknown application name.
+      - `xcaddy build` gives Caddy v2.11.9 with `http.handlers.ids_copy`. The built Caddy and the built `ids-live` with `configs/crs-first-engine.json` ran together on this machine, records in a temporary folder. Of four curl requests, the SQL injection scored 23 (942100, 942190, 942270, 942360) and the path traversal 13 (930100, 930110). All four got 920350, the Host header being a numeric address. `ids-live` said 4 received, 4 analysed, none missed, `copiers` 1, and stopped cleanly on SIGTERM. Its socket path check also refused the first try, a path of 109 bytes, with its message.

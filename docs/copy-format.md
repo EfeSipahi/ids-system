@@ -1,6 +1,6 @@
 # Copy format
 
-Written: 26 October 2026. Format version: 1.
+Written: 26 October 2026. Updated 18 November 2026, before any copier used version 1: the IDS's hello gives its frame limit (`max_frame`), and the copier fits each copy into it (decided by the user); the response note `handler error`. Format version: 1.
 
 This is the contract between a proxy's copier and the IDS: how copies of requests and responses travel from the proxy to `ids-live`, and, later, how decisions travel back (K4).
 
@@ -19,7 +19,7 @@ The decisions behind it are T2–T8 and T10 (main plan, section 11.27; [developm
 1. The copier connects to a Unix socket that `ids-live` listens on, set in the product configuration (`live.socket`). The socket has permission 0660: only the users that may send copies can connect. Anyone who can write to it can add records, so it must not be reachable by others.
 2. A socket path can't be longer than about 108 bytes on Linux. `ids-live` checks the path when it starts.
 3. Nothing in a frame depends on the connection (T2). A TCP connection could carry the same frames later; it would need TLS and authentication of its own, which are not part of version 1.
-4. Each side first sends a `hello` frame. When the IDS does not speak the copier's format version, its `hello` carries an `error` text and it closes the connection.
+4. Each side first sends a `hello` frame: the copier first, then the IDS. When the IDS does not speak the copier's format version, its `hello` carries an `error` text and it closes the connection. Otherwise its `hello` gives the longest frame it accepts (`max_frame`), and the copier never sends a longer one (section 4.4).
 5. After that the copier sends `copy` and `missed` frames. The IDS sends nothing more in version 1; `decision` frames are reserved for blocking (K4).
 6. When the connection breaks, the copier counts the copies it could not send and reconnects (T8). Copies are never written to disk on either side (T10).
 
@@ -45,7 +45,7 @@ The decisions behind it are T2–T8 and T10 (main plan, section 11.27; [developm
 3. Rules for readers:
    - A frame of a type you don't know is skipped.
    - A frame of length 0 has no type and is an error.
-   - A frame longer than your limit is refused before it is read (`ids-live`: `live.max_frame_mb`, default 16 MB). Close the connection; the next frame's start is not known.
+   - A frame longer than your limit is refused before it is read (`ids-live`: `live.max_frame_mb`, default 16 MB). Close the connection. A copier that keeps to the `max_frame` of the IDS's hello never sends one; the frames it sent after a refused one would be lost without a count.
    - A frame that breaks any rule below is an error, and the connection is closed. A copy is never "partly" accepted.
    - JSON parts are read strictly: a field you don't know is an error. New optional fields need a reader that knows them, so the format version changes with them.
 
@@ -57,6 +57,7 @@ The decisions behind it are T2–T8 and T10 (main plan, section 11.27; [developm
 | `program` | The sender, for example `caddy ids_copy` or `ids-live`. 1–64 bytes of printable text |
 | `version` | The sender's version. Optional; at most 64 bytes of printable text |
 | `error` | Only from the IDS: why it refuses the connection. Optional; at most 1,024 bytes of printable text |
+| `max_frame` | Only from the IDS: the longest frame it accepts, in bytes, as a frame's first 4 bytes count it (type byte and content). `ids-live` sends `live.max_frame_mb` × 1,048,576. Optional; 0 to 4,294,967,295; left out or 0 means the copier uses 16,777,216 |
 
 "Printable text" here and below means UTF-8 without control characters.
 
@@ -93,9 +94,9 @@ The request line and the headers are raw bytes, not JSON. JSON can't hold bytes 
 | `tls.server_name`, `tls.alpn` | The name the client asked for (SNI, at most 255 bytes), and the agreed protocol, such as `h2`. Optional |
 | `request.body_length` | How many body bytes the client sent, as far as they were read |
 | `request.body_complete` | `true` when the body was read to its end |
-| `response.status` | The response's status, 100–999. `response` is left out when no response was written, for example because the client went away |
+| `response.status` | The response's status, 100–999. `response` is left out when no response was written, for example because the client went away, or none had been started when the copy was sent (`max_wait`, C7) |
 | `response.body_length` | How many body bytes the application sent |
-| `response.note` | Why the copied body is not the response's body: `type not copied` (the copier copies only some types, T4), `not finished` (the copy was sent while the response was still running), `upgraded` (the connection became, for example, a WebSocket). Optional |
+| `response.note` | Why the copied body is not the response's body: `type not copied` (the copier copies only some types, T4), `not finished` (the copy was sent while the response was still running), `upgraded` (the connection became, for example, a WebSocket), `handler error` (the application's handler returned an error and the proxy wrote the response itself, after the copier's part: the status is the error's, and the copier saw no headers or body). Optional |
 
 Rules:
 
@@ -106,13 +107,22 @@ Rules:
 
 ### 4.3. What a copier keeps
 
-1. The Caddy copier runs first among Caddy's handlers, so it copies the request before any rewrite.
+1. The Caddy copier runs first among Caddy's handlers, so it copies the request before any rewrite. It registers that place itself (before `tracing`, the first of Caddy's standard order), so a Caddyfile needs no `order` option.
 2. Caddy runs on Go's HTTP server, which keeps the headers in a map. So:
    - names are in Go's canonical form (`cache-control` becomes `Cache-Control`);
    - the order of different headers is lost, but repeated values of one name keep their order.
 
-   The copier writes `Host` first, then the other headers sorted by name, with `Transfer-Encoding` restored from the request. The lab compares results with the original requests (development plan, verification 5).
+   The copier writes `Host` first, then the other headers sorted by name, with `Transfer-Encoding` restored from the request. Response headers are sorted by name too; when the application set no `Content-Type`, the copy has the one Go's server sniffs and sends. The lab compares results with the original requests (development plan, verification 5).
 3. Requests that Go's server rejects before any handler runs, for example with a broken request line or headers that are too large, never reach the copier. They never reach the application either.
+
+### 4.4. Fitting a copy into the IDS's limit
+
+A copier's limits (12.5 MB of request body, 512 KB of response body by default) keep a copy under 16 MB. When they are raised above the IDS's `max_frame`, the copier shortens a copy that would be too long before it sends it:
+
+1. It cuts the end of the response body, which the IDS does not analyse yet (K8).
+2. If that is not enough, it drops the response body and cuts the end of the request body.
+3. `body_length` keeps the length of the whole body, so the IDS analyses the first part and reports the body as partly inspected, as for any long body (T3).
+4. Only a copy whose metadata and heads alone are longer than `max_frame` is not sent. The copier counts it as missed, reason `refused by the IDS`.
 
 ## 5. `missed`
 
@@ -120,6 +130,6 @@ Rules:
 | --- | --- |
 | `from`, `to` | The first and last time of the requests that were not copied. Both are required, and `to` may not be before `from` |
 | `count` | How many, 1 or more |
-| `reason` | `queue full` (the copier's queue was full, T7), `not connected` (the IDS could not be reached, T8), `refused by the IDS` (the IDS refused a frame, for example one over its size limit). 1–64 bytes of printable text |
+| `reason` | `queue full` (the copier's queue was full, T7), `not connected` (the IDS could not be reached, T8), `refused by the IDS` (the copy does not fit into the IDS's `max_frame` even without its bodies, section 4.4). 1–64 bytes of printable text |
 
 `ids-live` turns each `missed` frame into a `gap` record, which the dashboard shows (`docs/records-format.md`).

@@ -211,7 +211,7 @@ type Response struct {
 	BodyLength int64 `json:"body_length"`
 	BodyCopied int   `json:"body_copied"`
 	// Note says why the copied body is not the whole body: "type not
-	// copied", "not finished" or "upgraded".
+	// copied", "not finished", "upgraded" or "handler error".
 	Note string `json:"note,omitempty"`
 }
 
