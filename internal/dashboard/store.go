@@ -32,7 +32,11 @@ type store struct {
 	runs    []string                // runs in the order first seen
 	rules   map[string][]record.Rule
 	counts  []countsEntry
+	gaps    []gapEntry
 	broken  int // lines that could not be read
+	// skipped counts lines of a record type this dashboard does not know,
+	// which readers skip (docs/records-format.md, section 2).
+	skipped int
 }
 
 // recordFile is one file and how far it has been read.
@@ -73,6 +77,13 @@ type entry struct {
 
 type countsEntry struct {
 	record.Counts
+	file *recordFile
+}
+
+// gapEntry is a gap record: requests of the live input that were not
+// analysed (T7, T8).
+type gapEntry struct {
+	record.Gap
 	file *recordFile
 }
 
@@ -177,6 +188,13 @@ func (s *store) forget(f *recordFile) {
 		}
 	}
 	s.counts = counts
+	gaps := s.gaps[:0]
+	for _, g := range s.gaps {
+		if g.file != f {
+			gaps = append(gaps, g)
+		}
+	}
+	s.gaps = gaps
 }
 
 // maxLine is the longest line that is read. The writer's limits keep a
@@ -308,8 +326,18 @@ func (s *store) add(f *recordFile, offset int64, line []byte) {
 			return
 		}
 		s.counts = append(s.counts, countsEntry{Counts: c, file: f})
-	default:
+	case record.TypeGap:
+		var g record.Gap
+		if json.Unmarshal(line, &g) != nil || g.Missed < 1 {
+			s.broken++
+			return
+		}
+		s.gaps = append(s.gaps, gapEntry{Gap: g, file: f})
+	case "":
 		s.broken++
+	default:
+		// A newer writer's record type: skipped, as the format asks (C4).
+		s.skipped++
 	}
 }
 

@@ -353,3 +353,16 @@ All 37 problems were worked on. P32 (the long rules page) was first only partly 
    - chart labels: 24 hours "Oct 23, 12:00 · 15:00 · … · Oct 24, 00:00 · … · 09:00"; 7 days "Oct 18" to "Oct 24";
    - the 1-hour view of the demo correctly shows "No records in this period" (the demo records end 10 hours earlier);
    - no sideways overflow and no script errors.
+
+## The Carbon look (18 November 2026)
+
+1. The user found the dashboard hard to read, without a standard for colours, type or components, and asked for a free design system. Four were compared, with their licenses read on GitHub: IBM Carbon (Apache-2.0, IBM Plex fonts OFL-1.1), USWDS (public domain and CC0), Radix Colors (MIT, colours only), and keeping our styles with the contrast fixed. GOV.UK Frontend (crown and font reserved) and Tabler (Bootstrap and JavaScript, against `el()` only) were left out.
+2. Measured before the change, against WCAG (4.5:1 for text, 3:1 for marks) on the light page: the warning yellow `#fab219` 1.7:1, the good green 3.2:1, the accent blue 4.2:1; in dark, the critical red 3.6:1 on cards.
+3. Decided by the user on 18 November 2026: Carbon. The reasons given: it is made for data-heavy work products such as security monitoring; it is a whole standard (colours, type, spacing, data table, tags, notifications, content switcher, tiles); it has official dark themes; its status colours are checked for contrast and used with a shape; its licenses are the clearest.
+4. How it is applied, without a new dependency and with the same security policy:
+   - the token values of `@carbon/themes` 11.86.0 and `@carbon/colors` are written into `app.css` as our colour roles: theme g10 in light, g100 in dark;
+   - IBM Plex Sans (300, 400, 600) and Plex Mono (400) are served from `web/static/fonts/` with their license, `OFL-1.1-IBM-Plex.txt` (about 250 kB, the complete files, so that any script in a record is covered);
+   - the components follow Carbon's: the dark 48 px UI shell header, flat square tiles, data tables with a grey header layer, small grey tags, the content switcher for the period, 32 px fields in the filter rows, inline notifications with a status edge, the inverse tooltip;
+   - the chart takes Carbon's categorical order, checked with the data-visualisation validator: alerts purple 70 `#6929c4` (dark: purple 60 `#8a3ffc`), other records cyan 50 `#1192e8`, every check passing in both themes; status colours are not used for series;
+   - the warning yellow is a mark only, with a dark edge in light; text keeps the text colours.
+5. Checked in the browser (Playwright, Chromium 157, 1440 px, light and dark) on records made by the real Caddy and `ids-live` (proxy plan, note 6): every page, no sideways overflow, no script error, the fonts loaded. Fixed during the check: the pager line took the header's black (the selector `.top` matched it), the alerts filters wrapped to two lines (P22), the time, client and application columns were cut, an IPv6 address with a port was written without brackets, and an error notification's text was red.

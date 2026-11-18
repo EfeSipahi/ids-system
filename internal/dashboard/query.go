@@ -105,7 +105,59 @@ type overview struct {
 	IPs        []item    `json:"top_ips"`
 	LastRecord time.Time `json:"last_record,omitzero"`
 	LastAlert  time.Time `json:"last_alert,omitzero"`
+
+	// NotAnalysed counts the requests of the live input that were not
+	// analysed in the period, from the gap records (T7, T8); NotAnalysedBy
+	// splits it by source and reason, and Gaps are the newest gaps.
+	NotAnalysed   int64         `json:"not_analysed"`
+	NotAnalysedBy []missedCount `json:"not_analysed_by"`
+	Gaps          []gapRow      `json:"gaps"`
+	GapCount      int           `json:"gap_count"`
+	// UnknownApps are the application names the proxy gave that the
+	// configuration does not have, with their requests in the period (T6).
+	UnknownApps []item `json:"unknown_applications"`
+	// Live is the state of the newest run when its input is live.
+	Live *liveStatus `json:"live,omitempty"`
 }
+
+// missedCount is the not-analysed total of one source and reason.
+type missedCount struct {
+	Source string `json:"source"`
+	Reason string `json:"reason"`
+	Missed int64  `json:"missed"`
+}
+
+// gapRow is one gap record.
+type gapRow struct {
+	From   time.Time `json:"from"`
+	To     time.Time `json:"to"`
+	Missed int64     `json:"missed"`
+	Reason string    `json:"reason"`
+	Source string    `json:"source"`
+}
+
+// liveStatus says whether a live run is writing, and whether a proxy is
+// sending to it.
+type liveStatus struct {
+	Socket string    `json:"socket,omitempty"`
+	Start  time.Time `json:"start"`
+	// LastCounts is the end of the run's newest counts record, and Copiers
+	// the copiers that record saw (most at once in its period). Both are
+	// left out before the first counts record.
+	LastCounts time.Time `json:"last_counts,omitzero"`
+	Copiers    *int      `json:"copiers,omitempty"`
+	// Stale is true when nothing has been written for longer than
+	// staleAfter: ids-live writes a counts record every minute, so it has
+	// stopped, crashed or hangs (decided by the user, 18 November 2026).
+	Stale bool `json:"stale"`
+}
+
+// staleAfter is how old a live run's newest counts record may be. ids-live
+// writes one every minute.
+const staleAfter = 2 * time.Minute
+
+// maxGaps is how many of the newest gaps the overview lists.
+const maxGaps = 10
 
 const (
 	topSize = 10
@@ -212,7 +264,66 @@ func (s *store) overview(r timeRange) overview {
 	o.Groups = top(groupCounts)
 	o.Locations = top(locations)
 	o.IPs = top(ips)
+	s.liveParts(&o, r)
 	return o
+}
+
+// liveParts adds what the live input wrote: gaps, unknown application
+// names, and the state of the newest run. A gap belongs to the period when
+// its end is in it, as a counts record does. The caller holds s.mu.
+func (s *store) liveParts(o *overview, r timeRange) {
+	o.NotAnalysedBy, o.Gaps, o.UnknownApps = []missedCount{}, []gapRow{}, []item{}
+	by := map[[2]string]int64{}
+	for _, g := range s.gaps {
+		if !r.contains(g.To) {
+			continue
+		}
+		o.NotAnalysed += g.Missed
+		by[[2]string{g.Source, g.Reason}] += g.Missed
+		o.Gaps = append(o.Gaps, gapRow{From: g.From, To: g.To, Missed: g.Missed, Reason: g.Reason, Source: g.Source})
+	}
+	for k, n := range by {
+		o.NotAnalysedBy = append(o.NotAnalysedBy, missedCount{Source: k[0], Reason: k[1], Missed: n})
+	}
+	sort.Slice(o.NotAnalysedBy, func(i, j int) bool {
+		a, b := o.NotAnalysedBy[i], o.NotAnalysedBy[j]
+		if a.Missed != b.Missed {
+			return a.Missed > b.Missed
+		}
+		return a.Source+a.Reason < b.Source+b.Reason
+	})
+	sort.SliceStable(o.Gaps, func(i, j int) bool { return o.Gaps[i].To.After(o.Gaps[j].To) })
+	o.GapCount = len(o.Gaps)
+	if len(o.Gaps) > maxGaps {
+		o.Gaps = o.Gaps[:maxGaps]
+	}
+
+	unknown := map[string]int{}
+	for _, c := range s.counts {
+		if r.contains(c.To) && c.To.After(r.From) {
+			for name, n := range c.UnknownApplications {
+				unknown[name] += n
+			}
+		}
+	}
+	o.UnknownApps = top(unknown)
+
+	st, ok := s.latestRun()
+	if !ok || st.Input == nil || st.Input.Kind != record.InputLive {
+		return
+	}
+	live := &liveStatus{Socket: st.Input.Socket, Start: st.Time}
+	for _, c := range s.counts {
+		if c.Run == st.Run && c.To.After(live.LastCounts) {
+			live.LastCounts, live.Copiers = c.To, c.Copiers
+		}
+	}
+	since := live.LastCounts
+	if since.IsZero() {
+		since = st.Time
+	}
+	live.Stale = r.To.Sub(since) > staleAfter
+	o.Live = live
 }
 
 // bucketWidths are the widths a bar of the chart may have. Round widths
@@ -556,6 +667,8 @@ type runRow struct {
 	Run    string        `json:"run"`
 	Time   time.Time     `json:"time"`
 	Engine record.Engine `json:"engine"`
+	// Input is where the run's requests came from; nil for request files.
+	Input *record.Input `json:"input,omitempty"`
 	// What the run did: requests analysed (from its counts records), and
 	// the request records and alerts that are still kept.
 	Analysed int `json:"analysed"`
@@ -585,12 +698,14 @@ type enginePage struct {
 	Oldest         time.Time           `json:"oldest_record,omitzero"`
 	Newest         time.Time           `json:"newest_record,omitzero"`
 	Unreadable     int                 `json:"unreadable_lines"`
+	// Skipped counts lines of record types this dashboard does not know.
+	Skipped int `json:"skipped_lines"`
 }
 
 func (s *store) enginePage() enginePage {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	p := enginePage{Runs: []runRow{}, Files: []fileRow{}, Applications: []result.AppStartup{}, Records: len(s.entries), Unreadable: s.broken}
+	p := enginePage{Runs: []runRow{}, Files: []fileRow{}, Applications: []result.AppStartup{}, Records: len(s.entries), Unreadable: s.broken, Skipped: s.skipped}
 	type done struct{ analysed, records, alerts int }
 	byRun := map[string]*done{}
 	for _, run := range s.runs {
@@ -612,11 +727,11 @@ func (s *store) enginePage() enginePage {
 	for i := len(s.runs) - 1; i >= 0; i-- {
 		st := s.starts[s.runs[i]]
 		d := byRun[st.Run]
-		p.Runs = append(p.Runs, runRow{Run: st.Run, Time: st.Time, Engine: st.Engine, Analysed: d.analysed, Records: d.records, Alerts: d.alerts})
+		p.Runs = append(p.Runs, runRow{Run: st.Run, Time: st.Time, Engine: st.Engine, Input: st.Input, Analysed: d.analysed, Records: d.records, Alerts: d.alerts})
 	}
 	sort.SliceStable(p.Runs, func(i, j int) bool { return p.Runs[i].Time.After(p.Runs[j].Time) })
 	if st, ok := s.latestRun(); ok {
-		p.Latest = &runRow{Run: st.Run, Time: st.Time, Engine: st.Engine}
+		p.Latest = &runRow{Run: st.Run, Time: st.Time, Engine: st.Engine, Input: st.Input}
 		if st.Applications != nil {
 			p.Applications = st.Applications
 		}

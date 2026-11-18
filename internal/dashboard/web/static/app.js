@@ -104,6 +104,14 @@
     return days === 1 ? "1 day ago" : `${days} days ago`;
   }
 
+  // hostPort writes an address with its port: "203.0.113.7:443", or
+  // "[::1]:443" for IPv6, whose colons would be read as the port's.
+  function hostPort(ip, port) {
+    if (!ip) return "";
+    if (!port) return ip;
+    return ip.includes(":") ? `[${ip}]:${port}` : `${ip}:${port}`;
+  }
+
   function short(text, n) {
     text = String(text || "");
     return text.length > n ? text.slice(0, n - 1) + "…" : text;
@@ -440,6 +448,67 @@
       [].concat(notes).filter(Boolean).map((n) => el("div", { class: "note" }, n)));
   }
 
+  // banner is a Carbon inline notification: a status mark, a title and a
+  // sentence. kind is "error" or "warning".
+  function banner(kind, title, text) {
+    return el("div", { class: "banner " + kind, role: kind === "error" ? "alert" : "status" },
+      el("span", { class: "mark", "aria-hidden": "true" }, "!"),
+      el("div", {}, el("strong", {}, title), " ", text));
+  }
+
+  // The sources and reasons of a gap (docs/records-format.md, section 5.1).
+  const gapSources = { copier: "the proxy's copier", ids: "ids-live" };
+  const gapReasons = {
+    "queue full": "queue full",
+    "not connected": "ids-live not reachable",
+    "refused by the IDS": "too large for ids-live",
+    "IDS stopped": "ids-live stopped before analysing",
+  };
+  const gapReason = (g) => `${gapReasons[g.reason] || g.reason} (${gapSources[g.source] || g.source})`;
+
+  // liveBanners say when the live input is not working (stage 6): ids-live
+  // has written nothing for over two minutes (the user's option A, 18
+  // November 2026), or no proxy is connected to it.
+  function liveBanners(live) {
+    if (!live) return null;
+    if (live.stale) {
+      const since = live.last_counts || live.start;
+      return banner("error", `ids-live has written nothing since ${fmtTime(since)} (${ago(since)}).`,
+        "No requests are being analysed: ids-live has stopped, crashed or hangs. It writes counts every minute while it runs.");
+    }
+    if (live.copiers === 0) {
+      return banner("warning", "No copier connected.",
+        `In the last minute no proxy was connected to ids-live${live.socket ? " on " + live.socket : ""}, so no copies arrive. Check that Caddy runs with ids_copy.`);
+    }
+    return null;
+  }
+
+  // gapsCard lists what the live input could not analyse (T7, T8).
+  function gapsCard(o) {
+    return el("section", { class: "card" },
+      el("div", { class: "card-head" }, el("h2", {}, "Not analysed"),
+        el("span", { class: "muted" }, o.gap_count === 0 ? "" : o.gap_count > o.gaps.length
+          ? `the newest ${o.gaps.length} of ${nf.format(o.gap_count)} gaps` : `${o.gap_count} ${o.gap_count === 1 ? "gap" : "gaps"}`)),
+      o.gaps.length ? [
+        el("ul", { class: "plain" }, o.not_analysed_by.map((m) => el("li", {}, el("strong", {}, nf.format(m.missed)), " ", gapReason(m)))),
+        el("div", { class: "table-wrap" }, el("table", {},
+          el("thead", {}, el("tr", {}, el("th", {}, "Time span"), el("th", { class: "num" }, "Missed"), el("th", {}, "Reason"))),
+          el("tbody", {}, o.gaps.map((g) => el("tr", {},
+            el("td", { class: "nowrap" }, g.from === g.to ? fmtTime(g.from) : fmtSpan(g.from, g.to)),
+            el("td", { class: "num" }, nf.format(g.missed)),
+            el("td", {}, gapReason(g)))))))]
+        : el("p", { class: "muted" }, "Every request that reached the proxy in this period was analysed."));
+  }
+
+  // unknownAppsCard lists the application names the proxy gave that the
+  // configuration does not have (T6).
+  function unknownAppsCard(o) {
+    return el("section", { class: "card" },
+      el("div", { class: "card-head" }, el("h2", {}, "Unknown application names")),
+      el("p", { class: "muted" }, "The proxy named these applications, but the configuration has none of these names, so their requests ran as no application: the rules only, without a profile."),
+      el("ul", { class: "plain" }, o.unknown_applications.map((i) => el("li", {}, el("code", {}, i.key), " · ", nf.format(i.count), i.count === 1 ? " request" : " requests"))));
+  }
+
   // columns draws records over time: alerts at the bottom, the other
   // records above them, with a tooltip per column and a table twin. A bar
   // whose period has not ended is drawn lighter (P13). The chart is one tab
@@ -649,11 +718,17 @@
         location.assign("/alerts?" + query({ kind: "all", from: toDate(from).toISOString(), to: to.toISOString() }));
       };
       const ruleName = (i) => [el("strong", {}, i.key), " ", i.msg || i.label, i.msg ? el("span", { class: "muted" }, " · " + i.label) : null];
+      // The live input's parts show when the newest run is live, or when
+      // the period has gaps from an earlier one.
+      const liveInput = o.live || o.not_analysed > 0;
+      const missedNote = o.not_analysed_by.slice(0, 2).map((m) => `${nf.format(m.missed)} ${gapReasons[m.reason] || m.reason}`).join(" · ");
       replace(el("div", { class: "stack" },
+        liveBanners(o.live),
         el("div", { class: "tiles" },
           tile("Alerts", o.alerts, o.analysed > 0 || o.last_alert ? [share(o.alerts), o.last_alert ? "last alert " + ago(o.last_alert) : ""] : "score reached the threshold", true),
           tile("Records", o.recorded, "a finding or an incomplete analysis"),
           tile("Requests analysed", o.analysed, o.profiled ? ["from the counts of the IDS", `${nf.format(o.no_profile)} of no application: the rules only, no profile`] : "from the counts of the IDS"),
+          liveInput ? tile("Not analysed", o.not_analysed, o.not_analysed > 0 ? missedNote : "nothing was dropped") : null,
           tile("Incomplete analyses", o.incomplete, share(o.incomplete) || "parts that could not be inspected")),
         card("Records over time",
           el("div", { class: "legend" },
@@ -664,6 +739,9 @@
         el("section", { class: "card" },
           el("div", { class: "card-head" }, el("h2", {}, "Latest alerts"), latest.total ? el("a", { href: alertsLink({}) }, `All ${nf.format(latest.total)} alerts →`) : null),
           newest.length ? listTable(newest, { apps: latest.applications.length > 1 }) : el("p", { class: "empty" }, "No alerts in this period.")),
+        liveInput || o.unknown_applications.length ? el("div", { class: "grid-2" },
+          liveInput ? gapsCard(o) : null,
+          o.unknown_applications.length ? unknownAppsCard(o) : null) : null,
         el("div", { class: "grid-2x2" },
           card("Rules that fired most", toplist(o.top_rules, ruleName, (i) => alertsLink({ kind: "all", rule: i.key }))),
           card("Attack groups", toplist(o.top_groups, (i) => i.key, (i) => alertsLink({ kind: "all", group: i.key }))),
@@ -907,6 +985,34 @@
     const json = JSON.stringify(r, null, 2);
     const clientCount = el("span", { class: "muted" }, "…");
 
+    // What the live input knows besides the request (T5, T10, C6): the
+    // proxy's own ID and time, the connection, TLS and the response.
+    const proxy = r.proxy, conn = r.connection, tls = r.tls, resp = r.response;
+    const addr = (a) => (a ? hostPort(a.ip, a.port) : "");
+    const responseNotes = {
+      "type not copied": "the body was not copied: the copier copies only some types (text/plain, text/html and text/xml by default)",
+      "not finished": "the copy was sent while the response was still running (max_wait)",
+      "upgraded": "the connection became another protocol, such as a WebSocket",
+      "handler error": "the application returned an error and the proxy wrote the response itself; only the status is known",
+    };
+    const proxyCard = proxy ? card("Proxy", kv([
+      ["Proxy request ID", [el("code", {}, proxy.request_id), copyButton(proxy.request_id, "the proxy's request ID")]],
+      ["Received by the proxy", fmtTime(proxy.received)],
+      ["Analysed", fmtTime(r.time)],
+      ["Connection from", conn ? addr(conn) + (ip && conn.ip !== ip ? " (a proxy in front of it; the client is " + ip + ")" : "") : ""],
+      ["TLS", tls ? `${tls.version}, ${tls.cipher}` : "no (plain HTTP)"],
+      ["Server name (SNI)", tls && tls.server_name],
+      ["Protocol (ALPN)", tls && tls.alpn]])) : null;
+    const responseCard = proxy ? card("Response", resp ? [kv([
+      ["Status", String(resp.status)],
+      ["Content type", resp.content_type],
+      ["Encoding", resp.encoding],
+      ["Body length", bytes(resp.body_length)],
+      ["Copied", resp.body_copied < resp.body_length ? `${bytes(resp.body_copied)} of it` : resp.body_length ? "all of it" : ""],
+      ["Note", resp.note ? responseNotes[resp.note] || resp.note : ""]]),
+    el("p", { class: "muted" }, "The response body is not analysed yet: the response rules come later.")]
+      : el("p", { class: "muted" }, "No response was written when the copy was made: the client went away, or the application had not answered yet.")) : null;
+
     // The application and its profile's findings (F9), apart from the
     // rule findings and the score (M10).
     const app = r.application, prof = r.profile;
@@ -950,10 +1056,11 @@
           ["Run", el("code", {}, r.run)]])),
         card("Who and where", kv([
           ["Client IP", ip ? [el("a", { href: "/alerts?" + query({ kind: "all", ip, range: "all" }) }, ip), copyButton(ip, "the IP address")] : "not known"],
+          ["Client from", proxy ? "the proxy: the connection, or a trusted proxy's header" : ""],
           ["Last 24 hours", ip ? clientCount : ""],
           ["Client port", r.client && r.client.port],
           ["Host", r.server && r.server.host],
-          ["Server address", r.server && r.server.ip ? `${r.server.ip}${r.server.port ? ":" + r.server.port : ""}` : ""]]))),
+          ["Server address", r.server ? hostPort(r.server.ip, r.server.port) : ""]]))),
       card("Request", kv([
         ["Request line", [el("code", { class: "wrap" }, line), copyButton(line, "the request line")]],
         ["User-Agent", req.user_agent],
@@ -963,6 +1070,7 @@
         ["Header names", req.header_names && req.header_names.length ? chips(req.header_names) : ""],
         ["Cookies", req.cookies && req.cookies.length ? chips(req.cookies.map((c) => `${c.name} #${c.hash}`)) : ""]]),
         el("p", { class: "muted" }, "Secret values (passwords, tokens, cookies, Authorization) are masked before a record is written.")),
+      proxyCard || responseCard ? el("div", { class: "grid-2" }, proxyCard, responseCard) : null,
       card("Analysis", kv([
         ["Complete", a.complete ? "yes" : "no — a clean result does not cover the parts that were not inspected"],
         ["Body", `${a.body}${a.body_format ? " as " + a.body_format : ""}${a.body_reason ? " (" + a.body_reason + ")" : ""}`],
@@ -1181,12 +1289,13 @@
         return el("tr", {},
           el("td", { class: "nowrap" }, fmtTime(r.time)),
           el("td", { class: "mono" }, r.run),
+          el("td", {}, r.input && r.input.kind === "live" ? "live" : "files"),
           el("td", {}, r.engine.crs),
           el("td", {}, String(r.engine.paranoia_level)),
           el("td", { class: "num" }, nf.format(r.analysed)),
           el("td", { class: "num" }, nf.format(r.records)),
           el("td", { class: "num" }, nf.format(r.alerts)),
-          el("td", { class: "nowrap" }, el("code", { title: r.engine.config }, short(r.engine.config, 20)), copyButton(r.engine.config, "the fingerprint"),
+          el("td", { class: "nowrap" }, el("code", { title: r.engine.config }, short(r.engine.config, 15)), copyButton(r.engine.config, "the fingerprint"),
             changed ? [" ", el("span", { class: "chip changed", title: "The configuration is not the one of the run before" }, "changed")] : null));
       });
       const level = l ? l.engine.paranoia_level : 0;
@@ -1196,6 +1305,7 @@
           ["Run", el("code", {}, l.run)],
           ["Engine", `${l.engine.version}${l.engine.revision ? " (" + l.engine.revision.slice(0, 12) + ")" : ""}`],
           ["Rules", l.engine.crs],
+          ["Input", l.input && l.input.kind === "live" ? `live: copies from a proxy over ${l.input.socket || "a Unix socket"} (ids-live)` : "request files (ids-offline)"],
           ["Paranoia level", p.applications.length ? `${l.engine.paranoia_level} by default; an application may have its own` : l.engine.paranoia_level],
           ["Rule status", el("a", { href: "/rules" }, `${nf.format(p.active_rules - p.above_level_rules)} run, ` +
             `${nf.format(p.above_level_rules)} above level ${level}, ${nf.format(p.excluded_rules)} excluded`)],
@@ -1217,13 +1327,14 @@
               el("td", { class: "wrap sub" }, a.notes && a.notes.length ? a.notes.map((n) => el("div", {}, n)) : "–"))))))) : null,
         card("Runs", el("p", { class: "muted" }, "Each start of the IDS, newest first. A new configuration fingerprint means the rules or settings changed. Records and alerts count what is still kept."),
           el("div", { class: "table-wrap" }, el("table", { class: "wide" },
-            el("thead", {}, el("tr", {}, [["Started", ""], ["Run", ""], ["Rules", ""], ["Level", ""], ["Analysed", "num"], ["Records", "num"], ["Alerts", "num"], ["Configuration", ""]].map(([h, c]) => el("th", { class: c }, h)))),
+            el("thead", {}, el("tr", {}, [["Started", ""], ["Run", ""], ["Input", ""], ["Rules", ""], ["Level", ""], ["Analysed", "num"], ["Records", "num"], ["Alerts", "num"], ["Configuration", ""]].map(([h, c]) => el("th", { class: c }, h)))),
             el("tbody", {}, runs)))),
         card("Record files", kv([
           ["Records kept", nf.format(p.records)],
           ["Oldest", fmtTime(p.oldest_record)],
           ["Newest", fmtTime(p.newest_record)],
-          ["Unreadable lines", p.unreadable_lines ? nf.format(p.unreadable_lines) : "none"]]),
+          ["Unreadable lines", p.unreadable_lines ? nf.format(p.unreadable_lines) : "none"],
+          ["Other record types", p.skipped_lines ? `${nf.format(p.skipped_lines)} lines skipped: written by a newer version of the IDS` : ""]]),
           el("div", { class: "table-wrap" }, el("table", {},
             el("thead", {}, el("tr", {}, el("th", {}, "File"), el("th", { class: "num" }, "Size"), el("th", {}, "Last written"))),
             el("tbody", {}, p.files.map((f) => el("tr", {}, el("td", { class: "mono" }, f.name), el("td", { class: "num" }, bytes(f.size)), el("td", {}, fmtTime(f.modified))))))))));

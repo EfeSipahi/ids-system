@@ -33,7 +33,7 @@ The decisions behind it are R1–R7 and V4 (main plan, section 11.22). The code 
 4. **Rules for readers:**
    - A last line without `\n` is still being written. Read it on a later pass.
    - Ignore fields you don't know.
-   - Skip a line whose `type` you don't know (added 18 November 2026, with `gap`). Until stage 6 of the proxy plan, `ids-dashboard` still counts such lines as unreadable.
+   - Skip a line whose `type` you don't know (added 18 November 2026, with `gap`). `ids-dashboard` skips them and shows their number on its Engine page.
    - Skip, and count, lines that can't be read.
    - A `start` record appears again at the top of each rotated file; keep one per `run`.
    - A record's `id` is unique; a reader that meets it twice keeps the first.

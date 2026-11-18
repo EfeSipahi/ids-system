@@ -292,9 +292,10 @@ func TestStoreCountsBrokenLines(t *testing.T) {
 	f.Close()
 	appendLines(t, current, requestRecord("b", "run1", t0, "", 10))
 	refresh(t, s)
-	// The bad JSON, the unknown type and the request without an ID.
-	if got := ids(s); !reflect.DeepEqual(got, []string{"a", "b"}) || s.broken != 3 {
-		t.Fatalf("entries %v, broken %d", got, s.broken)
+	// The bad JSON and the request without an ID are broken; a type the
+	// dashboard does not know is skipped (C4).
+	if got := ids(s); !reflect.DeepEqual(got, []string{"a", "b"}) || s.broken != 2 || s.skipped != 1 {
+		t.Fatalf("entries %v, broken %d, skipped %d", got, s.broken, s.skipped)
 	}
 }
 
