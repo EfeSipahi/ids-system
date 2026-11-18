@@ -75,7 +75,7 @@ func secretRequest() *httpmodel.Request {
 func build(t *testing.T, req *httpmodel.Request, full bool) (Request, []byte) {
 	t.Helper()
 	res := loadRules(t).Evaluate(req)
-	rec := testBuilder(full).build(res.Request, res, nil, "id1", "run1", time.Date(2026, 10, 23, 10, 15, 2, 0, time.UTC))
+	rec := testBuilder(full).build(res.Request, res, nil, nil, "id1", "run1", time.Date(2026, 10, 23, 10, 15, 2, 0, time.UTC))
 	line, err := marshal(rec)
 	if err != nil {
 		t.Fatal(err)
@@ -349,7 +349,7 @@ func TestRecorder(t *testing.T) {
 	rs := loadRules(t)
 	dir := filepath.Join(t.TempDir(), "records")
 	c := &clock{t: time.Date(2026, 10, 23, 10, 0, 0, 0, time.UTC)}
-	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), nil, c.now)
+	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), nil, nil, c.now)
 	if err != nil {
 		t.Fatal(err)
 	}

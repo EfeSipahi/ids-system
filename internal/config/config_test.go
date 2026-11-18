@@ -219,3 +219,46 @@ func TestFingerprintOfProfiles(t *testing.T) {
 		t.Error("a changed profile file gives the same fingerprint")
 	}
 }
+
+// The live section of ids-live (A01): a relative socket starts at the
+// configuration's directory, defaults fill what is left out, and a socket
+// path Linux can't use is refused when the file is read.
+func TestLiveSection(t *testing.T) {
+	dir := t.TempDir()
+	write(t, dir, "rules.conf", `SecAction "id:1,phase:1,pass,nolog"`)
+	p, err := Load(write(t, dir, "ids.json", `{"files": ["rules.conf"]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Live != nil {
+		t.Errorf("left out: %+v", p.Live)
+	}
+	p, err = Load(write(t, dir, "ids.json", `{"files": ["rules.conf"], "live": {"socket": "copy.sock", "workers": 4}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Live == nil || p.Live.Socket != filepath.Join(dir, "copy.sock") || p.Live.Workers != 4 {
+		t.Errorf("live = %+v", p.Live)
+	}
+	if got := p.Live.WithDefaults(); got.QueueCopies != 1000 || got.QueueMB != 64 || got.MaxFrameMB != 16 {
+		t.Errorf("defaults = %+v", got)
+	}
+
+	long := "/run/" + strings.Repeat("x", 100) + ".sock"
+	for text, want := range map[string]string{
+		`{"files": ["rules.conf"], "live": {}}`:                                           "socket is missing",
+		`{"files": ["rules.conf"], "live": {"socket": "` + long + `"}}`:                   "Linux allows at most 107",
+		`{"files": ["rules.conf"], "live": {"socket": "@ids"}}`:                           "abstract sockets",
+		`{"files": ["rules.conf"], "live": {"socket": "/s", "workers": -1}}`:              "workers -1",
+		`{"files": ["rules.conf"], "live": {"socket": "/s", "queue_copies": 2000000}}`:    "queue_copies",
+		`{"files": ["rules.conf"], "live": {"socket": "/s", "queue_mb": 8}}`:              "max_frame_mb 16 is more than queue_mb 8",
+		`{"files": ["rules.conf"], "live": {"socket": "/s", "max_frame_mb": 2000}}`:       "max_frame_mb 2000 must be",
+		`{"files": ["rules.conf"], "live": {"socket": "/s", "queue_size": 1}}`:            "unknown field",
+		`{"files": ["rules.conf"], "live": {"socket": "/s", "workers": 1, "socket": ""}}`: "socket is missing",
+	} {
+		path := write(t, dir, "bad.json", text)
+		if _, err := Load(path); err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("%s: error %v, want %q", text, err, want)
+		}
+	}
+}

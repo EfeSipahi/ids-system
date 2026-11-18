@@ -23,6 +23,13 @@ import (
 // gives the same hash across runs.
 const KeyFile = "hash.key"
 
+// LockFile is the file in the record directory that a writer locks, so that
+// two writers never use the same directory (C5).
+const LockFile = "records.lock"
+
+// ErrInUse is returned by Open when another writer has the directory.
+var ErrInUse = errors.New("the records folder is in use by another writer")
+
 // countsInterval is how often a counts record is written while requests
 // arrive.
 const countsInterval = time.Minute
@@ -31,7 +38,9 @@ const countsInterval = time.Minute
 // many goroutines.
 type Recorder struct {
 	w *writer
-	b builder
+	// lock keeps other writers out of the directory until Close.
+	lock *os.File
+	b    builder
 	// apps holds the builder of each application, whose masker also knows
 	// the profile's secrets (F8). profiled is true when there are
 	// applications.
@@ -40,8 +49,15 @@ type Recorder struct {
 	run      string
 	now      func() time.Time
 
+	// live is true for a live input, whose counts records say how many
+	// copiers were connected.
+	live bool
+
 	mu     sync.Mutex
 	counts Counts
+	// copiers is how many copiers are connected now, and copiersMax the
+	// most in the period of counts.
+	copiers, copiersMax int
 }
 
 // NewEngine describes the running engine for the records. fingerprint
@@ -59,31 +75,51 @@ func NewEngine(rs *engine.RuleSet, fingerprint string) Engine {
 // Open starts a run: it opens the record files of cfg.Dir and writes the
 // start record, with the status of every rule and the applications of
 // apps. apps may be nil when the configuration has no applications.
+//
+// Only one writer may use a directory at a time. On Linux, Open locks the
+// directory until Close, and a second writer gets ErrInUse.
 func Open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set) (*Recorder, error) {
-	return open(cfg, eng, statuses, apps, time.Now)
+	return open(cfg, eng, statuses, apps, nil, time.Now)
 }
 
-func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, now func() time.Time) (*Recorder, error) {
+// OpenWith is Open for a run whose requests come from input, which the
+// start record names.
+func OpenWith(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, input *Input) (*Recorder, error) {
+	return open(cfg, eng, statuses, apps, input, time.Now)
+}
+
+func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, input *Input, now func() time.Time) (*Recorder, error) {
 	cfg = cfg.WithDefaults()
 	if err := cfg.Validate(); err != nil {
 		return nil, err
 	}
+	if err := os.MkdirAll(cfg.Dir, 0o700); err != nil {
+		return nil, fmt.Errorf("records: %w", err)
+	}
+	lock, err := lockDir(cfg.Dir)
+	if err != nil {
+		return nil, fmt.Errorf("records: %s: %w", cfg.Dir, err)
+	}
 	w, err := openWriter(cfg.Dir, int64(cfg.MaxFileMB)<<20, cfg.KeepFiles, now)
 	if err != nil {
+		unlock(lock)
 		return nil, fmt.Errorf("records: %w", err)
 	}
 	key, err := loadKey(filepath.Join(cfg.Dir, KeyFile))
 	if err != nil {
 		w.close()
+		unlock(lock)
 		return nil, fmt.Errorf("records: %w", err)
 	}
 	r := &Recorder{
-		w:   w,
-		b:   builder{masker: newMasker(cfg.SecretNames, key), full: cfg.FullRequests, engine: eng},
-		run: newID(),
-		now: now,
+		w:    w,
+		lock: lock,
+		b:    builder{masker: newMasker(cfg.SecretNames, key), full: cfg.FullRequests, engine: eng},
+		run:  newID(),
+		now:  now,
+		live: input != nil && input.Kind == InputLive,
 	}
-	start := Start{Type: TypeStart, Schema: Schema, Run: r.run, Time: now().UTC(), Engine: eng, Rules: []Rule{}}
+	start := Start{Type: TypeStart, Schema: Schema, Run: r.run, Time: now().UTC(), Engine: eng, Rules: []Rule{}, Input: input}
 	if apps != nil && len(apps.Apps()) > 0 {
 		r.profiled = true
 		r.apps = map[*profile.App]builder{}
@@ -109,6 +145,7 @@ func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Se
 	}
 	if err := w.setHeader(start); err != nil {
 		w.close()
+		unlock(lock)
 		return nil, fmt.Errorf("records: %w", err)
 	}
 	r.counts = Counts{Type: TypeCounts, Schema: Schema, Run: r.run, From: start.Time}
@@ -125,6 +162,25 @@ func (r *Recorder) Run() string {
 // res.Request. prof is the result of checking req against its application's
 // profile; it is nil when the configuration has no applications.
 func (r *Recorder) Add(req *httpmodel.Request, res *engine.Result, prof *profile.Result) error {
+	return r.AddWith(req, res, prof, nil)
+}
+
+// Live is what a live input knows of a request besides the request itself:
+// where the proxy got it and what the application answered.
+type Live struct {
+	Proxy Proxy
+	// Connection is the address the proxy's connection came from.
+	Connection Client
+	TLS        *TLS
+	Response   *Response
+	// UnknownApplication is the application name the proxy gave, when the
+	// configuration has no application of that name (T6). The request is
+	// then one of no application.
+	UnknownApplication string
+}
+
+// AddWith is Add for a request of a live input; live may be nil.
+func (r *Recorder) AddWith(req *httpmodel.Request, res *engine.Result, prof *profile.Result, live *Live) error {
 	if r.profiled && prof == nil {
 		prof = &profile.Result{BodyChecked: req.Status.Body.Complete()}
 	}
@@ -140,7 +196,7 @@ func (r *Recorder) Add(req *httpmodel.Request, res *engine.Result, prof *profile
 	wanted := Wanted(req, res, prof)
 	var rec Request
 	if wanted {
-		rec = b.build(req, res, prof, newID(), r.run, now)
+		rec = b.build(req, res, prof, live, newID(), r.run, now)
 		if err := r.w.write(rec); err != nil {
 			return fmt.Errorf("records: %w", err)
 		}
@@ -161,6 +217,12 @@ func (r *Recorder) Add(req *httpmodel.Request, res *engine.Result, prof *profile
 	if prof != nil && prof.App == nil {
 		r.counts.NoProfile++
 	}
+	if live != nil && live.UnknownApplication != "" {
+		if r.counts.UnknownApplications == nil {
+			r.counts.UnknownApplications = map[string]int{}
+		}
+		r.counts.UnknownApplications[live.UnknownApplication]++
+	}
 	if now.Sub(r.counts.From) >= countsInterval {
 		return r.flushLocked(now)
 	}
@@ -177,17 +239,46 @@ func (r *Recorder) Flush() error {
 
 func (r *Recorder) flushLocked(now time.Time) error {
 	r.counts.To = now.UTC()
+	if r.live {
+		n := r.copiersMax
+		r.counts.Copiers = &n
+	}
 	if err := r.w.write(r.counts); err != nil {
 		return fmt.Errorf("records: %w", err)
 	}
 	r.counts = Counts{Type: TypeCounts, Schema: Schema, Run: r.run, From: r.counts.To}
+	r.copiersMax = r.copiers
 	return nil
 }
 
-// Close writes the last counts record and closes the file.
+// SetCopiers says how many copiers are connected now. The next counts
+// record gives the most that were connected at the same time in its period.
+func (r *Recorder) SetCopiers(n int) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.copiers = n
+	r.copiersMax = max(r.copiersMax, n)
+}
+
+// Gap writes a gap record: missed requests that reached the proxy between
+// from and to were not analysed, for reason, and source says who dropped
+// them (GapCopier or GapIDS).
+func (r *Recorder) Gap(from, to time.Time, missed int64, reason, source string) error {
+	g := Gap{Type: TypeGap, Schema: Schema, Run: r.run, From: from.UTC(), To: to.UTC(), Missed: missed, Reason: reason, Source: source}
+	if err := r.w.write(g); err != nil {
+		return fmt.Errorf("records: %w", err)
+	}
+	return nil
+}
+
+// Close writes the last counts record, closes the file and lets other
+// writers use the directory.
 func (r *Recorder) Close() error {
 	err := r.Flush()
-	return errors.Join(err, r.w.close())
+	err = errors.Join(err, r.w.close())
+	unlock(r.lock)
+	r.lock = nil
+	return err
 }
 
 // newID returns a random ID of 26 letters and digits.

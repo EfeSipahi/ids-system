@@ -1,15 +1,16 @@
 # Record format
 
-Written: 23 October 2026. Updated 25 October 2026: applications and profiles (A04, decisions F1–F11), only as optional fields. Schema version: **1**.
+Written: 23 October 2026. Updated 25 October 2026: applications and profiles (A04, decisions F1–F11), only as optional fields. Updated 18 November 2026: the live input `ids-live` (A01, decisions T1–T12), as optional fields and the new record type `gap`. Schema version: **1**.
 
 This is the contract between the programs that write records and the programs that read them.
 
 ```
-now:    request files ──▶ ids-offline ──writes──▶ records/*.jsonl ──reads──▶ ids-dashboard
-later:  proxy copies  ──▶ ids (service) ─writes─▶ (same files)      ──reads──▶ ids-dashboard, webhook, syslog, MCP (I1)
+files:   request files ──▶ ids-offline ──writes──▶ records/*.jsonl ──reads──▶ ids-dashboard
+live:    proxy copies  ──▶ ids-live ─────writes──▶ (same files)
+later:                                                             ──reads──▶ webhook, syslog, MCP (I1)
 ```
 
-The decisions behind it are R1–R7 and V4 (main plan, section 11.22). The code is in `internal/record`. Two golden tests pin the format of a request record: `internal/record/testdata/request-record.json` without applications, and `request-record-profile.json` for a request of an application with a profile. The profile files themselves are described in `docs/profile-format.md`.
+The decisions behind it are R1–R7 and V4 (main plan, section 11.22). The code is in `internal/record`. Three golden tests pin the format of a request record: `internal/record/testdata/request-record.json` without applications, `request-record-profile.json` for a request of an application with a profile, and `request-record-live.json` for a request of the live input. The profile files themselves are described in `docs/profile-format.md`.
 
 ## 1. Files
 
@@ -18,19 +19,21 @@ The decisions behind it are R1–R7 and V4 (main plan, section 11.22). The code 
 | `records.jsonl` | The file being written now |
 | `records-<UTC time>.jsonl` | A full file, renamed at rotation, for example `records-20261023T193646.751485264Z.jsonl`. The names sort from oldest to newest |
 | `hash.key` | The installation key for cookie hashes (32 random bytes, hex). Made on the first run. Deleting it changes every later cookie hash |
+| `records.lock` | Empty. The writer locks it while it runs (Linux only). It stays when the writer ends |
 
 1. **Folder and permissions.** The folder is set in the product configuration (`records.dir`) or with `ids-offline -records DIR`. The folder has permission 0700 and every file 0600, because records hold personal data such as IP addresses.
 2. **Rotation (R5).** When `records.jsonl` would grow beyond `max_file_mb` (default 10 MB), it is renamed and a new one is started. The `start` record of the run is written again at the top of the new file, so each file can be read alone. The newest `keep_files` files are kept (default 10, the current one included); older ones are deleted.
-3. **Writing.** Each record is written as one whole line with a single write. One writer per folder.
+3. **Writing.** Each record is written as one whole line with a single write. One writer per folder: on Linux the writer takes a lock on `records.lock` (`flock`), and a second writer fails with "the records folder is in use by another writer". The lock ends with the writer, also when it crashes. Other systems have no lock, and the rule is not enforced there.
 
 ## 2. Lines
 
 1. Each line is one JSON object in UTF-8, ending with `\n`.
 2. The characters `<`, `>` and `&` are written as `<`, `>` and `&`. So a line can't be read as HTML by mistake.
-3. Every line has `"type"` (`start`, `request` or `counts`) and `"schema": 1`.
+3. Every line has `"type"` (`start`, `request`, `counts` or `gap`) and `"schema": 1`.
 4. **Rules for readers:**
    - A last line without `\n` is still being written. Read it on a later pass.
    - Ignore fields you don't know.
+   - Skip a line whose `type` you don't know (added 18 November 2026, with `gap`). Until stage 6 of the proxy plan, `ids-dashboard` still counts such lines as unreadable.
    - Skip, and count, lines that can't be read.
    - A `start` record appears again at the top of each rotated file; keep one per `run`.
    - A record's `id` is unique; a reader that meets it twice keeps the first.
@@ -38,7 +41,7 @@ The decisions behind it are R1–R7 and V4 (main plan, section 11.22). The code 
 
 ## 3. `start`: one per run
 
-Written when `ids-offline` (later `ids`) starts writing records.
+Written when `ids-offline` or `ids-live` starts writing records.
 
 | Field | Content |
 | --- | --- |
@@ -52,6 +55,7 @@ Written when `ids-offline` (later `ids`) starts writing records.
 | `rules[]` | Every rule: `id`, `file` (base name), `line`, `phase`, `paranoia_level` (left out when the rule has none), `msg` (the rule's `msg` text as written in its file, macros such as `%{MATCHED_VAR}` not expanded; left out when the rule has none; added 24 October 2026), `active`, and `reason` when it is excluded |
 | `applications[]` | Only when the configuration has applications. Per application: `name`, `hosts`, `paths` (left out when every path belongs to it), `profile` (file base name), `mode` (`monitor` or `alert`), `paranoia_level` (the level its requests run at), `exceptions[]` and `notes[]`. An exception is written as in the profile: `setting` and `value`, `rule` and `skip`, or `rule` and `off`; with `reason`, the author's `note`, and `no_effect` when it changes nothing at the moment, saying why (for example a rule above the level). Added 25 October 2026 |
 | `require_profile` | `true` when a request of no application gets a `no_profile` finding (F7). Left out otherwise |
+| `input` | Where the run's requests come from: `kind` `live` and the `socket` they arrive on. Left out for request files (`ids-offline`). Added 18 November 2026 |
 
 ## 4. `request`: one per request with a finding or an incomplete analysis (R1)
 
@@ -63,13 +67,17 @@ Written when `ids-offline` (later `ids`) starts writing records.
 | `decided_by` | `"rule layer only"`, or `"rule and profile layers"` for a request of an application whose profile is in `alert` mode. A profile in `monitor` mode does not take part in the decision. The decision mechanism (K3) replaces this later |
 | `application` | Only when the configuration has applications (F9): `name` (or `none` for a request of no application), `paranoia_level` (the level its rules ran at, F11) and `mode` (left out for `none`). The name is not an input of the ML layer |
 | `profile` | Only for a request of an application, or with a `no_profile` finding: `findings[]` (`kind`, `location`, `message`; never a value of the request), `omitted` (findings beyond the first 64, when there are more), `body_checked` (`false` when the body was not read to its end, so its parameters were not judged, M05). The finding kinds are listed in `docs/profile-format.md` |
-| `client.ip`, `client.port` | The address of the **connection**: today the offline input's `remote_addr`/`remote_port`, later the trusted proxy's. Never taken from `X-Forwarded-For` or any other header the client sends. Left out when unknown |
+| `proxy.request_id`, `proxy.received` | Live input only: the proxy's ID of the request (for Caddy, its request UUID), to find it in the proxy's logs, and when the proxy received it (UTC). `time` above is when the IDS analysed it. Added 18 November 2026 |
+| `client.ip`, `client.port` | Who sent the request. For request files: the file's `remote_addr`/`remote_port`. For the live input: the client as the proxy determined it, the connection's address or the one a trusted proxy in front gave (T5). Never taken by the IDS from `X-Forwarded-For` or any other header the client sends. Left out when unknown |
+| `connection.ip`, `connection.port` | Live input only: the address the proxy's connection came from. It differs from `client` when a trusted proxy is in front. Added 18 November 2026 |
 | `server.host`, `server.ip`, `server.port` | The `Host` header, and the address and port the request came to |
+| `tls` | Live input over TLS only (T10): `version` (for example `TLS 1.3`), `cipher`, `server_name` (SNI, left out when the client sent none), `alpn` (for example `h2`, left out when none was agreed). Record fields only, not an input of any layer. Added 18 November 2026 |
 | `request.method`, `path`, `query`, `version` | The request line. Secret parameters in `query` are masked by name, and secret path parts of a profile by place: `/reset/[masked]` |
 | `request.user_agent`, `referer`, `content_type` | These headers. Secret parameters in the Referer's query are masked |
 | `request.body_length` | Body size in bytes, as the client sent it. It can be more than was inspected: see `analysis.body` |
-| `request.header_names` | Header names in order, without values |
+| `request.header_names` | Header names in order, without values. For the live input, Caddy gives them in Go's canonical form (`Cache-Control`), `Host` first and the rest sorted by name (`docs/copy-format.md`, section 4.3) |
 | `request.cookies[]` | `name` and `hash`: the first 12 hex digits of HMAC-SHA256 of the value with `hash.key`. The same session gives the same hash; the value can't be found from it |
+| `response` | Live input only, when the application answered: `status`, `content_type` and `encoding` (its `Content-Type` and `Content-Encoding` headers, left out when absent), `body_length` (bytes the application sent), `body_copied` (bytes the copier copied, T4), `note` (`type not copied`, `not finished` or `upgraded`, left out otherwise). The response body itself is not recorded or analysed until the response rules (K8). Added 18 November 2026 |
 | `analysis` | `complete`, `body` (`empty`, `inspected`, `partly inspected` or `not inspected`), `body_format`, `body_reason`, `issues[]` (M05) |
 | `findings[]` | `rule_id`, `severity`, `message`, `location` (for example `ARGS:id`), `matched` (the matched value), `data` (the rule's log data), `action`, `tags` |
 | `score` | `total`, `threshold`, `exceeded`, `categories` (score per attack group, for example `sql_injection`) |
@@ -101,8 +109,24 @@ Control characters and invalid UTF-8 are written as escapes, as in the terminal 
 | `analysed` | Requests analysed, with or without a record |
 | `recorded`, `alerts`, `incomplete` | Of these: request records written, alerts, analyses that could not inspect everything |
 | `no_profile` | Of these, requests of no application, when the configuration has applications. Left out when 0. Added 25 October 2026 |
+| `unknown_applications` | Live input only: per name, the requests for which the proxy named an application that the configuration does not have (T6), for example `{"shop2": 3}`. They count as requests of no application. Left out when there are none. Added 18 November 2026 |
+| `copiers` | Live input only: the most copiers that were connected at the same time in the period. `0` means no proxy was sending, which tells "nothing arrives" from "nothing happens". Added 18 November 2026 |
 
-A `counts` record is written when a request comes a minute or more after the start of the period being counted, and at the end of a run. (The live service will also write one every minute when no request comes.) This is how requests without a record are still counted (R1).
+A `counts` record is written when a request comes a minute or more after the start of the period being counted, and at the end of a run. `ids-live` also writes one every minute when no request comes. This is how requests without a record are still counted (R1).
+
+### 5.1. `gap`: requests of the live input that were not analysed
+
+Added 18 November 2026 (T7, T8). Copies that are dropped are never lost without a count: each count becomes a `gap` record.
+
+| Field | Content |
+| --- | --- |
+| `run` | The run |
+| `from`, `to` | The first and last time the proxy received one of the requests (UTC) |
+| `missed` | How many requests, 1 or more |
+| `reason` | Why. From the copier: `queue full` (its queue was full), `not connected` (`ids-live` could not be reached), `refused by the IDS` (for example a frame over `max_frame_mb`). From `ids-live`: `queue full` (its own queue was full), `IDS stopped` (still queued when a stop's deadline passed) |
+| `source` | Who did not pass the copies on: `copier` or `ids` |
+
+A copier's gap is written when its `missed` frame arrives; for `not connected`, that is after it reconnects. `ids-live`'s gaps are written every minute and at the stop.
 
 ## 6. Masking (R4, M11)
 

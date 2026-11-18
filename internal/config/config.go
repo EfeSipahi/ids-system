@@ -3,8 +3,8 @@
 //
 // The file is one JSON object. The engine fields ("files", "exclude",
 // "paranoia_level") are at the top, as before; "request_body_limit",
-// "records", "applications" and "require_profile" are optional. Unknown fields are an error, so a
-// misspelled setting cannot be ignored.
+// "records", "applications", "require_profile" and "live" are optional.
+// Unknown fields are an error, so a misspelled setting cannot be ignored.
 package config
 
 import (
@@ -18,9 +18,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
+	"github.com/EfeSipahi/ids-system/internal/live"
 	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
 )
@@ -45,6 +47,10 @@ type Product struct {
 	Applications []profile.AppConfig `json:"applications"`
 	// RequireProfile makes a request of no application a finding (F7).
 	RequireProfile bool `json:"require_profile"`
+
+	// Live is the live input of ids-live (A01). It is nil when the file
+	// has no "live" section; ids-offline does not read it.
+	Live *live.Config `json:"live"`
 
 	// raw is the file as read, for the fingerprint.
 	raw []byte
@@ -79,6 +85,16 @@ func Load(path string) (*Product, error) {
 			p.Records.Dir = filepath.Join(dir, p.Records.Dir)
 		}
 		if err := p.Records.Validate(); err != nil {
+			return nil, fmt.Errorf("%s: %w", path, err)
+		}
+	}
+	if p.Live != nil {
+		// A name starting with @ is an abstract socket for Linux, which
+		// Validate refuses; it is not a path to join.
+		if s := p.Live.Socket; s != "" && !filepath.IsAbs(s) && !strings.HasPrefix(s, "@") {
+			p.Live.Socket = filepath.Join(dir, p.Live.Socket)
+		}
+		if err := p.Live.Validate(); err != nil {
 			return nil, fmt.Errorf("%s: %w", path, err)
 		}
 	}

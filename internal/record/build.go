@@ -27,8 +27,9 @@ type builder struct {
 
 // build makes the record of req. res must be the result of evaluating req,
 // and prof, when the configuration has applications, the result of checking
-// it against its application's profile.
-func (b builder) build(req *httpmodel.Request, res *engine.Result, prof *profile.Result, id, run string, now time.Time) Request {
+// it against its application's profile. live is set for a request of a live
+// input.
+func (b builder) build(req *httpmodel.Request, res *engine.Result, prof *profile.Result, live *Live, id, run string, now time.Time) Request {
 	var secretPath []int
 	var pathValues []string
 	if prof != nil {
@@ -71,7 +72,39 @@ func (b builder) build(req *httpmodel.Request, res *engine.Result, prof *profile
 	if b.full && rec.Alert {
 		rec.Full = b.fullRequest(req, s)
 	}
+	if live != nil {
+		b.addLive(&rec, live, s)
+	}
 	return rec
+}
+
+// addLive adds what a live input knows of the request. Its texts pass
+// through the secrets like any other: the server name and the response's
+// types come from the client or the application.
+func (b builder) addLive(rec *Request, live *Live, s secrets) {
+	rec.Proxy = &Proxy{RequestID: s.text(live.Proxy.RequestID, maxShortText), Received: live.Proxy.Received.UTC()}
+	if live.Connection != (Client{}) {
+		c := live.Connection
+		rec.Connection = &c
+	}
+	if t := live.TLS; t != nil {
+		rec.TLS = &TLS{
+			Version:    s.text(t.Version, maxShortText),
+			Cipher:     s.text(t.Cipher, maxShortText),
+			ServerName: s.text(t.ServerName, maxHost),
+			ALPN:       s.text(t.ALPN, maxShortText),
+		}
+	}
+	if r := live.Response; r != nil {
+		rec.Response = &Response{
+			Status:      r.Status,
+			ContentType: s.text(r.ContentType, maxContentType),
+			Encoding:    s.text(r.Encoding, maxContentType),
+			BodyLength:  r.BodyLength,
+			BodyCopied:  r.BodyCopied,
+			Note:        s.text(r.Note, maxShortText),
+		}
+	}
 }
 
 func (b builder) http(req *httpmodel.Request, s secrets, secretPath []int) HTTP {

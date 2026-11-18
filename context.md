@@ -1,6 +1,6 @@
 # IDS — Current Working Context
 
-Last updated: 17 November 2026  
+Last updated: 18 November 2026  
 Product directory: this repository (`/home/esip/Documents/ids-system` on the first development machine)  
 Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.md)
 
@@ -59,12 +59,15 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@within`, `@beginsWith`, `@endsWith`, `@validateByteRange`, `@validateUrlEncoding`, `@validateUtf8Encoding`, `@ipMatch`, `@eq`, `@lt`, `@ge`, `@gt`, `@unconditionalMatch` |
 | `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21). `NewTuning` and `EvaluateWith` apply one application's exceptions and level per request (`tuning.go`) |
 | `internal/profile` | Application profiles: strict reading, the choice of application, the allow-list checks, secrets, the exception policy, and the `-endpoints` survey |
-| `internal/result` | Output records: analysis status, findings, score. Request content is left out of the terminal output by default (M11) |
-| `internal/config` | The product configuration: engine settings plus the optional `request_body_limit` (default 13,107,200 bytes, as Coraza), `records`, `applications` and `require_profile` sections, and the configuration fingerprint (R7), which covers the profiles |
-| `internal/record` | Record files (R1–R7): building and masking request records, `start` and `counts` records, rotation, file permissions, cookie hashes |
+| `internal/result` | Output records: analysis status, findings, score. Request content is left out of the terminal output by default (M11). The startup report's text, shared by `ids-offline` and `ids-live` |
+| `internal/config` | The product configuration: engine settings plus the optional `request_body_limit` (default 13,107,200 bytes, as Coraza), `records`, `applications`, `require_profile` and `live` sections, and the configuration fingerprint (R7), which covers the profiles |
+| `internal/record` | Record files (R1–R7): building and masking request records, `start`, `counts` and `gap` records, the live fields (proxy, connection, TLS, response), rotation, file permissions, cookie hashes, the folder's lock |
+| `internal/copyframe` | The copy frames between a proxy's copier and `ids-live` (`docs/copy-format.md`) |
+| `internal/live` | The live input (A01): the Unix socket, hello frames, a queue with limits, workers, gap counts, the stop; turns a copy into the common request and analyses it as `ids-offline` does |
 | `internal/dashboard` | The dashboard: reader of the record files, JSON API, pages (embedded HTML, CSS, JS), users, login, sessions, its own certificate |
 | `internal/version` | The program version `0.1.0-dev` and the Git revision of the build |
 | `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level`, `-records DIR`, `-application NAME`, `-endpoints` |
+| `cmd/ids-live` | The live input as a service: `-config`, `-socket`, `-records`; stops on SIGTERM. Needs a `live` and a `records` section, or the flags |
 | `cmd/ids-dashboard` | The dashboard: `-config` (default `configs/dashboard.json`), `-add-user`, `-reset-password`, `-remove-user` |
 
 Other files:
@@ -148,7 +151,7 @@ Other files:
 
 ### 2.4. What it does not do
 
-1. It reads requests from files only. There is no proxy integration.
+1. `ids-live` reads copies of live traffic over a Unix socket (18 November 2026), but no copier exists yet: the Caddy module is stage 5 of the proxy plan, so only tests send copies. The dashboard does not show gaps or the live fields yet (stage 6).
 2. There is no ML layer, learned profile, or decision mechanism. An alert is the rule layer's score at the CRS threshold, or a profile finding of an application in `alert` mode, not the planned decision. The dashboard only reads; alerts cannot be marked yet (V7), and there is one user role.
 3. Request rules only; no response rules (they need a copy of each response, K8).
 4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
@@ -159,7 +162,7 @@ Other files:
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.10-X:nodwarf5 linux/amd64` (17 November 2026). `go.mod` needs Go 1.26.8 or newer. Fedora's packaged Go is set to `GOTOOLCHAIN=local` and never downloads a newer Go itself, so the distribution must ship one that is new enough.
 - Setting up another machine: clone the ML repository (GitHub `EfeSipahi/Lorica`) as `../ids-model`, next to this one, because `tools/csic_to_examples.py` reads it from there; the Go tests don't need it. `.gitattributes` keeps LF line endings on every system, because tests compare files byte for byte. In WSL2, keep the clone in the Linux file system (`~/...`), not under `/mnt/c`, as Microsoft recommends for speed.
-- Git: everything is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026) and the notes for setting up another machine (17 November 2026). `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to the notes for setting up another machine (17 November 2026) is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026). Stage 4 (18 November 2026) is committed on `main` but not pushed. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -206,7 +209,9 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
    - The CSIC profile is the first one (I2), written from the training records only.
    - All eight stages were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18).
 3. **Now:** live traffic through Caddy (A01, A08). **Decided on 26 October 2026** (T1–T12, main plan section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md); its progress table says which stage is next.
-   - Done and pushed: stage 1 (the plan), stage 2 (the copy frame format, `internal/copyframe`), stage 3 (the request body limit of 13,107,200 bytes and partly inspected bodies). Next: stage 4, live input and records: `internal/live`, `cmd/ids-live`, the `live` configuration section, the new record fields, the `gap` record and the records lock file. Nothing of stage 4 exists yet.
+   - Done and pushed: stage 1 (the plan), stage 2 (the copy frame format, `internal/copyframe`), stage 3 (the request body limit of 13,107,200 bytes and partly inspected bodies).
+   - Done and committed 18 November 2026, not pushed: stage 4, the live input and its records (`internal/live`, `cmd/ids-live`, the `live` section, the record fields, `gap`, the lock); the plan's note 4 has the details and checks. The user decided that live records keep the proxy's request ID and receive time (`proxy`).
+   - Next: stage 5, the Caddy copier (`caddy-module/`, its own `go.mod`; the first new dependency, Caddy, inside that module only), then `xcaddy build`.
    - Caddy with our own Go copier module (`caddy-module/`, its own `go.mod`, the only new dependency); later an Nginx `mirror` input, then an Nginx module.
    - Copies over a two-way Unix socket in our own frame format (`docs/copy-format.md`) to a new program, `ids-live`, which runs the same engine and profiles as `ids-offline` and writes the records.
    - Request bodies up to 12.5 MB and text responses up to 512 KB (Coraza's limits), partial past that; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues, drops counted; fail-open with gap records; Caddy terminates TLS.
@@ -234,3 +239,4 @@ Each still needs its own decisions before work starts.
 6. Do not commit unless the user asks.
 7. Product outputs belong in `ids-system`. Do not change the data split, model, or experiment records in `ids-model` without a reason; keep source metadata out of model inputs.
 8. Update this short file after meaningful progress: completed work, unfinished work, checks performed, and the next concrete step. Refer to the main plan instead of duplicating architecture details here.
+9. `configs/crs-first-engine.json` and `configs/csic-shop.json` write records to the repository's `records/` folder, which holds the user's own records for the dashboard. For a check run, pass `-records` with a temporary folder.

@@ -220,6 +220,9 @@ type Frame struct {
 	Hello  *Hello
 	Copy   *Copy
 	Missed *Missed
+	// Size is the frame's length as its first 4 bytes give it: the type
+	// byte and the content. A copy holds about this much memory.
+	Size int64
 }
 
 // TooLargeError is returned for a frame longer than the reader allows.
@@ -266,7 +269,12 @@ func (r *Reader) Next() (Frame, error) {
 		}
 		return Frame{}, err
 	}
-	return parse(Type(buf[0]), buf[1:])
+	f, err := parse(Type(buf[0]), buf[1:])
+	if err != nil {
+		return Frame{}, err
+	}
+	f.Size = n
+	return f, nil
 }
 
 func parse(t Type, content []byte) (Frame, error) {

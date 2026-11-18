@@ -524,7 +524,7 @@ func countProfile(c *profileCounts, r requestOutput) {
 }
 
 func writeSummary(w io.Writer, out output) {
-	writeStartup(w, out.Startup, len(out.Summary) > 0)
+	result.WriteStartup(w, out.Startup, len(out.Summary) > 0, startupHint)
 	if len(out.Summary) == 0 {
 		return
 	}
@@ -601,74 +601,8 @@ func check(ex offline.Example, res *engine.Result) *expectation {
 	return e
 }
 
-// writeStartup prints the rule report. With brief set, the excluded rules
-// are counted but not listed.
-func writeStartup(w io.Writer, s result.Startup, brief bool) {
-	level := ""
-	if len(s.Applications) > 0 {
-		level = " by default"
-	}
-	fmt.Fprintf(w, "Rules: %s, paranoia level %d%s, %d active, %d excluded\n", orNone(s.Ruleset), s.ParanoiaLevel, level, s.ActiveRules, len(s.ExcludedRules))
-	if !brief {
-		for _, ex := range s.ExcludedRules {
-			fmt.Fprintf(w, "  excluded %d (%s:%d): %s\n", ex.ID, ex.File, ex.Line, ex.Reason)
-		}
-	} else if len(s.ExcludedRules) > 0 {
-		fmt.Fprintln(w, "  (run without -requests to list the excluded rules and the reasons)")
-	}
-	if n := len(s.IgnoredTargetUpdates); n > 0 {
-		fmt.Fprintf(w, "Target updates for %d rules that are not active were ignored\n", n)
-	}
-	writeApplications(w, s, brief)
-}
-
-// writeApplications prints the applications of the startup report. With
-// brief set, the exceptions are counted but not listed; notes are always
-// printed.
-func writeApplications(w io.Writer, s result.Startup, brief bool) {
-	if len(s.Applications) == 0 {
-		return
-	}
-	other := "requests of other hosts get the rules only"
-	if s.RequireProfile {
-		other = "requests of other hosts get a no_profile finding (require_profile)"
-	}
-	fmt.Fprintf(w, "Applications: %d; %s\n", len(s.Applications), other)
-	for _, a := range s.Applications {
-		fmt.Fprintf(w, "  %s: hosts %s", a.Name, strings.Join(a.Hosts, ", "))
-		if len(a.Paths) > 0 {
-			fmt.Fprintf(w, ", paths %s", strings.Join(a.Paths, ", "))
-		}
-		fmt.Fprintf(w, "; profile %s, mode %s, paranoia level %d, %s\n", a.Profile, a.Mode, a.ParanoiaLevel, count(len(a.Exceptions), "exception"))
-		if !brief {
-			for _, ex := range a.Exceptions {
-				fmt.Fprintf(w, "    %s: %s\n", exceptionText(ex.Exception), ex.Reason)
-			}
-		}
-		for _, n := range a.Notes {
-			fmt.Fprintf(w, "    note: %s\n", n)
-		}
-	}
-	if brief && slices.ContainsFunc(s.Applications, func(a result.AppStartup) bool { return len(a.Exceptions) > 0 }) {
-		fmt.Fprintln(w, "  (run without -requests to list the exceptions)")
-	}
-}
-
-// exceptionText says what an exception changes, such as "rule 932350
-// skips ARGS_NAMES:pwd".
-func exceptionText(ex profile.Exception) string {
-	switch {
-	case ex.Setting != "":
-		return fmt.Sprintf("setting %s = %q", ex.Setting, *ex.Value)
-	case ex.Off:
-		return fmt.Sprintf("rule %d off", ex.Rule)
-	default:
-		return fmt.Sprintf("rule %d skips %s", ex.Rule, strings.Join(ex.Skip, ", "))
-	}
-}
-
 func writeText(w io.Writer, out output) {
-	writeStartup(w, out.Startup, len(out.Requests) > 0)
+	result.WriteStartup(w, out.Startup, len(out.Requests) > 0, startupHint)
 
 	failed := 0
 	for _, r := range out.Requests {
@@ -781,6 +715,9 @@ func writeRecords(w io.Writer, r *recordsOutput) {
 		fmt.Fprintf(w, "\nRecords: %d of %d requests written to %s (run %s)\n", r.Written, r.Analysed, r.Dir, r.Run)
 	}
 }
+
+// startupHint says how to see what a brief startup report leaves out.
+const startupHint = "run without -requests"
 
 // count writes n with the word, as "1 finding" or "2 findings".
 func count(n int, word string) string {

@@ -90,7 +90,7 @@ func buildProfiled(t *testing.T, rs *engine.RuleSet, set *profile.Set, req *http
 	}
 	res := rs.EvaluateWith(req, tuning)
 	prof := set.Check(res.Request, app)
-	rec := b.build(res.Request, res, &prof, "id2", "run1", time.Date(2026, 10, 25, 10, 15, 2, 0, time.UTC))
+	rec := b.build(res.Request, res, &prof, nil, "id2", "run1", time.Date(2026, 10, 25, 10, 15, 2, 0, time.UTC))
 	line, err := marshal(rec)
 	if err != nil {
 		t.Fatal(err)
@@ -197,7 +197,7 @@ func TestRecorderWithApplications(t *testing.T) {
 	set := testApps(t, rs)
 	dir := filepath.Join(t.TempDir(), "records")
 	c := &clock{t: time.Date(2026, 10, 25, 10, 0, 0, 0, time.UTC)}
-	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), set, c.now)
+	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), set, nil, c.now)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -339,7 +339,7 @@ func FuzzProfileSecretsAreMasked(f *testing.F) {
 		})
 		res := rs.EvaluateWith(req, app.Tuning)
 		prof := set.Check(res.Request, app)
-		line, err := marshal(b.build(res.Request, res, &prof, "id", "run", time.Time{}))
+		line, err := marshal(b.build(res.Request, res, &prof, nil, "id", "run", time.Time{}))
 		if err != nil {
 			t.Fatal(err)
 		}

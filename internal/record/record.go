@@ -9,6 +9,8 @@
 //   - "request": one request with a finding or an incomplete analysis (R1).
 //   - "counts": how many requests were analysed in a time window, including
 //     the ones that got no record.
+//   - "gap": requests of a live input that were not analysed, such as the
+//     ones a full queue dropped (T7, T8).
 //
 // docs/records-format.md describes the format for other programs.
 //
@@ -46,6 +48,7 @@ const (
 	TypeStart   = "start"
 	TypeRequest = "request"
 	TypeCounts  = "counts"
+	TypeGap     = "gap"
 )
 
 // Engine identifies the code, rules and settings that produced a record
@@ -79,7 +82,22 @@ type Start struct {
 	// when the configuration has no applications.
 	Applications   []result.AppStartup `json:"applications,omitempty"`
 	RequireProfile bool                `json:"require_profile,omitempty"`
+
+	// Input says where the run's requests come from. It is left out for
+	// request files (ids-offline).
+	Input *Input `json:"input,omitempty"`
 }
+
+// Input is the source of a run's requests.
+type Input struct {
+	// Kind is InputLive: copies from a proxy's copiers (A01).
+	Kind string `json:"kind"`
+	// Socket is the Unix socket the copies arrive on.
+	Socket string `json:"socket,omitempty"`
+}
+
+// InputLive is the kind of a live input, ids-live.
+const InputLive = "live"
 
 // Rule is the status of one rule.
 type Rule struct {
@@ -118,9 +136,22 @@ type Request struct {
 	Application *result.Application `json:"application,omitempty"`
 	Profile     *Profile            `json:"profile,omitempty"`
 
-	Client   Client          `json:"client"`
-	Server   Server          `json:"server"`
+	// Proxy names the request at the proxy that copied it, so that it can
+	// be found in the proxy's logs. It is set for a live input only, as
+	// are Connection, TLS and Response.
+	Proxy *Proxy `json:"proxy,omitempty"`
+
+	// Client is who sent the request: for a live input, the client as the
+	// proxy determined it (T5); Connection is then the address the
+	// proxy's connection came from, which is a proxy in front of it when
+	// there is one.
+	Client     Client  `json:"client"`
+	Connection *Client `json:"connection,omitempty"`
+	Server     Server  `json:"server"`
+	// TLS is set when the request came over TLS (T10).
+	TLS      *TLS            `json:"tls,omitempty"`
 	HTTP     HTTP            `json:"request"`
+	Response *Response       `json:"response,omitempty"`
 	Analysis result.Analysis `json:"analysis"`
 	Findings []Finding       `json:"findings"`
 	Score    result.Score    `json:"score"`
@@ -142,6 +173,46 @@ type Server struct {
 	Host string `json:"host,omitempty"`
 	IP   string `json:"ip,omitempty"`
 	Port int    `json:"port,omitempty"`
+}
+
+// Proxy names a request at the proxy that copied it.
+type Proxy struct {
+	// RequestID is the proxy's ID of the request, such as Caddy's request
+	// UUID.
+	RequestID string `json:"request_id"`
+	// Received is when the proxy received the request. The record's own
+	// time is when the IDS analysed it.
+	Received time.Time `json:"received"`
+}
+
+// TLS describes the TLS session a request came over (T10). It is a record
+// field only, not an input of any detection layer.
+type TLS struct {
+	// Version is the protocol, such as "TLS 1.3", and Cipher the cipher
+	// suite, such as "TLS_AES_128_GCM_SHA256".
+	Version string `json:"version"`
+	Cipher  string `json:"cipher"`
+	// ServerName is the name the client asked for (SNI), and ALPN the
+	// protocol the two sides agreed on, such as "h2".
+	ServerName string `json:"server_name,omitempty"`
+	ALPN       string `json:"alpn,omitempty"`
+}
+
+// Response describes the response the application sent (C6). Its body is
+// not analysed until the response rules exist (K8).
+type Response struct {
+	Status int `json:"status"`
+	// ContentType and Encoding are the response's Content-Type and
+	// Content-Encoding headers.
+	ContentType string `json:"content_type,omitempty"`
+	Encoding    string `json:"encoding,omitempty"`
+	// BodyLength is how many body bytes the application sent, and
+	// BodyCopied how many of them the copier copied (T4).
+	BodyLength int64 `json:"body_length"`
+	BodyCopied int   `json:"body_copied"`
+	// Note says why the copied body is not the whole body: "type not
+	// copied", "not finished" or "upgraded".
+	Note string `json:"note,omitempty"`
 }
 
 // HTTP is the request line and the headers that describe the request,
@@ -218,7 +289,48 @@ type Counts struct {
 	// NoProfile counts the requests of no application, when the
 	// configuration has applications.
 	NoProfile int `json:"no_profile,omitempty"`
+
+	// UnknownApplications counts, by name, the requests for which the
+	// proxy named an application that the configuration does not have
+	// (T6). They count as requests of no application.
+	UnknownApplications map[string]int `json:"unknown_applications,omitempty"`
+	// Copiers is the most copiers that were connected at the same time in
+	// the period. It is set for a live input only, where 0 tells "no proxy
+	// is sending" from "no requests come".
+	Copiers *int `json:"copiers,omitempty"`
 }
+
+// Gap counts requests of a live input that were not analysed (T7, T8):
+// Missed requests that reached the proxy between From and To.
+type Gap struct {
+	Type   string    `json:"type"`
+	Schema int       `json:"schema"`
+	Run    string    `json:"run"`
+	From   time.Time `json:"from"`
+	To     time.Time `json:"to"`
+	Missed int64     `json:"missed"`
+	// Reason says why, such as "queue full", "not connected" or "refused
+	// by the IDS".
+	Reason string `json:"reason"`
+	// Source says who did not pass the copies on: GapCopier, the proxy's
+	// copier, or GapIDS, the IDS itself.
+	Source string `json:"source"`
+}
+
+// The sources of a gap.
+const (
+	GapCopier = "copier"
+	GapIDS    = "ids"
+)
+
+// The reasons of a gap whose source is the IDS. A copier's reasons are
+// those of its missed frames (docs/copy-format.md).
+const (
+	// ReasonQueueFull: the IDS's queue was full, so the copy was dropped.
+	ReasonQueueFull = "queue full"
+	// ReasonStopped: the IDS stopped before it analysed the copy.
+	ReasonStopped = "IDS stopped"
+)
 
 // Config is the "records" section of the configuration.
 type Config struct {

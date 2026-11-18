@@ -201,7 +201,7 @@ Each stage ends with its tests passing and a note in the progress section.
 | 1. Decision documents | Done 26 October 2026 |
 | 2. Frames | Done 26 October 2026 |
 | 3. Body limit | Done 26 October 2026 |
-| 4. Live input and records | Not started |
+| 4. Live input and records | Done 18 November 2026 |
 | 5. Copier | Not started |
 | 6. Dashboard | Not started |
 | 7. Lab and measurements | Not started |
@@ -230,3 +230,32 @@ Each stage ends with its tests passing and a note in the progress section.
       - new tests for a cut form, JSON and multipart body, an unfinished body, a body of which nothing was copied, the limit in the engine, and the setting;
       - `go vet` and `go test ./...` pass;
       - the full `-json` output of `ids-offline` and the request records are the same before and after (run IDs, times and cookie hashes left out) for four runs: the CRS tests at level 1 with `configs/crs-first-engine.json` (2,916 alerts) and at level 4 with `testdata/crs-tests.json`, and the 1,000 CSIC requests with `configs/crs-first-engine.json` (96 of 500 normal and 176 of 500 anomalous flagged) and with `configs/csic-shop.json`. No test request has a body over 1 MiB, so the old limit never applied to them.
+4. Stage 4: the live input and its records, 18 November 2026.
+   1. What was built:
+      - `internal/live`: the `live` settings, the socket, the server (hello, frames, the queue, workers, gaps, the copiers count, shutdown), the conversion of a copy into the common request, and `Analyzer`, which runs for each copy what `ids-offline` runs for each request.
+      - `cmd/ids-live`, with `-config`, `-socket` and `-records`. It prints the startup report, the socket and the records folder, and at the stop one line of counts. Connection events and errors go to standard error, without request values.
+      - `internal/config`: the optional `live` section. A relative socket path starts at the configuration's directory, like `records.dir`.
+      - `internal/record`: the request record's optional `proxy`, `connection`, `tls` and `response`; the `gap` record; `unknown_applications` and `copiers` in `counts`; `input` in `start`; `OpenWith`, `AddWith`, `Gap` and `SetCopiers`; the lock file `records.lock`. A golden file pins a live record (`testdata/request-record-live.json`).
+      - The startup report's text moved from `cmd/ids-offline` to `internal/result` (`WriteStartup`), so both commands print it the same way.
+   2. Decided by the user on 18 November 2026: live request records keep the proxy's request ID and the time the proxy received the request, in an optional `proxy` object (`request_id`, `received`), so that a record can be found in Caddy's logs. The record's `time` stays the time of the analysis.
+   3. Changes to the design above, made while writing it:
+      1. `copyframe.Frame` gives the frame's size, so the queue counts the bytes a copy really holds.
+      2. Both queue limits count the copies being analysed as well as those waiting, so `queue_copies` and `queue_mb` bound everything `ids-live` holds. The frame a connection is reading is not counted.
+      3. The stop (SIGTERM): `ids-live` shuts the reading side of each copier's socket. On Linux what a copier sent before is still read, while its next write fails, so it counts what follows as missed (T8). A test checks this behaviour of Linux. The queue then has 10 seconds (a first value, to be measured in the lab) to be analysed; copies left after that are not analysed but written as a gap with reason `IDS stopped`, source `ids`.
+      4. A copy whose analysis panics is logged and counted as failed, and the worker goes on, so that one request can't stop the IDS.
+      5. `counts.copiers` is the most copiers connected at the same time in the period.
+      6. A name the configuration does not have is counted in `unknown_applications` also when the configuration has no applications. The request record shows the application `none`, as T6 says; the name itself is in the counts only.
+      7. An abstract socket name (starting with `@`) is refused: it has no file permissions, so anyone on the machine could send copies.
+      8. The settings' bounds: `workers` 1–256, `queue_copies` 1–1,000,000, `queue_mb` 1–16,384, `max_frame_mb` 1–1,024 and not more than `queue_mb`.
+   4. Known limits:
+      - Each connection reads one frame at a time into memory, up to `max_frame_mb`, outside the queue's limit. Only users allowed by the socket's permission can connect.
+      - A frame that is still being read when the stop's deadline passes is lost without a count; the copier counts it only if its write failed.
+      - Until stage 6, the dashboard counts `gap` lines as unreadable (C4).
+   5. Checks:
+      - `gofmt -l .` is empty; `go vet ./...` and `go test ./...` pass. `internal/engine` and `internal/httpmodel` are unchanged, so the engine's race run was not needed. `go test -race` passes for `internal/live`, `internal/copyframe`, `internal/record`, `internal/dashboard` and `cmd/...`. The code also builds for Windows and macOS (no lock there).
+      - Fuzz, without a failure: `FuzzLiveSecretsAreMasked` (new: a secret in a copy, through a frame, the analysis and the records) 3.6 million inputs in 90 seconds; `FuzzReadFrame` 6.0 million in 60 seconds; `FuzzSecretsAreMasked` 1.2 million and `FuzzProfileSecretsAreMasked` 0.8 million in 60 seconds each.
+      - `internal/live` tests with a fake copier on a test socket: rule findings, profile findings, no application, an unknown name, a body the copier cut, a missed frame, a full queue by count and by bytes, a broken frame, a frame too large, another format version, a first frame that is not a hello, the copiers count, the stop with and without its deadline, a panic, and secrets (a password, a cookie, `Authorization`, a profile's secret field and header, with `full_requests` on). Socket tests: permission 0660, a stale socket removed, a live socket and a regular file left alone, a path that is too long.
+      - `TestLiveMatchesOffline`: the 1,318 example requests of `testdata/requests` (all but the one HTTP/0.9 request, which no copier can send) with `configs/csic-shop.json` and four workers give the same 850 request records live as offline, also under the race detector.
+      - `cmd/ids-live`: start errors, and a whole run with a copy, the lock, SIGTERM and the socket removed.
+      - `ids-offline`'s output is the same before and after, except the random run IDs, in 10 runs: the startup report alone with both configurations, text, `-show-values`, `-summary` of the CRS tests (2,916 of 5,072 flagged at level 1) and of the generated variants, `-json`, `-application` and `-endpoints`.
+      - The 1,000 CSIC requests: 96 of 500 normal and 176 of 500 anomalous flagged with `configs/crs-first-engine.json`; with `configs/csic-shop.json` the numbers of the profile plan's notes 17 and 18 (validation 5 of 99 normal and 27 of 98 anomalous flagged, test 3 of 100 and 30 of 99).

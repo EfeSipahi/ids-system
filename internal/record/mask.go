@@ -53,6 +53,7 @@ const (
 	maxHost        = 255
 	maxContentType = 256
 	maxHeaderName  = 128
+	maxShortText   = 64
 	maxHeaders     = 64
 	maxCookies     = 32
 	maxHeaderValue = 8192
