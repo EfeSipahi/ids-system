@@ -127,9 +127,13 @@ type pageData struct {
 	Analyst bool
 	Admin   bool
 	Need    string
+	// App is the application of an application's page, and Tab the part
+	// of it shown (W3).
+	App string
+	Tab string
 }
 
-var pageNames = []string{"overview", "alerts", "alert", "rules", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
+var pageNames = []string{"overview", "alerts", "alert", "rules", "rule", "applications", "application", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
 
 func (s *Server) loadPages() error {
 	s.pages = map[string]*template.Template{}
@@ -163,16 +167,23 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /alerts", page("alerts", "Alerts", RoleViewer))
 	mux.Handle("GET /alerts/{id}", page("alert", "Alert", RoleViewer))
 	mux.Handle("GET /rules", page("rules", "Rules", RoleViewer))
-	mux.Handle("GET /engine", page("engine", "Engine", RoleViewer))
+	mux.Handle("GET /rules/{id}", s.requirePage(RoleViewer, s.rulePage))
+	mux.Handle("GET /applications", page("applications", "Applications", RoleViewer))
+	mux.Handle("GET /applications/{name}", s.requirePage(RoleViewer, s.appPage("summary")))
+	mux.Handle("GET /applications/{name}/rules", s.requirePage(RoleViewer, s.appPage("rules")))
+	mux.Handle("GET /engine", page("engine", "Engine and live input", RoleViewer))
 	mux.Handle("GET /test", page("test", "Test a request", RoleAnalyst))
 	mux.Handle("GET /users", page("users", "Users", RoleAdmin))
-	mux.Handle("GET /log", page("log", "Log", RoleAdmin))
+	mux.Handle("GET /log", page("log", "Change log", RoleAdmin))
 	mux.Handle("GET /account", page("account", "Your account", RoleViewer))
 
 	mux.Handle("GET /api/overview", s.requireAPI(RoleViewer, s.apiOverview))
 	mux.Handle("GET /api/alerts", s.requireAPI(RoleViewer, s.apiAlerts))
 	mux.Handle("GET /api/records/{id}", s.requireAPI(RoleViewer, s.apiRecord))
 	mux.Handle("GET /api/rules", s.requireAPI(RoleViewer, s.apiRules))
+	mux.Handle("GET /api/rules/{id}", s.requireAPI(RoleViewer, s.apiRule))
+	mux.Handle("GET /api/applications", s.requireAPI(RoleViewer, s.apiApplications))
+	mux.Handle("GET /api/applications/{name}", s.requireAPI(RoleViewer, s.apiApplication))
 	mux.Handle("GET /api/engine", s.requireAPI(RoleViewer, s.apiEngine))
 	mux.Handle("GET /api/test", s.requireAPI(RoleAnalyst, s.apiTest))
 	mux.Handle("GET /api/test/files/{name}", s.requireAPI(RoleAnalyst, s.apiTestFile))
@@ -347,7 +358,107 @@ func (s *Server) apiOverview(w http.ResponseWriter, r *http.Request) {
 		badRequest(w, err)
 		return
 	}
-	writeJSON(w, http.StatusOK, s.store.overview(rng))
+	app := strings.TrimSpace(r.URL.Query().Get("app"))
+	if len(app) > maxAppName {
+		badRequest(w, fmt.Errorf("app is longer than %d characters", maxAppName))
+		return
+	}
+	writeJSON(w, http.StatusOK, s.store.overviewFor(rng, app))
+}
+
+// appPage serves an application's page, on the tab named tab (W3). A name
+// that no application could have is a page that does not exist.
+func (s *Server) appPage(tab string) func(http.ResponseWriter, *http.Request, string) {
+	return func(w http.ResponseWriter, r *http.Request, user string) {
+		name := r.PathValue("name")
+		if !validAppName(name) {
+			s.render(w, http.StatusNotFound, "notfound", pageData{Title: "Page not found", Page: "notfound", User: user})
+			return
+		}
+		s.render(w, http.StatusOK, "application", pageData{Title: name, Page: "application", User: user, App: name, Tab: tab, Poll: pollSeconds})
+	}
+}
+
+// rulePage serves a rule's page (W6).
+func (s *Server) rulePage(w http.ResponseWriter, r *http.Request, user string) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id < 1 || strconv.Itoa(id) != r.PathValue("id") {
+		s.render(w, http.StatusNotFound, "notfound", pageData{Title: "Page not found", Page: "notfound", User: user})
+		return
+	}
+	s.render(w, http.StatusOK, "rule", pageData{Title: "Rule " + strconv.Itoa(id), Page: "rule", User: user, ID: strconv.Itoa(id), Poll: pollSeconds})
+}
+
+// validAppName reports whether name could be an application's name
+// (profile.NewSet), or "none".
+func validAppName(name string) bool {
+	if name == "" || len(name) > maxAppName {
+		return false
+	}
+	for _, c := range name {
+		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '.' || c == '-' || c == '_') {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *Server) apiApplications(w http.ResponseWriter, r *http.Request) {
+	rng, err := parseRange(r.URL.Query().Get("range"), s.now())
+	if err != nil {
+		badRequest(w, err)
+		return
+	}
+	writeJSON(w, http.StatusOK, s.store.applications(rng))
+}
+
+func (s *Server) apiApplication(w http.ResponseWriter, r *http.Request) {
+	rng, err := parseRange(r.URL.Query().Get("range"), s.now())
+	if err != nil {
+		badRequest(w, err)
+		return
+	}
+	p, err := s.store.application(r.PathValue("name"), rng)
+	if errors.Is(err, errNoApp) {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "no application of this name has records or runs in the newest configuration"})
+		return
+	}
+	writeJSON(w, http.StatusOK, p)
+}
+
+// ruleConfigs are the product configurations whose rule files the rule
+// pages read: the IDS's own, then the test tab's.
+func (s *Server) ruleConfigs() []string {
+	var c []string
+	if s.cfg.IDSConfig != "" {
+		c = append(c, s.cfg.IDSConfig)
+	}
+	return append(c, s.cfg.TestConfigs...)
+}
+
+func (s *Server) apiRule(w http.ResponseWriter, r *http.Request) {
+	rng, err := parseRange(r.URL.Query().Get("range"), s.now())
+	if err != nil {
+		badRequest(w, err)
+		return
+	}
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil || id < 1 {
+		badRequest(w, fmt.Errorf("rule %q is not a rule number", r.PathValue("id")))
+		return
+	}
+	p, err := s.store.rule(id, rng)
+	if errors.Is(err, errNoRule) {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": fmt.Sprintf("the newest run has no rule %d", id)})
+		return
+	}
+	if text, err := ruleText(s.ruleConfigs(), p.Rule.File, p.Rule.Line); err != nil {
+		p.TextError = err.Error()
+	} else {
+		p.Text = text
+	}
+	p.TestFile = s.test.ruleFile(id)
+	writeJSON(w, http.StatusOK, p)
 }
 
 func (s *Server) apiAlerts(w http.ResponseWriter, r *http.Request) {
@@ -460,7 +571,7 @@ func (s *Server) apiTestRun(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) apiEngine(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.store.enginePage())
+	writeJSON(w, http.StatusOK, s.store.enginePageAt(s.now()))
 }
 
 // Watch reads the record files for new lines until ctx ends.

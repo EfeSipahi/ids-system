@@ -546,7 +546,10 @@
   // whose period has not ended is drawn lighter (P13). The chart is one tab
   // stop: the arrow keys move between bars (P16), and a click or Enter
   // lists the records of a bar (P19).
-  function columns(o, pick) {
+  // With analysed false the chart leaves out the requests analysed, which
+  // the IDS counts for all of its requests only (an application's or a
+  // rule's chart).
+  function columns(o, pick, analysed = true) {
     const series = o.series, n = series.length, width = o.bucket_seconds * 1000;
     const end = toDate(o.range.to);
     const ends = (b) => new Date(toDate(b.start).getTime() + width);
@@ -585,7 +588,7 @@
         el("div", { class: "when" }, fmtSpan(b.start, ends(b)), partial(b) ? " (so far)" : ""),
         el("div", { class: "line" }, el("span", { class: "key alerts" }), el("strong", {}, nf.format(b.alerts)), "alerts"),
         el("div", { class: "line" }, el("span", { class: "key others" }), el("strong", {}, nf.format(others)), "other records"),
-        el("div", { class: "line" }, el("span", { class: "key" }), el("strong", {}, nf.format(b.analysed)), "requests analysed"),
+        analysed ? el("div", { class: "line" }, el("span", { class: "key" }), el("strong", {}, nf.format(b.analysed)), "requests analysed") : null,
         b.records > 0 ? el("div", { class: "hint" }, "Click to list these records") : null);
       tip.hidden = false;
       const box = wrap.getBoundingClientRect();
@@ -656,14 +659,14 @@
     }
     wrap.append(chart, tip);
 
-    const rows = series.filter((b) => b.records > 0 || b.analysed > 0);
+    const rows = series.filter((b) => b.records > 0 || (analysed && b.analysed > 0));
     const table = el("details", { class: "table-view", "data-key": "table" }, el("summary", {}, "Show as a table"),
       el("div", { class: "table-wrap" }, el("table", {},
-        el("thead", {}, el("tr", {}, el("th", {}, "Period"), el("th", { class: "num" }, "Analysed"), el("th", { class: "num" }, "Records"), el("th", { class: "num" }, "Alerts"))),
+        el("thead", {}, el("tr", {}, el("th", {}, "Period"), analysed ? el("th", { class: "num" }, "Analysed") : null, el("th", { class: "num" }, "Records"), el("th", { class: "num" }, "Alerts"))),
         el("tbody", {}, rows.length ? rows.map((b) => el("tr", {},
           el("td", {}, fmtSpan(b.start, ends(b)), partial(b) ? " (so far)" : ""),
-          el("td", { class: "num" }, nf.format(b.analysed)), el("td", { class: "num" }, nf.format(b.records)), el("td", { class: "num" }, nf.format(b.alerts))))
-          : el("tr", {}, el("td", { colspan: 4, class: "muted" }, "Nothing in this period."))))));
+          analysed ? el("td", { class: "num" }, nf.format(b.analysed)) : null, el("td", { class: "num" }, nf.format(b.records)), el("td", { class: "num" }, nf.format(b.alerts))))
+          : el("tr", {}, el("td", { colspan: analysed ? 4 : 3, class: "muted" }, "Nothing in this period."))))));
     return [wrap, table];
   }
 
@@ -753,55 +756,253 @@
       }))));
   }
 
+  // appFilter wires the application filter of a page's filter bar (W1):
+  // "All applications" by default, kept in the page's address. Its choices
+  // come with the answers; it shows once there are applications. pick is
+  // called with the new choice.
+  function appFilter(form, chosen, pick) {
+    const select = form && form.elements.app;
+    let choices = null;
+    if (select) {
+      select.addEventListener("change", () => pick(select.value));
+      form.addEventListener("submit", (e) => e.preventDefault());
+    }
+    return (names) => {
+      if (!select || names.join("\n") === choices) return;
+      choices = names.join("\n");
+      const value = select.value || chosen;
+      refill(select, el("option", { value: "" }, "All applications"), names.map((n) => el("option", { value: n }, appName(n))));
+      if (value && !names.includes(value)) select.append(el("option", { value }, appName(value)));
+      select.value = value;
+      form.hidden = names.length === 0 && !value;
+    };
+  }
+
+  // appLink is the address of an application's page, or of its tab.
+  const appLink = (name, tab) => "/applications/" + encodeURIComponent(name) + (tab ? "/" + tab : "");
+
+  // modeText says what an application's mode means (F6).
+  const modeText = (mode) => (mode === "alert" ? "alert: a profile finding makes the request an alert" : "monitor: profile findings are recorded, not alerts");
+
+  // overviewPage is the overview of every request, or of one application
+  // chosen in its filter bar (W1). On an application's page it is the
+  // Summary tab, with the application fixed and its settings first (W3).
   function overviewPage() {
+    const fixed = body.dataset.app || "";
+    const form = fixed ? null : document.getElementById("filters");
+    let app = fixed || new URLSearchParams(location.search).get("app") || "";
+    const address = () => (fixed ? location.pathname : "/") + "?" + query({ range: period.value, app: fixed ? "" : app });
+    const showApps = appFilter(form, app, (v) => {
+      app = v;
+      history.replaceState(null, "", address());
+      view.classList.add("loading");
+      run();
+    });
     const load = async () => {
       const range = period.value;
-      const url = "/api/overview?" + query({ range });
-      const [o, latest] = await Promise.all([api(url), api("/api/alerts?" + query({ range, kind: "alerts" }))]);
+      const url = "/api/overview?" + query({ range, app });
+      const calls = [api(url), api("/api/alerts?" + query({ range, kind: "alerts", app }))];
+      if (fixed) calls.push(api("/api/applications/" + encodeURIComponent(fixed) + "?" + query({ range })));
+      const [o, latest, info] = await Promise.all(calls);
+      showApps(latest.applications);
       const newest = latest.rows.slice(0, 8);
-      if (same(url, { o, newest })) return;
-      const alertsLink = (extra) => "/alerts?" + query({ range, ...extra });
+      if (same(url, { o, newest, info })) return;
+      const alertsLink = (extra) => "/alerts?" + query({ range, app, ...extra });
       const nothing = o.recorded === 0 && o.analysed === 0;
       const share = (v) => (o.analysed > 0 ? pf.format(v / o.analysed) + " of requests analysed" : "");
       const pick = (from, to) => {
         const start = toDate(o.range.from);
         if (start && start > toDate(from)) from = start; // the first bar starts before the period
-        location.assign("/alerts?" + query({ kind: "all", from: toDate(from).toISOString(), to: to.toISOString() }));
+        location.assign("/alerts?" + query({ kind: "all", app, from: toDate(from).toISOString(), to: to.toISOString() }));
       };
       const ruleName = (i) => [el("strong", {}, i.key), " ", i.msg || i.label, i.msg ? el("span", { class: "muted" }, " · " + i.label) : null];
+      const ruleHref = (i) => "/rules/" + encodeURIComponent(i.key) + "?" + query({ range });
       // The live input's parts show when the newest run is live, or when
-      // the period has gaps from an earlier one.
-      const liveInput = o.live || o.not_analysed > 0;
+      // the period has gaps from an earlier one; they are not kept per
+      // application.
+      const liveInput = !app && (o.live || o.not_analysed > 0);
       const missedNote = o.not_analysed_by.slice(0, 2).map((m) => `${nf.format(m.missed)} ${gapReasons[m.reason] || m.reason}`).join(" · ");
+      const reviewed = o.alerts ? `${nf.format(o.not_reviewed)} not reviewed` : "";
+      const tiles = app ? [
+        tile("Alerts", o.alerts, [o.last_alert ? "last alert " + ago(o.last_alert) : "", reviewed], true),
+        tile("Records", o.recorded, "a finding or an incomplete analysis"),
+        tile("Marked false positive", o.false_positives, "records of this period"),
+        tile("Incomplete analyses", o.incomplete, "parts that could not be inspected")] : [
+        tile("Alerts", o.alerts, o.analysed > 0 || o.last_alert ? [share(o.alerts), o.last_alert ? "last alert " + ago(o.last_alert) : "", reviewed] : "score reached the threshold", true),
+        tile("Records", o.recorded, "a finding or an incomplete analysis"),
+        tile("Requests analysed", o.analysed, o.profiled ? ["from the counts of the IDS", `${nf.format(o.no_profile)} of no application: the rules only, no profile`] : "from the counts of the IDS"),
+        liveInput ? tile("Not analysed", o.not_analysed, o.not_analysed > 0 ? missedNote : "nothing was dropped") : null,
+        tile("Incomplete analyses", o.incomplete, share(o.incomplete) || "parts that could not be inspected")];
       replace(el("div", { class: "stack" },
         liveBanners(o.live),
-        el("div", { class: "tiles" },
-          tile("Alerts", o.alerts, o.analysed > 0 || o.last_alert ? [share(o.alerts), o.last_alert ? "last alert " + ago(o.last_alert) : "", o.alerts ? `${nf.format(o.not_reviewed)} not reviewed` : ""] : "score reached the threshold", true),
-          tile("Records", o.recorded, "a finding or an incomplete analysis"),
-          tile("Requests analysed", o.analysed, o.profiled ? ["from the counts of the IDS", `${nf.format(o.no_profile)} of no application: the rules only, no profile`] : "from the counts of the IDS"),
-          liveInput ? tile("Not analysed", o.not_analysed, o.not_analysed > 0 ? missedNote : "nothing was dropped") : null,
-          tile("Incomplete analyses", o.incomplete, share(o.incomplete) || "parts that could not be inspected")),
+        info ? appSettingsCard(info) : null,
+        el("div", { class: "tiles" }, tiles),
         card("Records over time",
           el("div", { class: "legend" },
             el("span", { class: "key" }, el("span", { class: "swatch alerts" }), "Alerts"),
             el("span", { class: "key" }, el("span", { class: "swatch others" }), "Records below the threshold"),
             el("span", { class: "key" }, el("span", { class: "swatch partial" }), "Period not over yet")),
-          nothing ? el("p", { class: "empty" }, "No records in this period. Run the IDS with records, or choose a longer period.") : columns(o, pick)),
+          app && !fixed ? el("p", { class: "muted" }, `The records of ${app === "none" ? "requests of no application" : "the application " + app}. The IDS counts the requests it analysed for all applications together, so they are not shown here.`) : null,
+          nothing ? el("p", { class: "empty" }, app ? "No records of this application in this period." : "No records in this period. Run the IDS with records, or choose a longer period.") : columns(o, pick, !app)),
         el("section", { class: "card" },
           el("div", { class: "card-head" }, el("h2", {}, "Latest alerts"), latest.total ? el("a", { href: alertsLink({}) }, `All ${nf.format(latest.total)} alerts →`) : null),
-          newest.length ? listTable(newest, { apps: latest.applications.length > 1, verdict: true }) : el("p", { class: "empty" }, "No alerts in this period.")),
+          newest.length ? listTable(newest, { apps: !app && latest.applications.length > 1, verdict: true }) : el("p", { class: "empty" }, "No alerts in this period.")),
         liveInput || o.unknown_applications.length ? el("div", { class: "grid-2" },
           liveInput ? gapsCard(o) : null,
           o.unknown_applications.length ? unknownAppsCard(o) : null) : null,
         el("div", { class: "grid-2x2" },
-          card("Rules that fired most", toplist(o.top_rules, ruleName, (i) => alertsLink({ kind: "all", rule: i.key }))),
+          card("Rules that fired most", toplist(o.top_rules, ruleName, ruleHref)),
           card("Attack groups", toplist(o.top_groups, (i) => i.key, (i) => alertsLink({ kind: "all", group: i.key }))),
           card("Where in the request", toplist(o.top_locations, (i) => i.key, (i) => alertsLink({ kind: "all", location: i.key }))),
-          card("Client IP addresses", toplist(o.top_ips, (i) => i.key, (i) => alertsLink({ kind: "all", ip: i.key }))))));
+          card("Client IP addresses", toplist(o.top_ips, (i) => i.key, (i) => alertsLink({ kind: "all", ip: i.key })))),
+        info ? card("Paths with the most records", toplist(info.top_paths, (i) => el("span", { class: "mono" }, i.key))) : null));
     };
     const run = every(load);
-    period.onChange((v) => {
-      history.replaceState(null, "", "/?" + query({ range: v }));
+    period.onChange(() => {
+      history.replaceState(null, "", address());
+      view.classList.add("loading");
+      run();
+    });
+  }
+
+  // appSettingsCard is an application's settings, first on its Summary
+  // tab (W3).
+  function appSettingsCard(info) {
+    const a = info.application;
+    if (!a.running) {
+      return card(`Settings of ${a.name}`, banner("warning", "Not in the running configuration.",
+        `The newest run, started ${fmtTime(info.run_time)}, has no application ${a.name}; its records are older. Its settings are no longer known.`));
+    }
+    return card(`Settings of ${a.name}`, kv([
+      ["Hosts", el("span", { class: "mono" }, a.hosts.join(", "))],
+      ["Paths", a.paths && a.paths.length ? el("span", { class: "mono" }, a.paths.join(", ")) : "every path of its hosts"],
+      ["Profile file", el("code", {}, a.profile)],
+      ["Mode", modeText(a.mode)],
+      ["Paranoia level", a.paranoia_level === info.default_level ? `${a.paranoia_level} (the default is ${info.default_level})` : `${a.paranoia_level}, its own (the default is ${info.default_level})`],
+      ["Rule exceptions", el("a", { href: appLink(a.name, "rules") }, a.exceptions.length ? `${a.exceptions.length} on its Rules tab` : "none; its Rules tab shows every rule")],
+      ["Notes", a.notes && a.notes.length ? a.notes.map((n) => el("div", { class: "sub" }, n)) : ""]]));
+  }
+
+  // ---- Applications (W1–W3) ----
+
+  function applicationsPage() {
+    const run = every(async () => {
+      const range = period.value;
+      const url = "/api/applications?" + query({ range });
+      const p = await api(url);
+      if (same(url, p)) return;
+      const alerts = (name, extra) => "/alerts?" + query({ range, app: name, ...extra });
+      const count = (n, href) => (n ? el("a", { href }, nf.format(n)) : "0");
+      const row = (a, none) => el("tr", {},
+        el("td", {}, none ? el("a", { href: alerts("none", { kind: "all" }) }, "Requests of no application")
+          : el("a", { href: appLink(a.name) }, a.name), !none && !a.running ? el("div", { class: "sub" }, "not in the running configuration") : null),
+        el("td", { class: "mono" }, none ? el("span", { class: "muted" }, "every other host and path") : a.hosts.map((h) => el("div", {}, h + (a.paths && a.paths.length ? " " + a.paths.join(", ") : "")))),
+        el("td", {}, none ? el("span", { class: "muted" }, "rules only") : a.running ? a.mode : "–"),
+        el("td", {}, a.running ? String(a.paranoia_level) : "–"),
+        el("td", { class: "num" }, none || !a.running ? "–" : el("a", { href: appLink(a.name, "rules") }, nf.format(a.exceptions.length))),
+        el("td", { class: "num" }, count(a.alerts, alerts(a.name, {}))),
+        el("td", { class: "num" }, count(a.not_reviewed, alerts(a.name, { review: "not_reviewed" }))),
+        el("td", { class: "num" }, count(a.false_positives, alerts(a.name, { kind: "all", review: "false_positive" }))),
+        el("td", { class: "nowrap" }, a.last_alert ? ago(a.last_alert) : "–"));
+      const head = [["Application", ""], ["Hosts", ""], ["Mode", ""], ["Level", ""], ["Exceptions", "num"], ["Alerts", "num"], ["Not reviewed", "num"], ["False positives", "num"], ["Last alert", ""]];
+      replace(el("div", { class: "stack" },
+        el("p", { class: "lead muted" }, "Each application has its own profile, paranoia level and rule exceptions, on its own page. " +
+          `Requests of no application run at the default level ${p.default_level}, with the rules only` +
+          (p.require_profile ? ", and get a no_profile finding (require_profile)." : ".")),
+        p.applications.length ? card(null, el("div", { class: "table-wrap" }, el("table", { class: "wide apps" },
+          el("thead", {}, el("tr", {}, head.map(([h, c]) => el("th", { class: c }, h)))),
+          el("tbody", {}, p.applications.map((a) => row(a, false)), row(p.none, true)))))
+          : card(null, el("p", { class: "empty" }, "The running configuration has no applications. An application is named with its hosts and a profile file under \"applications\" in the product configuration."),
+            p.none.records ? el("p", {}, el("a", { href: alerts("none", { kind: "all" }) }, `${nf.format(p.none.records)} records of no application in this period →`)) : null)));
+    });
+    period.onChange(() => {
+      history.replaceState(null, "", "/applications?" + query({ range: period.value }));
+      view.classList.add("loading");
+      run();
+    });
+  }
+
+  // applicationPage is one application's page: its Summary tab, the
+  // overview of its records, or its Rules tab (W3).
+  function applicationPage() {
+    if (body.dataset.tab === "rules") rulesPage();
+    else overviewPage();
+  }
+
+  // ---- One rule (W6) ----
+
+  // ruleBadge is a rule's status for one application.
+  function ruleBadge(st) {
+    switch (st.status) {
+      case "excluded": return el("span", { class: "badge excluded" }, "Excluded for every application");
+      case "off": return el("span", { class: "badge off" }, "Off");
+      case "above": return el("span", { class: "badge above", title: "Its paranoia level is above the level the rules run at, so the CRS gate rule skips it." }, `Above level ${st.level}`);
+      default: return el("span", { class: "badge active" }, "Runs");
+    }
+  }
+
+  const phases = { 1: "1, the request headers", 2: "2, the request body", 3: "3, the response headers", 4: "4, the response body", 5: "5, logging" };
+
+  function rulePage() {
+    const id = body.dataset.id;
+    const run = every(async () => {
+      const range = period.value;
+      const url = "/api/rules/" + encodeURIComponent(id) + "?" + query({ range });
+      const p = await api(url);
+      if (same(url, p)) return;
+      const r = p.rule;
+      const alerts = (extra) => "/alerts?" + query({ range, kind: "all", rule: id, ...extra });
+      const count = (n, href) => (n ? el("a", { href }, nf.format(n)) : "0");
+      const pick = (from, to) => {
+        const start = toDate(p.range.from);
+        if (start && start > toDate(from)) from = start;
+        location.assign("/alerts?" + query({ kind: "all", rule: id, from: toDate(from).toISOString(), to: to.toISOString() }));
+      };
+      replace(el("div", { class: "stack" },
+        el("p", { class: "lead" }, r.msg || el("span", { class: "muted" }, "This rule has no description."), el("span", { class: "muted" }, " · " + p.group)),
+        el("div", { class: "grid-2" },
+          card("About this rule", kv([
+            ["Attack group", p.group],
+            ["File", el("code", {}, `${r.file}, line ${r.line}`)],
+            ["Phase", phases[r.phase] || String(r.phase)],
+            ["Paranoia level", r.paranoia_level ? `${r.paranoia_level}: it runs for applications at level ${r.paranoia_level} or higher` : "none: a setup or scoring rule, which runs at every level"],
+            ["Rule set", p.crs],
+            ["Status", r.active ? "loaded" : "excluded for every application: " + r.reason]])),
+          card("What it found", kv([
+            ["Records", count(p.fired, alerts({}))],
+            ["Alerts among them", count(p.alerts, alerts({ kind: "alerts" }))],
+            ["Marked false positive", count(p.false_positives, alerts({ review: "false_positive" }))],
+            ["From the run", fmtTime(p.time)]]))),
+        card("Where it runs",
+          el("p", { class: "muted" }, "Its status for each application, at that application's paranoia level and with its exceptions. An application's own exception is on that application's Rules tab."),
+          el("div", { class: "table-wrap" }, el("table", { class: "wide" },
+            el("thead", {}, el("tr", {}, [["Application", ""], ["Level", ""], ["Status", ""], ["Reason", ""], ["Records", "num"], ["False positives", "num"]].map(([h, c]) => el("th", { class: c }, h)))),
+            el("tbody", {}, p.statuses.map((st) => {
+              const none = st.application === "none";
+              return el("tr", {},
+                el("td", {}, none ? "Requests of no application" : el("a", { href: appLink(st.application, "rules") + "?" + query({ q: id }) }, st.application),
+                  !st.running ? el("div", { class: "sub" }, "not in the running configuration") : null),
+                el("td", {}, String(st.level)),
+                el("td", { class: "wrap" }, ruleBadge(st), st.skips ? el("div", { class: "sub" }, "Skips " + st.skips.join(", ")) : null),
+                el("td", { class: "wrap" }, st.reason || "–", st.no_effect ? el("div", { class: "sub" }, "No effect now: " + st.no_effect) : null),
+                el("td", { class: "num" }, count(st.fired, alerts({ app: st.application }))),
+                el("td", { class: "num" }, count(st.false_positives, alerts({ app: st.application, review: "false_positive" }))));
+            }))))),
+        card("Records over time",
+          el("div", { class: "legend" },
+            el("span", { class: "key" }, el("span", { class: "swatch alerts" }), "Alerts"),
+            el("span", { class: "key" }, el("span", { class: "swatch others" }), "Records below the threshold")),
+          p.fired ? columns(p, pick, false) : el("p", { class: "empty" }, "This rule found nothing in this period.")),
+        p.fired ? el("div", { class: "grid-2x2" },
+          card("Where in the request", toplist(p.top_locations, (i) => i.key, (i) => alerts({ location: i.key }))),
+          card("Paths", toplist(p.top_paths, (i) => el("span", { class: "mono" }, i.key))),
+          card("Client IP addresses", toplist(p.top_ips, (i) => i.key, (i) => alerts({ ip: i.key })))) : null,
+        card("The rule as written",
+          p.text ? el("pre", { class: "block rule-text" }, p.text) : el("p", { class: "muted" }, "Its text can't be shown: " + p.text_error + "."),
+          analyst && p.test_file ? el("p", {}, "CRS has tests for this rule. ", el("a", { href: "/test?" + query({ file: p.test_file }) }, "Try them in the Test tab →")) : null)));
+    });
+    period.onChange(() => {
+      history.replaceState(null, "", location.pathname + "?" + query({ range: period.value }));
       view.classList.add("loading");
       run();
     });
@@ -1257,6 +1458,9 @@
 
   function rulesPage() {
     const form = document.getElementById("filters");
+    // On an application's Rules tab the application is fixed (W3).
+    const fixed = body.dataset.app || "";
+    const appValue = () => fixed || (form.elements.app ? form.elements.app.value : "");
     let data = null;
     let own = true; // the user changed the filters: sections open as the filters say
     const status = (r, level) => (!r.active ? "excluded" : r.off ? "off" : (r.paranoia_level || 0) > level ? "above" : "runs");
@@ -1284,11 +1488,12 @@
     const appField = document.getElementById("app-field");
     let appChoices = "";
     const showApps = (d) => {
+      if (fixed || !appField) return;
       const names = (d.applications || []).map((a) => `${a.name}\t${a.paranoia_level}`).concat(d.applications && d.applications.length ? [`none\t${d.engine.paranoia_level}`] : []);
       if (names.join("\n") === appChoices) return;
       appChoices = names.join("\n");
       const chosen = form.elements.app.value;
-      refill(form.elements.app, el("option", { value: "" }, "The run's level"),
+      refill(form.elements.app, el("option", { value: "" }, `All applications (default level ${d.engine.paranoia_level})`),
         names.map((n) => { const [name, level] = n.split("\t"); return el("option", { value: name }, `${appName(name)} (level ${level})`); }));
       form.elements.app.value = chosen;
       appField.hidden = names.length === 0;
@@ -1350,14 +1555,14 @@
           el("colgroup", {}, ["id", "msg", "line", "phase", "level", "status", "fired", "fp"].map((c) => el("col", { class: c }))),
           el("thead", {}, el("tr", {}, ["Rule", "Description", "Line", "Phase", "Level", "Status", "Fired", "False positive"].map((h, i) => el("th", { class: i >= 6 ? "num" : "", title: i === 7 ? "Records of this rule in the period that someone marked false positive, also records that are no longer kept" : null }, h)))),
           el("tbody", {}, sec.shown.map((r) => el("tr", {},
-            el("td", {}, r.fired ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range }) }, String(r.id)) : String(r.id)),
+            el("td", {}, el("a", { href: "/rules/" + r.id + "?" + query({ range: f.range }), title: "This rule's page: where it runs, and what it found" }, String(r.id))),
             el("td", { class: "wrap" }, r.msg || el("span", { class: "muted" }, "–")),
             el("td", {}, String(r.line)),
             el("td", {}, String(r.phase)),
             el("td", {}, r.paranoia_level ? String(r.paranoia_level) : "–"),
             el("td", { class: "wrap" }, statusCell(r, level, appLabel)),
-            el("td", { class: "num" }, nf.format(r.fired)),
-            el("td", { class: "num" }, r.false_positives ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range, review: "false_positive" }) }, nf.format(r.false_positives)) : "–")))))));
+            el("td", { class: "num" }, r.fired ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range, app: data.app }) }, nf.format(r.fired)) : "0"),
+            el("td", { class: "num" }, r.false_positives ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range, app: data.app, review: "false_positive" }) }, nf.format(r.false_positives)) : "–")))))));
 
       replace(el("div", { class: "stack" },
         el("p", { class: "muted" }, `${nf.format(data.rules.length)} rules of ${data.engine.crs} at paranoia level ${level}` +
@@ -1365,6 +1570,7 @@
           `${nf.format(counts.runs)} run, ${are(counts.above)} above the level and skipped, ${are(counts.excluded)} excluded` +
           (counts.off ? `, ${are(counts.off)} off for the application` : "") + ". " +
           `Showing ${nf.format(shownCount)}; fired counts ${data.app ? "this application's records only" : "every record"}. From the run that started ${fmtTime(data.time)}.`),
+        chosen && !fixed ? el("p", {}, el("a", { href: appLink(chosen.name, "rules") }, `${chosen.name}'s own page →`)) : null,
         chosen ? card(`Exceptions of ${chosen.name}`,
           chosen.exceptions.length ? el("ul", { class: "plain" }, chosen.exceptions.map((ex) => el("li", {},
             el("strong", {}, exceptionText(ex)), ": ", ex.reason,
@@ -1383,17 +1589,17 @@
     // The filters are kept in the address, as on the alerts page, so that
     // a link or the back button shows the same rules.
     const params = new URLSearchParams(location.search);
-    const fields = ["app", "status", "level", "q", "sort"];
-    if (params.get("app")) form.elements.app.append(el("option", { value: params.get("app") }, appName(params.get("app"))));
+    const fields = (fixed ? [] : ["app"]).concat(["status", "level", "q", "sort"]);
+    if (!fixed && params.get("app")) form.elements.app.append(el("option", { value: params.get("app") }, appName(params.get("app"))));
     for (const f of fields) if (params.has(f)) form.elements[f].value = params.get(f);
     const sync = () => {
       const p = { range: period.value };
       for (const f of fields) p[f] = form.elements[f].value.trim();
       if (p.sort === "id") p.sort = "";
-      history.replaceState(null, "", "/rules?" + query(p));
+      history.replaceState(null, "", (fixed ? location.pathname : "/rules") + "?" + query(p));
     };
     const run = every(async () => {
-      const url = "/api/rules?" + query({ range: period.value, app: form.elements.app.value });
+      const url = "/api/rules?" + query({ range: period.value, app: appValue() });
       const d = await api(url);
       showApps(d);
       if (same(url, d)) return;
@@ -1429,11 +1635,14 @@
       const p = await api("/api/engine");
       if (same("/api/engine", p)) return;
       const l = p.latest;
+      // A replay started when it was replayed; its records carry the
+      // requests' own times.
+      const startedAt = (r) => (r.input && r.input.kind === "replay" && r.input.replayed ? r.input.replayed : r.time);
       const runs = p.runs.map((r, i) => {
         const older = p.runs[i + 1];
         const changed = older && older.engine.config !== r.engine.config;
         return el("tr", {},
-          el("td", { class: "nowrap" }, fmtTime(r.time)),
+          el("td", { class: "nowrap" }, fmtTime(startedAt(r))),
           el("td", { class: "nowrap" }, el("code", { title: r.run }, r.run.slice(0, 8)), copyButton(r.run, "the run ID")),
           el("td", { title: r.input && r.input.kind === "replay" ? "Request files replayed on " + fmtTime(r.input.replayed) + "; the records carry the requests' own times" : null },
             r.input && r.input.kind === "live" ? "live" : r.input && r.input.kind === "replay" ? "replay" : "files"),
@@ -1443,12 +1652,13 @@
           el("td", { class: "num" }, nf.format(r.records)),
           el("td", { class: "num" }, nf.format(r.alerts)),
           el("td", { class: "nowrap" }, el("code", { title: r.engine.config }, short(r.engine.config, 15)), copyButton(r.engine.config, "the fingerprint"),
-            changed ? [" ", el("span", { class: "chip changed", title: "The configuration is not the one of the run before" }, "changed")] : null));
+            changed ? el("div", {}, el("span", { class: "chip changed", title: "The configuration is not the one of the run before" }, "changed")) : null));
       });
       const level = l ? l.engine.paranoia_level : 0;
       replace(el("div", { class: "stack" },
+        liveInputCard(p),
         l ? card("Running configuration", kv([
-          ["Started", fmtTime(l.time)],
+          ["Started", fmtTime(startedAt(l))],
           ["Run", el("code", {}, l.run)],
           ["Engine", `${l.engine.version}${l.engine.revision ? " (" + l.engine.revision.slice(0, 12) + ")" : ""}`],
           ["Rules", l.engine.crs],
@@ -1488,6 +1698,28 @@
             el("thead", {}, el("tr", {}, el("th", {}, "File"), el("th", { class: "num" }, "Size"), el("th", {}, "Last written"))),
             el("tbody", {}, p.files.map((f) => el("tr", {}, el("td", { class: "mono" }, f.name), el("td", { class: "num" }, bytes(f.size)), el("td", {}, fmtTime(f.modified))))))))));
     });
+  }
+
+  // liveInputCard is the state of ids-live (W17): whether it runs, what it
+  // runs, whether a copier is connected, and what it could not analyse.
+  function liveInputCard(p) {
+    const l = p.latest, live = p.live;
+    if (!live) {
+      return card("Live input", el("p", { class: "muted" }, l
+        ? `The newest run read ${l.input && l.input.kind === "replay" ? "replayed request files" : "request files"} (ids-offline), so the dashboard can't tell whether ids-live runs. When it runs, its state shows here.`
+        : "No run has been read yet. When ids-live runs, its state shows here."));
+    }
+    const since = live.last_counts || live.start;
+    return card("Live input",
+      live.stale ? banner("error", "ids-live is not running.", `It has written nothing since ${fmtTime(since)} (${ago(since)}); it writes counts every minute while it runs. Start it again on the server.`)
+        : live.copiers === 0 ? banner("warning", "Running, but no copier is connected.", "No proxy sent copies in the last minute. Check that Caddy runs with ids_copy.") : null,
+      kv([
+        ["State", live.stale ? "not running" : `running since ${fmtTime(live.start)}`],
+        ["Last counts", live.last_counts ? `${fmtTime(live.last_counts)} (${ago(live.last_counts)})` : "none yet: the first come a minute after the start"],
+        ["Copiers connected", live.copiers === undefined || live.copiers === null ? "not known yet" : nf.format(live.copiers)],
+        ["Socket", live.socket ? el("code", {}, live.socket) : ""],
+        ["Run", el("code", {}, l.run)],
+        ["Not analysed in the last hour", p.not_analysed_last_hour ? p.not_analysed_by.map((m) => el("div", {}, `${nf.format(m.missed)}: ${gapReason(m)}`)) : "none"]]));
   }
 
   // ---- Login ----
@@ -1879,6 +2111,12 @@
     fillChoices();
     if (info.examples.length) load(info.examples[0], false);
     measure();
+    // A rule's page links here with its CRS test file (W6).
+    const asked = new URLSearchParams(location.search).get("file");
+    if (asked && [...fileSel.options].some((o) => o.value === asked)) {
+      fileSel.value = asked;
+      fileSel.dispatchEvent(new Event("change"));
+    }
   }
 
   // ---- Users, your account and the log (docs/development-plan-marks-users.md, G3–G5) ----
@@ -2118,6 +2356,6 @@
     });
   }
 
-  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
+  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
   if (pages[page] && (view || page === "login")) pages[page]();
 })();

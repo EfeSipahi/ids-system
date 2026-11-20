@@ -3,39 +3,7 @@
   <h1>Rules</h1>
   <div class="tools"><span class="tools-label">Fired in</span>{{template "period"}}{{template "live"}}</div>
 </div>
-<form class="filters" id="filters" autocomplete="off">
-  <label id="app-field" hidden>Application
-    <select name="app" id="app"><option value="">The run's level</option></select>
-  </label>
-  <label>Status
-    <select name="status">
-      <option value="">All rules</option>
-      <option value="runs">Runs at this level</option>
-      <option value="above">Above the level</option>
-      <option value="excluded">Excluded</option>
-      <option value="off">Off for the application</option>
-      <option value="fired">Fired</option>
-    </select>
-  </label>
-  <label>Paranoia level
-    <select name="level">
-      <option value="">Any</option>
-      <option value="0">None (setup, scoring)</option>
-      <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-    </select>
-  </label>
-  <label>Search <input name="q" type="search" size="24" placeholder="id, description, file or group"></label>
-  <label>Order
-    <select name="sort">
-      <option value="id">Rule id</option>
-      <option value="fired">Times fired</option>
-    </select>
-  </label>
-  <div class="filter-actions">
-    <button type="button" id="open-all" class="small">Open all</button>
-    <button type="button" id="close-all" class="small">Close all</button>
-  </div>
-</form>
+{{template "rulefilters" .}}
 {{template "notice"}}
 <div id="view" class="stack"></div>
 {{end}}

@@ -202,6 +202,19 @@ func (t *tester) files() ([]testFile, error) {
 	return files, nil
 }
 
+// ruleFile returns the name of the example file of a rule's CRS tests, as
+// the picker lists it, or "" when the folder has none.
+func (t *tester) ruleFile(id int) string {
+	if t == nil || t.dir == "" {
+		return ""
+	}
+	name := strconv.Itoa(id)
+	if info, err := os.Stat(filepath.Join(t.dir, name+".json")); err != nil || !info.Mode().IsRegular() {
+		return ""
+	}
+	return name
+}
+
 // errNoSuchFile is the answer for a name the folder's listing does not
 // show.
 var errNoSuchFile = errors.New("no such example file")

@@ -41,6 +41,10 @@ type Config struct {
 	// TestRequestsDir is a folder of example request files, such as the
 	// converted CRS tests, that the tab's picker offers (S4). Optional.
 	TestRequestsDir string `json:"test_requests_dir"`
+	// IDSConfig is the product configuration that ids-live runs (W12 of
+	// docs/development-plan-dashboard-control.md). The rule pages read
+	// the rules' text through it. Optional.
+	IDSConfig string `json:"ids_config"`
 }
 
 // The defaults for settings that are left out.
@@ -69,7 +73,7 @@ func LoadConfig(path string) (Config, error) {
 		return Config{}, fmt.Errorf("%s: invalid JSON: unexpected content after the configuration", path)
 	}
 	dir := filepath.Dir(path)
-	paths := []*string{&cfg.RecordsDir, &cfg.StateDir, &cfg.TLSCert, &cfg.TLSKey, &cfg.TestRequestsDir}
+	paths := []*string{&cfg.RecordsDir, &cfg.StateDir, &cfg.TLSCert, &cfg.TLSKey, &cfg.TestRequestsDir, &cfg.IDSConfig}
 	for i := range cfg.TestConfigs {
 		paths = append(paths, &cfg.TestConfigs[i])
 	}

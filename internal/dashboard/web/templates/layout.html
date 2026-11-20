@@ -9,7 +9,7 @@
 <script src="/static/theme.js"></script>
 <script src="/static/app.js" defer></script>
 </head>
-<body data-page="{{.Page}}" data-id="{{.ID}}" data-poll="{{.Poll}}" data-role="{{.Role}}">
+<body data-page="{{.Page}}" data-id="{{.ID}}" data-poll="{{.Poll}}" data-role="{{.Role}}" data-app="{{.App}}" data-tab="{{.Tab}}">
 {{if .User}}
 <header class="top">
   <div class="bar">
@@ -34,18 +34,25 @@
       <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
     </div>
     <div class="side-group">
-      <span class="side-label">Rules</span>
-      <a href="/rules" {{if eq .Page "rules"}}aria-current="page"{{end}}>Rules</a>
-      {{if .Analyst}}<a href="/test" {{if eq .Page "test"}}aria-current="page"{{end}}>Test a request</a>{{end}}
+      <span class="side-label">Applications</span>
+      <a href="/applications" {{if or (eq .Page "applications") (eq .Page "application")}}aria-current="page"{{end}}>Applications</a>
     </div>
     <div class="side-group">
+      <span class="side-label">Rules</span>
+      <a href="/rules" {{if or (eq .Page "rules") (eq .Page "rule")}}aria-current="page"{{end}}>Rules</a>
+    </div>
+    {{if .Analyst}}<div class="side-group">
+      <span class="side-label">Tools</span>
+      <a href="/test" {{if eq .Page "test"}}aria-current="page"{{end}}>Test a request</a>
+    </div>{{end}}
+    <div class="side-group">
       <span class="side-label">System</span>
-      <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine</a>
+      <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine and live input</a>
     </div>
     {{if .Admin}}<div class="side-group">
       <span class="side-label">Administration</span>
       <a href="/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Users</a>
-      <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Log</a>
+      <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Change log</a>
     </div>{{end}}
   </nav>
   <div class="content">
@@ -78,3 +85,37 @@
 </div>{{end}}
 
 {{define "notice"}}<div id="notice" class="notice-bar" role="status" hidden></div>{{end}}
+
+{{define "rulefilters"}}<form class="filters" id="filters" autocomplete="off">
+  {{if not .App}}<label id="app-field" hidden>Application
+    <select name="app" id="app"><option value="">All applications</option></select>
+  </label>{{end}}
+  <label>Status
+    <select name="status">
+      <option value="">All rules</option>
+      <option value="runs">Runs at this level</option>
+      <option value="above">Above the level</option>
+      <option value="excluded">Excluded</option>
+      <option value="off">Off for {{if .App}}{{.App}}{{else}}the application{{end}}</option>
+      <option value="fired">Fired</option>
+    </select>
+  </label>
+  <label>Paranoia level
+    <select name="level">
+      <option value="">Any</option>
+      <option value="0">None (setup, scoring)</option>
+      <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+    </select>
+  </label>
+  <label>Search <input name="q" type="search" size="24" placeholder="id, description, file or group"></label>
+  <label>Order
+    <select name="sort">
+      <option value="id">Rule id</option>
+      <option value="fired">Times fired</option>
+    </select>
+  </label>
+  <div class="filter-actions">
+    <button type="button" id="open-all" class="small">Open all</button>
+    <button type="button" id="close-all" class="small">Close all</button>
+  </div>
+</form>{{end}}

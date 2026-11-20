@@ -1,0 +1,13 @@
+{{define "content"}}
+<div class="pagehead">
+  <div class="headline"><a class="up" href="/applications">← Applications</a><h1>{{.App}}</h1></div>
+  <div class="tools">{{if eq .Tab "rules"}}<span class="tools-label">Fired in</span>{{end}}{{template "period"}}{{template "live"}}</div>
+</div>
+<nav class="tabs" aria-label="Parts of the application {{.App}}">
+  <a href="/applications/{{.App}}" {{if eq .Tab "summary"}}aria-current="page"{{end}}>Summary</a>
+  <a href="/applications/{{.App}}/rules" {{if eq .Tab "rules"}}aria-current="page"{{end}}>Rules</a>
+</nav>
+{{if eq .Tab "rules"}}{{template "rulefilters" .}}{{end}}
+{{template "notice"}}
+<div id="view" class="stack"></div>
+{{end}}

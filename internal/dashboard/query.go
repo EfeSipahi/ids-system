@@ -121,6 +121,16 @@ type overview struct {
 	// NotReviewed counts the alerts of the period that nobody marked yet
 	// (G1).
 	NotReviewed int `json:"not_reviewed"`
+
+	// Application is the application the overview is for (W1), or
+	// "none" for the requests of no application; empty for every
+	// request. The counts of the IDS, the gaps and the unknown
+	// application names are not kept per application, so with one they
+	// are left out.
+	Application string `json:"application,omitempty"`
+	// FalsePositives counts the records of the period marked false
+	// positive.
+	FalsePositives int `json:"false_positives"`
 }
 
 // missedCount is the not-analysed total of one source and reason.
@@ -168,44 +178,76 @@ const (
 )
 
 func (s *store) overview(r timeRange) overview {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	o := overview{Range: r}
+	return s.overviewFor(r, "")
+}
 
-	// With "all", the chart starts at the first thing recorded.
+// timeline is the bars of a chart over a period.
+type timeline struct {
+	series []bucket
+	width  time.Duration
+	from   time.Time
+}
+
+// newTimeline makes the bars of r. With "all", the chart starts at
+// earliest, the first thing recorded.
+func newTimeline(r timeRange, earliest time.Time) timeline {
 	from := r.From
 	if from.IsZero() {
 		from = r.To
-		for _, e := range s.entries {
-			if e.time.Before(from) {
-				from = e.time
-			}
-		}
-		for _, c := range s.counts {
-			if c.From.Before(from) {
-				from = c.From
-			}
+		if !earliest.IsZero() && earliest.Before(from) {
+			from = earliest
 		}
 	}
 	width := bucketWidth(r.To.Sub(from))
 	from = from.Truncate(width)
-	o.BucketSecs = int(width / time.Second)
 	n := int(r.To.Sub(from)/width) + 1
-	o.Series = make([]bucket, n)
-	for i := range o.Series {
-		o.Series[i].Start = from.Add(time.Duration(i) * width)
+	tl := timeline{series: make([]bucket, n), width: width, from: from}
+	for i := range tl.series {
+		tl.series[i].Start = from.Add(time.Duration(i) * width)
 	}
-	slot := func(t time.Time) *bucket {
-		i := int(t.Sub(from) / width)
-		if i < 0 || i >= n {
-			return nil
-		}
-		return &o.Series[i]
-	}
+	return tl
+}
 
-	// A counts record belongs to the period when its end is in it.
+// slot returns the bar of t, or nil when t is outside the chart.
+func (tl timeline) slot(t time.Time) *bucket {
+	i := int(t.Sub(tl.from) / tl.width)
+	if i < 0 || i >= len(tl.series) {
+		return nil
+	}
+	return &tl.series[i]
+}
+
+// earliest returns the time of the first record or counts record.
+func (s *store) earliest() time.Time {
+	var first time.Time
+	for _, e := range s.entries {
+		if first.IsZero() || e.time.Before(first) {
+			first = e.time
+		}
+	}
 	for _, c := range s.counts {
-		if r.contains(c.To) && c.To.After(r.From) {
+		if first.IsZero() || c.From.Before(first) {
+			first = c.From
+		}
+	}
+	return first
+}
+
+// overviewFor is the overview of one application's records (W1), or of
+// every record when app is "".
+func (s *store) overviewFor(r timeRange, app string) overview {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	o := overview{Range: r, Application: app}
+
+	tl := newTimeline(r, s.earliest())
+	o.Series, o.BucketSecs = tl.series, int(tl.width/time.Second)
+	slot := tl.slot
+
+	// A counts record belongs to the period when its end is in it. The
+	// counts are not kept per application.
+	for _, c := range s.counts {
+		if app == "" && r.contains(c.To) && c.To.After(r.From) {
 			o.Analysed += c.Analysed
 			o.NoProfile += c.NoProfile
 			if b := slot(c.To); b != nil {
@@ -215,7 +257,7 @@ func (s *store) overview(r timeRange) overview {
 	}
 	rules, groupCounts, locations, ips := map[int]int{}, map[string]int{}, map[string]int{}, map[string]int{}
 	for _, e := range s.entries {
-		if !r.contains(e.time) {
+		if !r.contains(e.time) || app != "" && !sameApp(e.app, app) {
 			continue
 		}
 		o.Recorded++
@@ -270,7 +312,15 @@ func (s *store) overview(r timeRange) overview {
 	o.Groups = top(groupCounts)
 	o.Locations = top(locations)
 	o.IPs = top(ips)
+	s.marks.each(func(l markLine) {
+		if l.Verdict == verdictFalsePositive && r.contains(l.Alert.Time) && (app == "" || sameApp(l.Alert.Application, app)) {
+			o.FalsePositives++
+		}
+	})
 	s.liveParts(&o, r)
+	if app != "" {
+		o.NotAnalysed, o.NotAnalysedBy, o.Gaps, o.GapCount, o.UnknownApps = 0, []missedCount{}, []gapRow{}, 0, []item{}
+	}
 	return o
 }
 
@@ -628,17 +678,26 @@ func (s *store) newestConfig() string {
 	return st.Engine.Config
 }
 
-// latestRun returns the run whose start record is the newest.
+// latestRun returns the run that started last. A replay's start record
+// carries the time of its first request; it started when it was replayed.
 func (s *store) latestRun() (record.Start, bool) {
 	var latest record.Start
 	found := false
 	for _, run := range s.runs {
 		st := s.starts[run]
-		if !found || st.Time.After(latest.Time) {
+		if !found || started(st).After(started(latest)) {
 			latest, found = st, true
 		}
 	}
 	return latest, found
+}
+
+// started is when a run started: when it was replayed, for a replay.
+func started(st record.Start) time.Time {
+	if st.Input != nil && st.Input.Kind == record.InputReplay && !st.Input.Replayed.IsZero() {
+		return st.Input.Replayed
+	}
+	return st.Time
 }
 
 // rulesPage lists the rules of the newest run with how often each fired in
@@ -744,9 +803,22 @@ type enginePage struct {
 	// marks file that could not be read.
 	Marks           int `json:"marks"`
 	MarksUnreadable int `json:"marks_unreadable"`
+
+	// Live is the state of the newest run when its input is live (W17),
+	// and NotAnalysed, by source and reason, what the live input did not
+	// analyse in the last hour.
+	Live          *liveStatus   `json:"live,omitempty"`
+	NotAnalysed   int64         `json:"not_analysed_last_hour"`
+	NotAnalysedBy []missedCount `json:"not_analysed_by"`
 }
 
 func (s *store) enginePage() enginePage {
+	return s.enginePageAt(time.Now())
+}
+
+// enginePageAt is the Engine page at now, which decides whether ids-live
+// still writes.
+func (s *store) enginePageAt(now time.Time) enginePage {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	p := enginePage{Runs: []runRow{}, Files: []fileRow{}, Applications: []result.AppStartup{}, Records: len(s.entries), Unreadable: s.broken, Skipped: s.skipped}
@@ -776,7 +848,7 @@ func (s *store) enginePage() enginePage {
 		d := byRun[st.Run]
 		p.Runs = append(p.Runs, runRow{Run: st.Run, Time: st.Time, Engine: st.Engine, Input: st.Input, Analysed: d.analysed, Records: d.records, Alerts: d.alerts})
 	}
-	sort.SliceStable(p.Runs, func(i, j int) bool { return p.Runs[i].Time.After(p.Runs[j].Time) })
+	sort.SliceStable(p.Runs, func(i, j int) bool { return started(s.starts[p.Runs[i].Run]).After(started(s.starts[p.Runs[j].Run])) })
 	if st, ok := s.latestRun(); ok {
 		p.Latest = &runRow{Run: st.Run, Time: st.Time, Engine: st.Engine, Input: st.Input}
 		if st.Applications != nil {
@@ -808,5 +880,8 @@ func (s *store) enginePage() enginePage {
 			p.Newest = e.time
 		}
 	}
+	var o overview
+	s.liveParts(&o, timeRange{Name: "1h", From: now.UTC().Add(-time.Hour), To: now.UTC()})
+	p.Live, p.NotAnalysed, p.NotAnalysedBy = o.Live, o.NotAnalysed, o.NotAnalysedBy
 	return p
 }

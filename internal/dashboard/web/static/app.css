@@ -567,3 +567,18 @@ table.rules col.fp { width: 7.5rem; }
 .review .card-head { margin-bottom: 8px; }
 .review form.mark-bar { margin: 12px 0 0; }
 
+
+/* An application's or a rule's page (W3, W6): the way up to its list above
+   the title, and the application's parts as Carbon tabs. */
+.headline { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.headline .up { font-size: 0.875rem; }
+.headline h1 { overflow-wrap: anywhere; }
+nav.tabs { display: flex; gap: 0; margin: 0 0 16px; border-bottom: 1px solid var(--border-subtle); overflow-x: auto; }
+nav.tabs a {
+  padding: 10px 16px; color: var(--text-2); white-space: nowrap; font-size: 0.875rem;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+}
+nav.tabs a:hover { color: var(--text); text-decoration: none; border-bottom-color: var(--border-strong); }
+nav.tabs a[aria-current="page"] { color: var(--text); font-weight: 600; border-bottom-color: var(--interactive); }
+pre.rule-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 28rem; overflow: auto; }
+table.apps td { vertical-align: top; }

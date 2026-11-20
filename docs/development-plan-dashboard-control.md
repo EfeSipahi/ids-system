@@ -321,10 +321,30 @@ Decided by the user on 21 November 2026: 1. Each commit holds one stage's code, 
 | Stage | Status |
 | --- | --- |
 | Decisions W1–W26 | Decided 21 November 2026 |
-| 1. The organisation, showing only | Not started |
+| 1. The organisation, showing only | Done, 21 November 2026 (note 1) |
 | 2. The foundations of change | Not started |
 | 3. The changes | Not started |
 | 4. The profile | Not started |
 | 5. Analyse files | Not started |
 | 6. Records, the dashboard's settings, views | Not started |
 | 7. The close | Not started |
+
+## 6. Notes of the night run
+
+Each stage's note says what was built, how it was checked, and the choices made along the way that the decisions above did not settle. Those choices wait for the user's approval in the morning.
+
+1. Stage 1, the organisation, showing only.
+   1. Built:
+      - the navigation of W2, with the pages that exist so far: Monitor (Overview, Alerts), Applications, Rules, Tools (Test a request), System (Engine and live input), Administration (Users, Change log);
+      - the overview's application filter (W1): "All applications" by default, in the filter bar and the address; with one application, the tiles that are not kept per application (requests analysed, not analysed) and the gaps are left out, and the chart says so;
+      - Applications (`/applications`): each application with its hosts, mode, level, exceptions, alerts, not reviewed, false positives and last alert, then the requests of no application; an application that only older records have is listed as "not in the running configuration";
+      - an application's page (`/applications/{name}`) with two tabs so far: Summary (its settings, then the overview of its records and the paths with the most records) and Rules (the rules page with the application fixed);
+      - a rule's page (`/rules/{id}`): what the rule is, its status for every application and for the requests of no application (W6), what it found (records, alerts, false positives, over time, where in the request, paths, clients), its text as written in the rule file, and a link to CRS's tests for it in the Test tab, which now opens a rule's tests from its address (`/test?file=942100`);
+      - the Engine page is "Engine and live input", with a Live input card first (W17): running or not, since when, the last counts, copiers connected, the socket, and what was not analysed in the last hour.
+   2. Checks: `go test ./...` (new tests in `internal/dashboard/apps_test.go`; the route tests by role and without a login cover the new routes); a browser round as admin and viewer, light at 1366 px and dark at 1920 px, on a demo copy of the records with a replay of the 1,300 generated attacks under `csic-shop.json` (60 % of them sent to the shop's host): no page wider than the window, no console error.
+   3. Choices made:
+      - a new optional setting in `dashboard.json`, `ids_config`: the product configuration `ids-live` runs (W12). Stage 1 uses it only to read a rule's text; without it, the Test tab's configurations are tried. The repository's `configs/dashboard.json` leaves it out, so that a dashboard started from the repository does not write the repository's configuration in later stages;
+      - which run is the newest: a replay's start record carries the time of its first request, so a replay done today of last week's requests counted as an old run. A replay now counts from when it was replayed, on every page; the Engine page's "Started" shows that time too;
+      - the rule's page links each application to its Rules tab, filtered to the rule; the controls come in stage 3;
+      - "Log" in the navigation is now "Change log", as W2 names it.
+

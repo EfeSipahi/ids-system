@@ -73,10 +73,19 @@ type entry struct {
 	app          string
 	profileKinds []string
 	alertBy      []string
+	// ruleLocs are the places each rule matched, each pair once, for the
+	// rule's own page.
+	ruleLocs []ruleLoc
 
 	file   *recordFile
 	offset int64
 	length int
+}
+
+// ruleLoc is a place a rule matched.
+type ruleLoc struct {
+	rule     int
+	location string
 }
 
 type countsEntry struct {
@@ -309,6 +318,9 @@ func (s *store) add(f *recordFile, offset int64, line []byte) {
 		for _, finding := range rec.Findings {
 			if !slices.Contains(e.rules, finding.RuleID) {
 				e.rules = append(e.rules, finding.RuleID)
+			}
+			if rl := (ruleLoc{finding.RuleID, finding.Location}); finding.Location != "" && !slices.Contains(e.ruleLocs, rl) {
+				e.ruleLocs = append(e.ruleLocs, rl)
 			}
 			g := groupOf(finding.RuleID)
 			if !g.counts {
