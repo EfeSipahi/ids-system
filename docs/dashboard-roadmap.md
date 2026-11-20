@@ -75,7 +75,7 @@ What the dashboard still can't do: change anything of the IDS. Its exceptions, l
 
 | # | Item | Note |
 | --- | --- | --- |
-| 8.1 | Extra names for the dashboard's certificate | A setting for names and addresses its own certificate should carry (for example the NetBird address), so browsers stop warning about the name. Open since 19 November |
+| 8.1 | Extra names for the dashboard's certificate | A setting for names and addresses its own certificate should carry (for example an address the dashboard is reached at through a VPN), so browsers stop warning about the name. Open since 19 November |
 | 8.2 | Common passwords refused | NIST SP 800-63B-4 also asks to check a chosen password against a list of known or leaked passwords; today only the length is checked |
 | 8.3 | The Log page in words | A bulk mark shows its filter as an address query (`kind=alerts&rule=942100`); it could say "alerts of rule 942100" |
 | 8.4 | Long chips | A long attack-group name alone in its column is cut short, with the full name in its tooltip |
