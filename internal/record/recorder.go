@@ -79,16 +79,27 @@ func NewEngine(rs *engine.RuleSet, fingerprint string) Engine {
 // Only one writer may use a directory at a time. On Linux, Open locks the
 // directory until Close, and a second writer gets ErrInUse.
 func Open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set) (*Recorder, error) {
-	return open(cfg, eng, statuses, apps, nil, time.Now)
+	return open(cfg, eng, statuses, apps, nil, time.Now, time.Now)
 }
 
 // OpenWith is Open for a run whose requests come from input, which the
 // start record names.
 func OpenWith(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, input *Input) (*Recorder, error) {
-	return open(cfg, eng, statuses, apps, input, time.Now)
+	return open(cfg, eng, statuses, apps, input, time.Now, time.Now)
 }
 
-func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, input *Input, now func() time.Time) (*Recorder, error) {
+// OpenReplay is Open for a replay (ids-offline -replay): the start record,
+// each record and the counts take their time from clock, which the caller
+// sets to each request's own time before adding it. The start record
+// names the input as a replay run at replayed. Rotated files are still
+// named by the real time, so that their names sort from oldest to newest.
+func OpenReplay(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, replayed time.Time, clock func() time.Time) (*Recorder, error) {
+	return open(cfg, eng, statuses, apps, &Input{Kind: InputReplay, Replayed: replayed.UTC()}, clock, time.Now)
+}
+
+// open starts a run. now is the clock of the records; files is the clock
+// that names rotated files.
+func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set, input *Input, now, files func() time.Time) (*Recorder, error) {
 	cfg = cfg.WithDefaults()
 	if err := cfg.Validate(); err != nil {
 		return nil, err
@@ -100,7 +111,7 @@ func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Se
 	if err != nil {
 		return nil, fmt.Errorf("records: %s: %w", cfg.Dir, err)
 	}
-	w, err := openWriter(cfg.Dir, int64(cfg.MaxFileMB)<<20, cfg.KeepFiles, now)
+	w, err := openWriter(cfg.Dir, int64(cfg.MaxFileMB)<<20, cfg.KeepFiles, files)
 	if err != nil {
 		unlock(lock)
 		return nil, fmt.Errorf("records: %w", err)

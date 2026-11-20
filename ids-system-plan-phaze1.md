@@ -1671,3 +1671,16 @@ All five stages of [docs/development-plan-marks-users.md](docs/development-plan-
 
 **Next in the order:** the user's choice: a false positive turned into an exception (with a preview and a history), settings pages, more views, or the response rules (K8) and alerts by webhook and syslog.
 
+### 11.33. A replay of request files on their own clock — 20 November 2026
+
+The user asked why the demo records all had the same time: a record carries the moment of its analysis, and `ids-offline` analyses a file in seconds. Of three ways (a replay on the requests' own times; real live traffic over real time; shifting the times of written records), the user chose the first, after asking which part changes: only the time stamped on the records of a replay, not the analysis. No CRS request rule reads the time, and the engine has no time variable.
+
+**What exists now:**
+
+1. A request file may give each request a `time` (RFC 3339): when it reached the server (`testdata/requests/README.md`).
+2. `ids-offline -replay` sorts the requests by that time and records each one at it; the per-minute counts follow the same clock. Every request needs a time, none may be in the future, and a replay needs a records folder. The start record names the run `input.kind` `replay`, with `replayed`, the real time the replay ran (`docs/records-format.md`). Rotated record files are still named by the real time.
+3. The dashboard's Engine page names such a run a replay. Nothing else of the dashboard changed: it places records by their time already.
+4. Without `-replay`, a file's times are read and checked but not used; `ids-offline`'s output is byte for byte the same as before in four compared runs.
+
+**Checks:** the replay's start record, record times, order and counts; the refusals (no time, a time in the future, a time that is not RFC 3339, no request files, with `-endpoints`, no records folder); times ignored without `-replay`; `ids-offline`, `ids-live`, the record and dashboard tests pass. For the user's dashboard, the 1,300 generated attacks got documentation addresses and times over the last 7 days (sessions per address, scanners in bursts, more by day) in a copy outside the repository, and were replayed into `records/`.
+

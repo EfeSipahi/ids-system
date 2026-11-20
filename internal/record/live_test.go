@@ -101,7 +101,7 @@ func TestLiveRecorder(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "records")
 	c := &clock{t: time.Date(2026, 10, 23, 10, 0, 0, 0, time.UTC)}
 	input := &Input{Kind: InputLive, Socket: "/run/ids/copy.sock"}
-	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), nil, input, c.now)
+	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), nil, input, c.now, c.now)
 	if err != nil {
 		t.Fatal(err)
 	}

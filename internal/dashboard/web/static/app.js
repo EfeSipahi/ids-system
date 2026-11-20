@@ -334,6 +334,15 @@
     });
   }
 
+  // inputText says where a run's requests came from: live copies, request
+  // files, or request files replayed on their own clock (ids-offline
+  // -replay), whose records carry the requests' times.
+  function inputText(input) {
+    if (input && input.kind === "live") return `live: copies from a proxy over ${input.socket || "a Unix socket"} (ids-live)`;
+    if (input && input.kind === "replay") return `a replay of request files, done ${fmtTime(input.replayed)}: the records carry the requests' own times, not the time of the analysis (ids-offline -replay)`;
+    return "request files (ids-offline)";
+  }
+
   // ---- Small parts ----
 
   function badge(rec, incomplete = true) {
@@ -1426,7 +1435,8 @@
         return el("tr", {},
           el("td", { class: "nowrap" }, fmtTime(r.time)),
           el("td", { class: "mono" }, r.run),
-          el("td", {}, r.input && r.input.kind === "live" ? "live" : "files"),
+          el("td", { title: r.input && r.input.kind === "replay" ? "Request files replayed on " + fmtTime(r.input.replayed) + "; the records carry the requests' own times" : null },
+            r.input && r.input.kind === "live" ? "live" : r.input && r.input.kind === "replay" ? "replay" : "files"),
           el("td", {}, r.engine.crs),
           el("td", {}, String(r.engine.paranoia_level)),
           el("td", { class: "num" }, nf.format(r.analysed)),
@@ -1442,7 +1452,7 @@
           ["Run", el("code", {}, l.run)],
           ["Engine", `${l.engine.version}${l.engine.revision ? " (" + l.engine.revision.slice(0, 12) + ")" : ""}`],
           ["Rules", l.engine.crs],
-          ["Input", l.input && l.input.kind === "live" ? `live: copies from a proxy over ${l.input.socket || "a Unix socket"} (ids-live)` : "request files (ids-offline)"],
+          ["Input", inputText(l.input)],
           ["Paranoia level", p.applications.length ? `${l.engine.paranoia_level} by default; an application may have its own` : l.engine.paranoia_level],
           ["Rule status", el("a", { href: "/rules" }, `${nf.format(p.active_rules - p.above_level_rules)} run, ` +
             `${nf.format(p.above_level_rules)} above level ${level}, ${nf.format(p.excluded_rules)} excluded`)],

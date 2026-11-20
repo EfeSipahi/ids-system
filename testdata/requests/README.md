@@ -23,6 +23,16 @@ A log line is built from a match in the bracket form of ModSecurity:
 A body is given as text in `body`, or in base64 in `body_base64` when it is
 not UTF-8 text.
 
+A request may say who sent it and when:
+
+| Field | Meaning |
+| --- | --- |
+| `remote_addr`, `remote_port` | The client's address and port |
+| `server_addr`, `server_port` | The address and port the request was sent to |
+| `time` | When the request reached the server, RFC 3339, such as `2026-11-18T14:02:31Z`. Only `ids-offline -replay` uses it: the records then carry this time instead of the moment of the analysis. No rule reads it. Added 20 November 2026 |
+
+None of the files here has a `time`; a replay needs a copy with times.
+
 ## The `crs/` directory
 
 These files are generated. Do not edit them by hand; change the script and

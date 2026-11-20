@@ -90,14 +90,23 @@ type Start struct {
 
 // Input is the source of a run's requests.
 type Input struct {
-	// Kind is InputLive: copies from a proxy's copiers (A01).
+	// Kind is InputLive, copies from a proxy's copiers (A01), or
+	// InputReplay, request files replayed on their own clock.
 	Kind string `json:"kind"`
 	// Socket is the Unix socket the copies arrive on.
 	Socket string `json:"socket,omitempty"`
+	// Replayed is when a replay was run. The run's records carry the
+	// requests' own times, not this one.
+	Replayed time.Time `json:"replayed,omitzero"`
 }
 
-// InputLive is the kind of a live input, ids-live.
-const InputLive = "live"
+const (
+	// InputLive is the kind of a live input, ids-live.
+	InputLive = "live"
+	// InputReplay is the kind of a replay: ids-offline -replay, which
+	// writes each record at the time its request carries.
+	InputReplay = "replay"
+)
 
 // Rule is the status of one rule.
 type Rule struct {

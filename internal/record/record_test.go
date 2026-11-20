@@ -349,7 +349,7 @@ func TestRecorder(t *testing.T) {
 	rs := loadRules(t)
 	dir := filepath.Join(t.TempDir(), "records")
 	c := &clock{t: time.Date(2026, 10, 23, 10, 0, 0, 0, time.UTC)}
-	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), nil, nil, c.now)
+	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), nil, nil, c.now, c.now)
 	if err != nil {
 		t.Fatal(err)
 	}

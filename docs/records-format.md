@@ -46,7 +46,7 @@ Written when `ids-offline` or `ids-live` starts writing records.
 | Field | Content |
 | --- | --- |
 | `run` | Random ID of this run (26 lower-case letters and digits) |
-| `time` | Start time, UTC (RFC 3339) |
+| `time` | Start time, UTC (RFC 3339). In a replay, the time of its first request |
 | `engine.version` | Version of the program, now `0.1.0-dev` |
 | `engine.revision` | Git commit of the build, with `-modified` when the working tree had changes. Left out when unknown, for example with `go run` |
 | `engine.crs` | Rule set signature, for example `OWASP_CRS/4.30.0` |
@@ -55,13 +55,13 @@ Written when `ids-offline` or `ids-live` starts writing records.
 | `rules[]` | Every rule: `id`, `file` (base name), `line`, `phase`, `paranoia_level` (left out when the rule has none), `msg` (the rule's `msg` text as written in its file, macros such as `%{MATCHED_VAR}` not expanded; left out when the rule has none; added 24 October 2026), `active`, and `reason` when it is excluded |
 | `applications[]` | Only when the configuration has applications. Per application: `name`, `hosts`, `paths` (left out when every path belongs to it), `profile` (file base name), `mode` (`monitor` or `alert`), `paranoia_level` (the level its requests run at), `exceptions[]` and `notes[]`. An exception is written as in the profile: `setting` and `value`, `rule` and `skip`, or `rule` and `off`; with `reason`, the author's `note`, and `no_effect` when it changes nothing at the moment, saying why (for example a rule above the level). Added 25 October 2026 |
 | `require_profile` | `true` when a request of no application gets a `no_profile` finding (F7). Left out otherwise |
-| `input` | Where the run's requests come from: `kind` `live` and the `socket` they arrive on. Left out for request files (`ids-offline`). Added 18 November 2026 |
+| `input` | Where the run's requests come from: `kind` `live` and the `socket` they arrive on (`ids-live`), or `kind` `replay` and `replayed`, the real time the replay ran (`ids-offline -replay`, added 20 November 2026). Left out for request files read the ordinary way (`ids-offline`). Added 18 November 2026 |
 
 ## 4. `request`: one per request with a finding or an incomplete analysis (R1)
 
 | Field | Content |
 | --- | --- |
-| `id`, `run`, `time` | Random ID of the record, the run, the time of the analysis (UTC) |
+| `id`, `run`, `time` | Random ID of the record, the run, the time of the analysis (UTC). In a replay (`input.kind` `replay`), the time the request file gives the request instead: the requests are analysed in that order, as if they arrived then, and the `counts` records follow the same clock |
 | `alert` | `true` when the score reached the threshold (R2), or when the application's profile is in `alert` mode and found something (F6) |
 | `alert_by` | When `alert` is true and the configuration has applications: what made it an alert, `["rules"]`, `["profile"]` or `["rules", "profile"]`. Left out otherwise |
 | `decided_by` | `"rule layer only"`, or `"rule and profile layers"` for a request of an application whose profile is in `alert` mode. A profile in `monitor` mode does not take part in the decision. The decision mechanism (K3) replaces this later |

@@ -50,6 +50,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/EfeSipahi/ids-system/internal/analysis"
 	"github.com/EfeSipahi/ids-system/internal/config"
@@ -166,6 +167,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	recordsDir := flags.String("records", "", "write records to this `directory`, in place of the one in the configuration")
 	appName := flags.String("application", "", "check every request against the profile of the application with this `name`, whatever its host")
 	endpoints := flags.Bool("endpoints", false, "only list the endpoints and parameters of the requests, without values")
+	replay := flags.Bool("replay", false, "write each record at the time its request carries (the \"time\" of the request files), in time order, as if the requests had arrived then")
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}
@@ -174,6 +176,10 @@ func run(args []string, stdout, stderr io.Writer) int {
 		return 2
 	}
 
+	if *replay && (*requestsPath == "" || *endpoints) {
+		fmt.Fprintln(stderr, "ids-offline: -replay needs -requests, and does not go with -endpoints")
+		return 2
+	}
 	if *endpoints {
 		if *requestsPath == "" || *recordsDir != "" || *summary || *appName != "" {
 			fmt.Fprintln(stderr, "ids-offline: -endpoints needs -requests and lists the requests only; leave out -records, -summary and -application")
@@ -218,9 +224,32 @@ func run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "ids-offline: %v\n", err)
 			return 2
 		}
-		recorder, err := openRecords(cfg, *recordsDir, rules, apps)
+		// The requests in the order they are analysed: file by file, or,
+		// for a replay, by their own time.
+		order := make([]queued, 0)
+		for i, file := range files {
+			source := strings.TrimSuffix(filepath.Base(file), ".json")
+			for _, ex := range examples[i] {
+				order = append(order, queued{source, ex})
+			}
+		}
+		var clock time.Time // the time of the request being recorded, in a replay
+		if *replay {
+			if order, err = replayOrder(order, time.Now()); err != nil {
+				fmt.Fprintf(stderr, "ids-offline: %v\n", err)
+				return 2
+			}
+			if len(order) > 0 {
+				clock = order[0].ex.Time
+			}
+		}
+		recorder, err := openRecords(cfg, *recordsDir, rules, apps, *replay, func() time.Time { return clock })
 		if err != nil {
 			fmt.Fprintf(stderr, "ids-offline: %v\n", err)
+			return 2
+		}
+		if *replay && recorder == nil {
+			fmt.Fprintln(stderr, "ids-offline: -replay writes records; give -records or a configuration with a records section")
 			return 2
 		}
 		if recorder != nil {
@@ -228,34 +257,35 @@ func run(args []string, stdout, stderr io.Writer) int {
 		}
 
 		opt := result.Options{ShowValues: *showValues}
-		for i, file := range files {
-			source := strings.TrimSuffix(filepath.Base(file), ".json")
-			for _, ex := range examples[i] {
-				app := forced
-				if app == nil {
-					app = apps.Match(ex.Request)
-				}
-				res, prof := analysis.Run(rules, apps, ex.Request, app)
-				r := requestOutput{
-					Index:       len(out.Requests) + 1,
-					Source:      source,
-					Name:        ex.Name,
-					Analysed:    result.NewAnalysed(res, prof, app, rules.ParanoiaLevel(), opt),
-					Expectation: check(ex, res),
-				}
-				out.Requests = append(out.Requests, r)
-				if recorder == nil {
-					continue
-				}
-				if err := recorder.Add(res.Request, res, prof); err != nil {
-					recorder.Close()
-					fmt.Fprintf(stderr, "ids-offline: %v\n", err)
-					return 2
-				}
-				out.Records.Analysed++
-				if record.Wanted(res.Request, res, prof) {
-					out.Records.Written++
-				}
+		for _, q := range order {
+			source, ex := q.source, q.ex
+			if *replay {
+				clock = ex.Time
+			}
+			app := forced
+			if app == nil {
+				app = apps.Match(ex.Request)
+			}
+			res, prof := analysis.Run(rules, apps, ex.Request, app)
+			r := requestOutput{
+				Index:       len(out.Requests) + 1,
+				Source:      source,
+				Name:        ex.Name,
+				Analysed:    result.NewAnalysed(res, prof, app, rules.ParanoiaLevel(), opt),
+				Expectation: check(ex, res),
+			}
+			out.Requests = append(out.Requests, r)
+			if recorder == nil {
+				continue
+			}
+			if err := recorder.Add(res.Request, res, prof); err != nil {
+				recorder.Close()
+				fmt.Fprintf(stderr, "ids-offline: %v\n", err)
+				return 2
+			}
+			out.Records.Analysed++
+			if record.Wanted(res.Request, res, prof) {
+				out.Records.Written++
 			}
 		}
 		if recorder != nil {
@@ -296,7 +326,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 // openRecords starts the record files of this run, or returns nil when no
 // records are to be written: the configuration has no "records" section
 // and -records was not given.
-func openRecords(cfg *config.Product, dir string, rules *engine.RuleSet, apps *profile.Set) (*record.Recorder, error) {
+func openRecords(cfg *config.Product, dir string, rules *engine.RuleSet, apps *profile.Set, replay bool, clock func() time.Time) (*record.Recorder, error) {
 	if cfg.Records == nil && dir == "" {
 		return nil, nil
 	}
@@ -309,7 +339,33 @@ func openRecords(cfg *config.Product, dir string, rules *engine.RuleSet, apps *p
 	if err != nil {
 		return nil, err
 	}
+	if replay {
+		return record.OpenReplay(rc, record.NewEngine(rules, fingerprint), rules.Statuses(), apps, time.Now(), clock)
+	}
 	return record.Open(rc, record.NewEngine(rules, fingerprint), rules.Statuses(), apps)
+}
+
+// queued is a request waiting for its analysis, with the file it came
+// from.
+type queued struct {
+	source string
+	ex     offline.Example
+}
+
+// replayOrder checks that every request of a replay has its time, none of
+// them later than now, and sorts them by it; requests of the same time
+// keep their order.
+func replayOrder(order []queued, now time.Time) ([]queued, error) {
+	for _, q := range order {
+		switch {
+		case q.ex.Time.IsZero():
+			return nil, fmt.Errorf("-replay: request %q of %s has no time; every request of a replay needs one", q.ex.Name, q.source)
+		case q.ex.Time.After(now):
+			return nil, fmt.Errorf("-replay: request %q of %s has a time in the future, %s", q.ex.Name, q.source, q.ex.Time.Format(time.RFC3339))
+		}
+	}
+	slices.SortStableFunc(order, func(a, b queued) int { return a.ex.Time.Compare(b.ex.Time) })
+	return order, nil
 }
 
 // recordsDirOf returns the directory records are written to: the one of

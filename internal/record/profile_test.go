@@ -197,7 +197,7 @@ func TestRecorderWithApplications(t *testing.T) {
 	set := testApps(t, rs)
 	dir := filepath.Join(t.TempDir(), "records")
 	c := &clock{t: time.Date(2026, 10, 25, 10, 0, 0, 0, time.UTC)}
-	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), set, nil, c.now)
+	r, err := open(Config{Dir: dir}, testEngine, rs.Statuses(), set, nil, c.now, c.now)
 	if err != nil {
 		t.Fatal(err)
 	}

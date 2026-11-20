@@ -15,6 +15,7 @@ import (
 	"net/netip"
 	"os"
 	"regexp"
+	"time"
 
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
 )
@@ -23,6 +24,12 @@ import (
 type Example struct {
 	Name    string
 	Request *httpmodel.Request
+
+	// Time is when the request reached the server, as the file says; zero
+	// when the file gives none. Only a replay (ids-offline -replay) uses
+	// it: the records then carry this time instead of the moment of the
+	// analysis. No rule reads it.
+	Time time.Time
 
 	// ExpectIDs are rule IDs that must match the request; NoExpectIDs are
 	// rule IDs that must not. Both may be empty.
@@ -64,6 +71,9 @@ type fileExample struct {
 	// RemoteAddr and RemotePort are the address of the client, ServerAddr
 	// and ServerPort the address the request was sent to. Each may be left
 	// out.
+	// Time is when the request reached the server, RFC 3339, such as
+	// "2026-11-18T14:02:31Z". Optional.
+	Time        string `json:"time"`
 	RemoteAddr  string `json:"remote_addr"`
 	RemotePort  int    `json:"remote_port"`
 	ServerAddr  string `json:"server_addr"`
@@ -191,6 +201,12 @@ func (fe fileExample) toExample(opt httpmodel.Options) (Example, error) {
 		NoExpectIDs: fe.NoExpectIDs,
 	}
 	var err error
+	if fe.Time != "" {
+		if ex.Time, err = time.Parse(time.RFC3339Nano, fe.Time); err != nil {
+			return Example{}, fmt.Errorf("time %q is not an RFC 3339 time, such as 2026-11-18T14:02:31Z", fe.Time)
+		}
+		ex.Time = ex.Time.UTC()
+	}
 	if fe.ExpectLog != "" {
 		if ex.ExpectLog, err = regexp.Compile(fe.ExpectLog); err != nil {
 			return Example{}, fmt.Errorf("expect_log: %w", err)
