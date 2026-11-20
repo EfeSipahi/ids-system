@@ -562,7 +562,7 @@ func newDashboard(t *testing.T, dir string) *testDashboard {
 		dir = t.TempDir()
 	}
 	cfg := Config{Listen: "127.0.0.1:0", RecordsDir: dir, StateDir: t.TempDir(), SessionIdleMinutes: 60}
-	password, err := AddUser(cfg.StateDir, "admin")
+	password, err := AddUser(cfg.StateDir, "admin", RoleAdmin)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -703,8 +703,16 @@ func TestLoadConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := Config{Listen: DefaultListen, RecordsDir: filepath.Join(filepath.Dir(dir), "records"), StateDir: "/var/lib/ids", SessionIdleMinutes: DefaultIdleMinutes}
-	if cfg != want {
+	if !reflect.DeepEqual(cfg, want) {
 		t.Errorf("config = %+v, want %+v", cfg, want)
+	}
+	// The test tab's paths start at the configuration's folder too.
+	cfg, err = LoadConfig(write(`{"records_dir": "r", "state_dir": "s", "test_configs": ["a.json", "/etc/ids/b.json"], "test_requests_dir": "../crs"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := []string{filepath.Join(dir, "a.json"), "/etc/ids/b.json"}; !reflect.DeepEqual(cfg.TestConfigs, want) || cfg.TestRequestsDir != filepath.Join(filepath.Dir(dir), "crs") {
+		t.Errorf("test_configs = %q, test_requests_dir = %q", cfg.TestConfigs, cfg.TestRequestsDir)
 	}
 	for _, bad := range []string{
 		`{"records_dir": "r", "state_dir": "s", "listen": "dashboard.example.com:8443"}`,
@@ -718,6 +726,8 @@ func TestLoadConfig(t *testing.T) {
 		`{"records_dir": "r", "state_dir": "s", "session_idle_minutes": -1}`,
 		`{"records_dir": "r", "state_dir": "s", "colour": "blue"}`,
 		`{"records_dir": "r", "state_dir": "s"} {}`,
+		`{"records_dir": "r", "state_dir": "s", "test_configs": [""]}`,
+		`{"records_dir": "r", "state_dir": "s", "test_configs": ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"]}`,
 	} {
 		if _, err := LoadConfig(write(bad)); err == nil {
 			t.Errorf("accepted: %s", bad)

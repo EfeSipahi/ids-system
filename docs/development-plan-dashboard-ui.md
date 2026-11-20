@@ -366,3 +366,24 @@ All 37 problems were worked on. P32 (the long rules page) was first only partly 
    - the chart takes Carbon's categorical order, checked with the data-visualisation validator: alerts purple 70 `#6929c4` (dark: purple 60 `#8a3ffc`), other records cyan 50 `#1192e8`, every check passing in both themes; status colours are not used for series;
    - the warning yellow is a mark only, with a dark edge in light; text keeps the text colours.
 5. Checked in the browser (Playwright, Chromium 157, 1440 px, light and dark) on records made by the real Caddy and `ids-live` (proxy plan, note 6): every page, no sideways overflow, no script error, the fonts loaded. Fixed during the check: the pager line took the header's black (the selector `.top` matched it), the alerts filters wrapped to two lines (P22), the time, client and application columns were cut, an IPv6 address with a port was written without brackets, and an error notification's text was red.
+
+## The test tab (19 November 2026)
+
+A seventh page, "Test", built following [development-plan-test-tab.md](development-plan-test-tab.md) (decisions S1–S4). It keeps the Carbon look above:
+
+1. A Carbon text area for the raw request (Plex Mono, the field layer, a bottom border, no wrapping), and 32 px fields like the filters' for the example, the CRS rule and test, the configuration, the level, the application, the client address and the body's line ends.
+2. The answer in cards, as the alert page has them: the verdict, the CRS test's expectation with green and red marks, the rule findings in a data table, the decision and the analysis side by side, the application and profile, what the engine read in one table, and the JSON.
+3. A warning notification, with a button, when `Content-Length` disagrees with the body.
+4. Values are put in as text only, as everywhere (the top of `app.js`); the text is not kept in the browser.
+5. Checked in three Playwright rounds at 1440 and 1024 px, light and dark; the defects found and fixed are in that plan's note 4.
+
+## Marks, users and the log (20 November 2026)
+
+Built following [development-plan-marks-users.md](development-plan-marks-users.md) (decisions G1–G6), in the Carbon look above:
+
+1. A verdict badge (a square for a verdict, a ring for not reviewed): red for a real attack, green for expected, purple for a false positive, grey for undetermined. It sits in a Review column of the alerts list and of the overview's latest alerts, and on an alert's own Review card.
+2. For analysts and admins: a box per row and one for the page, and a bar above the list: the verdict, a note, "Mark N chosen" (primary) and "Mark all N that match" (asks first). On an alert's page, a small form in its Review card, and the earlier marks in a table that opens.
+3. Three pages: Users (a field for the admin's own password, the users with a role menu, Reset password and Remove, a form to add a user), Your account (change your own password), and Log (the change log and the logins, by user and kind). The header links the user's name, with the role, to the account page.
+4. Carbon's green success notification, next to the error and warning ones; a red "danger" button for Remove.
+5. With the boxes and the Review column the list's columns were given new widths, and the All records view leaves out the Attack groups column, so that the request keeps about 12 rem at 1440 px. Checked in four Playwright rounds; the defects found are in that plan's note 5.
+

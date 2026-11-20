@@ -15,6 +15,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -32,9 +34,14 @@ const pollSeconds = 5
 
 // Server is the dashboard.
 type Server struct {
-	cfg   Config
-	store *store
-	auth  *auth
+	cfg     Config
+	store   *store
+	auth    *auth
+	test    *tester
+	changes *changeLog
+	marks   *marks
+	// lock is the state folder's lock (C4), held while the dashboard runs.
+	lock  *os.File
 	pages map[string]*template.Template
 	now   func() time.Time
 	log   *log.Logger
@@ -57,20 +64,47 @@ func newServer(cfg Config, logOut io.Writer, now func() time.Time) (*Server, err
 	if len(u.names()) == 0 {
 		return nil, errors.New("there is no user yet; add one with: ids-dashboard -add-user NAME")
 	}
+	// One dashboard writes a state folder (G6, C4).
+	lock, err := lockFile(filepath.Join(cfg.StateDir, stateLockFile), false)
+	if errors.Is(err, errInUse) {
+		return nil, fmt.Errorf("the state folder %s is in use by another dashboard", cfg.StateDir)
+	}
+	if err != nil {
+		return nil, err
+	}
 	s := &Server{
-		cfg:   cfg,
-		store: newStore(cfg.RecordsDir),
-		auth:  newAuth(u, cfg.StateDir, time.Duration(cfg.SessionIdleMinutes)*time.Minute, now),
-		now:   now,
-		log:   log.New(logOut, "ids-dashboard: ", log.LstdFlags),
+		cfg:     cfg,
+		store:   newStore(cfg.RecordsDir),
+		auth:    newAuth(u, cfg.StateDir, time.Duration(cfg.SessionIdleMinutes)*time.Minute, now),
+		now:     now,
+		log:     log.New(logOut, "ids-dashboard: ", log.LstdFlags),
+		changes: &changeLog{path: filepath.Join(cfg.StateDir, ChangesFile)},
+		lock:    lock,
+	}
+	if s.marks, err = openMarks(filepath.Join(cfg.StateDir, MarksFile)); err != nil {
+		s.Close()
+		return nil, err
+	}
+	s.store.marks = s.marks
+	if s.test, err = newTester(cfg.TestConfigs, cfg.TestRequestsDir, now); err != nil {
+		s.Close()
+		return nil, err
 	}
 	if err := s.loadPages(); err != nil {
+		s.Close()
 		return nil, err
 	}
 	if err := s.store.refresh(); err != nil {
+		s.Close()
 		return nil, err
 	}
 	return s, nil
+}
+
+// Close lets go of the state folder, so that another dashboard may use it.
+func (s *Server) Close() {
+	unlockFile(s.lock)
+	s.lock = nil
 }
 
 // pageData is what a page template gets.
@@ -87,9 +121,15 @@ type pageData struct {
 	Name    string
 	Next    string
 	Version string
+	// Role is the user's role, and Analyst whether it is analyst or
+	// more; Need is the role a refused page needs (G3).
+	Role    string
+	Analyst bool
+	Admin   bool
+	Need    string
 }
 
-var pageNames = []string{"overview", "alerts", "alert", "rules", "engine", "login", "notfound"}
+var pageNames = []string{"overview", "alerts", "alert", "rules", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
 
 func (s *Server) loadPages() error {
 	s.pages = map[string]*template.Template{}
@@ -113,26 +153,40 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("POST /login", s.loginPost)
 	mux.HandleFunc("POST /logout", s.logoutPost)
 
-	page := func(name, title string) http.Handler {
-		return s.requirePage(func(w http.ResponseWriter, r *http.Request, user string) {
+	page := func(name, title, least string) http.Handler {
+		return s.requirePage(least, func(w http.ResponseWriter, r *http.Request, user string) {
 			s.render(w, http.StatusOK, name, pageData{Title: title, Page: name, User: user, ID: r.PathValue("id"), Poll: pollSeconds})
 		})
 	}
-	mux.Handle("GET /{$}", page("overview", "Overview"))
-	mux.Handle("GET /alerts", page("alerts", "Alerts"))
-	mux.Handle("GET /alerts/{id}", page("alert", "Alert"))
-	mux.Handle("GET /rules", page("rules", "Rules"))
-	mux.Handle("GET /engine", page("engine", "Engine"))
+	// Each route names the least role that may use it (G3).
+	mux.Handle("GET /{$}", page("overview", "Overview", RoleViewer))
+	mux.Handle("GET /alerts", page("alerts", "Alerts", RoleViewer))
+	mux.Handle("GET /alerts/{id}", page("alert", "Alert", RoleViewer))
+	mux.Handle("GET /rules", page("rules", "Rules", RoleViewer))
+	mux.Handle("GET /engine", page("engine", "Engine", RoleViewer))
+	mux.Handle("GET /test", page("test", "Test a request", RoleAnalyst))
+	mux.Handle("GET /users", page("users", "Users", RoleAdmin))
+	mux.Handle("GET /log", page("log", "Log", RoleAdmin))
+	mux.Handle("GET /account", page("account", "Your account", RoleViewer))
 
-	mux.Handle("GET /api/overview", s.requireAPI(s.apiOverview))
-	mux.Handle("GET /api/alerts", s.requireAPI(s.apiAlerts))
-	mux.Handle("GET /api/records/{id}", s.requireAPI(s.apiRecord))
-	mux.Handle("GET /api/rules", s.requireAPI(s.apiRules))
-	mux.Handle("GET /api/engine", s.requireAPI(s.apiEngine))
+	mux.Handle("GET /api/overview", s.requireAPI(RoleViewer, s.apiOverview))
+	mux.Handle("GET /api/alerts", s.requireAPI(RoleViewer, s.apiAlerts))
+	mux.Handle("GET /api/records/{id}", s.requireAPI(RoleViewer, s.apiRecord))
+	mux.Handle("GET /api/rules", s.requireAPI(RoleViewer, s.apiRules))
+	mux.Handle("GET /api/engine", s.requireAPI(RoleViewer, s.apiEngine))
+	mux.Handle("GET /api/test", s.requireAPI(RoleAnalyst, s.apiTest))
+	mux.Handle("GET /api/test/files/{name}", s.requireAPI(RoleAnalyst, s.apiTestFile))
+	mux.Handle("POST /api/test", s.requireAPI(RoleAnalyst, s.apiTestRun))
+	mux.Handle("GET /api/users", s.requireAPI(RoleAdmin, s.apiUsers))
+	mux.Handle("POST /api/users", s.requireAPI(RoleAdmin, s.apiUsersChange))
+	mux.Handle("GET /api/log", s.requireAPI(RoleAdmin, s.apiLog))
+	mux.Handle("POST /api/account", s.requireAPI(RoleViewer, s.apiAccount))
+	mux.Handle("POST /api/marks", s.requireAPI(RoleAnalyst, s.apiMark))
+	mux.Handle("GET /api/marks/{id}", s.requireAPI(RoleViewer, s.apiMarkHistory))
 
 	// Everything else needs a login too, so that the dashboard says
 	// nothing about what exists to someone who is not logged in.
-	mux.Handle("/", s.requirePage(func(w http.ResponseWriter, r *http.Request, user string) {
+	mux.Handle("/", s.requirePage(RoleViewer, func(w http.ResponseWriter, r *http.Request, user string) {
 		s.render(w, http.StatusNotFound, "notfound", pageData{Title: "Page not found", Page: "notfound", User: user})
 	}))
 
@@ -157,8 +211,9 @@ func securityHeaders(next http.Handler) http.Handler {
 }
 
 // requirePage sends a browser without a login to the login page, which
-// brings it back to the page it asked for (U8).
-func (s *Server) requirePage(h func(http.ResponseWriter, *http.Request, string)) http.Handler {
+// brings it back to the page it asked for (U8). A user whose role is below
+// least gets a page that says so, with status 403 (G3).
+func (s *Server) requirePage(least string, h func(http.ResponseWriter, *http.Request, string)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := s.auth.user(sessionToken(r))
 		if user == "" {
@@ -167,6 +222,10 @@ func (s *Server) requirePage(h func(http.ResponseWriter, *http.Request, string))
 				target += "?next=" + url.QueryEscape(r.URL.RequestURI())
 			}
 			http.Redirect(w, r, target, http.StatusSeeOther)
+			return
+		}
+		if !allows(s.auth.users.role(user), least) {
+			s.render(w, http.StatusForbidden, "forbidden", pageData{Title: "Not allowed", Page: "forbidden", User: user, Need: least})
 			return
 		}
 		h(w, r, user)
@@ -198,11 +257,17 @@ func afterLogin(next string) string {
 	return next
 }
 
-// requireAPI answers 401 to a request without a login.
-func (s *Server) requireAPI(h func(http.ResponseWriter, *http.Request)) http.Handler {
+// requireAPI answers 401 to a request without a login, and 403 to a user
+// whose role is below least (G3).
+func (s *Server) requireAPI(least string, h func(http.ResponseWriter, *http.Request)) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if s.auth.user(sessionToken(r)) == "" {
+		user := s.auth.user(sessionToken(r))
+		if user == "" {
 			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "login required"})
+			return
+		}
+		if !allows(s.auth.users.role(user), least) {
+			writeJSON(w, http.StatusForbidden, map[string]string{"error": "your role can't do this; it needs " + least})
 			return
 		}
 		h(w, r)
@@ -211,6 +276,11 @@ func (s *Server) requireAPI(h func(http.ResponseWriter, *http.Request)) http.Han
 
 func (s *Server) render(w http.ResponseWriter, status int, name string, data pageData) {
 	data.Version = buildversion.Version
+	if data.User != "" {
+		data.Role = s.auth.users.role(data.User)
+		data.Analyst = allows(data.Role, RoleAnalyst)
+		data.Admin = allows(data.Role, RoleAdmin)
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
 	if err := s.pages[name].ExecuteTemplate(w, "layout", data); err != nil {
@@ -322,6 +392,71 @@ func (s *Server) apiRules(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, p)
+}
+
+// apiTest gives the test tab its configurations, examples and example
+// files.
+func (s *Server) apiTest(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, s.test.page(s.store.newestConfig()))
+}
+
+// apiTestFile gives the requests of one example file of the picker.
+func (s *Server) apiTestFile(w http.ResponseWriter, r *http.Request) {
+	list, err := s.test.fileExamples(r.PathValue("name"))
+	switch {
+	case errors.Is(err, errNoSuchFile):
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "no such example file"})
+	case err != nil:
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	default:
+		writeJSON(w, http.StatusOK, map[string]any{"name": r.PathValue("name"), "examples": list})
+	}
+}
+
+// apiTestRun runs one test. The body is the request as raw text, at most
+// maxTestText bytes, refused before more is read (C3); the choices are in
+// the query: config, level, application, client and crlf.
+func (s *Server) apiTestRun(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxTestText)
+	text, err := io.ReadAll(r.Body)
+	if err != nil {
+		var tooLong *http.MaxBytesError
+		if errors.As(err, &tooLong) {
+			writeJSON(w, http.StatusRequestEntityTooLarge, map[string]string{"error": fmt.Sprintf("the request is longer than %d bytes", maxTestText)})
+			return
+		}
+		badRequest(w, err)
+		return
+	}
+	q := r.URL.Query()
+	tr := testRequest{Application: q.Get("application"), Client: q.Get("client"), BodyCRLF: q.Get("crlf") == "1", Text: string(text)}
+	for _, n := range []struct {
+		name string
+		to   *int
+	}{{"config", &tr.Config}, {"level", &tr.Level}} {
+		if v := q.Get(n.name); v != "" {
+			if *n.to, err = strconv.Atoi(v); err != nil {
+				badRequest(w, fmt.Errorf("%s %q is not a number", n.name, v))
+				return
+			}
+		}
+	}
+	answer, err := s.test.run(r.Context(), tr, s.store.newestConfig())
+	if err != nil {
+		var te *testError
+		switch {
+		case errors.As(err, &te):
+			if te.status == http.StatusInternalServerError {
+				s.log.Printf("test tab: %v", err)
+			}
+			writeJSON(w, te.status, map[string]string{"error": te.msg})
+		default:
+			// The client went away while waiting for its turn.
+			writeJSON(w, http.StatusServiceUnavailable, map[string]string{"error": err.Error()})
+		}
+		return
+	}
+	writeJSON(w, http.StatusOK, answer)
 }
 
 func (s *Server) apiEngine(w http.ResponseWriter, r *http.Request) {

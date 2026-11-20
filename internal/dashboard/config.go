@@ -1,7 +1,10 @@
 // Package dashboard is the web dashboard of the IDS (V1–V7, main plan
 // section 11.22). It reads the record files that the IDS writes and shows
-// them to logged-in users over HTTPS. It only reads: nothing in it changes
-// a record or a setting of the IDS (V2).
+// them to logged-in users over HTTPS. Nothing in it changes a record or a
+// setting of the IDS (V2). Its test tab analyses a request a user writes,
+// with the IDS's own engine, and keeps nothing of it: no record, no
+// setting, no log line with its content (S1–S4, C1 of
+// docs/development-plan-test-tab.md).
 package dashboard
 
 import (
@@ -31,12 +34,21 @@ type Config struct {
 	TLSKey  string `json:"tls_key"`
 	// SessionIdleMinutes is how long a login lasts without use.
 	SessionIdleMinutes int `json:"session_idle_minutes"`
+	// TestConfigs are the product configurations the test tab can
+	// analyse a request with (S2); the first is the default. Left out,
+	// the tab says how to turn it on.
+	TestConfigs []string `json:"test_configs"`
+	// TestRequestsDir is a folder of example request files, such as the
+	// converted CRS tests, that the tab's picker offers (S4). Optional.
+	TestRequestsDir string `json:"test_requests_dir"`
 }
 
 // The defaults for settings that are left out.
 const (
 	DefaultListen      = "127.0.0.1:8443"
 	DefaultIdleMinutes = 60
+	// maxTestConfigs is the most configurations the test tab lists.
+	maxTestConfigs = 16
 )
 
 // LoadConfig reads a configuration file. Relative paths in it start at the
@@ -57,7 +69,11 @@ func LoadConfig(path string) (Config, error) {
 		return Config{}, fmt.Errorf("%s: invalid JSON: unexpected content after the configuration", path)
 	}
 	dir := filepath.Dir(path)
-	for _, p := range []*string{&cfg.RecordsDir, &cfg.StateDir, &cfg.TLSCert, &cfg.TLSKey} {
+	paths := []*string{&cfg.RecordsDir, &cfg.StateDir, &cfg.TLSCert, &cfg.TLSKey, &cfg.TestRequestsDir}
+	for i := range cfg.TestConfigs {
+		paths = append(paths, &cfg.TestConfigs[i])
+	}
+	for _, p := range paths {
 		if *p != "" && !filepath.IsAbs(*p) {
 			*p = filepath.Join(dir, *p)
 		}
@@ -99,6 +115,13 @@ func (c Config) validate() error {
 		return errors.New("tls_cert and tls_key must be given together, or both left empty")
 	case c.SessionIdleMinutes < 1 || c.SessionIdleMinutes > 24*60:
 		return fmt.Errorf("session_idle_minutes %d must be 1 to 1440", c.SessionIdleMinutes)
+	case len(c.TestConfigs) > maxTestConfigs:
+		return fmt.Errorf("test_configs names %d configurations; at most %d", len(c.TestConfigs), maxTestConfigs)
+	}
+	for i, p := range c.TestConfigs {
+		if p == "" {
+			return fmt.Errorf("test_configs[%d] is empty", i)
+		}
 	}
 	return nil
 }

@@ -51,6 +51,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/EfeSipahi/ids-system/internal/analysis"
 	"github.com/EfeSipahi/ids-system/internal/config"
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
@@ -88,14 +89,10 @@ type requestOutput struct {
 	// Source is the file the example came from, without ".json".
 	Source string `json:"source"`
 	Name   string `json:"name,omitempty"`
-	result.Record
-
-	// Application, Profile and AlertBy are set when the configuration has
-	// applications. AlertBy names what made the request an alert: "rules",
-	// "profile" or both.
-	Application *result.Application `json:"application,omitempty"`
-	Profile     *result.Profile     `json:"profile,omitempty"`
-	AlertBy     []string            `json:"alert_by,omitempty"`
+	// Analysed is the record of the request and, when the configuration
+	// has applications, its application, profile result and what made it
+	// an alert: "rules", "profile" or both.
+	result.Analysed
 
 	Expectation *expectation `json:"expectation,omitempty"`
 }
@@ -238,25 +235,13 @@ func run(args []string, stdout, stderr io.Writer) int {
 				if app == nil {
 					app = apps.Match(ex.Request)
 				}
-				var tuning *engine.Tuning
-				if app != nil {
-					tuning = app.Tuning
-				}
-				res := rules.EvaluateWith(ex.Request, tuning)
+				res, prof := analysis.Run(rules, apps, ex.Request, app)
 				r := requestOutput{
 					Index:       len(out.Requests) + 1,
 					Source:      source,
 					Name:        ex.Name,
-					Record:      result.NewRecord(res.Request, res, opt),
+					Analysed:    result.NewAnalysed(res, prof, app, rules.ParanoiaLevel(), opt),
 					Expectation: check(ex, res),
-				}
-				var prof *profile.Result
-				if profiled {
-					checked := apps.Check(res.Request, app)
-					prof = &checked
-					a := result.NewApplication(app, rules.ParanoiaLevel())
-					r.Application, r.Profile = &a, result.NewProfile(checked)
-					r.AlertBy = result.AlertBy(r.Score, checked)
 				}
 				out.Requests = append(out.Requests, r)
 				if recorder == nil {

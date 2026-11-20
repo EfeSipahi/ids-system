@@ -37,6 +37,10 @@ type store struct {
 	// skipped counts lines of a record type this dashboard does not know,
 	// which readers skip (docs/records-format.md, section 2).
 	skipped int
+
+	// marks are the verdicts people gave (G1); they live in the state
+	// folder, not in the records. Lock order: s.mu before the marks' own.
+	marks *marks
 }
 
 // recordFile is one file and how far it has been read.

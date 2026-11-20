@@ -1,8 +1,8 @@
 # Record format
 
-Written: 23 October 2026. Updated 25 October 2026: applications and profiles (A04, decisions F1–F11), only as optional fields. Updated 18 November 2026: the live input `ids-live` (A01, decisions T1–T12), as optional fields and the new record type `gap`. Schema version: **1**.
+Written: 23 October 2026. Updated 25 October 2026: applications and profiles (A04, decisions F1–F11), only as optional fields. Updated 18 November 2026: the live input `ids-live` (A01, decisions T1–T12), as optional fields and the new record type `gap`. Checked against the code and the lab's records on 19 November 2026; the request version and response encoding of the live input are described more exactly. Schema version: **1**.
 
-This is the contract between the programs that write records and the programs that read them.
+This is the contract between the programs that write records and the programs that read them. Readers never change a record file: the dashboard keeps people's marks on records, its users and its change log in its own state folder ([dashboard-state.md](dashboard-state.md)).
 
 ```
 files:   request files ──▶ ids-offline ──writes──▶ records/*.jsonl ──reads──▶ ids-dashboard
@@ -72,12 +72,12 @@ Written when `ids-offline` or `ids-live` starts writing records.
 | `connection.ip`, `connection.port` | Live input only: the address the proxy's connection came from. It differs from `client` when a trusted proxy is in front. Added 18 November 2026 |
 | `server.host`, `server.ip`, `server.port` | The `Host` header, and the address and port the request came to |
 | `tls` | Live input over TLS only (T10): `version` (for example `TLS 1.3`), `cipher`, `server_name` (SNI, left out when the client sent none), `alpn` (for example `h2`, left out when none was agreed). Record fields only, not an input of any layer. Added 18 November 2026 |
-| `request.method`, `path`, `query`, `version` | The request line. Secret parameters in `query` are masked by name, and secret path parts of a profile by place: `/reset/[masked]` |
+| `request.method`, `path`, `query`, `version` | The request line. Secret parameters in `query` are masked by name, and secret path parts of a profile by place: `/reset/[masked]`. For the live input, `version` is the protocol as the proxy received it: `HTTP/1.1`, `HTTP/2.0` or `HTTP/3.0` |
 | `request.user_agent`, `referer`, `content_type` | These headers. Secret parameters in the Referer's query are masked |
 | `request.body_length` | Body size in bytes, as the client sent it. It can be more than was inspected: see `analysis.body` |
 | `request.header_names` | Header names in order, without values. For the live input, Caddy gives them in Go's canonical form (`Cache-Control`), `Host` first and the rest sorted by name (`docs/copy-format.md`, section 4.3) |
 | `request.cookies[]` | `name` and `hash`: the first 12 hex digits of HMAC-SHA256 of the value with `hash.key`. The same session gives the same hash; the value can't be found from it |
-| `response` | Live input only, when the application answered: `status`, `content_type` and `encoding` (its `Content-Type` and `Content-Encoding` headers, left out when absent), `body_length` (bytes the application sent), `body_copied` (bytes the copier copied, T4), `note` (`type not copied`, `not finished`, `upgraded` or `handler error`, left out otherwise; see `docs/copy-format.md`, section 4.2). The response body itself is not recorded or analysed until the response rules (K8). Added 18 November 2026 |
+| `response` | Live input only, when the application answered: `status`, `content_type` and `encoding` (its `Content-Type` and `Content-Encoding` headers, left out when absent), `body_length` (bytes the application sent), `body_copied` (bytes the copier copied, T4), `note` (`type not copied`, `not finished`, `upgraded` or `handler error`, left out otherwise; see `docs/copy-format.md`, section 4.2). The response body itself is not recorded or analysed until the response rules (K8). `encoding` is what the client got: behind Caddy's `reverse_proxy`, a client that does not accept gzip gets a plain body, which Caddy unzipped (`docs/copy-format.md`, section 4.3). Added 18 November 2026 |
 | `analysis` | `complete`, `body` (`empty`, `inspected`, `partly inspected` or `not inspected`), `body_format`, `body_reason`, `issues[]` (M05) |
 | `findings[]` | `rule_id`, `severity`, `message`, `location` (for example `ARGS:id`), `matched` (the matched value), `data` (the rule's log data), `action`, `tags` |
 | `score` | `total`, `threshold`, `exceeded`, `categories` (score per attack group, for example `sql_injection`) |

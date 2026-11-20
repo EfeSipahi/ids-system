@@ -1,0 +1,265 @@
+[
+  {
+    "name": "A normal request: no rule should match",
+    "method": "GET",
+    "uri": "/products?id=42&sort=price",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ]
+    ]
+  },
+  {
+    "name": "SQL injection in the query",
+    "method": "GET",
+    "uri": "/search?q=1%27%20UNION%20SELECT%20username%2C%20password%20FROM%20users--",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ]
+    ]
+  },
+  {
+    "name": "Cross-site scripting (XSS) in a form body",
+    "method": "POST",
+    "uri": "/comment",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "70"
+      ]
+    ],
+    "body": "name=Ann&comment=%3Cscript%3Ealert%28document.cookie%29%3C%2Fscript%3E"
+  },
+  {
+    "name": "Path traversal to a system file",
+    "method": "GET",
+    "uri": "/download?file=..%2F..%2F..%2F..%2Fetc%2Fpasswd",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ]
+    ]
+  },
+  {
+    "name": "Command injection after a host name",
+    "method": "GET",
+    "uri": "/tools/ping?host=127.0.0.1%3Bcat%20%2Fetc%2Fpasswd",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ]
+    ]
+  },
+  {
+    "name": "SQL injection inside a JSON body",
+    "method": "POST",
+    "uri": "/api/login",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/json"
+      ],
+      [
+        "Content-Length",
+        "50"
+      ]
+    ],
+    "body": "{\"user\": \"admin' OR '1'='1' -- \", \"password\": \"x\"}"
+  },
+  {
+    "name": "A PHP file uploaded in a multipart form",
+    "method": "POST",
+    "uri": "/upload",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "multipart/form-data; boundary=----form7MA4YWxkTrZu0gW"
+      ],
+      [
+        "Content-Length",
+        "280"
+      ]
+    ],
+    "body": "------form7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"title\"\r\n\r\nHoliday photo\r\n------form7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"file\"; filename=\"shell.php\"\r\nContent-Type: application/x-php\r\n\r\n<?php system($_GET['cmd']); ?>\r\n------form7MA4YWxkTrZu0gW--\r\n"
+  },
+  {
+    "name": "A scanner's User-Agent",
+    "method": "GET",
+    "uri": "/",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "sqlmap/1.8.2#stable (https://sqlmap.org)"
+      ],
+      [
+        "Accept",
+        "*/*"
+      ]
+    ]
+  },
+  {
+    "name": "An HTTP version that is not allowed",
+    "method": "GET",
+    "uri": "/",
+    "version": "HTTP/1.7",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ]
+    ]
+  },
+  {
+    "name": "A GET request with a body",
+    "method": "GET",
+    "uri": "/search",
+    "headers": [
+      [
+        "Host",
+        "shop.example.com"
+      ],
+      [
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+      ],
+      [
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      ],
+      [
+        "Accept-Language",
+        "en-US,en;q=0.5"
+      ],
+      [
+        "Content-Type",
+        "application/x-www-form-urlencoded"
+      ],
+      [
+        "Content-Length",
+        "14"
+      ]
+    ],
+    "body": "q=shoes&page=2"
+  }
+]

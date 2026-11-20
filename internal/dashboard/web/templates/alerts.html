@@ -18,6 +18,16 @@
   <label>Client IP <input name="ip" size="15"></label>
   <label>Location <input name="location" size="14" placeholder="ARGS:id"></label>
   <label>Min. score <input name="min_score" inputmode="numeric" pattern="[0-9]*" size="4"></label>
+  <label>Review
+    <select name="review">
+      <option value="">Any</option>
+      <option value="not_reviewed">Not reviewed</option>
+      <option value="real_attack">Real attack</option>
+      <option value="expected">Expected</option>
+      <option value="false_positive">False positive</option>
+      <option value="undetermined">Undetermined</option>
+    </select>
+  </label>
   <label>Order
     <select name="sort">
       <option value="time">Newest first</option>

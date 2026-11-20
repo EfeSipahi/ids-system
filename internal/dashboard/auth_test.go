@@ -38,6 +38,19 @@ func TestEveryRouteNeedsALogin(t *testing.T) {
 		{"GET", "/api/records/a", http.StatusUnauthorized},
 		{"GET", "/api/rules", http.StatusUnauthorized},
 		{"GET", "/api/engine", http.StatusUnauthorized},
+		{"GET", "/test", http.StatusSeeOther},
+		{"GET", "/api/test", http.StatusUnauthorized},
+		{"GET", "/api/test/files/920100", http.StatusUnauthorized},
+		{"POST", "/api/test", http.StatusUnauthorized},
+		{"GET", "/users", http.StatusSeeOther},
+		{"GET", "/log", http.StatusSeeOther},
+		{"GET", "/account", http.StatusSeeOther},
+		{"GET", "/api/users", http.StatusUnauthorized},
+		{"POST", "/api/users", http.StatusUnauthorized},
+		{"GET", "/api/log", http.StatusUnauthorized},
+		{"POST", "/api/account", http.StatusUnauthorized},
+		{"GET", "/api/marks/a", http.StatusUnauthorized},
+		{"POST", "/api/marks", http.StatusUnauthorized},
 		{"POST", "/api/overview", http.StatusSeeOther},
 		{"GET", "/login", http.StatusOK},
 		{"GET", "/static/app.js", http.StatusOK},
@@ -293,6 +306,22 @@ func TestSessionEndsWithUserChanges(t *testing.T) {
 		t.Error("the old password still works")
 	}
 	c = d.login(t, "admin", password)
+	// A new role ends the session too (C2).
+	other, err := AddUser(d.cfg.StateDir, "other", RoleAdmin)
+	if err != nil {
+		t.Fatal(err)
+	}
+	o := d.login(t, "other", other)
+	u, _ := openUsers(d.cfg.StateDir)
+	if err := u.setRole("other", RoleAnalyst); err != nil {
+		t.Fatal(err)
+	}
+	if d.do("GET", "/api/engine", nil, o).Code != http.StatusUnauthorized {
+		t.Error("a new role did not end the session")
+	}
+	if err := u.setRole("other", RoleAdmin); err != nil {
+		t.Fatal(err)
+	}
 	if err := RemoveUser(d.cfg.StateDir, "admin"); err != nil {
 		t.Fatal(err)
 	}
@@ -339,7 +368,7 @@ func TestLoginFormLimit(t *testing.T) {
 
 func TestUsers(t *testing.T) {
 	dir := t.TempDir()
-	password, err := AddUser(dir, "admin")
+	password, err := AddUser(dir, "admin", RoleAdmin)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -355,11 +384,11 @@ func TestUsers(t *testing.T) {
 			t.Errorf("check(%q, %q) passed", tc[0], tc[1])
 		}
 	}
-	if _, err := AddUser(dir, "admin"); err == nil {
+	if _, err := AddUser(dir, "admin", RoleAdmin); err == nil {
 		t.Error("the same name was added twice")
 	}
 	for _, bad := range []string{"", "a b", "ali/../x", strings.Repeat("a", 65), "<script>"} {
-		if _, err := AddUser(dir, bad); err == nil {
+		if _, err := AddUser(dir, bad, RoleAdmin); err == nil {
 			t.Errorf("name %q was accepted", bad)
 		}
 	}
@@ -384,7 +413,7 @@ func TestUsers(t *testing.T) {
 	}
 
 	// A running dashboard sees users added later.
-	second, err := AddUser(dir, "second")
+	second, err := AddUser(dir, "second", RoleAdmin)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -409,7 +438,7 @@ func TestPasswordWorkFactor(t *testing.T) {
 	dir := t.TempDir()
 	old := newIterations
 	newIterations = 2000
-	password, err := AddUser(dir, "admin")
+	password, err := AddUser(dir, "admin", RoleAdmin)
 	newIterations = old
 	if err != nil {
 		t.Fatal(err)

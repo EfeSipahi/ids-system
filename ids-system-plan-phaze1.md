@@ -31,11 +31,11 @@ Document role: Primary reference for current architecture decisions, implementat
 | Phase 1 | Detect SQLi, XSS carried in HTTP requests, and path traversal attempts; no automatic blocking |
 | Product architecture | Go core; ML development in Python; integration with an existing TLS reverse proxy; rule, ML, and application-profile layers |
 | Rule engine | Our own Go SecLang engine; CRS 4.30.0; all request rule groups, paranoia level 1 to 4 by configuration, default 1 (M19 and M20 as amended on 12 October 2026) |
-| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20). Records and alerts written by `ids-offline`, and the read-only `ids-dashboard` behind a login over HTTPS (section 11.23). Hand-written application profiles with per-application rule exceptions and levels, and the CSIC shop's profile (section 11.26) |
-| Not yet implemented | Live proxy integration, the Go feature extractor and ONNX model, the decision mechanism, webhook and syslog alerts, learned profiles |
+| Existing implementation | Python data preparation and feature extraction, a trained Random Forest pilot, and test reports. In Go: the rule layer, which runs every CRS request rule file at levels 1 to 4 on offline requests through the `ids-offline` command; all 5,072 convertible CRS request tests pass (sections 11.9–11.20). Records and alerts written by `ids-offline`, and the read-only `ids-dashboard` behind a login over HTTPS (section 11.23). Hand-written application profiles with per-application rule exceptions and levels, and the CSIC shop's profile (section 11.26). Live traffic through Caddy: the copier module `ids_copy` and `ids-live`, which analyses the copies as `ids-offline` analyses files, measured in a lab (section 11.28). A test tab in the dashboard that analyses a request the user writes (section 11.30). Marks on alerts, users with roles (viewer, analyst, admin) and a change log in the dashboard (section 11.32) |
+| Not yet implemented | The Nginx input, the response rules, the Go feature extractor and ONNX model, the decision mechanism, webhook and syslog alerts, learned profiles |
 | Approved decision count | M01–M21: 21 decisions; implementation status is tracked separately |
 | Open topics | A01–A11: 11 main topics, each potentially containing multiple subdecisions. Three ideas from the user, I1–I3: [section 6.15](#fikirler) |
-| Next step | Live traffic through Caddy (A01, A08), the third step of the user's order. Its decisions T1–T12 were made on 26 October 2026 (section 11.27); it is built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md). Hand-written application profiles (A04) were decided and built on 25 October 2026 (sections 11.25 and 11.26); records, alerts, and the dashboard on 23 October 2026 (section 11.23) |
+| Next step | The user's choice among: turning a false positive into an exception with a preview and a history, settings pages, more views, or the response rules (K8) and alerts by webhook and syslog; each with its decisions first. Marking alerts, users with roles and a change log (G1–G6) were built on 20 November 2026 (sections 11.31 and 11.32), following [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md). The request test tab (S1–S4) was built the same day (sections 11.29 and 11.30). Then the response rules (K8) and alerts by webhook and syslog, which need their own decisions. `ids-offline` keeps its name (decided 19 November 2026). Live traffic through Caddy (A01, A08) was decided on 26 October 2026 (section 11.27), built on 18 November and closed on 19 November 2026 (section 11.28), following [docs/development-plan-proxy.md](docs/development-plan-proxy.md) |
 
 **For the next agent:** First verify the current status in this document against the relevant files. Then continue from the first unfinished step in section 7.4. The user wants numbered discussions, one decision at a time; do not finalize other proposals or begin application implementation without approval.
 
@@ -717,7 +717,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 <a id="a01"></a>
 ### 6.1. A01 — Proxy, TLS, and copy transfer
 
-**Status:** Partly decided on 26 October 2026, decisions T1–T12 (section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md). In short: Caddy with our own Go copier module; copies over a two-way Unix socket in our own frame format; request bodies copied while they stream, up to 12.5 MB; responses copied for text types up to 512 KB; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues whose drops are counted; fail-open with gap records; Caddy terminates TLS, and keys never reach the IDS. Still open: the details of the second input, Nginx `mirror`; the Nginx module and its language (C or Rust); a TCP option with TLS and authentication; records from several machines.
+**Status:** Partly decided on 26 October 2026, decisions T1–T12 (section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md) and measured in a lab on 18 November 2026 (section 11.28). In short: Caddy with our own Go copier module; copies over a two-way Unix socket in our own frame format; request bodies copied while they stream, up to 12.5 MB; responses copied for text types up to 512 KB; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues whose drops are counted; fail-open with gap records; Caddy terminates TLS, and keys never reach the IDS. Still open: the details of the second input, Nginx `mirror`; the Nginx module and its language (C or Rust); a TCP option with TLS and authentication; records from several machines.
 
 **Known / approved basis:** M02 and M09 approve an existing reverse proxy, TLS termination, and request-copy analysis that does not hold up the application.
 
@@ -821,7 +821,7 @@ This decision does not select worker counts, parallel execution of all layers, o
 <a id="a09"></a>
 ### 6.9. A09 — Sensitive data, records, access, and retention
 
-**Status:** Partly decided; the decided part is built. Records, alerts, and the dashboard: decisions R1–R7 and V1–V7 of 23 October 2026 (section 11.22), implemented the same day (section 11.23); the record format is in `docs/records-format.md`. Still open: sensitive fields per application (with A04), roles and permissions once the dashboard can change settings, and what a block record contains (with K4).
+**Status:** Partly decided; the decided part is built. Records, alerts, and the dashboard: decisions R1–R7 and V1–V7 of 23 October 2026 (section 11.22), implemented the same day (section 11.23); the record format is in `docs/records-format.md`. Still open: sensitive fields per application (with A04), how long marks keep a client address (C6 of the marks plan), and what a block record contains (with K4). Roles were decided on 20 November 2026 (G3, section 11.31): viewer, analyst and admin.
 
 **Known / approved basis:** M11: actual content is analyzed; recorded values are masked or omitted; no complete raw-request recording by default.
 
@@ -926,7 +926,7 @@ The user added these ideas to the plan, I1 and I2 on 16 October 2026 and I3 on 2
    - an installer for the one-time work that needs administrator rights: installing the programs (with a ready-built Caddy that already contains the copier), a system user, the socket folder and its permissions, the services that start the programs, the first admin password;
    - setup pages in the dashboard for ongoing changes: applications and their profiles, levels and exceptions, which Caddy sites are copied, and later alert and blocking settings. Caddy's admin API loads a new configuration without downtime and rolls back a configuration that fails.
 3. **Questions to answer before building it:** a dashboard that changes the proxy controls all the traffic, so it needs roles and permissions (A09), a change history, a confirmation before a change takes effect, and Caddy's admin API on a permission-protected Unix socket (Caddy's documentation warns that an exposed admin endpoint lets anyone control the server). The dashboard is read-only today by decision V2.
-4. **Related:** A09, I1 (an MCP server would change the same settings), section 6.13 item 4; whether the commands become one `ids` program at that stage (an open naming question of the proxy step).
+4. **Related:** A09, I1 (an MCP server would change the same settings), section 6.13 item 4; whether the commands become one `ids` program at that stage (the proxy step kept the name `ids-offline` on 19 November 2026).
 
 <a id="ilk-motor"></a>
 ## 7. Proposed starting decisions for the first engine
@@ -1565,3 +1565,109 @@ The profile work was committed (`68b42c8`, `71ffe71`). The proxy research follow
 **Consequences found while writing the plan** (approved with it, C1–C8 of the plan): the parser's body limit of 1 MiB becomes the setting `request_body_limit` with Coraza's default, for both inputs; Go's server changes header names and order, which the copier rebuilds and the lab checks; a new `gap` record and a lock file for the records folder; unzipping response bodies is built with the response rules.
 
 **Still open, to discuss next:** whether `ids-offline` keeps its name; the user's idea I3 (an installer, and setup from the dashboard, section 6.15); later: records from several machines, a shared block list for K4, the TCP option.
+
+### 11.28. Live traffic through Caddy built and measured — 18–19 November 2026
+
+Stages 4–8 of [docs/development-plan-proxy.md](docs/development-plan-proxy.md) were done on 18 and 19 November 2026, after stages 1–3 on 26 October; the plan's notes 4–8 hold the details and every measurement. The contracts are [docs/copy-format.md](docs/copy-format.md) (the frames, and how to set up both sides) and [docs/records-format.md](docs/records-format.md) (schema 1, with new optional fields and the `gap` record). On 17 November the work moved to a second machine: Fedora 44 in WSL2, with 4 CPUs of an Intel Core i5-9400F.
+
+**What exists now:**
+
+1. `ids-live` (`cmd/ids-live`, `internal/live`): listens on a Unix socket with permission 0660; answers a copier's hello with its frame limit; holds copies in a queue limited by count and by bytes; analyses them with the same engine, profiles and records as `ids-offline`; turns every dropped copy into a `gap` record; stops on SIGTERM, analysing what is queued for up to 10 seconds.
+2. Records: the request record's optional `proxy`, `connection`, `tls` and `response`; the `gap` record; `copiers` and `unknown_applications` in `counts`; `input` in `start`; a lock file, so that a second writer of one folder fails (Linux).
+3. The Caddy copier `ids_copy` (`caddy-module/`, its own `go.mod`, Caddy v2.11.9): copies the request and its response while they pass; places itself first among Caddy's handlers; shares one sender per socket across reloads; fits each copy into `ids-live`'s frame limit; counts what it can't send and reports it when it connects again.
+4. The dashboard: totals of what was not analysed, by reason, and the newest gaps; unknown application names; warnings "No copier connected" and "ids-live has written nothing since …"; Proxy and Response cards on the detail page; the input on the Engine page.
+5. The lab (`lab/`): a test application, a raw HTTPS replay tool, a comparison of record folders, a Caddyfile, and `lab/lab.sh` with six checks.
+
+**Decided by the user during the work:**
+
+1. Live request records keep the proxy's request ID and the time it received the request (`proxy`), to find a record in Caddy's logs.
+2. Revised option A: `ids-live`'s hello gives its frame limit, `max_frame`, and the copier fits each copy into it, cutting the response body first and then the end of the request body. Format version 1 was amended, because no copier used it yet.
+3. Option A: the overview warns when a live run's newest counts record is more than 2 minutes old, since `ids-live` writes one every minute.
+4. The dashboard follows the IBM Carbon Design System, chosen from free design systems: the colours of Carbon's g10 and g100 themes, and the IBM Plex fonts (OFL-1.1), served by the dashboard itself.
+
+**Checks** (the lab on 18 November, all requests over HTTPS; the close on 19 November):
+
+1. Equality (T9): the 396 CSIC validation and test requests through Caddy gave the same 162 request records in `ids-live` as in `ids-offline`, and 396 analysed in both. All 162 header-name lists differ, as C2 says, and no result changed.
+2. Added time (M09): with `ids-live` on its own CPU, the copier adds about 0.02 ms (one request at a time) to 0.2 ms (eight at a time) at the median, and up to about 1.3 ms for the slowest 1 in 100 under parallel load. With `ids-live` hung or stopped, the times equal those without the copier. On CPUs shared with the site, the analysis takes CPU from it.
+3. Overload (T7): 7,920 requests in a burst, all answered; 235 analysed, 2,429 counted by the copier and 5,256 by `ids-live`, which adds up. Peak memory: `ids-live` 46.6 MB, Caddy 58.4 MB.
+4. Stop and start (T8): one gap record of exactly the 132 requests sent while `ids-live` was stopped.
+5. TLS and client address (T5, T10): TLS 1.3 with its cipher and SNI recorded; `X-Forwarded-For` used only when the sender is a trusted proxy; HTTP/2 and HTTP/3 work.
+6. Responses (T4, C7): text copied up to 512 KB, an image not copied, a slow response sent at 10 seconds as "not finished", a WebSocket at its upgrade.
+7. The close: `gofmt`, `go vet` and `go test` in both modules; the race detector on the whole main module, engine included, and on the copier; seven fuzz tests for 60 seconds each; unchanged numbers: 2,916 of 5,072 CRS tests flagged at level 1, CSIC 96 of 500 normal and 176 of 500 anomalous, and with the CSIC profile validation 5 of 99 and 27 of 98, test 3 of 100 and 30 of 99.
+
+**Defaults kept as first values:** the queues (1,000 copies or 64 MB, on both sides), `max_wait` (10 s), `ids-live`'s workers (2) and its stop's wait (10 s). The lab measured the behaviour with them (plan, note 7); they were not changed, and a change needs the user's approval.
+
+**Known limits:** copies in `ids-live`'s queue when it crashes are lost without a count (C8); requests that Go's server rejects before any handler never reach the copier (C3), nor the application; the copier sees a request body only as far as the application reads it; the response that Caddy writes for a handler's error is seen only as its status; Caddy's `reverse_proxy` unzips responses for clients that do not accept gzip, so the copy is what the client got; the numbers come from replayed CSIC requests on one machine, not from a real site.
+
+**Decided by the user after the close, 19 November 2026:** `ids-offline` keeps its name (option A of the plan's open point 1). The dashboard is to be extended beyond reading before the response rules; its scope is being discussed. The dashboard's own login password, service and certificate for the user's network are left as they are while developing.
+
+**Next in the order:** extending the dashboard, then the response rules (K8) and alerts by webhook and syslog, each with its own decisions. Later: the Nginx input, records from several machines, a shared block list for K4, the TCP option.
+
+### 11.29. Decisions on a request test tab in the dashboard — 19 November 2026
+
+Before alert marking and users, the user asked for a tab where they write a request themselves and see how the rules behave. The CRS project's sandbox, Coraza's Playground and Cloudflare's Trace offer the same kind of tool. The plan is [docs/development-plan-test-tab.md](docs/development-plan-test-tab.md).
+
+**Decisions:**
+
+| # | Decision |
+| --- | --- |
+| S1 | The dashboard runs the analysis itself, with the same engine and profiles as `ids-offline` and `ids-live`; nothing goes through Caddy |
+| S2 | A list of configuration files in `dashboard.json`, chosen from a menu on the tab; the first is the default; each one's fingerprint is compared with the newest run's |
+| S3 | The request is written as raw HTTP text |
+| S4 | Examples: a short built-in list, and a picker of CRS's own test requests by rule |
+
+**Consequences approved with the plan** (C1–C6 of the plan): the dashboard computes but still changes nothing (V2 holds); it loads rule sets when first used, at most 4 kept; the text is at most 1 MiB and at most 2 tests run at once; the request is never sent anywhere; matched values are shown, since the text is the user's own and nothing is stored; one example is replaced because a body over 12.5 MB can't be typed.
+
+### 11.30. The request test tab built — 19 November 2026
+
+All five stages of [docs/development-plan-test-tab.md](docs/development-plan-test-tab.md) were done the same day; its notes 1–5 hold the details.
+
+**What exists now:**
+
+1. A "Test" tab in the dashboard: a request written as raw HTTP text, a built-in example (ten, from a normal request to a PHP upload) or one of CRS's own tests chosen by rule; the configuration from `test_configs`, the paranoia level, the application and a client address. The answer gives the verdict, every rule finding with its matched value, the score by category, the profile's findings, the analysis status, what the engine read, and, for a CRS test, whether its expectation is met.
+2. `internal/analysis.Run`: the one analysis of a request, which `ids-offline`, `ids-live` and the tab now share; `result.Analysed`, what `ids-offline` prints and the tab shows for each request.
+3. `offline.ParseRaw` and `offline.Raw`: raw HTTP text, with the body's line ends kept apart, because a browser's text box turns `\r\n` into `\n`.
+
+**Changes made during the work** (plan, notes 2–3): spaces around a header value are removed, as Go's HTTP server does (checked); no CRS rule compares `Content-Length` with the body, so the example meant for that became "a GET request with a body" (920170); an optional client address, for the 905 rules and examples that set one.
+
+**Checks:**
+
+1. 6,384 of the 6,391 example requests are written as text and read back the same; the 7 others are named, with the reason.
+2. Through the real API, the tab's answers equal `ids-offline -json -show-values` for 5,066 CRS tests (every expectation met) and the 1,000 CSIC requests with two configurations.
+3. `ids-offline`'s output and records are byte for byte the same as before the shared analysis, in 8 runs; the live tests pass.
+4. Three browser rounds; four layout defects fixed.
+5. A 1 MiB request takes 0.3–3.8 s at level 1 and 2.1–9.8 s at level 4 on this machine; at most two run at once, and the limit stays 1 MiB unless the user lowers it.
+
+**Next in the order:** alert marking, users with roles and a change log, with their decisions first; then the response rules (K8) and alerts by webhook and syslog.
+
+### 11.31. Decisions on marking alerts, users with roles, and a change log — 20 November 2026
+
+The first part of extending the dashboard beyond reading. The plan is [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md); its context names what Elastic Security, Microsoft Sentinel and NIST SP 800-63B-4 do.
+
+**Decisions:**
+
+| # | Decision |
+| --- | --- |
+| G1 | A mark is a verdict: not reviewed, real attack, expected, false positive or undetermined, with an optional note, who and when |
+| G2 | Marks go on existing records: one, the selected ones, or all that match the list's filter; no standing marks for future alerts |
+| G3 | Three roles as a ladder: viewer, analyst (also marks and tests), admin (also users, the change log, later settings); the existing users become admins. Per-user permissions were weighed and left for a custom role, should a mixed job appear |
+| G4 | A Users page for admins; a new or reset password is random, shown once and kept; every user can change their own (at least 15 characters, no composition rules); user changes ask for the admin's password again; the last admin stays; sessions end on removal, role change or reset |
+| G5 | An append-only change log of marks and user changes, one entry per action, never a password; admins only, with the logins; each alert's own mark history for every role |
+| G6 | JSON Lines files in the dashboard's state folder (`marks.jsonl`, `changes.jsonl`, roles in `users.json`); a mark keeps a summary of its alert; one dashboard writes them, under a lock |
+
+**Consequences approved with the plan** (C1–C8 of the plan): the dashboard writes its own state folder only, never records or IDS settings (V2's "read-only" ends there); a role change ends sessions; `users.json` changes take a lock, since the page and the commands both write it; a second dashboard on the same state folder refuses to start; users without a role read as admins, and `-add-user` gets `-role`; marks keep a client address after its record rotates away (retention left for A09); a bulk mark is at most 10,000 records; re-asking the password counts toward the login wait.
+
+### 11.32. Marks, users with roles and the change log built — 20 November 2026
+
+All five stages of [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md) were done the same day; its notes 1–5 hold the details. The state folder's files are described in [docs/dashboard-state.md](docs/dashboard-state.md).
+
+**What exists now:**
+
+1. Roles (G3): `users.json` keeps each user's role, users without one being admins; every route names its least role; a role change ends the user's sessions; the last admin stays; `-add-user` takes `-role`. Every change of `users.json` holds a lock file, since the dashboard and the commands both write it.
+2. Users and the change log (G4, G5): the Users page (add, remove, change a role, reset a password, each after the admin's password, whose wrong tries count with the login's); Your account (one's own password, at least 15 characters); `changes.jsonl`, appended to only; the Log page with the changes and the logins, for admins. One dashboard per state folder, under `dashboard.lock`.
+3. Marks (G1, G2, G6): `marks.jsonl`; a verdict and note on one record, the chosen ones or all that match the list's filter, at most 10,000 per action; a Review column and filter; the overview's "not reviewed"; false positives per rule on the Rules page, also of records that rotated away; each alert's mark history on its page.
+
+**Checks:** every route as no login, viewer, analyst and admin; the last admin, sessions ending, the shared wait; two writers of `users.json` at once (the test catches a lost change without the lock); one log entry per action; no password in any state file; marks by IDs and filter, after a restart and after rotation; 10,000 records marked in 27 ms, 10,001 refused; `FuzzStoreReadsAnyFile` also reads marks; four browser rounds as each role, light and dark, with two layout defects fixed; the records folder unchanged.
+
+**Next in the order:** the user's choice: a false positive turned into an exception (with a preview and a history), settings pages, more views, or the response rules (K8) and alerts by webhook and syslog.
+

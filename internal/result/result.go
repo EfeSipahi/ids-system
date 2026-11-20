@@ -242,6 +242,32 @@ func NewProfile(res profile.Result) *Profile {
 	return p
 }
 
+// Analysed is what the output says about one analysed request: its record
+// and, when the configuration has applications, its application, its
+// profile result and what made it an alert. ids-offline prints it and the
+// dashboard's test tab shows it (docs/development-plan-test-tab.md).
+type Analysed struct {
+	Record
+
+	Application *Application `json:"application,omitempty"`
+	Profile     *Profile     `json:"profile,omitempty"`
+	AlertBy     []string     `json:"alert_by,omitempty"`
+}
+
+// NewAnalysed describes one request that analysis.Run analysed: res is
+// the rules' result, prof the profile result (nil without applications),
+// app the request's application (nil for none), and defaultLevel the
+// configuration's paranoia level.
+func NewAnalysed(res *engine.Result, prof *profile.Result, app *profile.App, defaultLevel int, opt Options) Analysed {
+	a := Analysed{Record: NewRecord(res.Request, res, opt)}
+	if prof != nil {
+		described := NewApplication(app, defaultLevel)
+		a.Application, a.Profile = &described, NewProfile(*prof)
+		a.AlertBy = AlertBy(a.Score, *prof)
+	}
+	return a
+}
+
 // What made a request an alert (F6): the rules' anomaly score, and the
 // profile's findings when the profile's mode is "alert".
 const (

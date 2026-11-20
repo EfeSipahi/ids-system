@@ -1,0 +1,7 @@
+{{define "content"}}
+<div class="pagehead"><h1>Not allowed</h1></div>
+<section class="card">
+  <p>This page needs the role {{.Need}} or more. Your role is {{.Role}}; an admin can change it.</p>
+  <p><a href="/">Go to the overview</a> · <a href="/alerts">Alerts</a></p>
+</section>
+{{end}}

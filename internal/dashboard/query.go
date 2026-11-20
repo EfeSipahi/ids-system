@@ -118,6 +118,9 @@ type overview struct {
 	UnknownApps []item `json:"unknown_applications"`
 	// Live is the state of the newest run when its input is live.
 	Live *liveStatus `json:"live,omitempty"`
+	// NotReviewed counts the alerts of the period that nobody marked yet
+	// (G1).
+	NotReviewed int `json:"not_reviewed"`
 }
 
 // missedCount is the not-analysed total of one source and reason.
@@ -224,6 +227,9 @@ func (s *store) overview(r timeRange) overview {
 			o.Alerts++
 			if b != nil {
 				b.Alerts++
+			}
+			if s.marks.verdict(e.id) == verdictNotReviewed {
+				o.NotReviewed++
 			}
 			if e.time.After(o.LastAlert) {
 				o.LastAlert = e.time
@@ -389,6 +395,8 @@ type filter struct {
 	MinScore int
 	Sort     string // "time" (newest first) or "score" (highest first)
 	Page     int
+	// Review is a verdict (G1), "not_reviewed" included; empty for all.
+	Review string
 }
 
 func parseFilter(q url.Values, now time.Time) (filter, error) {
@@ -396,7 +404,10 @@ func parseFilter(q url.Values, now time.Time) (filter, error) {
 	if err != nil {
 		return filter{}, err
 	}
-	f := filter{Range: r, Kind: q.Get("kind"), Group: q.Get("group"), IP: strings.TrimSpace(q.Get("ip")), Location: strings.TrimSpace(q.Get("location")), App: strings.TrimSpace(q.Get("app")), Sort: q.Get("sort"), Page: 1}
+	f := filter{Range: r, Kind: q.Get("kind"), Group: q.Get("group"), IP: strings.TrimSpace(q.Get("ip")), Location: strings.TrimSpace(q.Get("location")), App: strings.TrimSpace(q.Get("app")), Sort: q.Get("sort"), Page: 1, Review: q.Get("review")}
+	if f.Review != "" && !slices.Contains(verdicts, f.Review) {
+		return filter{}, fmt.Errorf("review %q is not one of %s", f.Review, strings.Join(verdicts, ", "))
+	}
 	if len(f.App) > maxAppName {
 		return filter{}, fmt.Errorf("app is longer than %d characters", maxAppName)
 	}
@@ -479,6 +490,8 @@ type row struct {
 	Application  string   `json:"application,omitempty"`
 	ProfileKinds []string `json:"profile_kinds,omitempty"`
 	AlertBy      []string `json:"alert_by,omitempty"`
+	// Verdict is the record's mark (G1), "not_reviewed" without one.
+	Verdict string `json:"verdict"`
 }
 
 type list struct {
@@ -499,7 +512,7 @@ func (s *store) list(f filter) list {
 	defer s.mu.RUnlock()
 	var matched []*entry
 	for _, e := range s.entries {
-		if f.match(e) {
+		if f.match(e) && s.reviewMatches(f, e) {
 			matched = append(matched, e)
 		}
 	}
@@ -520,6 +533,7 @@ func (s *store) list(f filter) list {
 			Path: e.path, UserAgent: e.userAgent, Rules: nonNil(e.rules), Groups: nonNil(e.groups),
 			Locations: nonNil(e.locations), Incomplete: e.incomplete,
 			Application: e.app, ProfileKinds: e.profileKinds, AlertBy: e.alertBy,
+			Verdict: s.marks.verdict(e.id),
 		})
 	}
 	l.Applications = s.appNames()
@@ -571,6 +585,9 @@ type ruleRow struct {
 	record.Rule
 	Group string `json:"group"`
 	Fired int    `json:"fired"`
+	// FalsePositives counts the records of the period with this rule that
+	// are marked false positive, also those that rotated away (G6).
+	FalsePositives int `json:"false_positives"`
 
 	// Off and Skips are the chosen application's exception for the rule:
 	// the rule does not run for it, or does not look at these variables.
@@ -596,6 +613,19 @@ type rulesPage struct {
 	Applications []result.AppStartup `json:"applications,omitempty"`
 	App          string              `json:"app,omitempty"`
 	Level        int                 `json:"level"`
+}
+
+// newestConfig returns the configuration fingerprint of the newest run,
+// or "" when there is no run: the test tab says whether it tests the same
+// rules (S2).
+func (s *store) newestConfig() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	st, ok := s.latestRun()
+	if !ok {
+		return ""
+	}
+	return st.Engine.Config
 }
 
 // latestRun returns the run whose start record is the newest.
@@ -641,6 +671,15 @@ func (s *store) rulesPage(r timeRange, app string) (rulesPage, error) {
 			fired[id]++
 		}
 	}
+	falsePositives := map[int]int{}
+	s.marks.each(func(l markLine) {
+		if l.Verdict != verdictFalsePositive || !r.contains(l.Alert.Time) || app != "" && !sameApp(l.Alert.Application, app) {
+			return
+		}
+		for _, id := range l.Alert.Rules {
+			falsePositives[id]++
+		}
+	})
 	if !ok {
 		return p, nil
 	}
@@ -654,7 +693,7 @@ func (s *store) rulesPage(r timeRange, app string) (rulesPage, error) {
 		}
 	}
 	for _, rule := range s.rules[st.Run] {
-		row := ruleRow{Rule: rule, Group: fileGroup(rule.File), Fired: fired[rule.ID]}
+		row := ruleRow{Rule: rule, Group: fileGroup(rule.File), Fired: fired[rule.ID], FalsePositives: falsePositives[rule.ID]}
 		if ex, ok := exceptions[rule.ID]; ok {
 			row.Off, row.Skips, row.ExceptionReason, row.NoEffect = ex.Off, ex.Skip, ex.Reason, ex.NoEffect
 		}
@@ -700,12 +739,20 @@ type enginePage struct {
 	Unreadable     int                 `json:"unreadable_lines"`
 	// Skipped counts lines of record types this dashboard does not know.
 	Skipped int `json:"skipped_lines"`
+	// Marks counts the marked records, also those that rotated away, whose
+	// marks keep a client address (C6); MarksUnreadable the lines of the
+	// marks file that could not be read.
+	Marks           int `json:"marks"`
+	MarksUnreadable int `json:"marks_unreadable"`
 }
 
 func (s *store) enginePage() enginePage {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	p := enginePage{Runs: []runRow{}, Files: []fileRow{}, Applications: []result.AppStartup{}, Records: len(s.entries), Unreadable: s.broken, Skipped: s.skipped}
+	if s.marks != nil {
+		p.Marks, p.MarksUnreadable = s.marks.count()
+	}
 	type done struct{ analysed, records, alerts int }
 	byRun := map[string]*done{}
 	for _, run := range s.runs {

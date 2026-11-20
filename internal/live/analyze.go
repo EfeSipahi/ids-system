@@ -1,6 +1,7 @@
 package live
 
 import (
+	"github.com/EfeSipahi/ids-system/internal/analysis"
 	"github.com/EfeSipahi/ids-system/internal/copyframe"
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
@@ -9,10 +10,11 @@ import (
 )
 
 // Analyzer runs for each copy what ids-offline runs for each request: it
-// finds the application, evaluates the rules with the application's
-// exceptions and level, checks the profile, and records the result. It is
-// safe for use by many workers: the rules and the applications are only
-// read (M21), and the recorder is safe for many goroutines.
+// finds the application, runs analysis.Run (the rules with the
+// application's exceptions and level, then the profile), and records the
+// result. It is safe for use by many workers: the rules and the
+// applications are only read (M21), and the recorder is safe for many
+// goroutines.
 type Analyzer struct {
 	Rules    *engine.RuleSet
 	Apps     *profile.Set
@@ -27,16 +29,7 @@ func (a *Analyzer) Analyze(c *copyframe.Copy) error {
 	req := Request(c, a.Parsing)
 	live := NewLive(c)
 	app := a.application(c, req, live)
-	var tuning *engine.Tuning
-	if app != nil {
-		tuning = app.Tuning
-	}
-	res := a.Rules.EvaluateWith(req, tuning)
-	var prof *profile.Result
-	if len(a.Apps.Apps()) > 0 {
-		checked := a.Apps.Check(res.Request, app)
-		prof = &checked
-	}
+	res, prof := analysis.Run(a.Rules, a.Apps, req, app)
 	return a.Recorder.AddWith(res.Request, res, prof, live)
 }
 

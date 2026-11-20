@@ -83,14 +83,35 @@ const (
 // login checks a user name and password. On success it returns a new
 // session token. On loginWait it returns how long to wait.
 func (a *auth) login(name, password, ip string) (token string, result loginResult, wait time.Duration) {
+	stamp, result, wait := a.verify(name, password, ip, "")
+	if result != loginOK {
+		return "", result, wait
+	}
+	token = a.start(name, stamp)
+	a.write(name, "ok", ip)
+	return token, loginOK, 0
+}
+
+// verify checks a user's password with the wait after wrong passwords
+// (C8): a login, or a user asked for their password again before a change
+// (G4). what is "" for a login and "confirm" for the second; it names the
+// line of the log of logins. The wrong passwords of both count together,
+// so a stolen session can't guess faster than the login page.
+func (a *auth) verify(name, password, ip, what string) (stamp string, result loginResult, wait time.Duration) {
 	now := a.now()
 	key := strings.ToLower(name)
+	logged := func(r string) string {
+		if what == "" {
+			return r
+		}
+		return what + " " + r
+	}
 
 	a.mu.Lock()
 	if f := a.failed[key]; f != nil && now.Before(f.until) {
 		wait = f.until.Sub(now)
 		a.mu.Unlock()
-		a.write(name, "wait", ip)
+		a.write(name, logged("wait"), ip)
 		return "", loginWait, wait
 	}
 	a.mu.Unlock()
@@ -110,14 +131,32 @@ func (a *auth) login(name, password, ip string) (token string, result loginResul
 		if f.count >= freeTries {
 			f.until = now.Add(waitAfter(f.count))
 		}
-		a.write(name, "failed", ip)
+		a.write(name, logged("failed"), ip)
 		return "", loginFailed, 0
 	}
 	delete(a.failed, key)
-	token = rand.Text()
+	if what != "" {
+		a.write(name, logged("ok"), ip)
+	}
+	return stamp, loginOK, 0
+}
+
+// start makes a new session for a user whose password was just checked,
+// and returns its token.
+func (a *auth) start(name, stamp string) string {
+	now := a.now()
+	token := rand.Text()
+	a.mu.Lock()
 	a.sessions[token] = &session{user: name, stamp: stamp, created: now, lastSeen: now}
-	a.write(name, "ok", ip)
-	return token, loginOK, 0
+	a.mu.Unlock()
+	return token
+}
+
+// end ends one session, without a line in the log.
+func (a *auth) end(token string) {
+	a.mu.Lock()
+	delete(a.sessions, token)
+	a.mu.Unlock()
 }
 
 // waitAfter is the wait after count wrong passwords in a row: 30 seconds

@@ -27,6 +27,7 @@ func FuzzStoreReadsAnyFile(f *testing.F) {
 	f.Add([]byte(strings.Join(lines, "\n") + "\n"))
 	f.Add([]byte(lines[1] + "\nnot json\n{\"type\":\"request\",\"id\":\"c\",\"time\":\"0000-01-01T00:00:00Z\"}\n" + lines[2][:30]))
 	f.Add([]byte("{\"type\":\"counts\",\"to\":\"9999-12-31T23:59:59Z\",\"analysed\":-5}\n{\"type\":\"start\",\"run\":\"\"}\n"))
+	f.Add([]byte(`{"record":"a","verdict":"false_positive","alert":{"time":"2026-10-23T12:00:00Z","rules":[930100,-1]}}` + "\n" + `{"record":"","verdict":"expected"}` + "\n"))
 	f.Fuzz(func(t *testing.T, data []byte) {
 		dir := t.TempDir()
 		if err := os.WriteFile(filepath.Join(dir, record.CurrentFile), data, 0o600); err != nil {
@@ -36,6 +37,17 @@ func FuzzStoreReadsAnyFile(f *testing.F) {
 		if err := s.refresh(); err != nil {
 			t.Fatal(err)
 		}
+		// The same bytes as a marks file: read without a stop or a panic,
+		// and joined to the records (verification 5).
+		marksPath := filepath.Join(t.TempDir(), MarksFile)
+		if err := os.WriteFile(marksPath, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		m, err := openMarks(marksPath)
+		if err != nil {
+			t.Fatal(err)
+		}
+		s.marks = m
 		for _, e := range s.entries {
 			if _, err := s.load(e.id); err != nil {
 				t.Fatalf("load(%q): %v", e.id, err)
@@ -48,6 +60,7 @@ func FuzzStoreReadsAnyFile(f *testing.F) {
 			s.rulesPage(r, "")
 			s.rulesPage(r, "none")
 			s.list(filter{Range: r, Kind: "all", App: "none", Page: 1})
+			s.list(filter{Range: r, Kind: "all", Review: verdictNotReviewed, Page: 1})
 		}
 		s.enginePage()
 	})

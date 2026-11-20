@@ -23,7 +23,7 @@ Decided by the user on 26 October 2026, decisions T1–T12 (main plan section 11
    | T12 | A new command, `cmd/ids-live` |
 
 3. Still open, to be discussed after this plan; the user called them next steps:
-   1. whether `ids-offline` keeps its name (A: keep it; B: rename it to `ids-analyze`; C: one `ids` program with subcommands);
+   1. whether `ids-offline` keeps its name (A: keep it; B: rename it to `ids-analyze`; C: one `ids` program with subcommands). Decided by the user on 19 November 2026: A, it keeps its name;
    2. the user's idea of an installer, plus setup from the dashboard (main plan section 6.15, I3).
 
    Also noted for later in the main plan: records from several machines, a shared block list for K4, and the TCP option.
@@ -205,7 +205,7 @@ Each stage ends with its tests passing and a note in the progress section.
 | 5. Copier | Done 18 November 2026 |
 | 6. Dashboard | Done 18 November 2026 |
 | 7. Lab and measurements | Done 18 November 2026 |
-| 8. Close | Not started |
+| 8. Close | Done 19 November 2026 |
 
 ### Notes from the work
 
@@ -358,3 +358,18 @@ Each stage ends with its tests passing and a note in the progress section.
       - Caddy's reverse proxy asks the application for gzip itself when the client did not, and unzips the answer (Go's transport). The copier then sees the plain body and no `Content-Encoding`, which is what the client got.
       - A mistake in the first version of `lab.sh`: with CPU pinning, the saved process IDs were those of helper shells, so one timing run stopped nothing and its numbers were thrown away; the programs left running were stopped. `lab.sh` now starts `taskset` itself and waits for each `ids-live` run's own "Listening on" line; after every scenario `pgrep` showed no lab program left running.
    5. Checks: `go vet ./lab/...` and `go test ./lab/...` pass (the raw request bytes of `replay`, the multiset difference of `compare`); `bash -n lab/lab.sh` passes.
+8. Stage 8: the close, 19 November 2026.
+   1. Documents:
+      - `docs/copy-format.md`: section 4.3 gained what the lab showed, the protocol names (`HTTP/1.1`, `HTTP/2.0`, `HTTP/3.0`) and Caddy's `reverse_proxy` unzipping responses for clients that do not accept gzip; a new section 6 says how to set up `ids-live` and the copier, with every setting, its default and its bounds.
+      - `docs/records-format.md`: checked field by field against `internal/record`; the live request's `version` and the response's `encoding` are described more exactly.
+      - `docs/project-history.md`: section 4.9, the timeline, the numbers, the problems met, the commits.
+      - The main plan: sections 1 and 6.1, and history 11.28. `context.md`.
+      - A comment in `caddy-module/module.go` said the queue limits of the first copier of a socket hold. The code, and note 5 above, say the last one's, so that a reload can change them. The comment was corrected; the code was not changed.
+   2. The defaults this plan called first values, to be measured, were not changed: the queues (1,000 copies or 64 MB, on both sides), `max_wait` (10 s), `ids-live`'s 2 workers and its stop's 10 seconds. Note 7 has how the copier and `ids-live` behave with them. A change needs the user's approval.
+   3. Checks (verification items 1–3), all records in a temporary folder:
+      - `gofmt -l .` is empty in both modules; `go vet ./...` and `go test ./...` pass in both; `go test -race ./...` passes for the whole main module, the engine included (16.5 minutes, of which `internal/engine` 983 s), and for `caddy-module/` (also again after the comment fix).
+      - Unchanged numbers with `ids-offline`: the CRS tests at level 1 with `configs/crs-first-engine.json`, 2,916 of 5,072 flagged and 2,967 records; the 1,000 CSIC requests, 96 of 500 normal and 176 of 500 anomalous flagged; with `configs/csic-shop.json`, validation 5 of 99 normal and 27 of 98 anomalous flagged, test 3 of 100 and 30 of 99, as in the profile plan's notes 17 and 18. The golden tests of `ids-offline` and of the records pass.
+      - Fuzz, 60 seconds each, without a failure: `FuzzReadFrame` 7.7 million inputs, `FuzzLiveSecretsAreMasked` 1.6 million, `FuzzSecretsAreMasked` 0.8 million, `FuzzProfileSecretsAreMasked` 0.4 million, `FuzzStoreReadsAnyFile` 0.12 million, and, because stage 3 changed the parser and the engine, `FuzzBodyParsers` 2.6 million and `FuzzEvaluate` 0.13 million.
+      - The repository's `records/` folder was the same, byte for byte, before and after the checks.
+      - Not repeated: the dashboard's browser check (verification item 4, done in stage 6; the dashboard has not changed since) and the lab (item 5, note 7).
+

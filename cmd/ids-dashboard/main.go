@@ -42,6 +42,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	addUser := flags.String("add-user", "", "add a user `name` with a new random password, print the password, and exit")
 	resetPassword := flags.String("reset-password", "", "give the user `name` a new random password, print it, and exit")
 	removeUser := flags.String("remove-user", "", "remove the user `name` and exit")
+	role := flags.String("role", "", "with -add-user: the new user's `role`, viewer, analyst or admin (default admin)")
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}
@@ -59,6 +60,14 @@ func run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, "ids-dashboard: use only one of -add-user, -reset-password and -remove-user")
 		return 2
 	}
+	if *role != "" && *addUser == "" {
+		fmt.Fprintln(stderr, "ids-dashboard: -role goes with -add-user; an admin changes roles on the Users page")
+		return 2
+	}
+	if *role == "" {
+		// Whoever runs the command owns the machine (C5).
+		*role = dashboard.RoleAdmin
+	}
 
 	cfg, err := dashboard.LoadConfig(*configPath)
 	if err != nil {
@@ -68,12 +77,12 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 	switch {
 	case *addUser != "":
-		password, err := dashboard.AddUser(cfg.StateDir, *addUser)
+		password, err := dashboard.AddUser(cfg.StateDir, *addUser, *role)
 		if err != nil {
 			fmt.Fprintf(stderr, "ids-dashboard: %v\n", err)
 			return 2
 		}
-		fmt.Fprintf(stdout, "Added user %s. Password (shown only now): %s\n", *addUser, password)
+		fmt.Fprintf(stdout, "Added user %s (%s). Password (shown only now): %s\n", *addUser, *role, password)
 		return 0
 	case *resetPassword != "":
 		password, err := dashboard.ResetPassword(cfg.StateDir, *resetPassword)
@@ -97,6 +106,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "ids-dashboard: %v\n", err)
 		return 2
 	}
+	defer srv.Close()
 	cert, made, err := srv.Certificate()
 	if err != nil {
 		fmt.Fprintf(stderr, "ids-dashboard: certificate: %v\n", err)

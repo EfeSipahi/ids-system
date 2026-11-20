@@ -36,7 +36,7 @@ func TestUserCommands(t *testing.T) {
 	config := writeConfig(t, "127.0.0.1:8443")
 
 	code, out, errOut := runTool("-config", config, "-add-user", "admin")
-	if code != 0 || !strings.HasPrefix(out, "Added user admin. Password (shown only now): ") {
+	if code != 0 || !strings.HasPrefix(out, "Added user admin (admin). Password (shown only now): ") {
 		t.Fatalf("add: %d %q %q", code, out, errOut)
 	}
 	password := strings.TrimSpace(out[strings.LastIndex(out, " ")+1:])
@@ -55,10 +55,23 @@ func TestUserCommands(t *testing.T) {
 	if code != 0 || !strings.HasPrefix(out, "New password for admin (shown only now): ") || strings.Contains(out, password) {
 		t.Errorf("reset: %d %q", code, out)
 	}
-	if code, out, _ := runTool("-config", config, "-remove-user", "admin"); code != 0 || out != "Removed user admin.\n" {
+	// Roles (G3, C5): -role goes with -add-user only; the last admin stays.
+	if code, out, _ := runTool("-config", config, "-add-user", "watcher", "-role", "viewer"); code != 0 || !strings.HasPrefix(out, "Added user watcher (viewer).") {
+		t.Errorf("add a viewer: %d %q", code, out)
+	}
+	if code, _, errOut := runTool("-config", config, "-add-user", "x", "-role", "root"); code != 2 || !strings.Contains(errOut, `role "root"`) {
+		t.Errorf("bad role: %d %q", code, errOut)
+	}
+	if code, _, errOut := runTool("-config", config, "-reset-password", "admin", "-role", "viewer"); code != 2 || !strings.Contains(errOut, "-role goes with -add-user") {
+		t.Errorf("-role without -add-user: %d %q", code, errOut)
+	}
+	if code, _, errOut := runTool("-config", config, "-remove-user", "admin"); code != 2 || !strings.Contains(errOut, "last admin") {
+		t.Errorf("remove the last admin: %d %q", code, errOut)
+	}
+	if code, out, _ := runTool("-config", config, "-remove-user", "watcher"); code != 0 || out != "Removed user watcher.\n" {
 		t.Errorf("remove: %d %q", code, out)
 	}
-	if code, _, errOut := runTool("-config", config, "-remove-user", "admin"); code != 2 || !strings.Contains(errOut, `no user "admin"`) {
+	if code, _, errOut := runTool("-config", config, "-remove-user", "watcher"); code != 2 || !strings.Contains(errOut, `no user "watcher"`) {
 		t.Errorf("remove twice: %d %q", code, errOut)
 	}
 	if code, _, errOut := runTool("-config", config, "-add-user", "a b"); code != 2 || !strings.Contains(errOut, "user name") {

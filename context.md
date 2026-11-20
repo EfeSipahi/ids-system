@@ -1,6 +1,6 @@
 # IDS — Current Working Context
 
-Last updated: 18 November 2026  
+Last updated: 20 November 2026  
 Product directory: this repository (`/home/esip/Documents/ids-system` on the first development machine)  
 Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.md)
 
@@ -8,7 +8,7 @@ Main architecture reference: [ids-system-plan-phaze1.md](ids-system-plan-phaze1.
 
 A general-purpose, open-source HTTP intrusion detection system (IDS), customizable through application profiles. Phase 1 started with SQLi, request-borne XSS, and path traversal; since 12 October 2026 the rule part is being extended to all request rules of CRS (decision K6). It produces alerts and does not block requests.
 
-Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a configurable paranoia level, an ML layer, manually defined application profiles, and a decision mechanism that combines them. HTTPS traffic arrives as request copies from an existing reverse proxy. **Of these, the rule layer and hand-written application profiles exist**, working on offline requests, with records, alerts, and a read-only dashboard (records and dashboard since 23 October 2026, UI reworked on 24 October, profiles since 25 October). The rest is approved design (M01–M21), not working features.
+Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a configurable paranoia level, an ML layer, manually defined application profiles, and a decision mechanism that combines them. HTTPS traffic arrives as request copies from an existing reverse proxy. **Of these, the rule layer and hand-written application profiles exist**, working on offline requests and on live copies from Caddy, with records, alerts, and a read-only dashboard (records and dashboard since 23 October 2026, UI reworked on 24 October, profiles since 25 October, live traffic through Caddy since 18 November). The rest is approved design (M01–M21), not working features.
 
 ## 2. What we have made
 
@@ -33,6 +33,22 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 - Records carry `application`, `profile` and `alert_by`; the dashboard filters by application and shows each application's exceptions and level.
 - The CSIC shop's profile (`profiles/csic-shop.json`, `configs/csic-shop.json`), written from the training records only, level 2, three exceptions accepted by the user. Test records: false alarms 30 → 3 of 100; Coraza gives the same rule results.
 
+**Live traffic through Caddy (18 November 2026, closed 19 November):** built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md), decisions T1–T12 (main plan sections 11.27 and 11.28); the contracts are [docs/copy-format.md](docs/copy-format.md) and [docs/records-format.md](docs/records-format.md).
+- The Caddy module `ids_copy` copies each request and its response while they pass, and sends the copies over a Unix socket to `ids-live`, which analyses them with the same engine, profiles and records as `ids-offline`.
+- The site never waits for the IDS: queues with limits on both sides; a copy that does not fit, or can't be sent, is dropped and counted in a `gap` record.
+- Records carry the proxy's request ID, the connection, TLS and the response; the dashboard shows gaps, unknown application names, the copier status and a warning when `ids-live` stops writing. The dashboard follows IBM Carbon since the same day.
+- The lab (`lab/`): the 396 CSIC requests give the same records live as offline; the copier adds about 0.02–0.2 ms at the median; every dropped copy is counted.
+
+**Test a request (19 November 2026):** a "Test" tab in the dashboard, built following [docs/development-plan-test-tab.md](docs/development-plan-test-tab.md), decisions S1–S4 (main plan sections 11.29 and 11.30).
+- Write a request as raw HTTP text, or load a built-in example or one of CRS's own tests by rule; choose the configuration (`test_configs` in `dashboard.json`), the paranoia level, the application and a client address; see every rule finding with its matched value, the score, the profile's findings and what the engine read.
+- The dashboard runs the IDS's own engine and profiles through `internal/analysis`, the one analysis that `ids-offline` and `ids-live` also run, and keeps nothing: no record, no setting, no log line with the request.
+- Its answers equal `ids-offline -json -show-values` for all 5,066 CRS tests that raw text can hold and the 1,000 CSIC requests.
+
+**Marks, users with roles and a change log (20 November 2026):** built following [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md), decisions G1–G6 (main plan sections 11.31 and 11.32); the state files are described in [docs/dashboard-state.md](docs/dashboard-state.md).
+- A verdict per alert (not reviewed, real attack, expected, false positive, undetermined) with a note, set on one record, the chosen ones or all that match the list's filter (at most 10,000); a Review column and filter; "not reviewed" on the overview; false positives per rule on the Rules page, also of records that rotated away.
+- Three roles as a ladder: viewer, analyst (also marks and tests), admin (also Users and Log). Users, roles and passwords on the Users page, each change after the admin's password; everyone can change their own password (at least 15 characters).
+- An append-only change log, shown with the logins on the Log page to admins. The dashboard writes only its state folder, never a record or an IDS setting.
+
 Run it:
 
 ```
@@ -40,8 +56,10 @@ go run ./cmd/ids-offline -requests testdata/requests/path-traversal.json      # 
 go run ./cmd/ids-offline -config testdata/crs-tests.json -requests testdata/requests/crs -summary
 go run ./cmd/ids-offline -config configs/csic-shop.json                     # the CSIC shop's applications and exceptions
 go run ./cmd/ids-offline -endpoints -requests FILE                            # endpoints and parameters of a file, for writing a profile
-go run ./cmd/ids-dashboard -add-user admin                                    # prints the password once
+go run ./cmd/ids-dashboard -add-user admin                                    # prints the password once; -role viewer|analyst|admin (default admin)
 go run ./cmd/ids-dashboard                                                    # https://127.0.0.1:8443
+go run ./cmd/ids-live -config FILE                                            # needs a live section, or -socket; see docs/copy-format.md, section 6
+lab/lab.sh build && lab/lab.sh equality                                       # the lab: Caddy with ids_copy, ids-live, the CSIC requests; outputs in /tmp/ids-lab
 ```
 
 The dashboard makes its own certificate on first start and prints its SHA-256 fingerprint; the browser warns once until it is accepted. `testdata/crs-tests.json` has no `records` section, so CRS test runs write records only with `-records DIR`.
@@ -54,22 +72,23 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | --- | --- |
 | `internal/seclang` | Parses CRS rule files into Go values. Six directives are supported; any other is an error |
 | `internal/httpmodel` | The common request (M03, M16): received content, parsed view, analysis status (M05). Reads the query, cookies, and form, JSON, multipart, and XML bodies |
-| `internal/offline` | Reads example requests from JSON, with optional `expect_ids` / `no_expect_ids` |
+| `internal/offline` | Reads example requests from JSON, with optional `expect_ids` / `no_expect_ids`; reads and writes a request as raw HTTP text (`ParseRaw`, `Raw`) for the test tab |
+| `internal/analysis` | `Run`: the one analysis of a request (the rules with the application's exceptions and level, then the profile) that `ids-offline`, `ids-live` and the test tab run |
 | `internal/engine/transform` | 17 transformations. 12 are ports of the ModSecurity v2 functions, `length` counts bytes; `normalizePath`, `normalizePathWin`, `htmlEntityDecode`, and `base64Decode` follow Coraza (main plan sections 11.15 and 11.18); `normalizePathWin` leaves out Coraza's cut at a colon, which could hide a file name |
 | `internal/engine/operator` | `@rx`, `@pm`, `@pmFromFile`, `@detectSQLi`, `@detectXSS`, `@contains`, `@streq`, `@within`, `@beginsWith`, `@endsWith`, `@validateByteRange`, `@validateUrlEncoding`, `@validateUtf8Encoding`, `@ipMatch`, `@eq`, `@lt`, `@ge`, `@gt`, `@unconditionalMatch` |
 | `internal/engine` | `Load` prepares a read-only rule set and refuses to start on anything unsupported (M15). `Evaluate` runs phases 1 and 2 for one request with its own state (M21). `NewTuning` and `EvaluateWith` apply one application's exceptions and level per request (`tuning.go`) |
 | `internal/profile` | Application profiles: strict reading, the choice of application, the allow-list checks, secrets, the exception policy, and the `-endpoints` survey |
-| `internal/result` | Output records: analysis status, findings, score. Request content is left out of the terminal output by default (M11). The startup report's text, shared by `ids-offline` and `ids-live` |
+| `internal/result` | Output records: analysis status, findings, score, and `Analysed` (with the application and profile result). Request content is left out of the terminal output by default (M11). The startup report's text, shared by `ids-offline` and `ids-live` |
 | `internal/config` | The product configuration: engine settings plus the optional `request_body_limit` (default 13,107,200 bytes, as Coraza), `records`, `applications`, `require_profile` and `live` sections, and the configuration fingerprint (R7), which covers the profiles |
 | `internal/record` | Record files (R1–R7): building and masking request records, `start`, `counts` and `gap` records, the live fields (proxy, connection, TLS, response), rotation, file permissions, cookie hashes, the folder's lock |
 | `internal/copyframe` | The copy frames between a proxy's copier and `ids-live` (`docs/copy-format.md`) |
 | `internal/live` | The live input (A01): the Unix socket, hello frames, a queue with limits, workers, gap counts, the stop; turns a copy into the common request and analyses it as `ids-offline` does |
-| `internal/dashboard` | The dashboard: reader of the record files (also gaps and the live fields), JSON API, pages (embedded HTML, CSS, JS) in the IBM Carbon look with IBM Plex fonts (`web/static/fonts/`, OFL-1.1), users, login, sessions, its own certificate |
+| `internal/dashboard` | The dashboard: reader of the record files (also gaps and the live fields), JSON API, pages (embedded HTML, CSS, JS) in the IBM Carbon look with IBM Plex fonts (`web/static/fonts/`, OFL-1.1), users with roles, login, sessions, its own certificate, the test tab (`tester.go`, built-in examples in `web/examples.json`), marks (`marks.go`), the Users, Account and Log pages and the change log (`admin.go`), and the lock of its state folder |
 | `internal/version` | The program version `0.1.0-dev` and the Git revision of the build |
 | `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level`, `-records DIR`, `-application NAME`, `-endpoints` |
 | `cmd/ids-live` | The live input as a service: `-config`, `-socket`, `-records`; stops on SIGTERM. Needs a `live` and a `records` section, or the flags |
 | `caddy-module/` | The Caddy module `ids_copy` (its own `go.mod`, Caddy v2.11.9): copies each request and response while they pass, and sends the copies to `ids-live`; counts what it can't send. Build: `xcaddy build v2.11.9 --with github.com/EfeSipahi/ids-system/caddy-module=./caddy-module --replace github.com/EfeSipahi/ids-system=.` (xcaddy v0.4.7) |
-| `cmd/ids-dashboard` | The dashboard: `-config` (default `configs/dashboard.json`), `-add-user`, `-reset-password`, `-remove-user` |
+| `cmd/ids-dashboard` | The dashboard: `-config` (default `configs/dashboard.json`), `-add-user` with `-role`, `-reset-password`, `-remove-user` |
 
 Other files:
 
@@ -77,8 +96,14 @@ Other files:
 | --- | --- |
 | `configs/crs-first-engine.json` | The product configuration. Loads nineteen CRS files; 456 of 460 rules active, 4 excluded with a written reason each (all in file 901). Optional `paranoia_level`, 1 to 4, default 1. Its `records` section writes records to `records/` |
 | `configs/csic-shop.json`, `profiles/csic-shop.json` | The product configuration with the CSIC shop as an application, and its profile |
-| `configs/dashboard.json` | The dashboard configuration: listen address `127.0.0.1:8443`, records folder, state folder `dashboard-state/` (users, certificate, login log), optional certificate files, idle limit |
+| `configs/dashboard.json` | The dashboard configuration: listen address `127.0.0.1:8443`, records folder, state folder `dashboard-state/` (users, certificate, login log), optional certificate files, idle limit, and the test tab's configurations and CRS test folder |
 | `docs/records-format.md` | The record format: the contract between the IDS and its readers, masking rules, known limits |
+| `docs/copy-format.md` | The copy frames between a proxy's copier and `ids-live`, and how to set up both (section 6) |
+| `docs/development-plan-proxy.md` | The plan for live traffic through Caddy (finished 19 November 2026): research, decisions T1–T12, notes 1–8 with every lab measurement |
+| `docs/development-plan-marks-users.md` | The plan for marking alerts, users with roles and a change log (finished 20 November 2026): decisions G1–G6, consequences C1–C8, notes 1–5 with the checks |
+| `docs/dashboard-state.md` | The dashboard's state files: users, lock files, the log of logins, the change log, the marks |
+| `docs/development-plan-test-tab.md` | The plan for the dashboard's test tab (finished 19 November 2026): decisions S1–S4, notes 1–5 with the checks and the time of 1 MiB requests |
+| `lab/` | The lab: `testapp`, `replay`, `compare`, `Caddyfile` and `lab.sh` (development plan, note 7) |
 | `docs/development-plan-records-dashboard.md` | The plan for records, alerts, and the dashboard (finished 23 October 2026), with notes per stage |
 | `docs/development-plan-dashboard-ui.md` | The dashboard UI plan (finished 24 October 2026): problems P1–P37, decisions U1–U8, notes and checks |
 | `docs/development-plan-profiles.md` | The profile plan (finished 25 October 2026): decisions F1–F11, stages, notes 1–18 with every measurement and the CSIC results |
@@ -89,11 +114,36 @@ Other files:
 | `tools/` | Python scripts that generate the test data, and `coraza-reference/`, a separate Go module that runs Coraza. Coraza is not a dependency of the IDS |
 | `docs/development-plan-all-request-rules.md` | The plan for all request rules (finished 16 October 2026): plans A to F, with results after each |
 | `docs/development-plan-rule-layer.md` | The earlier plan (finished 11 October), with results per stage in its section 8 |
-| `docs/project-history.md` | What was done and how, 27 September to 25 October 2026, written for the project report |
+| `docs/project-history.md` | What was done and how, 27 September to 19 November 2026, written for the project report |
 | `docs/crs-4.30.0-ruleset.md` | Reference for the CRS files and our scope |
 | `docs/go-learning-plan.md` | The user's Go learning plan |
 
-### 2.2. What was checked (16 October 2026, records and dashboard on 23 October, dashboard UI on 24 October, profiles on 25 October)
+### 2.2. What was checked (16 October 2026, records and dashboard on 23 October, dashboard UI on 24 October, profiles on 25 October, live traffic on 18–19 November)
+
+**20 November, marks, users with roles and the change log** (details in its plan, notes 2–5):
+
+1. Every route as no login, viewer, analyst and admin; the last admin stays; a role change, a reset and a removal end the user's sessions; five wrong passwords at a change make the login wait too.
+2. Two programs changing `users.json` at once lose nothing (31 of 31 users; without the lock, 16 of 31).
+3. One change log entry per action; no password in any file of the state folder; the records folder unchanged.
+4. Marks: by IDs and by filter, history in order, after a restart, after the record rotated away, 10,000 records in 27 ms and 10,001 refused; `FuzzStoreReadsAnyFile` also reads marks.
+5. Four browser rounds as admin, analyst and viewer, light and dark; two defects fixed.
+
+**19 November, the test tab** (details in its plan, notes 2–5):
+
+1. Raw text: 6,384 of the 6,391 example requests are written as text and read back the same; 7 can't be (six with spaces around a header value, which Go's server removes too, and one body that is not UTF-8 text).
+2. The tab's answers equal `ids-offline -json -show-values`, through the real API: 5,066 CRS tests with `testdata/crs-tests.json` (every expectation met), and the 1,000 CSIC requests with `configs/csic-shop.json` and with `configs/crs-first-engine.json`.
+3. `ids-offline`'s output is byte for byte the same as before the shared analysis, in 8 runs; its records too.
+4. Browser: three Playwright rounds at 1440 and 1024 px, light and dark; four layout defects fixed.
+5. A 1 MiB request takes 0.3–3.8 s at level 1 and 2.1–9.8 s at level 4; at most two run at once.
+
+**18–19 November, live traffic through Caddy** (details in the proxy plan, notes 4–8):
+
+1. Live equals offline: 1,318 example requests give the same 850 records (Go test), and the 396 CSIC requests through a real Caddy the same 162 records (lab).
+2. The site never waits: with `ids-live` hung or stopped, the times equal those without the copier; the copier adds about 0.02–0.2 ms at the median.
+3. Every copy that is not analysed is counted: 7,920 = 235 analysed + 2,429 + 5,256 dropped under overload; a stop of `ids-live` gave a gap of exactly the 132 requests sent meanwhile.
+4. TLS 1.3, HTTP/2 and HTTP/3, trusted proxies, response types and limits, slow responses and WebSockets.
+5. No secret reaches the records through the live input (a new fuzz test).
+6. The close on 19 November: `gofmt`, `go vet`, `go test` and the race detector in both modules, seven fuzz tests, and unchanged numbers (CRS 2,916 of 5,072; CSIC 96 / 176; the CSIC profile's validation and test numbers).
 
 **25 October, application profiles** (details in the profile plan, notes 4, 7, 10, 13, 16 and 18):
 
@@ -152,7 +202,7 @@ Other files:
 
 ### 2.4. What it does not do
 
-1. Live traffic works through Caddy with the `ids_copy` module and `ids-live` (18 November 2026), and the dashboard shows gaps and the live fields. It was run on this machine over HTTP and HTTPS with a few requests; the measurements of T9, HTTP/2 timing and HTTP/3 are the lab's (stage 7).
+1. Live traffic works through Caddy only; the Nginx input is planned later (T1). It was measured in the lab on this machine with replayed CSIC requests, not on a real site. Response bodies are copied but not analysed until the response rules (K8).
 2. There is no ML layer, learned profile, or decision mechanism. An alert is the rule layer's score at the CRS threshold, or a profile finding of an application in `alert` mode, not the planned decision. The dashboard only reads; alerts cannot be marked yet (V7), and there is one user role.
 3. Request rules only; no response rules (they need a copy of each response, K8).
 4. A `text/plain` body is not split into fields. Since plan B the rules that read `REQUEST_BODY` inspect it as one text; it is still reported as not inspected.
@@ -163,7 +213,7 @@ Other files:
 - The Python Random Forest pilot is in the separate [ids-model](../ids-model/) directory and is not integrated. Its test set has already been observed.
 - Go version last verified: `go version go1.26.10-X:nodwarf5 linux/amd64` (17 November 2026). `go.mod` needs Go 1.26.8 or newer. Fedora's packaged Go is set to `GOTOOLCHAIN=local` and never downloads a newer Go itself, so the distribution must ship one that is new enough.
 - Setting up another machine: clone the ML repository (GitHub `EfeSipahi/Lorica`) as `../ids-model`, next to this one, because `tools/csic_to_examples.py` reads it from there; the Go tests don't need it. `.gitattributes` keeps LF line endings on every system, because tests compare files byte for byte. In WSL2, keep the clone in the Linux file system (`~/...`), not under `/mnt/c`, as Microsoft recommends for speed.
-- Git: everything up to the notes for setting up another machine (17 November 2026) is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026). Stages 4 to 7 of the proxy plan (18 November 2026) are committed and pushed: stage 4 `6c376ce`, stage 5 `353d63e`, then stage 6 and stage 7. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
+- Git: everything up to the notes for setting up another machine (17 November 2026) is on `main` and pushed to GitHub, including stages 1–3 of the proxy plan (commits `659a0f1`, `2be0781`, `5fba3dc`, 30 October 2026). Stages 4 to 7 of the proxy plan (18 November 2026) are committed and pushed: stage 4 `6c376ce`, stage 5 `353d63e`, stage 6 `a378c5b`, stage 7 `f1bc32f`. Stage 8, the close (19 November 2026), the test tab (the same day), and marks, users and the change log (20 November 2026) are not committed yet. `proje_oneri_formu.docx` holds personal data and is deliberately left uncommitted. The local branches `rule-layer` and `first-offline-engine` point to commits that are on `main` and can be deleted.
 
 ## 3. What we are going to do
 
@@ -209,19 +259,23 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
    - A paranoia level per application.
    - The CSIC profile is the first one (I2), written from the training records only.
    - All eight stages were done on 25 October 2026, including the CSIC profile (`profiles/csic-shop.json`, `configs/csic-shop.json`; results in the plan's notes 17–18).
-3. **Now:** live traffic through Caddy (A01, A08). **Decided on 26 October 2026** (T1–T12, main plan section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md); its progress table says which stage is next.
+3. **Done:** live traffic through Caddy (A01, A08). **Decided on 26 October 2026** (T1–T12, main plan section 11.27), built following [docs/development-plan-proxy.md](docs/development-plan-proxy.md); all eight stages are done (main plan section 11.28).
    - Done and pushed: stage 1 (the plan), stage 2 (the copy frame format, `internal/copyframe`), stage 3 (the request body limit of 13,107,200 bytes and partly inspected bodies).
    - Done, committed and pushed 18 November 2026 (`6c376ce`): stage 4, the live input and its records (`internal/live`, `cmd/ids-live`, the `live` section, the record fields, `gap`, the lock); the plan's note 4 has the details and checks. The user decided that live records keep the proxy's request ID and receive time (`proxy`).
    - Done, committed and pushed 18 November 2026 (`353d63e`): stage 5, the Caddy copier (`caddy-module/`), and the format amendment the user decided (revised option A: `ids-live`'s hello gives `max_frame`, and the copier fits each copy into it). The plan's note 5 has the details and checks.
    - Done, committed and pushed 18 November 2026: stage 6, the dashboard (gaps, not-analysed totals, unknown names, the copier status and the user's option A, a warning when `ids-live` stops writing; the live fields on the detail and Engine pages), and the dashboard's new look, IBM Carbon, chosen by the user the same day (UI plan, section "The Carbon look"). The plan's note 6 has the checks.
    - Done, committed and pushed 18 November 2026: stage 7, the lab (`lab/`) and its measurements; every check of verification item 5 passed, the numbers are in the plan's note 7. In short: the 396 CSIC requests give the same records live as offline; the copier adds about 0.02–0.2 ms at the median and the site never waits for `ids-live`; every dropped copy is counted.
-   - Next: stage 8, the close: the format documents, the project history, the main plan's history 11.28, the full checks.
+   - Done 19 November 2026: stage 8, the close: the format documents (`docs/copy-format.md` gained section 6, how to set up `ids-live` and the copier), the project history (section 4.9), the main plan's history 11.28, and the full checks (the plan's note 8). Not committed yet.
    - Caddy with our own Go copier module (`caddy-module/`, its own `go.mod`, the only new dependency); later an Nginx `mirror` input, then an Nginx module.
    - Copies over a two-way Unix socket in our own frame format (`docs/copy-format.md`) to a new program, `ids-live`, which runs the same engine and profiles as `ids-offline` and writes the records.
    - Request bodies up to 12.5 MB and text responses up to 512 KB (Coraza's limits), partial past that; the client IP only from Caddy; the application named in the Caddy configuration; bounded queues, drops counted; fail-open with gap records; Caddy terminates TLS.
-   - Still to discuss: whether `ids-offline` keeps its name; the idea I3 below.
+   - Decided by the user on 19 November 2026: `ids-offline` keeps its name.
 
-   Then response rules, and alerts sent by webhook and syslog (decided 23 October 2026).
+   **Done 19 November 2026 (the user's choice):** a request test tab in the dashboard, decisions S1–S4 (main plan sections 11.29 and 11.30), following [docs/development-plan-test-tab.md](docs/development-plan-test-tab.md); all five stages are done, not committed yet.
+
+   **Done 20 November 2026:** extending the dashboard beyond reading, first part: marking alerts, users with roles and a change log (G1–G6, main plan sections 11.31 and 11.32), following [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md); all five stages done, not committed yet.
+
+   **Next:** the user's choice among the rest: turning a false positive into an exception (with a preview of what it would hide and a history), settings pages, more views (per client IP, per endpoint, live health), or the response rules (K8) and alerts by webhook and syslog. Each needs its own decisions first. Then response rules, and alerts sent by webhook and syslog (decided 23 October 2026). Each needs its own decisions first.
 4. Transfer of the ML model, which the user improves in the separate project, and the decision mechanism (A10, A05, A07, A06).
 5. Prevention, learned profiles, other protocols.
 

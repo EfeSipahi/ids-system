@@ -41,6 +41,7 @@
   --notif-error: #fff1f1;
   --notif-warning: #fcf4d6;
   --notif-info: #edf5ff;
+  --notif-success: #defbe6;
   --tag-gray-bg: #e0e0e0; --tag-gray: #161616;
   --tag-red-bg: #ffd7d9; --tag-red: #a2191f;
   --tag-purple-bg: #e8daff; --tag-purple: #6929c4;
@@ -63,7 +64,7 @@
     --link: #78a9ff; --link-hover: #a6c8ff; --interactive: #0f62fe; --interactive-hover: #0050e6; --focus: #ffffff;
     --inverse: #f4f4f4; --text-inverse: #161616; --selected-inverse: #f4f4f4;
     --error: #fa4d56; --warning: #f1c21b; --warning-outline: transparent; --success: #42be65; --info: #4589ff;
-    --notif-error: #262626; --notif-warning: #262626; --notif-info: #262626;
+    --notif-error: #262626; --notif-warning: #262626; --notif-info: #262626; --notif-success: #262626;
     --tag-gray-bg: #525252; --tag-gray: #e0e0e0;
     --tag-red-bg: #a2191f; --tag-red: #ffd7d9;
     --tag-purple-bg: #6929c4; --tag-purple: #e8daff;
@@ -80,7 +81,7 @@
   --link: #78a9ff; --link-hover: #a6c8ff; --interactive: #0f62fe; --interactive-hover: #0050e6; --focus: #ffffff;
   --inverse: #f4f4f4; --text-inverse: #161616; --selected-inverse: #f4f4f4;
   --error: #fa4d56; --warning: #f1c21b; --warning-outline: transparent; --success: #42be65; --info: #4589ff;
-  --notif-error: #262626; --notif-warning: #262626; --notif-info: #262626;
+  --notif-error: #262626; --notif-warning: #262626; --notif-info: #262626; --notif-success: #262626;
   --tag-gray-bg: #525252; --tag-gray: #e0e0e0;
   --tag-red-bg: #a2191f; --tag-red: #ffd7d9;
   --tag-purple-bg: #6929c4; --tag-purple: #e8daff;
@@ -102,7 +103,7 @@ body {
 }
 a { color: var(--link); text-decoration: none; }
 a:hover { color: var(--link-hover); text-decoration: underline; }
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: -2px;
 }
@@ -132,6 +133,10 @@ header.top a:focus-visible, header.top button:focus-visible, header.top select:f
 .account { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .account form { margin: 0; }
 .who { color: #c6c6c6; padding: 0 8px; }
+header.top a.who { align-self: stretch; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
+header.top a.who:hover { color: #f4f4f4; background: #333333; text-decoration: none; }
+header.top a.who[aria-current="page"] { color: #f4f4f4; background: #262626; box-shadow: inset 0 -3px #0f62fe; }
+.who .role { color: #a8a8a8; }
 header.top button, header.top select {
   background: transparent; color: #c6c6c6; border: 0; height: 48px; padding: 0 12px; border-radius: 0; font: inherit;
 }
@@ -242,6 +247,8 @@ input::placeholder { color: var(--muted); }
   background: var(--warning); color: #161616; box-shadow: 0 0 0 1px var(--warning-outline);
 }
 .banner.error .mark { background: var(--error); color: #ffffff; box-shadow: none; }
+.banner.success { border-left-color: var(--success); background: var(--notif-success); }
+.banner.success .mark { background: var(--success); color: #ffffff; box-shadow: none; }
 .banner strong { font-weight: 600; }
 
 /* Tiles and cards: flat Carbon layers, no corners, no shadow */
@@ -467,3 +474,69 @@ details.section > summary .counts { margin-left: auto; font-size: 0.75rem; }
   dl.kv { grid-template-columns: 1fr; }
   dl.kv dt { margin-top: 6px; }
 }
+
+/* Test a request (docs/development-plan-test-tab.md): a Carbon text area
+   for the raw request, and fields like the filters' */
+.lead { margin: 8px 0 16px; max-width: 80ch; }
+.test-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; margin-bottom: 16px; }
+.test-bar.settings { margin: 16px 0 8px; }
+.test-bar label { display: grid; gap: 8px; font-size: 0.75rem; color: var(--text-2); letter-spacing: 0.32px; }
+.test-bar select, .test-bar input { height: 32px; padding: 0 12px; font-size: 0.875rem; letter-spacing: 0.16px; max-width: 100%; }
+.test-bar label.wide select { width: 22rem; }
+.test-bar [name="file"] { width: 11rem; }
+.test-bar [name="level"] { width: 12rem; }
+.test-bar [name="application"] { width: 11rem; }
+.test-bar [name="client"] { width: 11rem; }
+.test-bar [name="crlf"] { width: 13rem; }
+textarea.editor {
+  display: block; width: 100%; box-sizing: border-box; min-height: 18rem; resize: vertical; margin: 0;
+  font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.875rem; line-height: 1.43;
+  color: var(--text); background: var(--layer-2); border: 0; border-bottom: 1px solid var(--border-strong); border-radius: 0;
+  padding: 12px 16px; tab-size: 4; white-space: pre; overflow: auto;
+}
+.config-note { font-size: 0.75rem; letter-spacing: 0.32px; }
+.test-run { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 16px; }
+.length-note { display: grid; gap: 8px; justify-items: start; margin-top: 16px; }
+#result.loading { opacity: 0.6; }
+.verdict h2 { font-size: 1.25rem; font-weight: 400; margin-bottom: 8px; }
+table.findings-table td.loc { min-width: 9rem; }
+
+/* Users, your account and the log (docs/development-plan-marks-users.md) */
+button.danger { color: var(--error); border-color: var(--error); }
+button.danger:hover { background: var(--error); border-color: var(--error); color: #ffffff; }
+table.users td { vertical-align: middle; }
+td.actions button + button { margin-left: 8px; }
+.role-cell { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.role-cell select { height: 32px; padding: 0 12px; font-size: 0.875rem; }
+.account-form { display: grid; gap: 16px; max-width: 28rem; margin-bottom: 16px; }
+.account-form label { display: grid; gap: 8px; font-size: 0.75rem; color: var(--text-2); letter-spacing: 0.32px; }
+.account-form input { font-size: 0.875rem; }
+
+/* Marks (G1): a badge per verdict, the bar that marks records, and the
+   column of chosen records */
+.badge.verdict::before { border-radius: 1px; }
+.badge.verdict.real-attack::before { background: var(--error); }
+.badge.verdict.false-positive::before { background: var(--tag-purple); }
+.badge.verdict.expected::before { background: var(--success); }
+.badge.verdict.undetermined::before { background: var(--muted); }
+.badge.verdict.not-reviewed::before { background: transparent; border: 2px solid var(--muted); width: 6px; height: 6px; border-radius: 50%; }
+.mark-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 16px; }
+.mark-bar select, .mark-bar input { height: 32px; padding: 0 12px; font-size: 0.875rem; }
+.mark-bar input[name$="note"] { width: 18rem; max-width: 100%; }
+/* With the Review column (and the boxes for marking), the other columns
+   give up room, so that the request keeps about 12rem at 1440 px. */
+table.list col.pick { width: 2.5rem; }
+table.list col.review { width: 8.25rem; }
+table.list.reviewed col.time { width: 9.5rem; }
+table.list.reviewed col.score { width: 7.25rem; }
+table.list.reviewed col.client { width: 8.75rem; }
+table.list.reviewed col.app { width: 7.5rem; }
+table.list.reviewed col.groups { width: 10rem; }
+table.list.reviewed col.rules { width: 8.75rem; }
+table.list.reviewed col.status { width: 8.75rem; }
+table.list td.pick, table.list th.pick { padding-right: 0; }
+table.list input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var(--interactive); }
+table.rules col.fp { width: 7.5rem; }
+.review .card-head { margin-bottom: 8px; }
+.review form.mark-bar { margin: 12px 0 0; }
+

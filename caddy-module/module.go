@@ -76,7 +76,8 @@ type Copier struct {
 	ResponseTypes []string `json:"response_types,omitempty"`
 	// QueueCopies and QueueMB limit the copies waiting to be sent. They
 	// belong to the socket: copiers of the same socket share one queue,
-	// and the first one's limits hold.
+	// and the limits of the one provisioned last hold, so after a reload
+	// those of the new configuration.
 	QueueCopies int `json:"queue_copies,omitempty"`
 	QueueMB     int `json:"queue_mb,omitempty"`
 	// MaxWait is how long a copy waits for the response to end. After it,

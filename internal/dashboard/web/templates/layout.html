@@ -9,7 +9,7 @@
 <script src="/static/theme.js"></script>
 <script src="/static/app.js" defer></script>
 </head>
-<body data-page="{{.Page}}" data-id="{{.ID}}" data-poll="{{.Poll}}">
+<body data-page="{{.Page}}" data-id="{{.ID}}" data-poll="{{.Poll}}" data-role="{{.Role}}">
 {{if .User}}
 <header class="top">
   <div class="bar">
@@ -19,6 +19,9 @@
       <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
       <a href="/rules" {{if eq .Page "rules"}}aria-current="page"{{end}}>Rules</a>
       <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine</a>
+      {{if .Analyst}}<a href="/test" {{if eq .Page "test"}}aria-current="page"{{end}}>Test</a>{{end}}
+      {{if .Admin}}<a href="/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Users</a>
+      <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Log</a>{{end}}
     </nav>
     <div class="account">
       <select id="theme" aria-label="Colour theme">
@@ -26,7 +29,7 @@
         <option value="light">Light theme</option>
         <option value="dark">Dark theme</option>
       </select>
-      <span class="who">{{.User}}</span>
+      <a class="who" href="/account" title="Your account: change your password" {{if eq .Page "account"}}aria-current="page"{{end}}>{{.User}} <span class="role">· {{.Role}}</span></a>
       <form method="post" action="/logout"><button type="submit">Log out</button></form>
     </div>
   </div>
@@ -35,7 +38,7 @@
 <main>
 {{template "content" .}}
 </main>
-<footer class="foot">IDS {{.Version}}{{if .User}} · read-only · alerts are decided by the rules and by profiles in alert mode<span id="zone"></span>{{end}}</footer>
+<footer class="foot">IDS {{.Version}}{{if .User}} · records are read only · alerts are decided by the rules and by profiles in alert mode<span id="zone"></span>{{end}}</footer>
 </body>
 </html>{{end}}
 

@@ -355,6 +355,26 @@
     return kinds && kinds.length ? el("span", { class: "badge profile", title: "Profile findings: " + kinds.join(", ") }, "Profile") : null;
   }
 
+  // Verdicts of marks (G1): their names and a badge for each.
+  const verdictNames = {
+    not_reviewed: "Not reviewed", real_attack: "Real attack", expected: "Expected",
+    false_positive: "False positive", undetermined: "Undetermined",
+  };
+  const verdictHelp = {
+    not_reviewed: "nobody has marked it yet",
+    real_attack: "a real attack",
+    expected: "real, but allowed: for example your own scanner or a penetration test",
+    false_positive: "the rule was wrong about this request",
+    undetermined: "looked at, but it can't be told",
+  };
+  const verdictOrder = ["not_reviewed", "real_attack", "expected", "false_positive", "undetermined"];
+  function verdictBadge(v) {
+    v = v || "not_reviewed";
+    return el("span", { class: "badge verdict " + v.replace("_", "-"), title: verdictHelp[v] || null }, verdictNames[v] || v);
+  }
+  // analyst is true when the user may mark alerts and use the test tab (G3).
+  const analyst = ["analyst", "admin"].includes(body.dataset.role);
+
   // appName is how an application is named on the pages.
   const appName = (name) => (name === "none" ? "No application" : name);
 
@@ -449,10 +469,13 @@
   }
 
   // banner is a Carbon inline notification: a status mark, a title and a
-  // sentence. kind is "error" or "warning".
+  // sentence. kind is "error", "warning" or "success".
   function banner(kind, title, text) {
+    // Messages from the server start in lower case; here they follow a
+    // title, as a sentence of their own.
+    if (typeof text === "string" && text) text = text[0].toUpperCase() + text.slice(1);
     return el("div", { class: "banner " + kind, role: kind === "error" ? "alert" : "status" },
-      el("span", { class: "mark", "aria-hidden": "true" }, "!"),
+      el("span", { class: "mark", "aria-hidden": "true" }, kind === "success" ? "✓" : "!"),
       el("div", {}, el("strong", {}, title), " ", text));
   }
 
@@ -672,32 +695,51 @@
     // Fixed column widths (app.css, table.list): a long request or many
     // chips is cut short in its cell instead of pushing the last column
     // out of the card.
-    const cols = [["Time", "", "time"], ["Score", "num", "score"]];
+    const cols = [];
+    if (opts.pick) cols.push(["", "", "pick"]);
+    cols.push(["Time", "", "time"], ["Score", "num", "score"]);
     if (opts.status) cols.push(["Status", "", "status"]);
+    if (opts.verdict) cols.push(["Review", "", "review"]);
     cols.push(["Client", "", "client"]);
     if (opts.apps) cols.push(["Application", "", "app"]);
-    cols.push(["Request", "", "request"], ["Attack groups", "", "groups"]);
+    // With both Status and Review, the attack groups give their room to
+    // the request; the rules still name what matched.
+    const groupsCol = !(opts.status && opts.verdict);
+    cols.push(["Request", "", "request"]);
+    if (groupsCol) cols.push(["Attack groups", "", "groups"]);
     if (opts.rules) cols.push(["Rules", "", "rules"]);
     const remember = () => store("sessionStorage", "ids.list", JSON.stringify({ url: location.pathname + location.search, ids: rows.map((r) => r.id) }));
-    return el("div", { class: "table-wrap" }, el("table", { class: "wide rows list" + (opts.status && opts.apps ? " many" : "") },
+    // opts.pick is the set of chosen record IDs, with opts.onPick called
+    // when it changes; the head's box chooses the whole page.
+    const pageBox = opts.pick ? el("input", {
+      type: "checkbox", "aria-label": "Choose every record of this page",
+      onchange: (e) => { for (const r of rows) { if (e.target.checked) opts.pick.add(r.id); else opts.pick.delete(r.id); } opts.onPick(); },
+    }) : null;
+    if (pageBox) pageBox.checked = rows.length > 0 && rows.every((r) => opts.pick.has(r.id));
+    return el("div", { class: "table-wrap" }, el("table", { class: "wide rows list" + (opts.status && opts.apps ? " many" : "") + (opts.verdict ? " reviewed" : "") + (opts.pick ? " picking" : "") },
       el("colgroup", {}, cols.map(([, , c]) => el("col", { class: c }))),
-      el("thead", {}, el("tr", {}, cols.map(([h, c]) => el("th", { class: c }, h)))),
+      el("thead", {}, el("tr", {}, cols.map(([h, c]) => el("th", { class: c }, c === "pick" ? pageBox : h)))),
       el("tbody", {}, rows.map((r) => {
         const link = "/alerts/" + encodeURIComponent(r.id);
         const target = `${r.method} ${r.host || ""}${r.path}`;
         // With the Application column, the application stands for the
         // host, and the cell keeps its room for the path.
         const host = opts.apps && r.application && r.application !== "none" ? "" : r.host || "";
-        return el("tr", { class: "linked", onclick: (e) => { if (e.target.closest("a") === null) { remember(); location.assign(link); } } },
+        return el("tr", { class: "linked", onclick: (e) => { if (e.target.closest("a, input, label") === null) { remember(); location.assign(link); } } },
+          opts.pick ? el("td", { class: "pick" }, el("input", {
+            type: "checkbox", checked: opts.pick.has(r.id), "aria-label": "Choose the record of " + fmtTime(r.time),
+            onchange: (e) => { if (e.target.checked) opts.pick.add(r.id); else opts.pick.delete(r.id); opts.onPick(); },
+          })) : null,
           el("td", {}, el("a", { href: link, onclick: remember }, fmtTime(r.time))),
           el("td", { class: "num" }, r.incomplete ? el("span", { class: "badge incomplete", title: "The analysis could not inspect every part" }, "Incomplete") : null,
             profileBadge(r.profile_kinds), " ", nf.format(r.score)),
           opts.status ? el("td", {}, badge(r, false)) : null,
+          opts.verdict ? el("td", {}, verdictBadge(r.verdict)) : null,
           el("td", { class: "mono", title: r.ip || null }, r.ip || "–"),
           opts.apps ? el("td", { title: appName(r.application || "none") }, appName(r.application || "none")) : null,
           el("td", {}, el("span", { class: "clip", title: target + (r.user_agent ? "\nUser-Agent: " + r.user_agent : "") },
             el("span", { class: "mono" }, r.method + " "), host + r.path)),
-          el("td", {}, chips(r.groups, null, 3)),
+          groupsCol ? el("td", {}, chips(r.groups, null, 3)) : null,
           opts.rules ? el("td", {}, chips(r.rules.filter((id) => !scoring(id)), opts.rules, 3)) : null);
       }))));
   }
@@ -725,7 +767,7 @@
       replace(el("div", { class: "stack" },
         liveBanners(o.live),
         el("div", { class: "tiles" },
-          tile("Alerts", o.alerts, o.analysed > 0 || o.last_alert ? [share(o.alerts), o.last_alert ? "last alert " + ago(o.last_alert) : ""] : "score reached the threshold", true),
+          tile("Alerts", o.alerts, o.analysed > 0 || o.last_alert ? [share(o.alerts), o.last_alert ? "last alert " + ago(o.last_alert) : "", o.alerts ? `${nf.format(o.not_reviewed)} not reviewed` : ""] : "score reached the threshold", true),
           tile("Records", o.recorded, "a finding or an incomplete analysis"),
           tile("Requests analysed", o.analysed, o.profiled ? ["from the counts of the IDS", `${nf.format(o.no_profile)} of no application: the rules only, no profile`] : "from the counts of the IDS"),
           liveInput ? tile("Not analysed", o.not_analysed, o.not_analysed > 0 ? missedNote : "nothing was dropped") : null,
@@ -738,7 +780,7 @@
           nothing ? el("p", { class: "empty" }, "No records in this period. Run the IDS with records, or choose a longer period.") : columns(o, pick)),
         el("section", { class: "card" },
           el("div", { class: "card-head" }, el("h2", {}, "Latest alerts"), latest.total ? el("a", { href: alertsLink({}) }, `All ${nf.format(latest.total)} alerts →`) : null),
-          newest.length ? listTable(newest, { apps: latest.applications.length > 1 }) : el("p", { class: "empty" }, "No alerts in this period.")),
+          newest.length ? listTable(newest, { apps: latest.applications.length > 1, verdict: true }) : el("p", { class: "empty" }, "No alerts in this period.")),
         liveInput || o.unknown_applications.length ? el("div", { class: "grid-2" },
           liveInput ? gapsCard(o) : null,
           o.unknown_applications.length ? unknownAppsCard(o) : null) : null,
@@ -786,7 +828,7 @@
       page: Number(params.get("page")) || 1,
     };
     if (!state.from || !state.to) state.from = state.to = "";
-    const fields = ["rule", "group", "app", "ip", "location", "min_score", "sort"];
+    const fields = ["rule", "group", "app", "ip", "location", "min_score", "review", "sort"];
     for (const f of fields) if (params.has(f)) form.elements[f].value = params.get(f);
     if (!form.elements.sort.value) form.elements.sort.value = "time";
 
@@ -799,6 +841,48 @@
       return p;
     };
     const sync = () => history.replaceState(null, "", "/alerts?" + query({ ...current(), page: state.page > 1 ? state.page : "" }));
+
+    // Marking (G2): the records chosen on this page, and the bar that
+    // marks them or every record that matches the filters. Only analysts
+    // and admins see it (G3).
+    const picked = new Set();
+    const markNotice = el("div", { "aria-live": "polite" });
+    const markVerdict = el("select", { name: "mark-verdict", "aria-label": "Verdict" },
+      verdictOrder.filter((v) => v !== "not_reviewed").concat("not_reviewed").map((v) => el("option", { value: v }, verdictNames[v])));
+    const markNote = el("input", { name: "mark-note", placeholder: "Note (optional)", maxlength: 1000, autocomplete: "off" });
+    const markPicked = el("button", { type: "button", class: "small primary" });
+    const markAll = el("button", { type: "button", class: "small" });
+    const bar = el("div", { class: "mark-bar" }, el("span", { class: "muted" }, "Mark as"), markVerdict, markNote, markPicked, markAll);
+    const showBar = () => {
+      markPicked.textContent = `Mark ${nf.format(picked.size)} chosen`;
+      markPicked.disabled = picked.size === 0;
+      markAll.textContent = shown ? `Mark all ${nf.format(shown.total)} that match` : "Mark all that match";
+      markAll.disabled = !shown || shown.total === 0;
+    };
+    const mark = async (request, count) => {
+      const verdict = markVerdict.value;
+      try {
+        const answer = await send("/api/marks", Object.assign({ verdict, note: markNote.value.trim() }, request));
+        refill(markNotice, banner("success", `${nf.format(answer.marked)} ${answer.marked === 1 ? "record" : "records"} marked ${verdictNames[verdict].toLowerCase()}.`, "It is written to the log."));
+        picked.clear();
+        markNote.value = "";
+        ownChange = true;
+        view.classList.add("loading");
+        run();
+      } catch (err) {
+        if (err.message !== "login required") refill(markNotice, banner("error", "Not marked.", err.message));
+      }
+      return count;
+    };
+    markPicked.addEventListener("click", () => mark({ ids: [...picked] }));
+    markAll.addEventListener("click", () => {
+      const n = shown ? shown.total : 0;
+      if (window.confirm(`Mark all ${nf.format(n)} ${what(n)} that match these filters as ${verdictNames[markVerdict.value].toLowerCase()}?`)) {
+        const f = current();
+        delete f.sort;
+        mark({ filter: query(f) });
+      }
+    });
 
     let shown = null;      // the list on screen
     let pending = null;    // a newer answer, waiting for "Show"
@@ -842,9 +926,14 @@
       pending = null;
       fresh.hidden = true;
       const ruleLink = (id) => "/alerts?" + query({ ...current(), rule: id });
-      replace(card(null,
-        l.rows.length ? [pager(l, "top"), listTable(l.rows, { status: state.kind === "all", rules: ruleLink, apps: l.applications.length > 1 }), l.pages > 1 ? pager(l, "bottom") : null]
-          : el("p", { class: "empty" }, `No ${what()} match these filters.`)), false);
+      showBar();
+      replace(el("div", { class: "stack" }, markNotice, card(null,
+        analyst && l.rows.length ? bar : null,
+        l.rows.length ? [pager(l, "top"), listTable(l.rows, {
+          status: state.kind === "all", rules: ruleLink, apps: l.applications.length > 1, verdict: true,
+          pick: analyst ? picked : null, onPick: showBar,
+        }), l.pages > 1 ? pager(l, "bottom") : null]
+          : el("p", { class: "empty" }, `No ${what()} match these filters.`))), false);
     };
 
     const load = async () => {
@@ -869,10 +958,11 @@
     const showActive = () => {
       const items = [];
       if (state.from) items.push([`Period ${fmtSpan(state.from, state.to)}`, () => { state.from = state.to = ""; period.show(); }]);
-      const labels = { rule: "Rule", group: "Group", app: "Application", ip: "IP", location: "Location", min_score: "Score at least" };
+      const labels = { rule: "Rule", group: "Group", app: "Application", ip: "IP", location: "Location", min_score: "Score at least", review: "Review" };
       for (const [f, label] of Object.entries(labels)) {
         const v = form.elements[f].value.trim();
-        if (v) items.push([`${label} ${f === "app" ? appName(v) : v}`, () => { form.elements[f].value = ""; }]);
+        const text = f === "app" ? appName(v) : f === "review" ? (verdictNames[v] || v).toLowerCase() : v;
+        if (v) items.push([`${label} ${text}`, () => { form.elements[f].value = ""; }]);
       }
       activeBox.hidden = items.length === 0;
       refill(activeBox,
@@ -882,6 +972,7 @@
 
     const apply = () => {
       state.page = 1;
+      picked.clear();
       ownChange = true;
       sync();
       showActive();
@@ -984,6 +1075,9 @@
     const uncategorised = (s.total || 0) - categoryList.reduce((n, [, v]) => n + v, 0);
     const json = JSON.stringify(r, null, 2);
     const clientCount = el("span", { class: "muted" }, "…");
+    // The review (G1, G5): the verdict, a form for analysts and admins,
+    // and the record's marks, filled in below.
+    const reviewBox = el("section", { class: "card review" }, el("h2", {}, "Review"), el("p", { class: "muted" }, "…"));
 
     // What the live input knows besides the request (T5, T10, C6): the
     // proxy's own ID and time, the connection, TLS and the response.
@@ -1042,6 +1136,7 @@
           el("span", {}, "from ", ip || "an unknown address"),
           hitGroups.length ? el("span", {}, hitGroups.join(", ")) : null,
           el("span", {}, `score ${s.total} / ${s.threshold}`))),
+      reviewBox,
       el("div", { class: "grid-2" },
         card("Decision", kv([
           ["Score", `${s.total} (threshold ${s.threshold})`],
@@ -1092,6 +1187,47 @@
         ["Rules", e.crs],
         ["Paranoia level", app ? `${app.paranoia_level} for this request; the configuration's is ${e.paranoia_level}` : e.paranoia_level],
         ["Configuration", el("code", { class: "wrap" }, e.config)]]))));
+
+    async function loadReview() {
+      let m;
+      try {
+        m = await api("/api/marks/" + encodeURIComponent(id));
+      } catch (err) {
+        if (err.message !== "login required") refill(reviewBox, el("h2", {}, "Review"), el("p", { class: "error" }, "The marks could not be loaded: " + err.message));
+        return;
+      }
+      const last = m.history.length ? m.history[m.history.length - 1] : null;
+      const notice = el("div", { "aria-live": "polite" });
+      let form = null;
+      if (analyst) {
+        const verdict = el("select", { name: "verdict", "aria-label": "Verdict" },
+          verdictOrder.map((v) => el("option", { value: v, selected: v === m.verdict }, verdictNames[v])));
+        const note = el("input", { name: "note", placeholder: "Note (optional)", maxlength: 1000, autocomplete: "off", value: last && last.note ? last.note : "" });
+        const help = el("span", { class: "muted" }, verdictHelp[m.verdict]);
+        verdict.addEventListener("change", () => { help.textContent = verdictHelp[verdict.value]; });
+        form = el("form", { class: "mark-bar" }, verdict, note, el("button", { type: "submit", class: "small primary" }, "Save"), help);
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          try {
+            await send("/api/marks", { verdict: verdict.value, note: note.value.trim(), ids: [id] });
+            await loadReview();
+          } catch (err) {
+            if (err.message !== "login required") refill(notice, banner("error", "Not marked.", err.message));
+          }
+        });
+      }
+      refill(reviewBox,
+        el("div", { class: "card-head" }, el("h2", {}, "Review"), verdictBadge(m.verdict)),
+        last ? el("p", {}, `${verdictNames[last.verdict]}, by ${last.user}, ${fmtTime(last.time)}.`, last.note ? [" ", el("span", { class: "muted" }, "Note: "), last.note] : null)
+          : el("p", { class: "muted" }, "Nobody has marked this record yet."),
+        form, notice,
+        m.history.length > 1 ? el("details", { class: "table-view", "data-key": "marks" }, el("summary", {}, `Earlier marks: ${m.history.length - 1}`),
+          el("div", { class: "table-wrap" }, el("table", {},
+            el("thead", {}, el("tr", {}, el("th", {}, "Time"), el("th", {}, "User"), el("th", {}, "Verdict"), el("th", {}, "Note"))),
+            el("tbody", {}, m.history.slice(0, -1).reverse().map((h) => el("tr", {},
+              el("td", { class: "nowrap" }, fmtTime(h.time)), el("td", {}, h.user), el("td", {}, verdictBadge(h.verdict)), el("td", { class: "wrap" }, h.note || "–"))))))) : null);
+    }
+    loadReview();
 
     // How often this client appears: records and alerts of the last day.
     if (ip) {
@@ -1202,8 +1338,8 @@
             (sec.shown.length < sec.rules.length ? ` · ${sec.shown.length} shown` : ""))),
         // The same column widths in every section (app.css, table.rules).
         el("div", { class: "table-wrap" }, el("table", { class: "wide rules" },
-          el("colgroup", {}, ["id", "msg", "line", "phase", "level", "status", "fired"].map((c) => el("col", { class: c }))),
-          el("thead", {}, el("tr", {}, ["Rule", "Description", "Line", "Phase", "Level", "Status", "Fired"].map((h, i) => el("th", { class: i === 6 ? "num" : "" }, h)))),
+          el("colgroup", {}, ["id", "msg", "line", "phase", "level", "status", "fired", "fp"].map((c) => el("col", { class: c }))),
+          el("thead", {}, el("tr", {}, ["Rule", "Description", "Line", "Phase", "Level", "Status", "Fired", "False positive"].map((h, i) => el("th", { class: i >= 6 ? "num" : "", title: i === 7 ? "Records of this rule in the period that someone marked false positive, also records that are no longer kept" : null }, h)))),
           el("tbody", {}, sec.shown.map((r) => el("tr", {},
             el("td", {}, r.fired ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range }) }, String(r.id)) : String(r.id)),
             el("td", { class: "wrap" }, r.msg || el("span", { class: "muted" }, "–")),
@@ -1211,7 +1347,8 @@
             el("td", {}, String(r.phase)),
             el("td", {}, r.paranoia_level ? String(r.paranoia_level) : "–"),
             el("td", { class: "wrap" }, statusCell(r, level, appLabel)),
-            el("td", { class: "num" }, nf.format(r.fired))))))));
+            el("td", { class: "num" }, nf.format(r.fired)),
+            el("td", { class: "num" }, r.false_positives ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range, review: "false_positive" }) }, nf.format(r.false_positives)) : "–")))))));
 
       replace(el("div", { class: "stack" },
         el("p", { class: "muted" }, `${nf.format(data.rules.length)} rules of ${data.engine.crs} at paranoia level ${level}` +
@@ -1334,7 +1471,9 @@
           ["Oldest", fmtTime(p.oldest_record)],
           ["Newest", fmtTime(p.newest_record)],
           ["Unreadable lines", p.unreadable_lines ? nf.format(p.unreadable_lines) : "none"],
-          ["Other record types", p.skipped_lines ? `${nf.format(p.skipped_lines)} lines skipped: written by a newer version of the IDS` : ""]]),
+          ["Other record types", p.skipped_lines ? `${nf.format(p.skipped_lines)} lines skipped: written by a newer version of the IDS` : ""],
+          ["Marked records", `${nf.format(p.marks)}, kept also after their record is gone; each keeps the alert's time, rules, path and client address`],
+          ["Unreadable mark lines", p.marks_unreadable ? nf.format(p.marks_unreadable) : ""]]),
           el("div", { class: "table-wrap" }, el("table", {},
             el("thead", {}, el("tr", {}, el("th", {}, "File"), el("th", { class: "num" }, "Size"), el("th", {}, "Last written"))),
             el("tbody", {}, p.files.map((f) => el("tr", {}, el("td", { class: "mono" }, f.name), el("td", { class: "num" }, bytes(f.size)), el("td", {}, fmtTime(f.modified))))))))));
@@ -1377,6 +1516,576 @@
 
   // The colour theme (U7): the system's, or one chosen here. theme.js
   // applies a stored choice before the page is drawn.
+  // ---- Test a request (docs/development-plan-test-tab.md, S1–S4) ----
+
+  // The user writes a request as raw HTTP text; the dashboard analyses it
+  // with the IDS's own rules and profiles and keeps nothing of it (C1).
+  // The text is not stored in the browser either; only the choices are.
+  async function testPage() {
+    let info;
+    try {
+      info = await api("/api/test");
+    } catch (err) {
+      if (err.message !== "login required") failed(err);
+      return;
+    }
+    if (!info.enabled) {
+      replace(card("The test tab is off",
+        el("p", {}, "List the product configurations it may analyse with under test_configs in the dashboard's configuration file, and start the dashboard again. For example, in configs/dashboard.json:"),
+        el("pre", { class: "block" }, '"test_configs": ["crs-first-engine.json", "csic-shop.json", "../testdata/crs-tests.json"],\n"test_requests_dir": "../testdata/requests/crs"'),
+        el("p", { class: "muted" }, "Paths start at the folder of the dashboard's configuration file.")));
+      return;
+    }
+    const remember = (k, v) => store("localStorage", "ids.test." + k, v);
+    const recall = (k) => stored("localStorage", "ids.test." + k);
+    const encoder = new TextEncoder();
+    const configs = info.configs;
+
+    // What was loaded last: an example, perhaps with the rules a CRS test
+    // expects, and its text, to tell when the user changed it.
+    let loaded = null;
+
+    const text = el("textarea", {
+      id: "test-text", class: "editor", rows: 16, spellcheck: "false", autocomplete: "off",
+      autocapitalize: "off", wrap: "off", "aria-label": "The request as raw HTTP text",
+    });
+    const size = el("span", { class: "muted" });
+    const lengthNote = el("div", { class: "length-note", hidden: true });
+    const runButton = el("button", { type: "button", class: "primary" }, "Analyse");
+    const result = el("div", { class: "stack", id: "result", "aria-live": "polite" });
+
+    const field = (label, control, extra) => el("label", { class: extra || null }, label, control);
+    const option = (value, label, attrs) => el("option", Object.assign({ value }, attrs || {}), label);
+
+    // Examples: the built-in list, and the picker of example files.
+    const exampleSel = el("select", { name: "example" }, option("", "Choose an example…"),
+      info.examples.map((ex, i) => option(String(i), ex.name)));
+    const fileSel = el("select", { name: "file" }, option("", "Choose a rule…"),
+      info.files.map((f) => option(f.name, `${f.name} (${f.tests} ${f.tests === 1 ? "test" : "tests"})`)));
+    const caseSel = el("select", { name: "case", disabled: true }, option("", "Choose a test…"));
+    let cases = [];
+
+    // The settings of a test.
+    const configSel = el("select", { name: "config" }, configs.map((c) =>
+      option(String(c.index), c.error ? `${c.name} · can't be loaded` : `${c.name} · level ${c.paranoia_level}${c.newest ? " · the IDS's rules" : ""}`)));
+    const levelSel = el("select", { name: "level" });
+    const appSel = el("select", { name: "application" });
+    const client = el("input", { name: "client", placeholder: "none", autocomplete: "off", spellcheck: "false", inputmode: "text" });
+    const crlfSel = el("select", { name: "crlf" },
+      option("0", "\\n, as typed"), option("1", "\\r\\n, as multipart needs"));
+    const configNote = el("p", { class: "muted config-note" });
+
+    const saved = recall("config");
+    if (saved !== null && configs.some((c) => String(c.index) === saved)) configSel.value = saved;
+
+    function current() {
+      return configs[Number(configSel.value)] || configs[0];
+    }
+
+    function fillChoices() {
+      const c = current();
+      const level = levelSel.value;
+      refill(levelSel, option("0", `As configured${c.paranoia_level ? " (" + c.paranoia_level + ")" : ""}`),
+        [1, 2, 3, 4].map((n) => option(String(n), "Level " + n)));
+      levelSel.value = ["1", "2", "3", "4"].includes(level) ? level : "0";
+      const app = appSel.value;
+      refill(appSel, option("", "By Host and path"), c.applications.map((a) => option(a, a)));
+      appSel.value = c.applications.includes(app) ? app : "";
+      appSel.disabled = c.applications.length === 0;
+      refill(configNote,
+        c.error ? el("span", { class: "error" }, "This configuration can't be loaded: " + c.error)
+          : [c.newest ? "These are the rules of the IDS's newest run." : "These are not the rules of the IDS's newest run: its configuration, a rule file, a profile or the level differs.",
+            " Fingerprint ", el("code", {}, short(c.fingerprint, 23))]);
+      crsHint();
+    }
+
+    // crsHint suggests the configuration CRS's tests are written for, when
+    // a CRS test is loaded with another one.
+    const hint = el("p", { class: "muted", hidden: true });
+    function crsHint() {
+      const fit = configs.find((c) => c.name === "crs-tests.json");
+      const show = !!(loaded && loaded.expect && fit && current() !== fit);
+      hint.hidden = !show;
+      if (show) {
+        refill(hint, "CRS wrote its tests for its own test setup at paranoia level 4; with another configuration some expected rules don't match. ",
+          el("button", { type: "button", class: "link", onclick: () => { configSel.value = String(fit.index); levelSel.value = "0"; changed(); } }, "Use crs-tests.json"));
+      }
+    }
+
+    function changed() {
+      remember("config", configSel.value);
+      fillChoices();
+    }
+
+    function load(ex, expect) {
+      if (!ex.writable) return;
+      text.value = ex.text;
+      crlfSel.value = ex.body_crlf ? "1" : "0";
+      client.value = ex.client || "";
+      loaded = { name: ex.name, text: ex.text, expect: expect ? { ids: ex.expect_ids || [], not: ex.no_expect_ids || [] } : null };
+      lengthNote.hidden = true;
+      measure();
+      crsHint();
+      text.focus();
+    }
+
+    function measure() {
+      const n = encoder.encode(text.value).length;
+      const over = n > info.max_text;
+      refill(size, `${bytes(n)} of ${bytes(info.max_text)}`);
+      size.classList.toggle("error", over);
+      runButton.disabled = over || !text.value.trim();
+    }
+
+    exampleSel.addEventListener("change", () => {
+      const ex = info.examples[Number(exampleSel.value)];
+      if (exampleSel.value !== "" && ex) load(ex, false);
+      fileSel.value = "";
+      refill(caseSel, option("", "Choose a test…"));
+      caseSel.disabled = true;
+    });
+    fileSel.addEventListener("change", async () => {
+      exampleSel.value = "";
+      refill(caseSel, option("", "Choose a test…"));
+      caseSel.disabled = true;
+      if (!fileSel.value) return;
+      try {
+        const data = await api("/api/test/files/" + encodeURIComponent(fileSel.value));
+        cases = data.examples;
+      } catch (err) {
+        if (err.message !== "login required") showError("The tests of this rule could not be loaded", err.message);
+        return;
+      }
+      refill(caseSel, option("", `Choose one of ${cases.length} tests…`), cases.map((ex, i) =>
+        option(String(i), ex.writable ? ex.name : ex.name + " (can't be written as text)", { disabled: !ex.writable })));
+      caseSel.disabled = false;
+      const first = cases.findIndex((ex) => ex.writable);
+      if (first >= 0) {
+        caseSel.value = String(first);
+        load(cases[first], true);
+      }
+    });
+    caseSel.addEventListener("change", () => {
+      const ex = cases[Number(caseSel.value)];
+      if (ex) load(ex, true);
+    });
+    configSel.addEventListener("change", changed);
+    text.addEventListener("input", () => { measure(); lengthNote.hidden = true; });
+    text.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        if (!runButton.disabled) run();
+      }
+    });
+    runButton.addEventListener("click", run);
+
+    function showError(title, message) {
+      refill(result, banner("error", title + ".", message));
+    }
+
+    async function run() {
+      runButton.disabled = true;
+      result.classList.add("loading");
+      const q = query({
+        config: configSel.value, level: levelSel.value === "0" ? "" : levelSel.value,
+        application: appSel.value, client: client.value.trim(), crlf: crlfSel.value === "1" ? "1" : "",
+      });
+      const forced = appSel.value;
+      let res, data;
+      try {
+        res = await fetch("/api/test?" + q, {
+          method: "POST", credentials: "same-origin", body: text.value,
+          headers: { "Content-Type": "text/plain; charset=utf-8", Accept: "application/json" },
+        });
+        if (res.status === 401) {
+          location.assign("/login?" + query({ next: location.pathname }));
+          return;
+        }
+        data = await res.json();
+      } catch (err) {
+        showError("The request could not be analysed", err.message);
+        return;
+      } finally {
+        result.classList.remove("loading");
+        measure();
+      }
+      if (!res.ok) {
+        showError(res.status === 400 ? "The request can't be read" : "The request could not be analysed", data.error || res.statusText);
+        return;
+      }
+      showLength(data.content_length);
+      showAnswer(data, forced);
+    }
+
+    // showLength says when Content-Length does not give the body's length,
+    // and offers to correct it; the IDS itself never does (C6).
+    function showLength(cl) {
+      lengthNote.hidden = !cl;
+      if (!cl) return;
+      refill(lengthNote, banner("warning", "Content-Length differs from the body.",
+        `It says ${cl.declared}; the body has ${nf.format(cl.body)} bytes. The IDS analyses the body as written, as it would analyse what a client sends.`),
+      el("button", { type: "button", class: "small", onclick: () => setLength(cl.body) }, `Set Content-Length to ${cl.body}`));
+    }
+
+    function setLength(n) {
+      const value = text.value;
+      const end = value.indexOf("\n\n");
+      const head = end < 0 ? value : value.slice(0, end);
+      const rest = end < 0 ? "" : value.slice(end);
+      const lines = head.split("\n");
+      const i = lines.findIndex((l, k) => k > 0 && /^content-length\s*:/i.test(l));
+      if (i < 0) return;
+      lines[i] = lines[i].slice(0, lines[i].indexOf(":")) + ": " + n;
+      text.value = lines.join("\n") + rest;
+      lengthNote.hidden = true;
+      measure();
+    }
+
+    // showAnswer shows what a test found; forced is the application chosen
+    // on the page, or "".
+    function showAnswer(a, forced) {
+      const r = a.result, s = r.score || {}, an = r.analysis || {}, rd = a.read || {};
+      const findings = r.findings || [];
+      const attack = findings.filter((f) => !scoring(f.rule_id));
+      const scores = findings.filter((f) => scoring(f.rule_id));
+      const matched = new Set(findings.map((f) => f.rule_id));
+      const hitGroups = [...new Set(attack.map((f) => groupOf(f.rule_id)))];
+      const alert = !!s.exceeded || (r.alert_by || []).length > 0;
+      const app = r.application, prof = r.profile;
+      const line = `${rd.method} ${rd.target}${rd.version ? " " + rd.version : ""}`;
+
+      // The rules a CRS test expects, while its text is unchanged.
+      let expectCard = null;
+      if (loaded && loaded.expect && (loaded.expect.ids.length || loaded.expect.not.length)) {
+        const same = text.value === loaded.text;
+        const missing = loaded.expect.ids.filter((id) => !matched.has(id));
+        const unwanted = loaded.expect.not.filter((id) => matched.has(id));
+        const met = missing.length === 0 && unwanted.length === 0;
+        expectCard = card("CRS test: " + loaded.name, kv([
+          ["Expected to match", loaded.expect.ids.length ? el("ul", { class: "plain" }, loaded.expect.ids.map((id) =>
+            el("li", {}, matched.has(id) ? el("span", { class: "badge active" }, `${id} matched`) : el("span", { class: "badge alert" }, `${id} did not match`)))) : ""],
+          ["Must not match", loaded.expect.not.length ? el("ul", { class: "plain" }, loaded.expect.not.map((id) =>
+            el("li", {}, matched.has(id) ? el("span", { class: "badge alert" }, `${id} matched`) : el("span", { class: "badge active" }, `${id} did not match`)))) : ""],
+          ["Result", met ? "The test's expectation is met." : "The test's expectation is not met."]]),
+        !same ? el("p", { class: "muted" }, "The text was changed after the test was loaded, so the expectation may no longer apply.") : null);
+      }
+
+      const byCategory = Object.entries(s.categories || {});
+      const uncategorised = (s.total || 0) - byCategory.reduce((n, [, v]) => n + v, 0);
+      const modes = { alert: "alert: a profile finding makes the request an alert", monitor: "monitor: profile findings are recorded, not alerts" };
+      const json = JSON.stringify(a, null, 2);
+      // One table of what the engine read: parameters of the query and the
+      // body, cookies, and files of a multipart body.
+      const read = [...rd.params,
+        ...rd.cookies.map((c) => ({ origin: "cookie", name: c.name, value: c.value })),
+        ...rd.files.map((f) => ({ origin: "file, field " + f.origin, name: f.name, value: f.value }))];
+      const pairs = (list, first) => el("div", { class: "table-wrap" }, el("table", {},
+        el("thead", {}, el("tr", {}, el("th", {}, first), el("th", {}, "Name"), el("th", {}, "Value"))),
+        el("tbody", {}, list.map((p) => el("tr", {},
+          el("td", { class: "nowrap" }, p.origin || "–"), el("td", { class: "mono wrap" }, p.name), el("td", { class: "mono wrap" }, p.value))))));
+
+      refill(result,
+        el("section", { class: "card verdict" },
+          el("h2", {}, alert ? "Alert" : "No alert"),
+          el("p", { class: "summary" },
+            !an.complete ? el("span", { class: "badge incomplete" }, "Incomplete") : null,
+            r.alert_by && r.alert_by.length ? el("span", {}, alertBy(r.alert_by)) : null,
+            el("span", {}, `score ${s.total} / ${s.threshold}`),
+            hitGroups.length ? el("span", {}, hitGroups.join(", ")) : el("span", {}, "no rule matched"),
+            prof && prof.findings.length ? profileBadge([...new Set(prof.findings.map((f) => f.kind))]) : null,
+            el("span", {}, `${a.config.name}, level ${a.paranoia_level}`),
+            app ? el("span", {}, "application " + appName(app.name)) : null,
+            el("span", { title: "How long the rules and the profile took" }, `${a.ms.toFixed(2)} ms`))),
+        expectCard,
+        el("section", { class: "card" },
+          el("h2", {}, `Rule findings: ${new Set(attack.map((f) => f.rule_id)).size} rules, ${attack.length} ${attack.length === 1 ? "place" : "places"}`),
+          attack.length ? el("div", { class: "table-wrap" }, el("table", { class: "findings-table" },
+            el("thead", {}, el("tr", {}, el("th", {}, "Rule"), el("th", {}, "Severity"), el("th", {}, "Message"), el("th", {}, "Where"), el("th", {}, "Matched"), el("th", {}, "Rule data"))),
+            el("tbody", {}, attack.map((f) => el("tr", {},
+              el("td", { class: "nowrap", title: groupOf(f.rule_id) }, String(f.rule_id)),
+              el("td", { class: "nowrap" }, severity(f.severity)),
+              el("td", { class: "wrap" }, f.message || "–"),
+              el("td", { class: "mono loc" }, f.location || "–"),
+              el("td", { class: "wrap" }, f.value ? el("code", {}, f.value) : "–"),
+              el("td", { class: "wrap sub" }, f.data || "–"))))))
+            : el("p", { class: "muted" }, an.complete ? "No rule matched." : "No rule matched in what could be inspected; see the analysis below."),
+          scores.map((f) => el("p", { class: "muted" }, `Score rule ${f.rule_id}: ${f.message}`))),
+        el("div", { class: "grid-2" },
+          card("Decision", kv([
+            ["Score", `${s.total} (threshold ${s.threshold})`],
+            ["By category", byCategory.length || uncategorised > 0 ? el("ul", { class: "plain" },
+              byCategory.map(([k, v]) => el("li", {}, categories[k] || k, " ", el("strong", {}, String(v)), " ", el("span", { class: "muted" }, `(${k})`))),
+              uncategorised > 0 ? el("li", {}, "No category ", el("strong", {}, String(uncategorised)), " ", el("span", { class: "muted" }, "(rules that add to the total only)")) : null) : ""],
+            ["Alert by", r.alert_by && r.alert_by.length ? r.alert_by.join(", ") : ""]])),
+          card("Analysis", kv([
+            ["Complete", an.complete ? "yes" : "no — a clean result does not cover the parts that were not inspected"],
+            ["Body", `${an.body}${an.body_format ? " as " + an.body_format : ""}${an.body_reason ? " (" + an.body_reason + ")" : ""}`],
+            ["Notes", (an.issues || []).map((i) => `${i.part}: ${i.message}`).join("; ")]]))),
+        app ? card("Application and profile", kv([
+          ["Application", app.name === "none" ? "No application: only the rules checked this request" : app.name],
+          ["Chosen", forced ? "on this page" : "by Host and path"],
+          ["Profile mode", modes[app.mode] || app.mode],
+          ["Paranoia level", app.name !== "none" && app.paranoia_level !== a.paranoia_level
+            ? `${app.paranoia_level}: the application's own, which it keeps whatever the level above (F11)` : String(app.paranoia_level)],
+          ["Body checked", prof && !prof.body_checked ? "no — the body was not read to its end, so its parameters were not checked" : ""]]),
+        prof ? (prof.findings.length ? el("div", { class: "table-wrap" }, el("table", {},
+          el("thead", {}, el("tr", {}, el("th", {}, "Finding"), el("th", {}, "Where"), el("th", {}, "What"))),
+          el("tbody", {}, prof.findings.map((f) => el("tr", {},
+            el("td", { class: "nowrap" }, f.kind), el("td", { class: "mono loc" }, f.location), el("td", { class: "wrap" }, f.message))))))
+          : el("p", { class: "muted" }, "The request is what the profile allows.")) : null) : null,
+        card("What the engine read", kv([
+          ["Request line", el("code", { class: "wrap" }, line)],
+          ["Path, decoded", el("code", { class: "wrap" }, rd.path || "–")],
+          ["Client", rd.client || "none given"],
+          ["Headers", nf.format(rd.headers)],
+          ["Body", bytes(rd.body_length)]]),
+        read.length ? pairs(read, "From") : el("p", { class: "muted" }, "No parameters, cookies or files."),
+        rd.not_shown ? el("p", { class: "muted" }, `${nf.format(rd.not_shown)} more are not listed.`) : null),
+        el("details", { class: "card", "data-key": "test-json" }, el("summary", {}, "The answer as JSON"),
+          el("div", { class: "raw-tools" }, copyButton(json, "the answer as JSON")),
+          el("pre", { class: "block" }, json)));
+      fitChips(result);
+    }
+
+    replace(el("div", { class: "stack" },
+      el("section", { class: "card" },
+        el("div", { class: "test-bar" },
+          field("Example", exampleSel, "wide"),
+          info.files.length ? [field("CRS rule", fileSel), field("CRS test", caseSel, "wide")] : null),
+        info.files_error ? el("p", { class: "error" }, "The example files can't be listed: " + info.files_error) : null,
+        hint,
+        text,
+        el("div", { class: "test-bar settings" },
+          field("Configuration", configSel, "wide"),
+          field("Paranoia level", levelSel),
+          field("Application", appSel),
+          field("Client address", client),
+          field("Body line ends", crlfSel)),
+        configNote,
+        el("div", { class: "test-run" }, runButton, el("span", { class: "muted" }, "or Ctrl+Enter"), size),
+        lengthNote),
+      result), false);
+
+    fillChoices();
+    if (info.examples.length) load(info.examples[0], false);
+    measure();
+  }
+
+  // ---- Users, your account and the log (docs/development-plan-marks-users.md, G3–G5) ----
+
+  // send posts JSON and returns the answer; an answer that is not OK
+  // throws an error with its message and status.
+  async function send(path, data) {
+    const res = await fetch(path, {
+      method: "POST", credentials: "same-origin", body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+    });
+    if (res.status === 401) {
+      location.assign("/login?" + query({ next: location.pathname + location.search }));
+      throw new Error("login required");
+    }
+    let answer = {};
+    try { answer = await res.json(); } catch (e) { /* no JSON */ }
+    if (!res.ok) {
+      const err = new Error(answer.error || `${res.status} ${res.statusText}`);
+      err.status = res.status;
+      throw err;
+    }
+    return answer;
+  }
+
+  const roleNames = { viewer: "Viewer", analyst: "Analyst", admin: "Admin" };
+  const roleText = {
+    viewer: "reads every page",
+    analyst: "also marks alerts and uses the test tab",
+    admin: "also manages users and sees the log",
+  };
+
+  // shown is a notification above a page's content: what a change did.
+  function shown(box, kind, title, text, ...more) {
+    refill(box, el("div", { class: "stack" }, banner(kind, title, text), ...more));
+  }
+
+  async function usersPage() {
+    const notice = el("div", { "aria-live": "polite" });
+    const password = el("input", { type: "password", name: "password", autocomplete: "current-password", placeholder: "Your password" });
+    const table = el("div");
+    const newName = el("input", { name: "name", autocomplete: "off", spellcheck: "false", placeholder: "for example ayse" });
+    const newRole = el("select", { name: "role" }, ["viewer", "analyst", "admin"].map((r) => el("option", { value: r }, roleNames[r])));
+    let data;
+
+    async function act(change, done) {
+      if (!password.value) {
+        shown(notice, "warning", "Your password is needed.", "Every change of users asks for it again.");
+        password.focus();
+        return;
+      }
+      try {
+        const answer = await send("/api/users", Object.assign({ password: password.value }, change));
+        const extra = answer.password ? el("p", {}, "New password for ", el("strong", {}, change.name), " (shown only now): ",
+          el("code", {}, answer.password), copyButton(answer.password, "the password")) : null;
+        shown(notice, answer.warning ? "warning" : "success", done + ".", answer.warning || "It is written to the log.", extra);
+        await load();
+      } catch (err) {
+        if (err.message !== "login required") shown(notice, "error", "Not changed.", err.message);
+      }
+    }
+
+    function row(u) {
+      const role = el("select", { name: "role-" + u.name, "aria-label": "Role of " + u.name },
+        data.roles.map((r) => el("option", { value: r, selected: r === u.role }, roleNames[r] || r)));
+      const save = el("button", { type: "button", class: "small", hidden: true }, "Change role");
+      role.addEventListener("change", () => { save.hidden = role.value === u.role; });
+      save.addEventListener("click", () => act({ action: "role", name: u.name, role: role.value },
+        `${u.name} is now ${roleNames[role.value] || role.value}`));
+      const you = u.name === data.you;
+      return el("tr", {},
+        el("td", {}, u.name, you ? el("span", { class: "muted" }, " (you)") : null),
+        el("td", {}, el("div", { class: "role-cell" }, role, save)),
+        el("td", { class: "nowrap" }, fmtTime(u.created)),
+        el("td", { class: "nowrap actions" },
+          el("button", { type: "button", class: "small", onclick: () => act({ action: "reset", name: u.name }, `${u.name} has a new password`) }, "Reset password"),
+          el("button", {
+            type: "button", class: "small danger", onclick: () => {
+              if (window.confirm(`Remove the user ${u.name}?${you ? " You will be logged out." : ""}`)) act({ action: "remove", name: u.name }, `${u.name} is removed`);
+            },
+          }, "Remove")));
+    }
+
+    async function load() {
+      try {
+        data = await api("/api/users");
+      } catch (err) {
+        if (err.message !== "login required") failed(err);
+        return;
+      }
+      refill(table, el("div", { class: "table-wrap" }, el("table", { class: "users" },
+        el("thead", {}, el("tr", {}, el("th", {}, "User"), el("th", {}, "Role"), el("th", {}, "Added"), el("th", {}, ""))),
+        el("tbody", {}, data.users.map(row)))));
+    }
+
+    replace(el("div", { class: "stack" },
+      notice,
+      card("Your password", el("div", { class: "test-bar" }, el("label", {}, "Asked again for every change below", password))),
+      card("Users", table),
+      card("Add a user",
+        el("form", { class: "test-bar", onsubmit: (e) => {
+          e.preventDefault();
+          const name = newName.value.trim();
+          act({ action: "add", name, role: newRole.value }, `${name} is added as ${roleNames[newRole.value]}`).then(() => { newName.value = ""; });
+        } },
+        el("label", {}, "Name", newName), el("label", {}, "Role", newRole),
+        el("button", { type: "submit", class: "primary" }, "Add user")),
+        el("ul", { class: "plain muted" }, ["viewer", "analyst", "admin"].map((r) => el("li", {}, `${roleNames[r]}: ${roleText[r]}.`))),
+        el("p", { class: "muted" }, "The new user's password is made at random and shown here once; pass it on to them. They can change it on their account page."))), false);
+    await load();
+  }
+
+  async function accountPage() {
+    const notice = el("div", { "aria-live": "polite" });
+    const field = (name, label, auto) => el("label", {}, label, el("input", { type: "password", name, autocomplete: auto }));
+    const form = el("form", { class: "account-form" },
+      field("current", "Current password", "current-password"),
+      field("new", "New password", "new-password"),
+      field("again", "New password again", "new-password"),
+      el("div", {}, el("button", { type: "submit", class: "primary" }, "Change password")));
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const v = (n) => form.elements[n].value;
+      if (v("new") !== v("again")) {
+        shown(notice, "error", "Not changed.", "The two new passwords are not the same.");
+        return;
+      }
+      try {
+        const answer = await send("/api/account", { current: v("current"), new: v("new"), again: v("again") });
+        form.reset();
+        shown(notice, answer.warning ? "warning" : "success", "Your password is changed.", answer.warning || "Your other sessions have ended; this one goes on.");
+      } catch (err) {
+        if (err.message !== "login required") shown(notice, "error", "Not changed.", err.message);
+      }
+    });
+    const user = document.querySelector(".who");
+    const role = body.dataset.role || "";
+    replace(el("div", { class: "stack" },
+      notice,
+      card("You", kv([["User", user ? user.firstChild.textContent.trim() : ""], ["Role", `${roleNames[role] || role}: ${roleText[role] || ""}`]])),
+      card("Change your password", form,
+        el("p", { class: "muted" }, "At least 15 characters. Any characters count, and there are no rules about mixing kinds: a few unrelated words make a long password that is easy to remember."))), false);
+  }
+
+  async function logPage() {
+    const params = new URLSearchParams(location.search);
+    const kinds = [
+      ["", "Everything"], ["change", "Changes"], ["login", "Logins"], ["mark", "Marks"],
+      ["user_added", "User added"], ["user_removed", "User removed"], ["role_changed", "Role changed"],
+      ["password_reset", "Password reset"], ["password_changed", "Own password changed"],
+    ];
+    const userSel = el("select", { name: "user" }, el("option", { value: "" }, "Every user"));
+    const kindSel = el("select", { name: "kind" }, kinds.map(([v, t]) => el("option", { value: v }, t)));
+    const pager = el("div", { class: "pager" });
+    const table = el("div");
+    let page = Number(params.get("page")) || 1;
+    kindSel.value = params.get("kind") || "";
+
+    const verdictNames = { not_reviewed: "not reviewed", real_attack: "real attack", expected: "expected", false_positive: "false positive", undetermined: "undetermined" };
+    function what(e) {
+      if (e.kind === "login") {
+        const results = { ok: "logged in", failed: "wrong password at login", wait: "login refused while waiting", logout: "logged out",
+          "confirm ok": "confirmed their password", "confirm failed": "wrong password when confirming a change", "confirm wait": "change refused while waiting" };
+        return [results[e.result] || e.result, e.ip ? el("span", { class: "muted" }, " from " + e.ip) : null];
+      }
+      const c = e.change;
+      switch (c.action) {
+        case "user_added": return `added the user ${c.target} as ${c.role}`;
+        case "user_removed": return `removed the user ${c.target} (${c.role})`;
+        case "role_changed": return `changed the role of ${c.target} from ${c.old_role} to ${c.role}`;
+        case "password_reset": return `reset the password of ${c.target}`;
+        case "password_changed": return "changed their own password";
+        case "mark": return [`marked ${nf.format(c.records)} ${c.records === 1 ? "record" : "records"} as ${verdictNames[c.verdict] || c.verdict}`,
+          c.note ? el("div", { class: "sub" }, "Note: " + c.note) : null,
+          c.filter ? el("div", { class: "sub" }, "All that matched ", el("a", { href: "/alerts?" + c.filter }, c.filter)) : null,
+          c.ids && c.ids.length ? el("div", { class: "sub" }, "Records: ", c.ids.slice(0, 10).map((id, i) => [i ? ", " : "", el("a", { href: "/alerts/" + encodeURIComponent(id) }, id.slice(0, 8))]), c.ids.length > 10 ? ` and ${c.ids.length - 10} more` : "") : null,
+          c.before ? el("div", { class: "sub" }, "Before: " + Object.entries(c.before).map(([v, n]) => `${nf.format(n)} ${verdictNames[v] || v}`).join(", ")) : null];
+      }
+      return c.action;
+    }
+
+    async function load() {
+      let p;
+      try {
+        p = await api("/api/log?" + query({ user: userSel.value, kind: kindSel.value, page }));
+      } catch (err) {
+        if (err.message !== "login required") failed(err);
+        return;
+      }
+      const chosen = userSel.value;
+      refill(userSel, el("option", { value: "" }, "Every user"), p.users.map((u) => el("option", { value: u }, u)));
+      userSel.value = p.users.includes(chosen) ? chosen : "";
+      page = p.page;
+      history.replaceState(null, "", "/log?" + query({ user: userSel.value, kind: kindSel.value, page: page > 1 ? page : "" }));
+      refill(pager, el("span", { class: "muted" }, `${nf.format(p.total)} ${p.total === 1 ? "entry" : "entries"}, page ${p.page} of ${p.pages}`),
+        el("button", { type: "button", class: "small", disabled: p.page <= 1, onclick: () => { page--; load(); } }, "Newer"),
+        el("button", { type: "button", class: "small", disabled: p.page >= p.pages, onclick: () => { page++; load(); } }, "Older"));
+      refill(table, p.entries.length ? el("div", { class: "table-wrap" }, el("table", {},
+        el("thead", {}, el("tr", {}, el("th", {}, "Time"), el("th", {}, "User"), el("th", {}, "Kind"), el("th", {}, "What"))),
+        el("tbody", {}, p.entries.map((e) => el("tr", {},
+          el("td", { class: "nowrap" }, fmtTime(e.time)),
+          el("td", { class: "nowrap" }, e.user || "–"),
+          el("td", { class: "nowrap" }, e.kind === "login" ? "login" : "change"),
+          el("td", { class: "wrap" }, what(e)))))))
+        : el("p", { class: "empty" }, "Nothing in the log for this choice."),
+      p.unreadable ? el("p", { class: "muted" }, `${nf.format(p.unreadable)} lines of the log files could not be read.`) : null);
+    }
+
+    userSel.value = params.get("user") || "";
+    for (const s of [userSel, kindSel]) s.addEventListener("change", () => { page = 1; load(); });
+    replace(el("div", { class: "stack" },
+      el("section", { class: "card" },
+        el("div", { class: "test-bar" }, el("label", {}, "User", userSel), el("label", {}, "Kind", kindSel)),
+        pager, table)), false);
+    await load();
+  }
+
   const theme = document.getElementById("theme");
   if (theme) {
     theme.value = document.documentElement.dataset.theme || "";
@@ -1387,6 +2096,6 @@
     });
   }
 
-  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, engine: enginePage, login: loginPage };
+  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
   if (pages[page] && (view || page === "login")) pages[page]();
 })();

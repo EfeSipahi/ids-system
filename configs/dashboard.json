@@ -4,5 +4,7 @@
   "state_dir": "../dashboard-state",
   "tls_cert": "",
   "tls_key": "",
-  "session_idle_minutes": 60
+  "session_idle_minutes": 60,
+  "test_configs": ["crs-first-engine.json", "csic-shop.json", "../testdata/crs-tests.json"],
+  "test_requests_dir": "../testdata/requests/crs"
 }

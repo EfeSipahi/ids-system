@@ -1,6 +1,6 @@
 # Copy format
 
-Written: 26 October 2026. Updated 18 November 2026, before any copier used version 1: the IDS's hello gives its frame limit (`max_frame`), and the copier fits each copy into it (decided by the user); the response note `handler error`. Format version: 1.
+Written: 26 October 2026. Updated 18 November 2026, before any copier used version 1: the IDS's hello gives its frame limit (`max_frame`), and the copier fits each copy into it (decided by the user); the response note `handler error`. Updated 19 November 2026: what the lab showed about Caddy (section 4.3), and how to set up both sides (section 6). Format version: 1.
 
 This is the contract between a proxy's copier and the IDS: how copies of requests and responses travel from the proxy to `ids-live`, and, later, how decisions travel back (K4).
 
@@ -114,6 +114,8 @@ Rules:
 
    The copier writes `Host` first, then the other headers sorted by name, with `Transfer-Encoding` restored from the request. Response headers are sorted by name too; when the application set no `Content-Type`, the copy has the one Go's server sniffs and sends. The lab compares results with the original requests (development plan, verification 5).
 3. Requests that Go's server rejects before any handler runs, for example with a broken request line or headers that are too large, never reach the copier. They never reach the application either.
+4. The protocol in the request head is Go's name for it: `HTTP/1.1`, `HTTP/2.0` or `HTTP/3.0`. The lab sent requests over all three through the copier (development plan, note 7).
+5. Caddy's `reverse_proxy` asks the application for gzip itself when the client did not, and unzips the answer. The copier, which runs before it, then sees the plain body and no `Content-Encoding`, which is what the client gets. A client that accepts gzip gets the compressed body, and so does the copy, with its `Content-Encoding` (found in the lab).
 
 ### 4.4. Fitting a copy into the IDS's limit
 
@@ -133,3 +135,62 @@ A copier's limits (12.5 MB of request body, 512 KB of response body by default) 
 | `reason` | `queue full` (the copier's queue was full, T7), `not connected` (the IDS could not be reached, T8), `refused by the IDS` (the copy does not fit into the IDS's `max_frame` even without its bodies, section 4.4). 1–64 bytes of printable text |
 
 `ids-live` turns each `missed` frame into a `gap` record, which the dashboard shows (`docs/records-format.md`).
+
+## 6. Setting it up
+
+Added 19 November 2026. The defaults of the queues and of the waits are first values. The lab measured how the copier and `ids-live` behave with them (development plan, note 7), and they were not changed.
+
+### 6.1. `ids-live`
+
+`ids-live -config FILE` reads the product configuration, the same file `ids-offline` reads, with a `live` section:
+
+```json
+"live": {"socket": "/run/ids/copy.sock"}
+```
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `socket` | none, required | The socket's path. A relative path starts at the configuration file's folder. At most 107 bytes; an abstract name (`@…`) is refused, because it has no file permissions |
+| `workers` | 2 | How many copies are analysed at the same time, 1–256 |
+| `queue_copies` | 1,000 | The most copies `ids-live` holds, waiting or being analysed, 1–1,000,000. A copy past it is dropped and counted (`queue full`) |
+| `queue_mb` | 64 | The same in MiB, 1–16,384 |
+| `max_frame_mb` | 16 | The longest frame it accepts, in MiB (section 3, `max_frame`), 1–1,024 and not more than `queue_mb` |
+
+The flags `-socket` and `-records` replace the configuration's socket and records folder; with them, the configuration needs no `live` or `records` section. SIGTERM or SIGINT stops it: it stops reading, gives the queued copies 10 seconds, and writes what is left as a gap (`IDS stopped`).
+
+### 6.2. The Caddy copier
+
+Caddy is built with the module by xcaddy (v0.4.7 was used), from this repository's root:
+
+```bash
+xcaddy build v2.11.9 --with github.com/EfeSipahi/ids-system/caddy-module=./caddy-module --replace github.com/EfeSipahi/ids-system=.
+```
+
+A site in the Caddyfile:
+
+```
+shop.example.com {
+	ids_copy {
+		application shop
+		socket /run/ids/copy.sock
+	}
+	reverse_proxy 127.0.0.1:9000
+}
+```
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `socket` | none, required | `ids-live`'s socket, at most 107 bytes |
+| `application` | none | The application's name in the IDS's configuration (T6). Left out, the IDS chooses the application by Host and path |
+| `request_body_limit` | 13,107,200 bytes | How much of a request body is copied, up to 1 GiB, written as `12MiB` or `500KB` (`KiB` and `MiB` count in 1,024s, `KB` and `MB` in 1,000s) |
+| `response_body_limit` | 524,288 bytes | The same for a response body |
+| `response_types` | `text/plain text/html text/xml` | The media types whose response body is copied. Case and parameters such as `charset` do not matter |
+| `queue_copies` | 1,000 | The most copies waiting to be sent, 1–1,000,000 |
+| `queue_mb` | 64 | The same in MiB, 1–16,384 |
+| `max_wait` | `10s` | How long a copy waits for its response to end before it is sent, marked `not finished` (C7) |
+
+1. No `order` option is needed: the module places itself first (section 4.3).
+2. Sites that name the same socket share one connection and one queue. The queue limits of the copier loaded last hold, which after a reload are the new configuration's.
+3. The user Caddy runs as must be able to write to the socket, whose permission is 0660: the same user as `ids-live`, or a member of the socket's group.
+4. The client's address follows Caddy's `trusted_proxies` server option, which trusts no proxy by default (T5). `lab/Caddyfile` is a working example with `ids_copy` and `trusted_proxies`.
+
