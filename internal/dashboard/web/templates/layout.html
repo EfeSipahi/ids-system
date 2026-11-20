@@ -13,16 +13,8 @@
 {{if .User}}
 <header class="top">
   <div class="bar">
+    <button type="button" class="menu" id="menu" aria-controls="side" aria-expanded="false">Menu</button>
     <a class="brand" href="/"><img src="/static/icon.svg" alt="" width="20" height="20">IDS dashboard</a>
-    <nav aria-label="Pages">
-      <a href="/" {{if eq .Page "overview"}}aria-current="page"{{end}}>Overview</a>
-      <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
-      <a href="/rules" {{if eq .Page "rules"}}aria-current="page"{{end}}>Rules</a>
-      <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine</a>
-      {{if .Analyst}}<a href="/test" {{if eq .Page "test"}}aria-current="page"{{end}}>Test</a>{{end}}
-      {{if .Admin}}<a href="/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Users</a>
-      <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Log</a>{{end}}
-    </nav>
     <div class="account">
       <select id="theme" aria-label="Colour theme">
         <option value="">System theme</option>
@@ -34,11 +26,41 @@
     </div>
   </div>
 </header>
-{{end}}
+<div class="shell">
+  <nav class="side" id="side" aria-label="Pages">
+    <div class="side-group">
+      <span class="side-label">Monitor</span>
+      <a href="/" {{if eq .Page "overview"}}aria-current="page"{{end}}>Overview</a>
+      <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
+    </div>
+    <div class="side-group">
+      <span class="side-label">Rules</span>
+      <a href="/rules" {{if eq .Page "rules"}}aria-current="page"{{end}}>Rules</a>
+      {{if .Analyst}}<a href="/test" {{if eq .Page "test"}}aria-current="page"{{end}}>Test a request</a>{{end}}
+    </div>
+    <div class="side-group">
+      <span class="side-label">System</span>
+      <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine</a>
+    </div>
+    {{if .Admin}}<div class="side-group">
+      <span class="side-label">Administration</span>
+      <a href="/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Users</a>
+      <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Log</a>
+    </div>{{end}}
+  </nav>
+  <div class="content">
+    <main>
+{{template "content" .}}
+    </main>
+    <footer class="foot">IDS {{.Version}} · records are read only · alerts are decided by the rules and by profiles in alert mode<span id="zone"></span></footer>
+  </div>
+</div>
+{{else}}
 <main>
 {{template "content" .}}
 </main>
-<footer class="foot">IDS {{.Version}}{{if .User}} · records are read only · alerts are decided by the rules and by profiles in alert mode<span id="zone"></span>{{end}}</footer>
+<footer class="foot">IDS {{.Version}}</footer>
+{{end}}
 </body>
 </html>{{end}}
 

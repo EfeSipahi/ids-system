@@ -44,6 +44,8 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 - The dashboard runs the IDS's own engine and profiles through `internal/analysis`, the one analysis that `ids-offline` and `ids-live` also run, and keeps nothing: no record, no setting, no log line with the request.
 - Its answers equal `ids-offline -json -show-values` for all 5,066 CRS tests that raw text can hold and the 1,000 CSIC requests.
 
+**Navigation panel (21 November 2026):** the pages are in a panel on the left, in groups (Monitor, Rules, System, Administration), folded behind a Menu button below 1312 px; details in the dashboard UI plan, "The side navigation".
+
 **Marks, users with roles and a change log (20 November 2026):** built following [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md), decisions G1–G6 (main plan sections 11.31 and 11.32); the state files are described in [docs/dashboard-state.md](docs/dashboard-state.md).
 - A verdict per alert (not reviewed, real attack, expected, false positive, undetermined) with a note, set on one record, the chosen ones or all that match the list's filter (at most 10,000); a Review column and filter; "not reviewed" on the overview; false positives per rule on the Rules page, also of records that rotated away.
 - Three roles as a ladder: viewer, analyst (also marks and tests), admin (also Users and Log). Users, roles and passwords on the Users page, each change after the admin's password; everyone can change their own password (at least 15 characters).
@@ -103,6 +105,7 @@ Other files:
 | `docs/development-plan-proxy.md` | The plan for live traffic through Caddy (finished 19 November 2026): research, decisions T1–T12, notes 1–8 with every lab measurement |
 | `docs/development-plan-marks-users.md` | The plan for marking alerts, users with roles and a change log (finished 20 November 2026): decisions G1–G6, consequences C1–C8, notes 1–5 with the checks |
 | `docs/dashboard-state.md` | The dashboard's state files: users, lock files, the log of logins, the change log, the marks |
+| `docs/dashboard-roadmap.md` | What the dashboard still needs, in parts with their decisions and a suggested order (21 November 2026) |
 | `docs/development-plan-test-tab.md` | The plan for the dashboard's test tab (finished 19 November 2026): decisions S1–S4, notes 1–5 with the checks and the time of 1 MiB requests |
 | `lab/` | The lab: `testapp`, `replay`, `compare`, `Caddyfile` and `lab.sh` (development plan, note 7) |
 | `docs/development-plan-records-dashboard.md` | The plan for records, alerts, and the dashboard (finished 23 October 2026), with notes per stage |
@@ -276,7 +279,7 @@ Response rules (CRS files 950–980) are not part of this; they wait for the pro
 
    **Done 20 November 2026:** extending the dashboard beyond reading, first part: marking alerts, users with roles and a change log (G1–G6, main plan sections 11.31 and 11.32), following [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md); all five stages done, committed and pushed as `2e46365`.
 
-   **Next:** the user's choice among the rest: turning a false positive into an exception (with a preview of what it would hide and a history), settings pages, more views (per client IP, per endpoint, live health), or the response rules (K8) and alerts by webhook and syslog. Each needs its own decisions first. Then response rules, and alerts sent by webhook and syslog (decided 23 October 2026). Each needs its own decisions first.
+   **Next:** the dashboard's further parts, listed with their dependencies and a suggested order in [docs/dashboard-roadmap.md](docs/dashboard-roadmap.md) (21 November 2026): an application selector that every page follows (the user's idea), a safe change path with a preview and undo, a reload of `ids-live`, exceptions from false positives, application settings and a profile editor, a page per rule, own rules, more views, and system control last. Each part needs its own decisions first; then the response rules (K8) and alerts by webhook and syslog. Then response rules, and alerts sent by webhook and syslog (decided 23 October 2026). Each needs its own decisions first.
 4. Transfer of the ML model, which the user improves in the separate project, and the decision mechanism (A10, A05, A07, A06).
 5. Prevention, learned profiles, other protocols.
 

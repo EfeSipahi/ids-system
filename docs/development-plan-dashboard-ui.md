@@ -387,3 +387,13 @@ Built following [development-plan-marks-users.md](development-plan-marks-users.m
 4. Carbon's green success notification, next to the error and warning ones; a red "danger" button for Remove.
 5. With the boxes and the Review column the list's columns were given new widths, and the All records view leaves out the Attack groups column, so that the request keeps about 12 rem at 1440 px. Checked in four Playwright rounds; the defects found are in that plan's note 5.
 
+## The side navigation (21 November 2026)
+
+The user's choice: the pages move from the header to a navigation panel on the left, always open (option A, 256 px, text labels), in named groups, as Carbon's UI shell has it. Room is made for the pages the roadmap adds ([dashboard-roadmap.md](dashboard-roadmap.md)) and for the application selector, which will sit at its top.
+
+1. The header keeps the dashboard's name, the theme, the user's name with the role (a link to Your account) and Log out.
+2. The groups: Monitor (Overview, Alerts), Rules (Rules, Test a request for analysts and admins), System (Engine), Administration (Users and Log, for admins). The current page has Carbon's selected background and a blue bar on its left.
+3. Below 1312 px (Carbon's x-large breakpoint) the panel folds behind a Menu button in the header and opens over the page; Escape closes it. At 1056 px, the first choice, the alerts list had 56 px too few beside the panel at 1280 px, so the fold moved up.
+4. The content uses the width beside the panel, at most 1280 px. To fit: the Engine page's runs table shows the first 8 characters of a run ID (the whole one in its tooltip and the copy button) and "CRS 4.30.0" for "OWASP_CRS/4.30.0"; the alerts list's client column was widened again to 10.25 rem, so that every IPv4 address shows whole.
+5. Checked with Playwright as admin, analyst and viewer at 1024, 1280, 1366, 1440, 1536 and 1920 px, light and dark: each role sees its groups; no page and no table scrolls sideways (at 1024 px the alerts list scrolls 40 px inside its card, as it did before the panel); the request column of the alerts list has 126 px at 1366 px and 332 px at 1280 px with the panel folded; no console errors but the refused pages' 403.
+

@@ -118,17 +118,11 @@ code, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monos
 /* UI shell header: always Carbon's dark bar, 48px */
 header.top { background: #161616; border-bottom: 1px solid #393939; color: #f4f4f4; }
 header.top .bar {
-  max-width: 1240px; margin: 0 auto; padding: 0 16px; min-height: 48px;
+  padding: 0 16px 0 0; min-height: 48px;
   display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px;
 }
-.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; color: #f4f4f4; text-decoration: none; padding-right: 16px; letter-spacing: 0.1px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; color: #f4f4f4; text-decoration: none; padding: 0 16px; letter-spacing: 0.1px; }
 .brand:hover { color: #f4f4f4; text-decoration: none; }
-header.top nav { display: flex; flex-wrap: wrap; align-self: stretch; }
-header.top nav a {
-  color: #c6c6c6; text-decoration: none; padding: 0 16px; display: inline-flex; align-items: center; min-height: 48px;
-}
-header.top nav a:hover { background: #333333; color: #f4f4f4; text-decoration: none; }
-header.top nav a[aria-current="page"] { color: #f4f4f4; background: #262626; box-shadow: inset 0 -3px #0f62fe; font-weight: 600; }
 header.top a:focus-visible, header.top button:focus-visible, header.top select:focus-visible { outline-color: #ffffff; }
 .account { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 .account form { margin: 0; }
@@ -145,6 +139,26 @@ header.top select option { background: #262626; color: #f4f4f4; }
 
 main { max-width: 1240px; margin: 0 auto; padding: 24px 16px 16px; }
 .foot { max-width: 1240px; margin: 0 auto; padding: 8px 16px 24px; color: var(--muted); font-size: 0.75rem; line-height: 1.33; letter-spacing: 0.32px; }
+
+/* UI shell side navigation (21 November 2026, the user's choice): the
+   pages in named groups on the left, always open, Carbon's 16rem panel.
+   The content takes the rest of the width. */
+.shell { display: grid; grid-template-columns: 16rem minmax(0, 1fr); align-items: start; }
+nav.side {
+  position: sticky; top: 0; max-height: 100vh; overflow-y: auto; min-height: calc(100vh - 49px);
+  background: var(--layer); border-right: 1px solid var(--border-subtle); padding: 8px 0 24px;
+}
+.side-group { display: grid; padding-top: 8px; }
+.side-label { padding: 12px 16px 6px; font-size: 0.75rem; line-height: 1.33; letter-spacing: 0.32px; color: var(--muted); }
+nav.side a {
+  display: flex; align-items: center; min-height: 32px; padding: 0 16px; font-size: 0.875rem; letter-spacing: 0.16px;
+  color: var(--text-2); text-decoration: none;
+}
+nav.side a:hover { background: var(--layer-hover); color: var(--text); text-decoration: none; }
+nav.side a[aria-current="page"] { background: var(--layer-selected); color: var(--text); font-weight: 600; box-shadow: inset 3px 0 var(--interactive); }
+.content { min-width: 0; }
+.content main, .content .foot { max-width: 1280px; padding-left: 24px; padding-right: 24px; }
+header.top button.menu { display: none; }
 body[data-page="login"] .foot { text-align: center; }
 .stack { display: grid; gap: 16px; }
 .stack.loading { opacity: 0.6; }
@@ -469,6 +483,19 @@ details.section > summary .counts { margin-left: auto; font-size: 0.75rem; }
 @media (max-width: 900px) {
   .grid-2x2 { grid-template-columns: 1fr; }
 }
+/* Below Carbon's x-large breakpoint (1312px) the side navigation folds
+   away behind the Menu button and opens over the page: narrower, the
+   alerts list would have too little room beside it. */
+@media (max-width: 1311px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  nav.side { display: none; }
+  body.nav-open nav.side {
+    display: block; position: fixed; top: 48px; left: 0; bottom: 0; width: 16rem; max-height: none; min-height: 0;
+    z-index: 20; box-shadow: 0 2px 6px var(--shadow);
+  }
+  header.top button.menu { display: inline-flex; align-items: center; }
+  .content main, .content .foot { padding-left: 16px; padding-right: 16px; }
+}
 @media (max-width: 640px) {
   .account { margin-left: 0; }
   dl.kv { grid-template-columns: 1fr; }
@@ -529,7 +556,7 @@ table.list col.pick { width: 2.5rem; }
 table.list col.review { width: 8.25rem; }
 table.list.reviewed col.time { width: 9.5rem; }
 table.list.reviewed col.score { width: 7.25rem; }
-table.list.reviewed col.client { width: 8.75rem; }
+table.list.reviewed col.client { width: 10.25rem; }
 table.list.reviewed col.app { width: 7.5rem; }
 table.list.reviewed col.groups { width: 10rem; }
 table.list.reviewed col.rules { width: 8.75rem; }

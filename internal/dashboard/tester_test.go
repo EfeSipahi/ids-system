@@ -475,7 +475,7 @@ func TestTestAPI(t *testing.T) {
 			t.Errorf("file %q: %d", name, w.Code)
 		}
 	}
-	if w := d.do("GET", "/test", nil, session); w.Code != 200 || !strings.Contains(w.Body.String(), `aria-current="page">Test<`) {
+	if w := d.do("GET", "/test", nil, session); w.Code != 200 || !strings.Contains(w.Body.String(), `aria-current="page">Test a request<`) {
 		t.Errorf("GET /test: %d", w.Code)
 	}
 

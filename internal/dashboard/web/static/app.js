@@ -1434,10 +1434,10 @@
         const changed = older && older.engine.config !== r.engine.config;
         return el("tr", {},
           el("td", { class: "nowrap" }, fmtTime(r.time)),
-          el("td", { class: "mono" }, r.run),
+          el("td", { class: "nowrap" }, el("code", { title: r.run }, r.run.slice(0, 8)), copyButton(r.run, "the run ID")),
           el("td", { title: r.input && r.input.kind === "replay" ? "Request files replayed on " + fmtTime(r.input.replayed) + "; the records carry the requests' own times" : null },
             r.input && r.input.kind === "live" ? "live" : r.input && r.input.kind === "replay" ? "replay" : "files"),
-          el("td", {}, r.engine.crs),
+          el("td", { class: "nowrap", title: r.engine.crs }, r.engine.crs.replace(/^OWASP_CRS\//, "CRS ")),
           el("td", {}, String(r.engine.paranoia_level)),
           el("td", { class: "num" }, nf.format(r.analysed)),
           el("td", { class: "num" }, nf.format(r.records)),
@@ -2094,6 +2094,18 @@
         el("div", { class: "test-bar" }, el("label", {}, "User", userSel), el("label", {}, "Kind", kindSel)),
         pager, table)), false);
     await load();
+  }
+
+  // The Menu button opens the side navigation on narrow screens; Escape
+  // closes it.
+  const menu = document.getElementById("menu");
+  if (menu) {
+    const setOpen = (open) => {
+      body.classList.toggle("nav-open", open);
+      menu.setAttribute("aria-expanded", String(open));
+    };
+    menu.addEventListener("click", () => setOpen(!body.classList.contains("nav-open")));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && body.classList.contains("nav-open")) { setOpen(false); menu.focus(); } });
   }
 
   const theme = document.getElementById("theme");
