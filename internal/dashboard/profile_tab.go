@@ -8,6 +8,7 @@ import (
 	"errors"
 	"net/http"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 
@@ -27,6 +28,9 @@ type suggestion struct {
 	Only   bool `json:"only_alerts"`
 	// Endpoint is the profile's endpoint that takes it, or "".
 	Endpoint string `json:"endpoint,omitempty"`
+	// Files counts its requests in the last analysis of Analyse files,
+	// which also give the bodies' parameters (W15).
+	Files int `json:"files,omitempty"`
 	// Params are the parameters the profile does not take there.
 	Params []suggestedParam `json:"params"`
 }
@@ -145,6 +149,9 @@ type profilePage struct {
 	Text        string       `json:"text"`
 	Endpoints   int          `json:"endpoints"`
 	Suggestions []suggestion `json:"suggestions"`
+	// Files are the files of the last analysis, when it saw the
+	// application.
+	Files []string `json:"files,omitempty"`
 }
 
 func (s *Server) apiProfile(w http.ResponseWriter, r *http.Request) {
@@ -186,7 +193,48 @@ func (s *Server) apiProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Endpoints = prof.Endpoints()
 	p.Suggestions = s.store.suggestions(name, prof)
+	if sv, files := s.analyse.fileSurvey(name); sv != nil {
+		p.Suggestions = withFiles(p.Suggestions, sv, prof)
+		p.Files = files
+	}
 	writeJSON(w, http.StatusOK, p)
+}
+
+// withFiles adds what the last analysis of request files saw of the
+// application and its profile does not take.
+func withFiles(list []suggestion, sv *profile.Survey, prof *profile.Profile) []suggestion {
+	index := map[[2]string]int{}
+	for i, sg := range list {
+		index[[2]string{sg.Method, sg.Path}] = i
+	}
+	for _, ep := range sv.Endpoints() {
+		fits, _ := prof.Fits(ep.Method, ep.Path)
+		var params []suggestedParam
+		for _, prm := range ep.Params {
+			if fits != "" && prof.Knows(ep.Method, ep.Path, prm.In, prm.Name) {
+				continue
+			}
+			params = append(params, suggestedParam{Name: prm.Name, In: prm.In, Seen: prm.Count})
+		}
+		if fits != "" && len(params) == 0 {
+			continue
+		}
+		key := [2]string{ep.Method, ep.Path}
+		if i, ok := index[key]; ok {
+			list[i].Files = ep.Count
+			for _, prm := range params {
+				if !slices.ContainsFunc(list[i].Params, func(x suggestedParam) bool { return x.Name == prm.Name && x.In == prm.In }) {
+					list[i].Params = append(list[i].Params, prm)
+				}
+			}
+			continue
+		}
+		if params == nil {
+			params = []suggestedParam{}
+		}
+		list = append(list, suggestion{Method: ep.Method, Path: ep.Path, Endpoint: fits, Files: ep.Count, Params: params})
+	}
+	return list
 }
 
 // apiProfileCheck reads a profile as typed with the IDS's reader (W16).

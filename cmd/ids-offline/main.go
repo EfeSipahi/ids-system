@@ -45,7 +45,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"regexp"
 	"slices"
 	"sort"
 	"strconv"
@@ -53,6 +52,7 @@ import (
 	"time"
 
 	"github.com/EfeSipahi/ids-system/internal/analysis"
+	"github.com/EfeSipahi/ids-system/internal/batch"
 	"github.com/EfeSipahi/ids-system/internal/config"
 	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/httpmodel"
@@ -98,62 +98,13 @@ type requestOutput struct {
 	Expectation *expectation `json:"expectation,omitempty"`
 }
 
-// expectation says whether the rule ids an example names came out right.
-type expectation struct {
-	Met bool `json:"met"`
-	// Missing are rules that were expected and did not match.
-	Missing []int `json:"missing,omitempty"`
-	// Unwanted are rules that matched and must not.
-	Unwanted []int `json:"unwanted,omitempty"`
-	// MissingLog is the expected log pattern when no match produced it,
-	// and UnwantedLog the forbidden one when a match did.
-	MissingLog  string `json:"missing_log,omitempty"`
-	UnwantedLog string `json:"unwanted_log,omitempty"`
-}
-
-// groupSummary counts the examples of one file.
-type groupSummary struct {
-	Source string `json:"source"`
-
-	// RuleStatus is set when the file is named after a rule id, as the
-	// converted CRS tests are: "active", "excluded", or "not loaded" when
-	// the rule is in none of the loaded rule files.
-	RuleStatus string `json:"rule_status,omitempty"`
-
-	Tests int `json:"tests"`
-	// Flagged counts the requests whose anomaly score reached the
-	// threshold, whatever their expectation says.
-	Flagged int `json:"flagged"`
-	// Incomplete counts the requests that could not be inspected
-	// completely.
-	Incomplete int `json:"incomplete"`
-	Passed     int `json:"passed"`
-	// Failed counts examples whose expectation was not met although the
-	// whole request was inspected.
-	Failed int `json:"failed"`
-	// NotInspected counts examples whose expectation was not met and
-	// whose body could not be inspected. The engine could not have seen
-	// the payload.
-	NotInspected int `json:"not_inspected"`
-
-	// Profile is set when the configuration has applications.
-	Profile *profileCounts `json:"profile,omitempty"`
-}
-
-// profileCounts counts what the profile layer found in the examples of one
-// file.
-type profileCounts struct {
-	// Findings counts the requests with a profile finding.
-	Findings int `json:"findings"`
-	// UnknownEndpoints counts the requests whose path fits no endpoint of
-	// their profile.
-	UnknownEndpoints int `json:"unknown_endpoints"`
-	// Alerts counts the requests that are alerts because of the profile,
-	// whose mode is "alert".
-	Alerts int `json:"alerts"`
-	// NoApplication counts the requests of no application.
-	NoApplication int `json:"no_application"`
-}
+// The summary and the expectations are package batch's, which the
+// dashboard's Analyse files page uses too (W14).
+type (
+	expectation   = batch.Expectation
+	groupSummary  = batch.Group
+	profileCounts = batch.ProfileCounts
+)
 
 func run(args []string, stdout, stderr io.Writer) int {
 	flags := flag.NewFlagSet("ids-offline", flag.ContinueOnError)
@@ -497,71 +448,19 @@ func requestFiles(path string) ([]string, error) {
 // summarize counts the requests of each source file, in the order the
 // files were read.
 func summarize(requests []requestOutput, statuses []engine.RuleStatus, profiled bool) []groupSummary {
-	ruleStatus := map[int]string{}
-	for _, st := range statuses {
-		if st.Active {
-			ruleStatus[st.ID] = "active"
-		} else {
-			ruleStatus[st.ID] = "excluded"
-		}
-	}
-
-	var groups []groupSummary
-	index := map[string]int{}
+	items := make([]batch.Item, 0, len(requests))
 	for _, r := range requests {
-		i, ok := index[r.Source]
-		if !ok {
-			i = len(groups)
-			index[r.Source] = i
-			g := groupSummary{Source: r.Source}
-			if profiled {
-				g.Profile = &profileCounts{}
-			}
-			if id, err := strconv.Atoi(r.Source); err == nil {
-				g.RuleStatus = "not loaded"
-				if status, known := ruleStatus[id]; known {
-					g.RuleStatus = status
-				}
-			}
-			groups = append(groups, g)
+		it := batch.Item{Source: r.Source, Exceeded: r.Score.Exceeded, Complete: r.Analysis.Complete,
+			ByProfile: slices.Contains(r.AlertBy, result.AlertByProfile), Expectation: r.Expectation}
+		if r.Application != nil {
+			it.Application = r.Application.Name
 		}
-		g := &groups[i]
-		g.Tests++
-		if r.Score.Exceeded {
-			g.Flagged++
+		if r.Profile != nil {
+			it.Findings = r.Profile.Findings
 		}
-		if !r.Analysis.Complete {
-			g.Incomplete++
-		}
-		if g.Profile != nil {
-			countProfile(g.Profile, r)
-		}
-		switch {
-		case r.Expectation == nil || r.Expectation.Met:
-			g.Passed++
-		case !r.Analysis.Complete:
-			g.NotInspected++
-		default:
-			g.Failed++
-		}
+		items = append(items, it)
 	}
-	return groups
-}
-
-func countProfile(c *profileCounts, r requestOutput) {
-	if r.Application.Name == profile.NoApplication {
-		c.NoApplication++
-	}
-	if r.Profile == nil || len(r.Profile.Findings) == 0 {
-		return
-	}
-	c.Findings++
-	if slices.ContainsFunc(r.Profile.Findings, func(f profile.Finding) bool { return f.Kind == profile.KindUnknownEndpoint }) {
-		c.UnknownEndpoints++
-	}
-	if slices.Contains(r.AlertBy, result.AlertByProfile) {
-		c.Alerts++
-	}
+	return batch.Summarize(items, statuses, profiled)
 }
 
 func writeSummary(w io.Writer, out output) {
@@ -608,38 +507,9 @@ func writeSummary(w io.Writer, out output) {
 	writeRecords(w, out.Records)
 }
 
-// check compares the matched rule ids with what an example expects. It
-// returns nil for an example that expects nothing.
+// check compares the matched rule ids with what an example expects.
 func check(ex offline.Example, res *engine.Result) *expectation {
-	if !ex.HasExpectation() {
-		return nil
-	}
-	has := map[int]bool{}
-	for _, id := range res.MatchedIDs() {
-		has[id] = true
-	}
-	e := &expectation{}
-	for _, id := range ex.ExpectIDs {
-		if !has[id] {
-			e.Missing = append(e.Missing, id)
-		}
-	}
-	for _, id := range ex.NoExpectIDs {
-		if has[id] {
-			e.Unwanted = append(e.Unwanted, id)
-		}
-	}
-	logged := func(pattern *regexp.Regexp) bool {
-		return slices.ContainsFunc(res.LogLines(), pattern.MatchString)
-	}
-	if ex.ExpectLog != nil && !logged(ex.ExpectLog) {
-		e.MissingLog = ex.ExpectLog.String()
-	}
-	if ex.NoExpectLog != nil && logged(ex.NoExpectLog) {
-		e.UnwantedLog = ex.NoExpectLog.String()
-	}
-	e.Met = len(e.Missing) == 0 && len(e.Unwanted) == 0 && e.MissingLog == "" && e.UnwantedLog == ""
-	return e
+	return batch.Check(ex, res)
 }
 
 func writeText(w io.Writer, out output) {

@@ -42,6 +42,7 @@ type Server struct {
 	marks   *marks
 	control *control
 	disk    diskState
+	analyse *analyser
 	// lock is the state folder's lock (C4), held while the dashboard runs.
 	lock  *os.File
 	pages map[string]*template.Template
@@ -83,6 +84,7 @@ func newServer(cfg Config, logOut io.Writer, now func() time.Time) (*Server, err
 		changes: &changeLog{path: filepath.Join(cfg.StateDir, ChangesFile)},
 		lock:    lock,
 		control: newControl(cfg.IDSConfig, cfg.StateDir, now),
+		analyse: &analyser{recordsDir: cfg.RecordsDir, now: now},
 	}
 	if s.marks, err = openMarks(filepath.Join(cfg.StateDir, MarksFile)); err != nil {
 		s.Close()
@@ -136,7 +138,7 @@ type pageData struct {
 	Tab string
 }
 
-var pageNames = []string{"overview", "alerts", "alert", "rules", "rule", "applications", "application", "settings", "settingshistory", "proposals", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
+var pageNames = []string{"overview", "alerts", "alert", "rules", "rule", "applications", "application", "settings", "settingshistory", "proposals", "analyse", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
 
 func (s *Server) loadPages() error {
 	s.pages = map[string]*template.Template{}
@@ -182,6 +184,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /proposals", page("proposals", "Proposed changes", RoleAdmin))
 	mux.Handle("GET /engine", page("engine", "Engine and live input", RoleViewer))
 	mux.Handle("GET /test", page("test", "Test a request", RoleAnalyst))
+	mux.Handle("GET /analyse", page("analyse", "Analyse files", RoleAnalyst))
 	mux.Handle("GET /users", page("users", "Users", RoleAdmin))
 	mux.Handle("GET /log", page("log", "Change log", RoleAdmin))
 	mux.Handle("GET /account", page("account", "Your account", RoleViewer))
@@ -197,6 +200,10 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /api/test", s.requireAPI(RoleAnalyst, s.apiTest))
 	mux.Handle("GET /api/test/files/{name}", s.requireAPI(RoleAnalyst, s.apiTestFile))
 	mux.Handle("POST /api/test", s.requireAPI(RoleAnalyst, s.apiTestRun))
+	mux.Handle("GET /api/analyse", s.requireAPI(RoleAnalyst, s.apiAnalyse))
+	mux.Handle("POST /api/analyse", s.requireAPI(RoleAnalyst, s.apiAnalyseStart))
+	mux.Handle("POST /api/analyse/stop", s.requireAPI(RoleAnalyst, s.apiAnalyseStop))
+	mux.Handle("POST /api/analyse/try", s.requireAPI(RoleAnalyst, s.apiAnalyseTry))
 	mux.Handle("GET /api/users", s.requireAPI(RoleAdmin, s.apiUsers))
 	mux.Handle("POST /api/users", s.requireAPI(RoleAdmin, s.apiUsersChange))
 	mux.Handle("GET /api/log", s.requireAPI(RoleAdmin, s.apiLog))

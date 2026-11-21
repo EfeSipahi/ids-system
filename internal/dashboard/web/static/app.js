@@ -1085,15 +1085,16 @@
       return el("tr", {},
         el("td", { class: "mono" }, sg.method),
         el("td", { class: "mono wrap" }, sg.path),
-        el("td", { class: "num" }, nf.format(sg.seen)),
+        el("td", { class: "num" }, nf.format(sg.seen), sg.files ? el("div", { class: "sub" }, `${nf.format(sg.files)} in files`) : null),
         el("td", { class: "wrap" }, sg.endpoint ? el("code", {}, sg.endpoint) : el("span", { class: "muted" }, "no endpoint takes it")),
         el("td", { class: "wrap" }, lines.length ? shownParams : el("span", { class: "muted" }, "–")),
-        el("td", {}, sg.only_alerts ? el("span", { class: "badge alert", title: "Every record of it is an alert of the rules: more likely an attack than a part of the application" }, "Only in alerts") : `${nf.format(sg.alerts)} of ${nf.format(sg.seen)}`),
+        el("td", {}, sg.only_alerts && sg.seen ? el("span", { class: "badge alert", title: "Every record of it is an alert of the rules: more likely an attack than a part of the application" }, "Only in alerts") : sg.seen ? `${nf.format(sg.alerts)} of ${nf.format(sg.seen)}` : "–"),
         adminRole ? el("td", {}, el("button", { type: "button", class: "small", onclick: () => addToEditor(sg, chosen) }, "Add to the editor")) : null);
     });
     replace(el("div", { class: "stack" }, notice,
       card(`Seen in ${name}'s traffic, not in its profile`,
-        el("p", { class: "muted" }, "From the records: a request is recorded when it has a finding, so these are the paths and parameters the profile found unknown, and paths the rules found something in. A path seen only in alerts is marked: it is more likely an attack than a part of the application. Request files analysed in Analyse files will add the bodies' parameters (stage 5)."),
+        el("p", { class: "muted" }, "From the records: a request is recorded when it has a finding, so these are the paths and parameters the profile found unknown, and paths the rules found something in. A path seen only in alerts is marked: it is more likely an attack than a part of the application. " +
+          (p.files && p.files.length ? `The requests of the last analysis in Analyse files (${p.files.join(", ")}) are counted too, with their bodies' parameters.` : "Request files analysed in Analyse files add their requests, with the bodies' parameters.")),
         rows.length ? el("div", { class: "table-wrap" }, el("table", { class: "wide suggestions" },
           el("thead", {}, el("tr", {}, ["Method", "Path", "Records", "Endpoint in the profile", "Parameters it doesn't take", "Alerts", adminRole ? "" : null].filter((h) => h !== null).map((h, i) => el("th", { class: i === 2 ? "num" : "" }, h)))),
           el("tbody", {}, rows))) : el("p", { class: "empty" }, "Nothing: every path and parameter in the records is in the profile.")),
@@ -1105,6 +1106,173 @@
           el("button", { type: "button", class: "primary", onclick: async () => { if (await check()) addChange(object, { kind: "profile", text: editor.value }, notice); } }, `Add this profile of ${name} to the pending changes`), " ",
           el("button", { type: "button", onclick: () => { editor.value = p.text; check(); } }, "Back to the file as it is")) : null)), false);
     check();
+  }
+
+  // ---- Tools › Analyse files (W14) ----
+
+  async function analysePage() {
+    let info;
+    try {
+      info = await api("/api/analyse");
+    } catch (err) {
+      if (err.message !== "login required") failed(err);
+      return;
+    }
+    const params = new URLSearchParams(location.search);
+    const notice = el("div", { "aria-live": "polite" });
+    const option = (value, label) => el("option", { value }, label);
+    const source = el("select", { name: "source" }, option("upload", "Files from this computer"), info.folder.length ? option("folder", "Files of the example folder") : null);
+    const files = el("input", { type: "file", name: "files", multiple: true, accept: ".json,application/json" });
+    const folder = el("select", { name: "folder", multiple: true, size: 8 }, option("*", `All ${info.folder.length} files`), info.folder.map((f) => option(f.name, `${f.name} (${f.tests} ${f.tests === 1 ? "request" : "requests"})`)));
+    const configSel = el("select", { name: "config" }, info.configs.map((c) => option(String(c.index), c.name + (c.ids ? " · the IDS's own" : ""))));
+    const levelSel = el("select", { name: "level" }, option("0", "As configured"), [1, 2, 3, 4].map((n) => option(String(n), "Level " + n)));
+    const appSel = el("select", { name: "application" });
+    const fillApps = () => {
+      const c = info.configs[Number(configSel.value)] || { applications: [] };
+      refill(appSel, option("", "By Host and path"), c.applications.map((a) => option(a, a)));
+    };
+    configSel.addEventListener("change", fillApps);
+    fillApps();
+    const writeSel = info.write ? el("select", { name: "write" }, option("", "Nothing: show the result only"), option("records", "A run of records, at the time of the analysis"), option("replay", "A replay: records at the requests' own times")) : null;
+    const fileRow = formRow("Request files", files, `JSON files in ids-offline's format, ${Math.round(info.max_bytes / (1 << 20))} MB at most together.`);
+    const folderRow = formRow("Example files", folder, "Hold Ctrl to choose several.");
+    const showSource = () => { fileRow.hidden = source.value !== "upload"; folderRow.hidden = source.value !== "folder"; };
+    source.addEventListener("change", showSource);
+    showSource();
+    const start = el("button", { type: "button", class: "primary" }, "Analyse");
+    const status = el("div", { "aria-live": "polite" });
+    const resultBox = el("div", { class: "stack" });
+
+    start.addEventListener("click", async () => {
+      const form = new FormData();
+      form.append("config", configSel.value);
+      form.append("level", levelSel.value);
+      form.append("application", appSel.value);
+      if (writeSel) form.append("write", writeSel.value);
+      if (source.value === "upload") for (const f of files.files) form.append("files", f, f.name);
+      else for (const o of folder.selectedOptions) form.append("folder", o.value);
+      start.disabled = true;
+      try {
+        const res = await fetch("/api/analyse", { method: "POST", body: form, credentials: "same-origin", headers: { Accept: "application/json" } });
+        const answer = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(answer.error || res.statusText);
+        refill(notice);
+        watch();
+      } catch (err) {
+        refill(notice, banner("error", "Not started.", err.message));
+        start.disabled = false;
+      }
+    });
+
+    let timer = null;
+    const watch = () => { clearTimeout(timer); timer = setTimeout(load, 700); };
+    const expText = (e) => !e ? "" : e.met ? "met" : [e.missing && e.missing.length ? "missing " + e.missing.join(", ") : "", e.unwanted && e.unwanted.length ? "unwanted " + e.unwanted.join(", ") : "", e.missing_log ? "log missing" : "", e.unwanted_log ? "unwanted log" : ""].filter(Boolean).join("; ");
+    let shownJob = "";
+    const load = async () => {
+      let p;
+      try { p = await api("/api/analyse"); } catch (err) { return; }
+      const j = p.job;
+      start.disabled = !!(j && j.running);
+      if (!j) return;
+      if (j.running) {
+        const bar = el("div", { class: "progress" }, el("div", { class: "bar" }));
+        bar.firstChild.style.width = (j.total ? (100 * j.done / j.total).toFixed(1) : 0) + "%";
+        refill(status, card(null, el("p", {}, `Analysing ${nf.format(j.done)} of ${nf.format(j.total)} requests of ${j.files.length} ${j.files.length === 1 ? "file" : "files"}, with ${j.config}…`), bar,
+          el("button", { type: "button", class: "small", onclick: async () => { try { await send("/api/analyse/stop", {}); } catch (err) { /* it ended */ } } }, "Stop")));
+        watch();
+        return;
+      }
+      refill(status);
+      const key = j.id + j.ended;
+      if (key === shownJob) return;
+      shownJob = key;
+      drawResult(j);
+    };
+
+    const drawResult = (j) => {
+      const prof = j.profiled;
+      const total = j.summary.reduce((t, g) => {
+        for (const k of ["tests", "flagged", "passed", "failed", "not_inspected"]) t[k] += g[k];
+        if (prof) for (const k of ["findings", "unknown_endpoints", "alerts", "no_application"]) t.profile[k] += g.profile[k];
+        return t;
+      }, { tests: 0, flagged: 0, passed: 0, failed: 0, not_inspected: 0, profile: { findings: 0, unknown_endpoints: 0, alerts: 0, no_application: 0 } });
+      const head = ["File", "Rule", "Requests", "Flagged", "Passed", "Failed", "Not inspected"].concat(prof ? ["Profile", "Unknown path", "P. alerts", "No app"] : []);
+      const line = (name, status, g, strong) => el("tr", { class: strong ? "total" : null },
+        el("td", { class: "mono" }, name), el("td", {}, status || "–"),
+        [g.tests, g.flagged, g.passed, g.failed, g.not_inspected].map((v) => el("td", { class: "num" }, nf.format(v))),
+        prof ? [g.profile.findings, g.profile.unknown_endpoints, g.profile.alerts, g.profile.no_application].map((v) => el("td", { class: "num" }, nf.format(v))) : null);
+      const filter = el("select", { name: "rows" }, option("all", "Every request"), option("alerts", "Alerts"), option("unmet", "Expectations not met"));
+      const table = el("div");
+      let limit = 50;
+      const drawRows = () => {
+        const rows = j.rows.filter((r) => filter.value === "all" || (filter.value === "alerts" ? r.alert : r.expectation && !r.expectation.met));
+        refill(table, rows.length ? el("div", { class: "table-wrap" }, el("table", { class: "wide analysed" },
+          el("thead", {}, el("tr", {}, ["#", "File", "Request", "Application", "Score", "Rules", "Expectation"].map((h, i) => el("th", { class: i === 4 ? "num" : "" }, h)))),
+          el("tbody", {}, rows.slice(0, limit).map((r) => el("tr", {},
+            el("td", { class: "num" }, String(r.index)),
+            el("td", { class: "mono" }, r.source),
+            el("td", {}, el("span", { class: "clip", title: (r.name ? r.name + "\n" : "") + r.method + " " + r.path }, el("span", { class: "mono" }, r.method + " "), r.path)),
+            el("td", {}, r.application ? appName(r.application) : "–"),
+            el("td", { class: "num" }, r.alert ? el("span", { class: "badge alert" }, String(r.score)) : String(r.score)),
+            el("td", {}, chips(r.rules.filter((id) => !scoring(id)), (id) => "/rules/" + id, 4)),
+            el("td", { class: r.expectation && !r.expectation.met ? "error" : "" }, expText(r.expectation) || "–"))))))
+          : el("p", { class: "empty" }, "No request is shown with this choice."),
+          rows.length > limit ? el("p", {}, el("span", { class: "muted" }, `${nf.format(limit)} of ${nf.format(rows.length)} shown${j.rows.length < j.requests ? `; the result keeps the first ${nf.format(j.rows.length)} requests one by one, the summary counts all ${nf.format(j.requests)}` : ""}. `),
+            el("button", { type: "button", class: "small", onclick: () => { limit += 50; drawRows(); } }, "Show 50 more")) : null);
+        fitChips(table);
+      };
+      filter.addEventListener("change", () => { limit = 50; drawRows(); });
+      // Trying the pending changes on these requests (W8).
+      const tryNotice = el("div", { "aria-live": "polite" });
+      const objectSel = el("select", { name: "object" }, option("global", "Every application"));
+      api("/api/applications?range=all").then((a) => {
+        append(objectSel, a.applications.filter((x) => x.running).map((x) => option("app:" + x.name, x.name)));
+        if (params.get("try")) objectSel.value = params.get("try");
+      }).catch(() => {});
+      const tryIt = async () => {
+        refill(tryNotice, el("p", { class: "muted" }, "Running the requests twice: with the configuration as it is, and with the pending changes…"));
+        try {
+          const t = await send("/api/analyse/try", { object: objectSel.value });
+          refill(tryNotice, el("div", { class: "preview stack" },
+            el("p", {}, `Of the ${nf.format(t.requests)} requests ${t.reach === "every application" ? "" : "of " + t.reach + " "}in these files, `,
+              el("strong", {}, nf.format(t.alerts_before)), " are alerts now and ", el("strong", {}, nf.format(t.alerts_after)), " would be with the pending changes for ", t.reach, ": ",
+              `${nf.format(t.added)} more, ${nf.format(t.removed)} fewer.`),
+            t.examples.length ? el("div", { class: "table-wrap" }, el("table", { class: "wide" },
+              el("thead", {}, el("tr", {}, ["File", "Request", "Score now", "Score after", "", "Rules"].map((h) => el("th", {}, h)))),
+              el("tbody", {}, t.examples.map((x) => el("tr", {}, el("td", { class: "mono" }, x.source), el("td", { class: "mono wrap" }, x.path), el("td", {}, String(x.before)), el("td", {}, String(x.after)),
+                el("td", {}, x.alert ? "becomes an alert" : "no longer an alert"), el("td", {}, chips(x.rules, (id) => "/rules/" + id, 4))))))) : null));
+        } catch (err) {
+          if (err.message !== "login required") refill(tryNotice, banner("error", "Not tried.", err.message));
+        }
+      };
+      refill(resultBox,
+        j.error ? banner("error", "The analysis did not finish.", j.error) : null,
+        j.stopped ? banner("warning", "Stopped.", `${nf.format(j.requests)} of ${nf.format(j.total)} requests were analysed before the stop.`) : null,
+        card(`${j.files.length} ${j.files.length === 1 ? "file" : "files"}, ${nf.format(j.requests)} requests, with ${j.config}`,
+          kv([["Started", `${fmtTime(j.started)} by ${j.user}`], ["Level", j.level ? String(j.level) : "as configured"], ["Application", j.application || "by Host and path"],
+            ["Alerts", nf.format(j.alerts)], ["Expectations not met", nf.format(j.unmet)],
+            ["Records", j.record_run ? [`${nf.format(j.written)} written as run `, el("code", {}, j.record_run.slice(0, 8)), j.write === "replay" ? ", a replay on the requests' own times" : ", at the time of the analysis"] : "none written"]]),
+          j.summary.length ? el("div", { class: "table-wrap" }, el("table", { class: "wide summary" },
+            el("thead", {}, el("tr", {}, head.map((h, i) => el("th", { class: i >= 2 ? "num" : "" }, h)))),
+            el("tbody", {}, j.summary.map((g) => line(g.source, g.rule_status, g)), j.summary.length > 1 ? line("total", "", total, true) : null))) : null,
+          el("p", { class: "muted" }, "Flagged: the score reached the threshold. Failed: a CRS test's expectation was not met although the whole request was inspected; not inspected: the body could not be read." +
+            (prof ? " Profile: requests with a profile finding; unknown path: of these, paths no endpoint takes; p. alerts: alerts because of a profile in alert mode; no app: requests of no application." : ""))),
+        card("Each request", el("div", { class: "inline-form" }, formRow("Show", filter)), table),
+        card("Try pending changes on these requests",
+          el("p", { class: "muted" }, "The preview of a change works it out from the records; a change that adds detection (a higher level, a rule back on, new CRS settings) needs requests. Here these requests run with the configuration as it is and as the pending changes would make it."),
+          el("div", { class: "inline-form" }, formRow("Pending changes for", objectSel), el("button", { type: "button", class: "small", onclick: tryIt }, "Try them")), tryNotice));
+      drawRows();
+    };
+
+    replace(el("div", { class: "stack" }, notice,
+      card("What to analyse",
+        el("div", { class: "form-grid analyse-form" },
+          formRow("From", source), fileRow, folderRow,
+          formRow("Configuration", configSel), formRow("Paranoia level", levelSel), formRow("Application", appSel, "By Host and path, as the IDS decides, or every request as one application's."),
+          writeSel ? formRow("Write into the records", writeSel, "A run of records appears on every page, for everyone; ids-live must not be running, as one program writes the records folder at a time.") : null),
+        el("div", { class: "form-actions" }, start)),
+      status, resultBox), false);
+    load();
   }
 
   // settingsPage is System › Settings: the settings for every application
@@ -1282,7 +1450,8 @@
         pv.examples.length ? el("div", {}, el("div", { class: "sub" }, pv.alerts_removed > pv.examples.length ? `The first ${pv.examples.length} of them` : "They are"),
           listTable(pv.examples, { verdict: true, apps: object === "global" })) : null,
         pv.untested.length ? el("div", {}, el("div", { class: "sub" }, "What the records can't tell"),
-          el("ul", { class: "plain" }, pv.untested.map((t) => el("li", { class: "muted" }, t)))) : null);
+          el("ul", { class: "plain" }, pv.untested.map((t) => el("li", { class: "muted" }, t))),
+          analyst ? el("p", {}, el("a", { href: "/analyse?" + query({ try: object }) }, "Try these changes on request files in Analyse files →")) : null) : null);
     };
     const draw = (c, pv) => {
       if (!c.configured || !c.items.length) {
@@ -2859,6 +3028,6 @@
     });
   }
 
-  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, settings: settingsPage, settingshistory: settingsHistoryPage, proposals: proposalsPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
+  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, settings: settingsPage, settingshistory: settingsHistoryPage, proposals: proposalsPage, analyse: analysePage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
   if (pages[page] && (view || page === "login")) pages[page]();
 })();

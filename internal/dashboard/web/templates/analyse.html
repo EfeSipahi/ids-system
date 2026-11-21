@@ -1,0 +1,8 @@
+{{define "content"}}
+<div class="pagehead">
+  <h1>Analyse files</h1>
+</div>
+<p class="lead muted">Request files analysed by the IDS's own engine, as <code>ids-offline</code> does: a summary per file, whether CRS's test expectations are met, each request's findings. {{if .Admin}}An admin may also write the results into the records.{{end}}</p>
+{{template "notice"}}
+<div id="view" class="stack"></div>
+{{end}}

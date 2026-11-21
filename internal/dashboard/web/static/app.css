@@ -625,3 +625,11 @@ table.suggestions select { height: 32px; padding: 0 8px; }
 .check-status { margin: 8px 0 0; }
 table.suggestions .param code.clip { max-width: 16rem; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 table.suggestions .param.attack code { color: var(--text-2); }
+
+/* Analyse files (W14) */
+.analyse-form { grid-template-columns: minmax(0, 1fr); }
+.analyse-form select[multiple] { height: auto; padding: 4px 8px; }
+.progress { height: 8px; background: var(--layer-accent); margin: 8px 0 12px; }
+.progress .bar { height: 100%; background: var(--interactive); }
+table.summary tr.total td { font-weight: 600; border-top: 2px solid var(--border-strong); }
+table.analysed td.error { color: var(--error); }

@@ -325,7 +325,7 @@ Decided by the user on 21 November 2026: 1. Each commit holds one stage's code, 
 | 2. The foundations of change | Done, 21 November 2026 (note 2) |
 | 3. The changes | Done, 21 November 2026 (note 3) |
 | 4. The profile | Done, 21 November 2026 (note 4) |
-| 5. Analyse files | Not started |
+| 5. Analyse files | Done, 21 November 2026 (note 5) |
 | 6. Records, the dashboard's settings, views | Not started |
 | 7. The close | Not started |
 
@@ -390,4 +390,18 @@ Each stage's note says what was built, how it was checked, and the choices made 
       - the suggestions come from the records only until stage 5: a request is recorded when it has a finding, so they are the paths and parameters the profile found unknown, and the paths the rules found something in;
       - the parameters of the attacks themselves (such as `' UNION ALL SELECT NULL,NULL--`, sent as a parameter name) were offered as parameters in the first browser round; now a parameter that only alerts sent is marked and left out unless chosen. Attack requests that stay below the threshold still show their parameters unmarked;
       - "Add to the editor" writes the editor's JSON again with two spaces per level, as the profile files are written.
+5. Stage 5, Analyse files.
+   1. Built:
+      - Tools › Analyse files (`/analyse`, W14), for analysts and admins: request files uploaded (50 MB at most together) or chosen from the example folder, with a configuration, a level and an application; one analysis at a time, in the background, with its progress and a Stop button;
+      - the result: a summary per file with the same numbers as `ids-offline -summary`, CRS's test expectations, the profile's counts, and each request, 50 at a time;
+      - an admin may write the results as a run of records, at the time of the analysis or as a replay on the requests' own times, into the folder the dashboard reads; while `ids-live` holds the records folder, the analysis says so and writes nothing;
+      - "Try pending changes on these requests": the requests run with the configuration as it is and as an object's pending changes make it, for the changes the records can't tell about (W8); a preview's list of what the records can't tell links here;
+      - the Profile tab counts the requests of the last analysis too, with their bodies' parameters (W15);
+      - `internal/batch`: the expectation check and the summary per file, moved out of `ids-offline`, which now uses them as the dashboard does.
+   2. Checks: `go test ./...`; `TestAnalyseGivesIDSOfflinesNumbers` analyses every CRS test from the dashboard with the first configuration at level 1 and gets 2,916 of 5,072 flagged, the main plan's reference; `TestAnalyseUploadsAndRecords` covers uploads, roles, records, the lock and the try. `ids-offline`'s output was compared before and after the move: byte for byte the same for the CRS tests, and the same apart from the random run ID for the shop's configuration. A browser round as analyst (three CRS test files) and admin (500 uploaded requests, then the shop's pending changes tried on them), light and dark.
+   3. Choices made:
+      - the requests of the last analysis stay in the dashboard's memory until the next analysis or a restart, so that they can be tried and suggested; W14 said "kept only until the result has been seen";
+      - the result lists the first 2,000 requests one by one; the summary counts all of them;
+      - records written from here go to the dashboard's records folder, with the configuration's records settings.
+   4. A mistake made during this stage, and undone: to compare `ids-offline`'s output before and after the move, the two programs were run four times with `configs/csic-shop.json`, whose records section names the repository's `records/` folder, without a `-records` folder of their own. They added four runs to the user's records, and the file rotated. The user's records were restored at once: the first 1,905,868 bytes of the rotated file, which are exactly the three runs it held (k27cqvga, lcky5zqy, rxdhe65g), were written back as `records.jsonl`, and the rotated file was removed. The comparison was then made again with temporary records folders.
 
