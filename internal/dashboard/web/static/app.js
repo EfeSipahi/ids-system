@@ -944,6 +944,7 @@
     if (body.dataset.tab === "rules") rulesPage();
     else if (body.dataset.tab === "history") historyPage(object);
     else if (body.dataset.tab === "settings") appSettingsTab(object, body.dataset.app);
+    else if (body.dataset.tab === "profile") profileTab(object, body.dataset.app);
     else overviewPage();
   }
 
@@ -1003,11 +1004,107 @@
           el("pre", { class: "block" }, block), el("div", {}, copyButton(block, "the ids_copy block")),
           a.socket ? null : el("p", { class: "muted" }, "The configuration has no live socket, so the one shown is an example; use the socket ids-live listens on.")),
         card(null, kv([["Profile file", el("code", {}, a.profile)]]),
-          el("p", { class: "muted" }, "Its endpoints, parameters, cookies and headers are on the Profile tab, which comes in stage 4 of the plan."),
+          el("p", { class: "muted" }, "Its endpoints, parameters, cookies and headers are on ", el("a", { href: appLink(name, "profile") }, "its Profile tab"), "."),
           can ? el("button", { type: "button", class: "small danger", onclick: () => {
             if (window.confirm(`Remove the application ${name}? Once applied, its requests run as requests of no application. Its profile file is kept.`)) addChange(object, { kind: "remove_app" }, notice);
           } }, `Remove the application ${name}…`) : null)));
     });
+  }
+
+  // profileTab is an application's Profile tab (W15, W16): suggestions
+  // from its records, and its profile as JSON, checked as one types, for
+  // what the forms of the Settings and Rules tabs don't cover: endpoints,
+  // parameters, cookies and headers.
+  async function profileTab(object, name) {
+    const notice = el("div", { "aria-live": "polite" });
+    const status = el("p", { class: "muted check-status", "aria-live": "polite" });
+    const editor = el("textarea", { class: "editor profile-editor", rows: 28, spellcheck: "false", autocomplete: "off", autocapitalize: "off", wrap: "off", readonly: !adminRole, "aria-label": `The profile of ${name}, as JSON` });
+    let p;
+    try {
+      p = await api("/api/applications/" + encodeURIComponent(name) + "/profile");
+    } catch (err) {
+      if (err.message !== "login required") failed(err);
+      return;
+    }
+    if (!p.configured || (p.error && !p.text)) {
+      replace(card(null, banner("warning", "The profile can't be shown.", p.error)));
+      return;
+    }
+    editor.value = p.text;
+    let timer = null;
+    const check = async () => {
+      try {
+        const r = await send("/api/applications/" + encodeURIComponent(name) + "/profile/check", { text: editor.value });
+        refill(status, r.ok ? `It reads correctly: ${r.endpoints} ${r.endpoints === 1 ? "endpoint" : "endpoints"}, mode ${r.mode}, ${r.exceptions} ${r.exceptions === 1 ? "exception" : "exceptions"}.${editor.value === p.text ? " It is the file as it is." : " Changed, not added yet."}`
+          : el("span", { class: "error" }, "It does not read: " + r.error));
+        return r.ok;
+      } catch (err) {
+        if (err.message !== "login required") refill(status, el("span", { class: "error" }, "Not checked: " + err.message));
+        return false;
+      }
+    };
+    editor.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(check, 400); });
+
+    // A suggestion goes into the editor's text, where it can be read and
+    // corrected before the profile is added to the pending changes.
+    const addToEditor = (sg, types) => {
+      let doc;
+      try { doc = JSON.parse(editor.value); } catch (e) {
+        refill(notice, banner("error", "The editor's text is not JSON.", "Correct it first; the check below says where."));
+        return;
+      }
+      if (sg.only_alerts && !window.confirm(`Every record of ${sg.method} ${sg.path} is an alert of the rules: it is more likely an attack than a part of ${name}. Allow it in the profile all the same?`)) return;
+      doc.endpoints = doc.endpoints || [];
+      let ep = sg.endpoint ? doc.endpoints.find((x) => x.path === sg.endpoint && (x.method === sg.method || (x.methods || []).includes(sg.method))) : null;
+      if (!ep) {
+        ep = { note: `Added from the records on ${fmtTime(new Date())}`, method: sg.method, path: sg.path };
+        doc.endpoints.push(ep);
+      }
+      const params = sg.params.filter((prm) => types[prm.name] && types[prm.name].on);
+      if (params.length) {
+        ep.params = ep.params || {};
+        for (const prm of params) ep.params[prm.name] = { in: prm.in, type: types[prm.name].type };
+      }
+      editor.value = JSON.stringify(doc, null, 2) + "\n";
+      check();
+      refill(notice, banner("success", "Added to the editor.", `${sg.method} ${sg.path}${params.length ? " with " + params.map((x) => x.name).join(", ") : ""}. Read it in the editor below, then add the profile to the pending changes.`));
+    };
+    const typeNames = { string: "text", integer: "integer", number: "number", boolean: "true or false" };
+    // maxParams is how many parameters a row shows before "more".
+    const maxParams = 8;
+    const rows = p.suggestions.map((sg) => {
+      const chosen = {};
+      const lines = sg.params.map((prm) => {
+        chosen[prm.name] = { on: !prm.only_alerts, type: "string" };
+        const box = el("input", { type: "checkbox", checked: !prm.only_alerts, "aria-label": `Add ${prm.name}`, onchange: (e) => { chosen[prm.name].on = e.target.checked; } });
+        const sel = el("select", { "aria-label": `Type of ${prm.name}`, onchange: (e) => { chosen[prm.name].type = e.target.value; } }, Object.entries(typeNames).map(([v, t]) => el("option", { value: v }, t)));
+        return el("div", { class: "param" + (prm.only_alerts ? " attack" : "") }, adminRole ? box : null, el("code", { class: "clip", title: prm.name }, prm.name),
+          el("span", { class: "muted" }, ` ${prm.in}, ${nf.format(prm.seen)}×`), prm.only_alerts ? el("span", { class: "badge alert", title: "Every record that sent it is an alert of the rules: more likely an attack's own parameter" }, "only in alerts") : null, adminRole ? sel : null);
+      });
+      const shownParams = lines.length > maxParams ? [lines.slice(0, maxParams), el("details", {}, el("summary", {}, `${lines.length - maxParams} more`), lines.slice(maxParams))] : lines;
+      return el("tr", {},
+        el("td", { class: "mono" }, sg.method),
+        el("td", { class: "mono wrap" }, sg.path),
+        el("td", { class: "num" }, nf.format(sg.seen)),
+        el("td", { class: "wrap" }, sg.endpoint ? el("code", {}, sg.endpoint) : el("span", { class: "muted" }, "no endpoint takes it")),
+        el("td", { class: "wrap" }, lines.length ? shownParams : el("span", { class: "muted" }, "–")),
+        el("td", {}, sg.only_alerts ? el("span", { class: "badge alert", title: "Every record of it is an alert of the rules: more likely an attack than a part of the application" }, "Only in alerts") : `${nf.format(sg.alerts)} of ${nf.format(sg.seen)}`),
+        adminRole ? el("td", {}, el("button", { type: "button", class: "small", onclick: () => addToEditor(sg, chosen) }, "Add to the editor")) : null);
+    });
+    replace(el("div", { class: "stack" }, notice,
+      card(`Seen in ${name}'s traffic, not in its profile`,
+        el("p", { class: "muted" }, "From the records: a request is recorded when it has a finding, so these are the paths and parameters the profile found unknown, and paths the rules found something in. A path seen only in alerts is marked: it is more likely an attack than a part of the application. Request files analysed in Analyse files will add the bodies' parameters (stage 5)."),
+        rows.length ? el("div", { class: "table-wrap" }, el("table", { class: "wide suggestions" },
+          el("thead", {}, el("tr", {}, ["Method", "Path", "Records", "Endpoint in the profile", "Parameters it doesn't take", "Alerts", adminRole ? "" : null].filter((h) => h !== null).map((h, i) => el("th", { class: i === 2 ? "num" : "" }, h)))),
+          el("tbody", {}, rows))) : el("p", { class: "empty" }, "Nothing: every path and parameter in the records is in the profile.")),
+      card(`The profile of ${name}`,
+        el("p", { class: "muted" }, "Its file is ", el("code", {}, p.file), `. The mode, the level and the exceptions have forms on the Settings and Rules tabs; endpoints, parameters, cookies and headers are written here, as docs/profile-format.md describes. ` +
+          (adminRole ? "The whole profile is added to the pending changes, with the same preview and undo as any change." : "An admin changes it.")),
+        editor, status,
+        adminRole ? el("div", { class: "form-actions" },
+          el("button", { type: "button", class: "primary", onclick: async () => { if (await check()) addChange(object, { kind: "profile", text: editor.value }, notice); } }, `Add this profile of ${name} to the pending changes`), " ",
+          el("button", { type: "button", onclick: () => { editor.value = p.text; check(); } }, "Back to the file as it is")) : null)), false);
+    check();
   }
 
   // settingsPage is System › Settings: the settings for every application

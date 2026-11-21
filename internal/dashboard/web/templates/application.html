@@ -6,6 +6,7 @@
 <nav class="tabs" aria-label="Parts of the application {{.App}}">
   <a href="/applications/{{.App}}" {{if eq .Tab "summary"}}aria-current="page"{{end}}>Summary</a>
   <a href="/applications/{{.App}}/rules" {{if eq .Tab "rules"}}aria-current="page"{{end}}>Rules</a>
+  <a href="/applications/{{.App}}/profile" {{if eq .Tab "profile"}}aria-current="page"{{end}}>Profile</a>
   <a href="/applications/{{.App}}/settings" {{if eq .Tab "settings"}}aria-current="page"{{end}}>Settings</a>
   <a href="/applications/{{.App}}/history" {{if eq .Tab "history"}}aria-current="page"{{end}}>History</a>
 </nav>

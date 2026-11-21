@@ -80,10 +80,19 @@ type entry struct {
 	findings  []entryFinding
 	threshold int
 	profiled  bool
+	// profFindings are the profile's findings, for the suggestions of an
+	// application's Profile tab (W15).
+	profFindings []profFinding
 
 	file   *recordFile
 	offset int64
 	length int
+}
+
+// profFinding is a finding of the profile: its kind and where.
+type profFinding struct {
+	kind     string
+	location string
 }
 
 // entryFinding is one finding of a record: a rule, where it matched, and
@@ -320,6 +329,7 @@ func (s *store) add(f *recordFile, offset int64, line []byte) {
 		if rec.Profile != nil {
 			e.profiled = len(rec.Profile.Findings) > 0
 			for _, finding := range rec.Profile.Findings {
+				e.profFindings = append(e.profFindings, profFinding{finding.Kind, finding.Location})
 				if !slices.Contains(e.profileKinds, finding.Kind) {
 					e.profileKinds = append(e.profileKinds, finding.Kind)
 				}

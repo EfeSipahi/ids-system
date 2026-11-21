@@ -324,3 +324,58 @@ func TestSettingsAPI(t *testing.T) {
 		t.Errorf("files: %d %s", w.Code, w.Body)
 	}
 }
+
+// W15, W16: the Profile tab's suggestions from the records, the check as
+// one types, and the profile written as a whole.
+func TestProfileTab(t *testing.T) {
+	d, sessions, path := controlDashboard(t)
+	admin := sessions[RoleAdmin]
+	var p profilePage
+	decode(t, d.do("GET", "/api/applications/csic-shop/profile", nil, sessions[RoleAnalyst]), &p)
+	profilePath := filepath.Join(filepath.Dir(path), "..", "profiles", "csic-shop.json")
+	if p.Error != "" || p.Text != read(t, profilePath) || p.Endpoints != 8 || p.File != "../profiles/csic-shop.json" {
+		t.Fatalf("profile: %+v", p)
+	}
+	// r4 (GET /r4, an unknown parameter x) is not only an alert, so it
+	// comes first; r1 and r2 are alerts only.
+	if len(p.Suggestions) != 3 || p.Suggestions[0].Path != "/r4" || p.Suggestions[0].Only || len(p.Suggestions[0].Params) != 1 ||
+		p.Suggestions[0].Params[0] != (suggestedParam{Name: "x", In: "query", Seen: 1}) || !p.Suggestions[1].Only {
+		t.Errorf("suggestions: %+v", p.Suggestions)
+	}
+	check := func(text string) map[string]any {
+		var r map[string]any
+		decode(t, d.postJSON("/api/applications/csic-shop/profile/check", map[string]string{"text": text}, admin), &r)
+		return r
+	}
+	if r := check(p.Text); r["ok"] != true || r["endpoints"].(float64) != 8 {
+		t.Errorf("check of the file: %v", r)
+	}
+	if r := check(`{"mode": "loud"}`); r["ok"] != false || !strings.HasPrefix(r["error"].(string), "mode") {
+		t.Errorf("check of a bad mode: %v", r)
+	}
+	// The profile with /r4 added, as a whole.
+	text := strings.Replace(p.Text, `"endpoints": [`, `"endpoints": [
+    {"method": "GET", "path": "/r4", "params": {"x": {"in": "query"}}},`, 1)
+	ch := pendingChange{Kind: kindProfile, Text: text}
+	if w := d.postJSON("/api/changes", changeRequest{Action: "add", Object: "app:csic-shop", Change: &ch}, admin); w.Code != 200 {
+		t.Fatalf("add: %d %s", w.Code, w.Body)
+	}
+	if w := d.postJSON("/api/changes", changeRequest{Action: "apply", Object: "app:csic-shop", Reason: "r4 is the shop's"}, admin); w.Code != 200 {
+		t.Fatalf("apply: %d %s", w.Code, w.Body)
+	}
+	if read(t, profilePath) != text {
+		t.Error("the profile is not the text as given")
+	}
+	p = profilePage{}
+	decode(t, d.do("GET", "/api/applications/csic-shop/profile", nil, admin), &p)
+	for _, sg := range p.Suggestions {
+		if sg.Path == "/r4" {
+			t.Errorf("/r4 is still suggested: %+v", sg)
+		}
+	}
+	// An analyst can't write the profile.
+	ch = pendingChange{Kind: kindProfile, Text: text}
+	if w := d.postJSON("/api/changes", changeRequest{Action: "add", Object: "app:csic-shop", Change: &ch}, sessions[RoleAnalyst]); w.Code != http.StatusForbidden {
+		t.Errorf("analyst: %d", w.Code)
+	}
+}

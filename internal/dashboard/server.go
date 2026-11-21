@@ -176,6 +176,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /applications/{name}/rules", s.requirePage(RoleViewer, s.appPage("rules")))
 	mux.Handle("GET /applications/{name}/history", s.requirePage(RoleViewer, s.appPage("history")))
 	mux.Handle("GET /applications/{name}/settings", s.requirePage(RoleViewer, s.appPage("settings")))
+	mux.Handle("GET /applications/{name}/profile", s.requirePage(RoleViewer, s.appPage("profile")))
 	mux.Handle("GET /settings", page("settings", "Settings for every application", RoleViewer))
 	mux.Handle("GET /settings/history", page("settingshistory", "History of the settings for every application", RoleViewer))
 	mux.Handle("GET /proposals", page("proposals", "Proposed changes", RoleAdmin))
@@ -210,6 +211,8 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /api/control", s.requireAPI(RoleViewer, s.apiControl))
 	mux.Handle("GET /api/settings", s.requireAPI(RoleViewer, s.apiSettings))
 	mux.Handle("GET /api/applications/{name}/settings", s.requireAPI(RoleViewer, s.apiAppSettings))
+	mux.Handle("GET /api/applications/{name}/profile", s.requireAPI(RoleViewer, s.apiProfile))
+	mux.Handle("POST /api/applications/{name}/profile/check", s.requireAPI(RoleViewer, s.apiProfileCheck))
 
 	// Everything else needs a login too, so that the dashboard says
 	// nothing about what exists to someone who is not logged in.

@@ -324,7 +324,7 @@ Decided by the user on 21 November 2026: 1. Each commit holds one stage's code, 
 | 1. The organisation, showing only | Done, 21 November 2026 (note 1) |
 | 2. The foundations of change | Done, 21 November 2026 (note 2) |
 | 3. The changes | Done, 21 November 2026 (note 3) |
-| 4. The profile | Not started |
+| 4. The profile | Done, 21 November 2026 (note 4) |
 | 5. Analyse files | Not started |
 | 6. Records, the dashboard's settings, views | Not started |
 | 7. The close | Not started |
@@ -379,4 +379,15 @@ Each stage's note says what was built, how it was checked, and the choices made 
    3. Choices made:
       - the rule controls sit in each rule's status cell as "Change…", which opens a row below the rule, rather than in a column of their own, so the table keeps its widths;
       - the rules off for every application that CRS's setup needs off (901320, 901350, 901410, 901450, which the engine does not support) are listed with "Back on" like the others; the check refuses the change with the engine's own message.
+4. Stage 4, the profile.
+   1. Built:
+      - an application's Profile tab: the paths and parameters its records show that its profile does not take (W15), and its profile as JSON in an editor checked as one types with the IDS's own reader (W16); the whole profile is added to the pending changes, with the same preview and undo as any change; an analyst or a viewer reads it;
+      - a suggestion goes into the editor's text with "Add to the editor", where it can be read and corrected first; each parameter has a type to choose and a box to leave it out;
+      - a path or a parameter seen only in alerts of the rules is marked "only in alerts", sorted last, and its box starts unchecked; adding such a path asks first;
+      - `profile.Profile` says whether it takes a path (`Fits`) and a parameter (`Knows`).
+   2. Checks: `go test ./...` with `TestFitsAndKnows` and `TestProfileTab` (suggestions, the check, a profile written as a whole and applied byte for byte, an analyst refused); a browser round as admin and analyst, light at 1366 px and dark at 1920 px.
+   3. Choices made:
+      - the suggestions come from the records only until stage 5: a request is recorded when it has a finding, so they are the paths and parameters the profile found unknown, and the paths the rules found something in;
+      - the parameters of the attacks themselves (such as `' UNION ALL SELECT NULL,NULL--`, sent as a parameter name) were offered as parameters in the first browser round; now a parameter that only alerts sent is marked and left out unless chosen. Attack requests that stay below the threshold still show their parameters unmarked;
+      - "Add to the editor" writes the editor's JSON again with two spaces per level, as the profile files are written.
 

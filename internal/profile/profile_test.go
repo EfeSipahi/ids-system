@@ -490,3 +490,41 @@ func TestSurvey(t *testing.T) {
 		t.Errorf("survey\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
 	}
 }
+
+func TestFitsAndKnows(t *testing.T) {
+	p, err := Parse("p.json", []byte(`{"endpoints": [
+		{"method": "GET", "path": "/item/{id}", "params": {"q": {"in": "query"}, "n": {}}},
+		{"method": "POST", "path": "/files/*", "other_params": "allow"}]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ep, ok := p.Fits("GET", "/item/7"); !ok || ep != "/item/{id}" {
+		t.Errorf("fits: %q %v", ep, ok)
+	}
+	for _, tc := range []struct {
+		method, path string
+		ok           bool
+	}{{"POST", "/item/7", false}, {"GET", "/item/../x", false}, {"POST", "/files/a/b", true}} {
+		if _, ok := p.Fits(tc.method, tc.path); ok != tc.ok {
+			t.Errorf("%s %s: %v", tc.method, tc.path, ok)
+		}
+	}
+	for _, tc := range []struct {
+		method, path, in, name string
+		want                   bool
+	}{
+		{"GET", "/item/7", InQuery, "q", true},
+		{"GET", "/item/7", InBody, "q", false},
+		{"GET", "/item/7", InBody, "n", true},
+		{"GET", "/item/7", InQuery, "z", false},
+		{"POST", "/files/x", InJSON, "anything", true},
+		{"GET", "/nothing", InQuery, "q", false},
+	} {
+		if got := p.Knows(tc.method, tc.path, tc.in, tc.name); got != tc.want {
+			t.Errorf("%s %s %s %s: %v", tc.method, tc.path, tc.in, tc.name, got)
+		}
+	}
+	if p.Endpoints() != 2 {
+		t.Errorf("%d endpoints", p.Endpoints())
+	}
+}

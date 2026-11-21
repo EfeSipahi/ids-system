@@ -616,3 +616,12 @@ button.danger { color: var(--error); border-color: var(--error); }
 button.danger:hover { background: var(--error); border-color: var(--error); color: #ffffff; }
 tr.editor td { background: var(--layer-2); }
 @media (max-width: 900px) { .form-grid { grid-template-columns: minmax(0, 1fr); } .form-grid > button { grid-column: 1; } }
+
+/* The Profile tab (W15, W16) */
+textarea.profile-editor { min-height: 28rem; white-space: pre; overflow: auto; background: var(--layer-2); }
+table.suggestions td { vertical-align: top; }
+table.suggestions .param { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-bottom: 4px; }
+table.suggestions select { height: 32px; padding: 0 8px; }
+.check-status { margin: 8px 0 0; }
+table.suggestions .param code.clip { max-width: 16rem; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+table.suggestions .param.attack code { color: var(--text-2); }
