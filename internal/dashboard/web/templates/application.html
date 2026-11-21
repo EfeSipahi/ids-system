@@ -1,6 +1,6 @@
 {{define "content"}}
 <div class="pagehead">
-  <div class="headline"><a class="up" href="/applications">← Applications</a><h1>{{.App}}</h1></div>
+  <div class="headline">{{template "up" (up "/applications" "Applications")}}<h1>{{.App}}</h1></div>
   <div class="tools">{{if eq .Tab "rules"}}<span class="tools-label">Fired in</span>{{end}}{{if or (eq .Tab "summary") (eq .Tab "rules")}}{{template "period"}}{{end}}{{template "live"}}</div>
 </div>
 <nav class="tabs" aria-label="Parts of the application {{.App}}">

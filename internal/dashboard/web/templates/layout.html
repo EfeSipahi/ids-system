@@ -4,73 +4,78 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{.Title}} · IDS dashboard</title>
-<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/static/app.css">
-<script src="/static/theme.js"></script>
-<script src="/static/app.js" defer></script>
+<link rel="icon" href="{{.Static}}/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="{{.Static}}/carbon/themes.css">
+<link rel="stylesheet" href="{{.Static}}/app.css">
+<script src="{{.Static}}/theme.js"></script>
+<script type="module" src="{{.Static}}/carbon.js"></script>
+<script src="{{.Static}}/app.js" defer></script>
 </head>
 <body data-page="{{.Page}}" data-id="{{.ID}}" data-poll="{{.Poll}}" data-role="{{.Role}}" data-app="{{.App}}" data-tab="{{.Tab}}" data-user="{{.User}}">
+{{icons}}
 {{if .User}}
-<header class="top">
-  <div class="bar">
-    <button type="button" class="menu" id="menu" aria-controls="side" aria-expanded="false">Menu</button>
-    <a class="brand" href="/"><img src="/static/icon.svg" alt="" width="20" height="20">IDS dashboard</a>
-    <div class="account">
-      <select id="theme" aria-label="Colour theme">
-        <option value="">System theme</option>
-        <option value="light">Light theme</option>
-        <option value="dark">Dark theme</option>
-      </select>
-      <a class="who" href="/account" title="Your account: change your password" {{if eq .Page "account"}}aria-current="page"{{end}}>{{.User}} <span class="role">· {{.Role}}</span></a>
-      <form method="post" action="/logout"><button type="submit">Log out</button></form>
-    </div>
+<a class="skip" href="#main">Skip to the content</a>
+<cds-header aria-label="IDS dashboard" class="theme-g100">
+  <cds-header-menu-button id="menu" button-label-active="Close the menu" button-label-inactive="Open the menu"></cds-header-menu-button>
+  <cds-header-name href="/" prefix="IDS">dashboard</cds-header-name>
+  <div class="header-global">
+    <cds-header-global-action id="theme-action" aria-label="Colour theme" tooltip-text="Colour theme" panel-id="theme-panel">
+      <svg slot="icon" class="icon" width="20" height="20" aria-hidden="true" focusable="false"><use href="#icon-brightness-contrast"></use></svg>
+    </cds-header-global-action>
+    <cds-header-global-action id="account-action" aria-label="Your account: {{.User}}, {{.Role}}" tooltip-text="{{.User}} · {{.Role}}" tooltip-alignment="right" panel-id="account-panel">
+      <svg slot="icon" class="icon" width="20" height="20" aria-hidden="true" focusable="false"><use href="#icon-user--avatar"></use></svg>
+    </cds-header-global-action>
   </div>
-</header>
-<div class="shell">
-  <nav class="side" id="side" aria-label="Pages">
-    <div class="side-group">
-      <span class="side-label">Monitor</span>
-      <a href="/" {{if eq .Page "overview"}}aria-current="page"{{end}}>Overview</a>
-      <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
-      <a href="/clients" {{if or (eq .Page "clients") (eq .Page "client")}}aria-current="page"{{end}}>Clients</a>
-      <a href="/endpoints" {{if eq .Page "endpoints"}}aria-current="page"{{end}}>Endpoints</a>
+  <cds-header-panel id="theme-panel" aria-label="Colour theme" class="header-panel">
+    <p class="panel-label">Colour theme</p>
+    <div class="panel-list" role="group" aria-label="Colour theme" id="theme">
+      <button type="button" data-value="">{{icon "brightness-contrast"}}The system's</button>
+      <button type="button" data-value="light">{{icon "light"}}Light</button>
+      <button type="button" data-value="dark">{{icon "asleep"}}Dark</button>
     </div>
-    <div class="side-group">
-      <span class="side-label">Applications</span>
-      <a href="/applications" {{if or (eq .Page "applications") (eq .Page "application")}}aria-current="page"{{end}}>Applications</a>
+  </cds-header-panel>
+  <cds-header-panel id="account-panel" aria-label="Your account" class="header-panel">
+    <p class="panel-label">Logged in as</p>
+    <p class="panel-user"><span class="who">{{.User}}</span> <span class="role">{{.Role}}</span></p>
+    <div class="panel-list">
+      <a href="/account" {{if eq .Page "account"}}aria-current="page"{{end}}>{{icon "settings"}}Your account and password</a>
+      <form method="post" action="/logout"><button type="submit">{{icon "logout"}}Log out</button></form>
     </div>
-    <div class="side-group">
-      <span class="side-label">Rules</span>
-      <a href="/rules" {{if or (eq .Page "rules") (eq .Page "rule")}}aria-current="page"{{end}}>Rules</a>
-    </div>
-    {{if .Analyst}}<div class="side-group">
-      <span class="side-label">Tools</span>
-      <a href="/test" {{if eq .Page "test"}}aria-current="page"{{end}}>Test a request</a>
-      <a href="/analyse" {{if eq .Page "analyse"}}aria-current="page"{{end}}>Analyse files</a>
-    </div>{{end}}
-    <div class="side-group">
-      <span class="side-label">System</span>
-      <a href="/settings" {{if or (eq .Page "settings") (eq .Page "settingshistory")}}aria-current="page"{{end}}>Settings</a>
-      <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine and live input</a>
-      <a href="/records" {{if eq .Page "records"}}aria-current="page"{{end}}>Records</a>
-    </div>
-    {{if .Admin}}<div class="side-group">
-      <span class="side-label">Administration</span>
-      <a href="/proposals" {{if eq .Page "proposals"}}aria-current="page"{{end}}>Proposed changes</a>
-      <a href="/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Users</a>
-      <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Change log</a>
-      <a href="/dashboard-settings" {{if eq .Page "dashsettings"}}aria-current="page"{{end}}>Dashboard settings</a>
-    </div>{{end}}
-  </nav>
-  <div class="content">
-    <main>
+  </cds-header-panel>
+</cds-header>
+<cds-side-nav id="side" aria-label="Pages" collapse-mode="fixed">
+  <cds-side-nav-items>
+    <span class="side-label" aria-hidden="true">Monitor</span>
+    {{template "navlink" (nav . "/" "dashboard" "Overview" "overview")}}
+    {{template "navlink" (nav . "/alerts" "warning--alt" "Alerts" "alerts" "alert")}}
+    {{template "navlink" (nav . "/clients" "user--multiple" "Clients" "clients" "client")}}
+    {{template "navlink" (nav . "/endpoints" "api" "Endpoints" "endpoints")}}
+    <span class="side-label" aria-hidden="true">Applications</span>
+    {{template "navlink" (nav . "/applications" "application" "Applications" "applications" "application")}}
+    <span class="side-label" aria-hidden="true">Rules</span>
+    {{template "navlink" (nav . "/rules" "rule" "Rules" "rules" "rule")}}
+    {{if .Analyst}}<span class="side-label" aria-hidden="true">Tools</span>
+    {{template "navlink" (nav . "/test" "test-tool" "Test a request" "test")}}
+    {{template "navlink" (nav . "/analyse" "document--import" "Analyse files" "analyse")}}{{end}}
+    <span class="side-label" aria-hidden="true">System</span>
+    {{template "navlink" (nav . "/settings" "settings" "Settings" "settings" "settingshistory")}}
+    {{template "navlink" (nav . "/engine" "activity" "Engine and live input" "engine")}}
+    {{template "navlink" (nav . "/records" "data--base" "Records" "records")}}
+    {{if .Admin}}<span class="side-label" aria-hidden="true">Administration</span>
+    {{template "navlink" (nav . "/proposals" "pending" "Proposed changes" "proposals")}}
+    {{template "navlink" (nav . "/users" "user--admin" "Users" "users")}}
+    {{template "navlink" (nav . "/log" "recently-viewed" "Change log" "log")}}
+    {{template "navlink" (nav . "/dashboard-settings" "settings--adjust" "Dashboard settings" "dashsettings")}}{{end}}
+  </cds-side-nav-items>
+</cds-side-nav>
+<div class="content">
+  <main id="main" tabindex="-1">
 {{template "content" .}}
-    </main>
-    <footer class="foot">IDS {{.Version}} · records are read only · alerts are decided by the rules and by profiles in alert mode<span id="zone"></span></footer>
-  </div>
+  </main>
+  <footer class="foot">IDS {{.Version}} · records are read only · alerts are decided by the rules and by profiles in alert mode<span id="zone"></span></footer>
 </div>
 {{else}}
-<main>
+<main id="main">
 {{template "content" .}}
 </main>
 <footer class="foot">IDS {{.Version}}</footer>
@@ -78,20 +83,24 @@
 </body>
 </html>{{end}}
 
-{{define "period"}}<div class="seg" role="group" aria-label="Period" id="period">
-  <button type="button" data-value="1h">1 hour</button>
-  <button type="button" data-value="24h">24 hours</button>
-  <button type="button" data-value="7d">7 days</button>
-  <button type="button" data-value="all">All kept</button>
-</div>{{end}}
+{{define "navlink"}}<cds-side-nav-link href="{{.Href}}"{{if .Current}} active aria-current="page"{{end}}>{{slotIcon .Icon "title-icon"}}{{.Label}}</cds-side-nav-link>{{end}}
+
+{{define "period"}}<cds-content-switcher id="period" size="sm" aria-label="Period" class="period">
+  <cds-content-switcher-item value="1h">1 hour</cds-content-switcher-item>
+  <cds-content-switcher-item value="24h">24 hours</cds-content-switcher-item>
+  <cds-content-switcher-item value="7d">7 days</cds-content-switcher-item>
+  <cds-content-switcher-item value="all">All kept</cds-content-switcher-item>
+</cds-content-switcher>{{end}}
 
 {{define "live"}}<div class="live" id="live">
   <span class="dot" aria-hidden="true"></span>
   <span id="updated">Loading…</span>
-  <button type="button" id="pause" class="small" aria-pressed="false">Pause</button>
+  <cds-button id="pause" kind="ghost" size="sm">Pause</cds-button>
 </div>{{end}}
 
-{{define "notice"}}<div id="notice" class="notice-bar" role="status" hidden></div>{{end}}
+{{define "notice"}}<div id="notice" class="notice-box" hidden></div>{{end}}
+
+{{define "up"}}<cds-breadcrumb class="up"><cds-breadcrumb-item><cds-breadcrumb-link href="{{.Href}}">{{.Label}}</cds-breadcrumb-link></cds-breadcrumb-item></cds-breadcrumb>{{end}}
 
 {{define "rulefilters"}}<form class="filters" id="filters" autocomplete="off">
   {{if not .App}}<label id="app-field" hidden>Application

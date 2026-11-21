@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -143,6 +142,9 @@ type pageData struct {
 	// of it shown (W3).
 	App string
 	Tab string
+	// Static is the address of the static files of this build
+	// (assets.go).
+	Static string
 }
 
 var pageNames = []string{"overview", "alerts", "alert", "rules", "rule", "applications", "application", "settings", "settingshistory", "proposals", "analyse", "records", "clients", "client", "endpoints", "dashsettings", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
@@ -150,7 +152,7 @@ var pageNames = []string{"overview", "alerts", "alert", "rules", "rule", "applic
 func (s *Server) loadPages() error {
 	s.pages = map[string]*template.Template{}
 	for _, name := range pageNames {
-		t, err := template.ParseFS(webFiles, "web/templates/layout.html", "web/templates/"+name+".html")
+		t, err := template.New("layout.html").Funcs(pageFuncs).ParseFS(webFiles, "web/templates/layout.html", "web/templates/"+name+".html")
 		if err != nil {
 			return err
 		}
@@ -162,8 +164,7 @@ func (s *Server) loadPages() error {
 // Handler returns the dashboard's routes, behind its security checks.
 func (s *Server) Handler() http.Handler {
 	mux := http.NewServeMux()
-	static, _ := fs.Sub(webFiles, "web/static")
-	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServerFS(static)))
+	mux.Handle("GET /static/", staticHandler())
 
 	mux.HandleFunc("GET /login", s.loginPage)
 	mux.HandleFunc("POST /login", s.loginPost)
@@ -250,15 +251,24 @@ func (s *Server) Handler() http.Handler {
 	return securityHeaders(http.NewCrossOriginProtection().Handler(mux))
 }
 
-// securityHeaders tells the browser to run no script but the dashboard's
-// own file, to load nothing from elsewhere, and not to show the pages in a
-// frame. The records hold text that attackers wrote, such as a User-Agent
-// with a <script>; the pages put it in as text, and these headers stop it
-// even if one place did not.
+// contentSecurityPolicy lets the browser run no script but the dashboard's
+// own files, load nothing from elsewhere, and show the pages in no frame.
+// Style attributes are allowed (style-src-attr): three of Carbon's
+// components write one, the select, skeleton text and the expandable tile
+// (Y2 of docs/development-plan-dashboard-carbon.md). A style attribute can
+// change only how something looks: it runs no script, loads nothing and
+// sends nothing. Style elements and stylesheets stay the dashboard's own.
+const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
+
+// securityHeaders sends the policy above, and keeps the pages and the
+// answers out of the browser's cache; the static files set their own
+// (assets.go). The records hold text that attackers wrote, such as a
+// User-Agent with a <script>; the pages put it in as text, and the policy
+// stops it even if one place did not.
 func securityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := w.Header()
-		h.Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'")
+		h.Set("Content-Security-Policy", contentSecurityPolicy)
 		h.Set("X-Content-Type-Options", "nosniff")
 		h.Set("Referrer-Policy", "no-referrer")
 		h.Set("X-Frame-Options", "DENY")
@@ -333,6 +343,7 @@ func (s *Server) requireAPI(least string, h func(http.ResponseWriter, *http.Requ
 
 func (s *Server) render(w http.ResponseWriter, status int, name string, data pageData) {
 	data.Version = buildversion.Version
+	data.Static = "/static/" + staticVersion
 	if data.User != "" {
 		data.Role = s.auth.users.role(data.User)
 		data.Analyst = allows(data.Role, RoleAnalyst)

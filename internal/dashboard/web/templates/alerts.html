@@ -6,11 +6,11 @@
 <form class="filters" id="filters" autocomplete="off">
   <div class="field">
     <span class="field-label">Show</span>
-    <div class="seg" role="group" aria-label="Show" id="kind">
-      <button type="button" data-value="alerts">Alerts</button>
-      <button type="button" data-value="all">All records</button>
-      <button type="button" data-value="incomplete">Incomplete</button>
-    </div>
+    <cds-content-switcher id="kind" size="sm" aria-label="Show">
+      <cds-content-switcher-item value="alerts">Alerts</cds-content-switcher-item>
+      <cds-content-switcher-item value="all">All records</cds-content-switcher-item>
+      <cds-content-switcher-item value="incomplete">Incomplete</cds-content-switcher-item>
+    </cds-content-switcher>
   </div>
   <label>Rule <input name="rule" inputmode="numeric" pattern="[0-9]*" size="7"></label>
   <label>Attack group <select name="group" id="group"><option value="">Any</option></select></label>

@@ -229,7 +229,6 @@
     const state = live.paused ? "Paused" : live.stale ? "Not updating" : "Live";
     live.text.textContent = state + (live.at ? " · updated " + fmtClock.format(live.at) : "");
     live.button.textContent = live.paused ? "Resume" : "Pause";
-    live.button.setAttribute("aria-pressed", String(live.paused));
   }
 
   if (live.button) {
@@ -258,9 +257,9 @@
       return;
     }
     live.stale = true;
-    refill(live.notice, `Could not update: ${err.message}. ` +
+    refill(live.notice, banner("warning", "Could not update.", `${err.message}. ` +
       (live.at ? `The data below is from ${fmtClock.format(live.at)}. ` : "") +
-      `Trying again every ${poll / 1000} seconds.`);
+      `Trying again every ${poll / 1000} seconds.`));
     live.notice.hidden = false;
     showLive();
   }
@@ -295,7 +294,9 @@
   const ranges = ["1h", "24h", "7d", "all"];
 
   // period is the chosen time range: from the address, else the last
-  // choice in this browser, else 24 hours.
+  // choice in this browser, else 24 hours. Its control is Carbon's content
+  // switcher in the page's head; with none, no item is selected (a period
+  // of the alerts list chosen on a chart).
   const period = {
     value: (() => {
       const v = new URLSearchParams(location.search).get("range") || stored("localStorage", "ids.range");
@@ -303,35 +304,24 @@
     })(),
     group: document.getElementById("period"),
     show(none) {
-      if (!this.group) return;
-      for (const b of this.group.querySelectorAll("button")) b.setAttribute("aria-pressed", String(!none && b.dataset.value === this.value));
+      if (this.group) this.group.value = none ? "" : this.value;
     },
     onChange(fn) {
       if (!this.group) return;
       this.show();
-      this.group.addEventListener("click", (e) => {
-        const b = e.target.closest("button[data-value]");
-        if (!b) return;
-        this.value = b.dataset.value;
-        store("localStorage", "ids.range", this.value);
-        this.show();
-        fn(this.value);
+      segmented(this.group, this.value, (v) => {
+        if (!ranges.includes(v)) return;
+        this.value = v;
+        store("localStorage", "ids.range", v);
+        fn(v);
       });
     },
   };
 
-  // segmented wires a group of buttons of which one is pressed.
+  // segmented wires a content switcher: one choice of a few.
   function segmented(group, value, pick) {
-    const show = (v) => {
-      for (const b of group.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.value === v));
-    };
-    show(value);
-    group.addEventListener("click", (e) => {
-      const b = e.target.closest("button[data-value]");
-      if (!b) return;
-      show(b.dataset.value);
-      pick(b.dataset.value);
-    });
+    group.value = value;
+    group.addEventListener("cds-content-switcher-selected", (e) => pick(e.detail.item.value));
   }
 
   // inputText says where a run's requests came from: live copies, request
@@ -477,15 +467,16 @@
       [].concat(notes).filter(Boolean).map((n) => el("div", { class: "note" }, n)));
   }
 
-  // banner is a Carbon inline notification: a status mark, a title and a
-  // sentence. kind is "error", "warning" or "success".
+  // banner is Carbon's inline notification, low contrast: a status icon,
+  // a title and a sentence. kind is "error", "warning", "success" or
+  // "info". The title goes into its slot, not the title attribute, which
+  // the browser would show as a tooltip.
   function banner(kind, title, text) {
     // Messages from the server start in lower case; here they follow a
     // title, as a sentence of their own.
     if (typeof text === "string" && text) text = text[0].toUpperCase() + text.slice(1);
-    return el("div", { class: "banner " + kind, role: kind === "error" ? "alert" : "status" },
-      el("span", { class: "mark", "aria-hidden": "true" }, kind === "success" ? "✓" : "!"),
-      el("div", {}, el("strong", {}, title), " ", text));
+    return el("cds-inline-notification", { kind, "low-contrast": true, "hide-close-button": true, role: kind === "error" ? "alert" : "status" },
+      el("span", { slot: "title" }, title), text ? el("span", { slot: "subtitle" }, text) : null);
   }
 
   // The sources and reasons of a gap (docs/records-format.md, section 5.1).
@@ -2616,8 +2607,6 @@
     zone.textContent = ` · times are in ${name ? `${name} (${utc})` : utc}`;
   }
 
-  // The colour theme (U7): the system's, or one chosen here. theme.js
-  // applies a stored choice before the page is drawn.
   // ---- Test a request (docs/development-plan-test-tab.md, S1–S4) ----
 
   // The user writes a request as raw HTTP text; the dashboard analyses it
@@ -3112,11 +3101,10 @@
         if (err.message !== "login required") shown(notice, "error", "Not changed.", err.message);
       }
     });
-    const user = document.querySelector(".who");
     const role = body.dataset.role || "";
     replace(el("div", { class: "stack" },
       notice,
-      card("You", kv([["User", user ? user.firstChild.textContent.trim() : ""], ["Role", `${roleNames[role] || role}: ${roleText[role] || ""}`]])),
+      card("You", kv([["User", me], ["Role", `${roleNames[role] || role}: ${roleText[role] || ""}`]])),
       card("Change your password", form,
         el("p", { class: "muted" }, "At least 15 characters. Any characters count, and there are no rules about mixing kinds: a few unrelated words make a long password that is easy to remember."))), false);
   }
@@ -3202,25 +3190,55 @@
     await load();
   }
 
-  // The Menu button opens the side navigation on narrow screens; Escape
-  // closes it.
-  const menu = document.getElementById("menu");
-  if (menu) {
-    const setOpen = (open) => {
-      body.classList.toggle("nav-open", open);
-      menu.setAttribute("aria-expanded", String(open));
+  // ---- The UI shell (Y8 of docs/development-plan-dashboard-carbon.md) ----
+
+  // The side navigation is open on wide screens, 1312 pixels and more as
+  // in app.css; narrower, the menu button opens it over the page, and
+  // Escape or a click beside it closes it. Open, Carbon's side navigation
+  // takes the header's name and actions out of the tab order, for the
+  // overlay of a narrow screen; beside the page they stay in it.
+  const side = document.getElementById("side");
+  const menuButton = document.getElementById("menu");
+  if (side && menuButton) {
+    const wide = window.matchMedia("(min-width: 1312px)");
+    const setOpen = async (open) => {
+      side.expanded = open;
+      menuButton.active = open;
+      await side.updateComplete;
+      if (wide.matches) for (const n of document.querySelectorAll("cds-header-name, cds-header-global-action")) n.removeAttribute("tabindex");
     };
-    menu.addEventListener("click", () => setOpen(!body.classList.contains("nav-open")));
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && body.classList.contains("nav-open")) { setOpen(false); menu.focus(); } });
+    customElements.whenDefined("cds-side-nav").then(async () => {
+      await setOpen(wide.matches);
+      side.classList.add("ready");
+    });
+    wide.addEventListener("change", () => setOpen(wide.matches));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !wide.matches && side.expanded) {
+        setOpen(false);
+        menuButton.focus();
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (!wide.matches && side.expanded && !e.composedPath().some((n) => n === side || n === menuButton)) setOpen(false);
+    });
   }
 
+  // The colour theme (U7): the system's, or one chosen in the header's
+  // panel. theme.js applies a stored choice before the page is drawn.
   const theme = document.getElementById("theme");
   if (theme) {
-    theme.value = document.documentElement.dataset.theme || "";
-    theme.addEventListener("change", () => {
-      if (theme.value) document.documentElement.dataset.theme = theme.value;
+    const showTheme = () => {
+      const v = document.documentElement.dataset.theme || "";
+      for (const b of theme.querySelectorAll("button[data-value]")) b.setAttribute("aria-pressed", String(b.dataset.value === v));
+    };
+    showTheme();
+    theme.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-value]");
+      if (!b) return;
+      if (b.dataset.value) document.documentElement.dataset.theme = b.dataset.value;
       else delete document.documentElement.dataset.theme;
-      store("localStorage", "ids.theme", theme.value);
+      store("localStorage", "ids.theme", b.dataset.value);
+      showTheme();
     });
   }
 

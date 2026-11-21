@@ -233,7 +233,7 @@ func TestRoutesByRole(t *testing.T) {
 	// a refused page says what it needs.
 	for _, role := range Roles {
 		body := d.do("GET", "/", nil, sessions[role]).Body.String()
-		if !strings.Contains(body, "· "+role+"</span>") {
+		if !strings.Contains(body, `<span class="role">`+role+"</span>") {
 			t.Errorf("%s: the role is not shown", role)
 		}
 		if strings.Contains(body, `href="/test"`) != allows(role, RoleAnalyst) {

@@ -1,6 +1,6 @@
 {{define "content"}}
 <div class="pagehead">
-  <div class="headline"><a class="up" href="/rules">← Rules</a><h1>Rule {{.ID}}</h1></div>
+  <div class="headline">{{template "up" (up "/rules" "Rules")}}<h1>Rule {{.ID}}</h1></div>
   <div class="tools"><span class="tools-label">Fired in</span>{{template "period"}}{{template "live"}}</div>
 </div>
 <div id="changes" class="stack changes-box"></div>

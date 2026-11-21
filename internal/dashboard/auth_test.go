@@ -115,19 +115,34 @@ func TestSecurityHeaders(t *testing.T) {
 	for _, path := range []string{"/login", "/", "/api/overview", "/static/app.js", "/nothing"} {
 		h := d.do("GET", path, nil, session).Header()
 		csp := h.Get("Content-Security-Policy")
-		for _, part := range []string{"default-src 'self'", "script-src 'self'", "frame-ancestors 'none'", "base-uri 'none'"} {
-			if !strings.Contains(csp, part) {
-				t.Errorf("%s: CSP %q lacks %q", path, csp, part)
+		directives := map[string]string{}
+		for _, d := range strings.Split(csp, ";") {
+			name, value, _ := strings.Cut(strings.TrimSpace(d), " ")
+			directives[name] = value
+		}
+		// Only the dashboard's own scripts, styles and files; inline style
+		// attributes only, for three of Carbon's components (Y2 of
+		// docs/development-plan-dashboard-carbon.md).
+		for name, want := range map[string]string{
+			"default-src": "'self'", "script-src": "'self'", "style-src": "'self'", "style-src-attr": "'unsafe-inline'",
+			"img-src": "'self'", "connect-src": "'self'", "form-action": "'self'", "base-uri": "'none'", "frame-ancestors": "'none'",
+		} {
+			if directives[name] != want {
+				t.Errorf("%s: CSP %q has %s %q, want %q", path, csp, name, directives[name], want)
 			}
 		}
-		if strings.Contains(csp, "unsafe-inline") || strings.Contains(csp, "unsafe-eval") {
-			t.Errorf("%s: CSP %q allows inline script", path, csp)
+		if len(directives) != 9 || strings.Contains(csp, "unsafe-eval") {
+			t.Errorf("%s: CSP %q", path, csp)
+		}
+		cache := "no-store"
+		if strings.HasPrefix(path, "/static/") {
+			cache = "no-cache"
 		}
 		for name, want := range map[string]string{
 			"X-Content-Type-Options": "nosniff",
 			"Referrer-Policy":        "no-referrer",
 			"X-Frame-Options":        "DENY",
-			"Cache-Control":          "no-store",
+			"Cache-Control":          cache,
 		} {
 			if got := h.Get(name); got != want {
 				t.Errorf("%s: %s = %q, want %q", path, name, got, want)
