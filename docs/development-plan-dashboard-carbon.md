@@ -95,8 +95,8 @@ Recommendation was 2: the frame decides the whole look; it is cheap to change be
 | Decisions Y1–Y10 | All decided on 21 November 2026 |
 | 1. Files, script, theme, policy, frame, icons | Done 21 November 2026 |
 | 2. Lists and tables | Done 21 November 2026 |
-| 3. Forms and settings | Next |
-| 4. Detail pages | Waiting |
+| 3. Forms and settings | Done 21 November 2026 |
+| 4. Detail pages | Next |
 | 5. Explanations, loading and empty states, close | Waiting |
 
 ## 4. Notes from the work
@@ -109,3 +109,6 @@ Recommendation was 2: the frame decides the whole look; it is cheap to change be
 6. Stage 2. The tables stay HTML tables in Carbon's data table look: Carbon's `cds-table` sets no column widths, and the record lists need fixed ones (a long request is cut short in its cell, not pushing the last column out of the card). A row that opens a page (a record, a client, an application, a rule) is one link: in the text colour, lit up under the pointer, with a › at its end; its first cell's link is the one the keyboard reaches, and a click anywhere else in the row follows it. Ctrl-click opens it in a new tab. Counts and chips that open another list stay blue. Lists whose rows open nothing (Endpoints, Runs, the change log, Users, an application's History) have no ›. The bar lists of the overview, a client and a rule end with a › too.
 7. "All 34 alerts →" is a small Carbon button, "View all alerts", at the right of the card's title; a client and a rule have "View all records" on their "Records over time" card. The pages of the alerts list and the change log turn with Carbon's two page buttons, ‹ and ›, named in their tooltips.
 8. The record lists have 12 pixels between columns instead of 16, and narrower fixed columns, because Carbon's side navigation (256 pixels) is wider than the old one. At 1440 pixels the request keeps about 7rem beside the navigation; it grows with the window, and the whole request is in its tooltip and on the record's page.
+9. Stage 3. The fields, selects, check boxes and buttons stay the page's own HTML controls, drawn with Carbon's tokens and measures (app.css), not `cds-text-input` and the like. Carbon's field components keep their input inside their shadow DOM, so a form does not see it: Enter would not submit, `form.elements` would not hold it, `change` would not reach the page from a select, and password managers would not fill it. Carbon's own CSS draws its React components the same way, on HTML controls. What the user sees is Carbon's: a filled field with a bottom border (field-01 on the page, field-02 in a card, their hover colours), a select with Carbon's chevron, Carbon's 16-pixel check box, the tertiary, primary, danger and ghost buttons with Carbon's colours, states and focus ring, a file field whose button is a tertiary button, Carbon's label and helper text. Buttons and fields in a bar are 32 pixels high together.
+10. The select's chevron is an image, the one place an icon can't take the text colour, so `tools/carbonprep` writes `chevron--down-g10.svg` and `chevron--down-g100.svg` from `@carbon/icons` in each theme's icon colour (`-css-icons` in `tools/carbon-fetch.sh`).
+11. Icons on buttons (Y6): add (an application, a user), apply, undo, delete and remove, analyse and stop, export (download), copy. A page that can't load its data, the marks of an alert and the example files of the Test tab say so in Carbon's error notification.

@@ -9,7 +9,8 @@ script again.
   and the shared files they load.
 - `themes.css`: the themes g10 (light) and g100 (dark) of `@carbon/styles`
   1.120.0.
-- `icons.svg`: icons of `@carbon/icons` 11.92.0.
+- `icons.svg`: icons of `@carbon/icons` 11.92.0; `NAME-g10.svg` and
+  `NAME-g100.svg`: chevron--down in each theme's icon colour.
 
 All three are Copyright IBM Corp. under the Apache License 2.0, in
 `LICENSE`. `SHA256SUMS` lists every file, so that a change shows in a

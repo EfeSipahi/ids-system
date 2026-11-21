@@ -303,7 +303,7 @@
     view.classList.remove("loading");
     if (!drawn || !live.notice) {
       last = ""; // the next answer must replace the message
-      view.replaceChildren(el("p", { class: "error", role: "alert" }, "Could not load the data: ", err.message));
+      view.replaceChildren(banner("error", "Could not load the data.", err.message));
       return;
     }
     live.stale = true;
@@ -496,21 +496,22 @@
     return dl;
   }
 
-  // copyButton copies text to the clipboard (the page is HTTPS).
+  // copyButton copies text to the clipboard (the page is HTTPS): Carbon's
+  // copy icon, with what happened in its label for a moment.
   function copyButton(text, what) {
+    const label = el("span", {}, "Copy");
     return el("button", {
       type: "button", class: "copy", title: "Copy " + what, "aria-label": "Copy " + what,
-      onclick: async (e) => {
-        const b = e.currentTarget;
+      onclick: async () => {
         try {
           await navigator.clipboard.writeText(text);
-          b.textContent = "Copied";
+          label.textContent = "Copied";
         } catch (err) {
-          b.textContent = "Not copied";
+          label.textContent = "Not copied";
         }
-        setTimeout(() => { b.textContent = "Copy"; }, 1500);
+        setTimeout(() => { label.textContent = "Copy"; }, 1500);
       },
-    }, "Copy");
+    }, icon("copy"), label);
   }
 
   // ---- Overview ----
@@ -945,7 +946,7 @@
         el("button", { type: "button", class: "small", onclick: async () => {
           const ch = await addChange("global", { kind: "add_app", name: newName.value.trim(), hosts: lines(newHosts.value), paths: lines(newPaths.value) }, addNotice);
           if (ch) { append(addNotice.firstChild, [" ", el("a", { href: "/settings" }, "Apply it under Settings →")]); newName.value = newHosts.value = newPaths.value = ""; }
-        } }, "Add the application, pending")));
+        } }, "Add the application, pending", icon("add"))));
     const run = every(async () => {
       const range = period.value;
       const url = "/api/applications?" + query({ range });
@@ -1058,7 +1059,7 @@
           el("p", { class: "muted" }, "Its endpoints, parameters, cookies and headers are on ", el("a", { href: appLink(name, "profile") }, "its Profile tab"), "."),
           can ? el("button", { type: "button", class: "small danger", onclick: () => {
             if (window.confirm(`Remove the application ${name}? Once applied, its requests run as requests of no application. Its profile file is kept.`)) addChange(object, { kind: "remove_app" }, notice);
-          } }, `Remove the application ${name}…`) : null)));
+          } }, `Remove the application ${name}…`, icon("trash-can")) : null)));
     });
   }
 
@@ -1190,7 +1191,7 @@
     const showSource = () => { fileRow.hidden = source.value !== "upload"; folderRow.hidden = source.value !== "folder"; };
     source.addEventListener("change", showSource);
     showSource();
-    const start = el("button", { type: "button", class: "primary" }, "Analyse");
+    const start = el("button", { type: "button", class: "primary" }, "Analyse", icon("play"));
     const status = el("div", { "aria-live": "polite" });
     const resultBox = el("div", { class: "stack" });
 
@@ -1229,7 +1230,7 @@
         const bar = el("div", { class: "progress" }, el("div", { class: "bar" }));
         bar.firstChild.style.width = (j.total ? (100 * j.done / j.total).toFixed(1) : 0) + "%";
         refill(status, card(null, el("p", {}, `Analysing ${nf.format(j.done)} of ${nf.format(j.total)} requests of ${j.files.length} ${j.files.length === 1 ? "file" : "files"}, with ${j.config}…`), bar,
-          el("button", { type: "button", class: "small", onclick: async () => { try { await send("/api/analyse/stop", {}); } catch (err) { /* it ended */ } } }, "Stop")));
+          el("button", { type: "button", class: "small", onclick: async () => { try { await send("/api/analyse/stop", {}); } catch (err) { /* it ended */ } } }, "Stop", icon("stop"))));
         watch();
         return;
       }
@@ -1460,14 +1461,14 @@
             el("td", { class: "nowrap" }, r.oldest ? fmtTime(r.oldest) : "–"),
             el("td", { class: "nowrap" }, r.newest ? fmtTime(r.newest) : "–"))))))),
         card("Export", el("p", { class: "muted" }, "Every record kept, or those the alerts list's filters choose, with the Export links there."),
-          el("p", {}, el("a", { class: "button small", href: "/api/export?" + query({ format: "csv", kind: "all", range: "all" }) }, "All records as CSV"), " ",
-            el("a", { class: "button small", href: "/api/export?" + query({ format: "jsonl", kind: "all", range: "all" }) }, "All records as JSON Lines"))),
+          el("p", {}, el("a", { class: "button small", href: "/api/export?" + query({ format: "csv", kind: "all", range: "all" }) }, "All records as CSV", icon("download")), " ",
+            el("a", { class: "button small", href: "/api/export?" + query({ format: "jsonl", kind: "all", range: "all" }) }, "All records as JSON Lines", icon("download")))),
         adminRole ? card("Delete records",
           p.busy ? banner("warning", "ids-live is running.", "It writes the records folder, so nothing can be deleted while it runs: stop it first with scripts/ids-live-ctl stop.") : null,
           el("p", { class: "muted" }, "Deleting can't be undone. Marks of deleted records stay, with their alert's summary, until their age runs out."),
           el("div", { class: "form-grid" }, formRow("Reason", reason), formRow("Your password", password)),
-          p.runs.length ? el("div", { class: "inline-form" }, formRow("A run", runSel), el("button", { type: "button", class: "small danger", onclick: () => del({ run: runSel.value }) }, "Delete this run")) : null,
-          el("div", { class: "inline-form" }, formRow("Everything older than", before), el("button", { type: "button", class: "small danger", onclick: () => { if (before.value) del({ before: before.value }); } }, "Delete older records"))) : null));
+          p.runs.length ? el("div", { class: "inline-form" }, formRow("A run", runSel), el("button", { type: "button", class: "small danger", onclick: () => del({ run: runSel.value }) }, "Delete this run", icon("trash-can"))) : null,
+          el("div", { class: "inline-form" }, formRow("Everything older than", before), el("button", { type: "button", class: "small danger", onclick: () => { if (before.value) del({ before: before.value }); } }, "Delete older records", icon("trash-can")))) : null));
     });
   }
 
@@ -1713,7 +1714,7 @@
           refill(notice, banner("success", a.unchanged ? "Applied; no file changed." : `Applied as version ${a.version.id}.`,
             a.unchanged ? "The files already were as these changes make them." : "ids-live takes it within a few seconds, without stopping; the History tab shows when it runs it."));
         });
-      } }, `Apply ${n === 1 ? "this change" : "these " + n + " changes"} for ${who}`);
+      } }, `Apply ${n === 1 ? "this change" : "these " + n + " changes"} for ${who}`, icon("checkmark"));
       refill(box, notice, el("section", { class: "card pending" },
         el("div", { class: "card-head" }, el("h2", {}, `Pending changes for ${who}`), el("span", { class: "muted" }, `${n} ${n === 1 ? "change" : "changes"}, applied together as one version`)),
         el("ul", { class: "changes" }, c.items.map((ch) => el("li", {},
@@ -1774,7 +1775,7 @@
             el("td", { class: "wrap" }, v.undoes ? el("div", {}, `Undoes version ${v.undoes}`) : v.changes.map((c) => el("div", {}, c.what))),
             el("td", { class: "wrap" }, v.reason),
             el("td", { class: "wrap" }, stateOf(v)),
-            admin ? el("td", {}, el("button", { type: "button", class: "small", onclick: () => undo(v) }, "Undo")) : null))))))
+            admin ? el("td", {}, el("button", { type: "button", class: "small", onclick: () => undo(v) }, "Undo", icon("undo"))) : null))))))
           : card(null, el("p", { class: "empty" }, `No change has been applied to ${reachName(object)} from the dashboard yet.`))));
     });
     return run;
@@ -2008,7 +2009,7 @@
       replace(el("div", { class: "stack" }, markNotice, card(null,
         analyst && l.rows.length ? bar : null,
         l.rows.length ? el("div", { class: "export-bar" }, el("span", { class: "muted" }, `Export these ${nf.format(l.total)}:`),
-          el("a", { href: exportQuery("csv") }, "CSV"), el("a", { href: exportQuery("jsonl") }, "JSON Lines")) : null,
+          el("a", { class: "button small ghost", href: exportQuery("csv") }, "CSV", icon("download")), el("a", { class: "button small ghost", href: exportQuery("jsonl") }, "JSON Lines", icon("download"))) : null,
         l.rows.length ? [pager(l, "top"), listTable(l.rows, {
           status: state.kind === "all", rules: ruleLink, apps: l.applications.length > 1, verdict: true,
           pick: analyst ? picked : null, onPick: showBar,
@@ -2273,7 +2274,7 @@
       try {
         m = await api("/api/marks/" + encodeURIComponent(id));
       } catch (err) {
-        if (err.message !== "login required") refill(reviewBox, el("h2", {}, "Review"), el("p", { class: "error" }, "The marks could not be loaded: " + err.message));
+        if (err.message !== "login required") refill(reviewBox, el("h2", {}, "Review"), banner("error", "The marks could not be loaded.", err.message));
         return;
       }
       const last = m.history.length ? m.history[m.history.length - 1] : null;
@@ -2700,7 +2701,7 @@
     });
     const size = el("span", { class: "muted" });
     const lengthNote = el("div", { class: "length-note", hidden: true });
-    const runButton = el("button", { type: "button", class: "primary" }, "Analyse");
+    const runButton = el("button", { type: "button", class: "primary" }, "Analyse", icon("play"));
     const result = el("div", { class: "stack", id: "result", "aria-live": "polite" });
 
     const field = (label, control, extra) => el("label", { class: extra || null }, label, control);
@@ -3001,7 +3002,7 @@
         el("div", { class: "test-bar" },
           field("Example", exampleSel, "wide"),
           info.files.length ? [field("CRS rule", fileSel), field("CRS test", caseSel, "wide")] : null),
-        info.files_error ? el("p", { class: "error" }, "The example files can't be listed: " + info.files_error) : null,
+        info.files_error ? banner("error", "The example files can't be listed.", info.files_error) : null,
         hint,
         text,
         el("div", { class: "test-bar settings" },
@@ -3104,7 +3105,7 @@
             type: "button", class: "small danger", onclick: () => {
               if (window.confirm(`Remove the user ${u.name}?${you ? " You will be logged out." : ""}`)) act({ action: "remove", name: u.name }, `${u.name} is removed`);
             },
-          }, "Remove")));
+          }, "Remove", icon("trash-can"))));
     }
 
     async function load() {
@@ -3130,7 +3131,7 @@
           act({ action: "add", name, role: newRole.value }, `${name} is added as ${roleNames[newRole.value]}`).then(() => { newName.value = ""; });
         } },
         el("label", {}, "Name", newName), el("label", {}, "Role", newRole),
-        el("button", { type: "submit", class: "primary" }, "Add user")),
+        el("button", { type: "submit", class: "primary" }, "Add user", icon("add"))),
         el("ul", { class: "plain muted" }, ["viewer", "analyst", "admin"].map((r) => el("li", {}, `${roleNames[r]}: ${roleText[r]}.`))),
         el("p", { class: "muted" }, "The new user's password is made at random and shown here once; pass it on to them. They can change it on their account page."))), false);
     await load();

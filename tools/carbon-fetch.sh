@@ -39,7 +39,11 @@ brightness-contrast add trash-can copy undo download export launch
 arrow--right arrow--left chevron--right chevron--left close edit view
 filter renew play stop upload checkmark--filled warning--filled
 error--filled information help time document checkmark misuse in-progress
-view--off pause"
+view--off pause chevron--down"
+
+# Icons a stylesheet draws as a background, written as files of their own
+# in each theme's icon colour: the arrow of a select.
+CSS_ICONS="chevron--down"
 
 case $VERSION in
 *[!0-9.]* | "") echo "carbon-fetch: $VERSION is not a version such as 2.68.0" >&2; exit 2 ;;
@@ -95,13 +99,13 @@ tar -xzf "$work/styles.tgz" -C "$work/styles" package/css/styles.min.css
 tar -xzf "$work/icons.tgz" -C "$work/icons" package/svg
 
 go run ./tools/carbonprep -styles "$work/styles/package/css/styles.min.css" -styles-version "$STYLES" \
-	-icons "$work/icons/package/svg" -icons-version "$ICONS" -names "$ICON_NAMES" -out "$work/out"
+	-icons "$work/icons/package/svg" -icons-version "$ICONS" -names "$ICON_NAMES" -css-icons "$CSS_ICONS" -out "$work/out"
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
 cp "$work"/js/*.js "$OUT/"
 cp "$work/web-components/package/LICENSE" "$OUT/LICENSE"
-cp "$work/out/themes.css" "$work/out/icons.svg" "$OUT/"
+cp "$work"/out/*.css "$work"/out/*.svg "$OUT/"
 cat >"$OUT/README.md" <<EOF
 # IBM Carbon Design System
 
@@ -114,11 +118,12 @@ script again.
   and the shared files they load.
 - \`themes.css\`: the themes g10 (light) and g100 (dark) of \`@carbon/styles\`
   $STYLES.
-- \`icons.svg\`: icons of \`@carbon/icons\` $ICONS.
+- \`icons.svg\`: icons of \`@carbon/icons\` $ICONS; \`NAME-g10.svg\` and
+  \`NAME-g100.svg\`: $CSS_ICONS in each theme's icon colour.
 
 All three are Copyright IBM Corp. under the Apache License 2.0, in
 \`LICENSE\`. \`SHA256SUMS\` lists every file, so that a change shows in a
 diff.
 EOF
-(cd "$OUT" && sha256sum -- *.js themes.css icons.svg LICENSE >SHA256SUMS)
+(cd "$OUT" && sha256sum -- *.js *.css *.svg LICENSE >SHA256SUMS)
 echo "carbon-fetch: wrote $OUT ($(du -sh "$OUT" | cut -f1))"
