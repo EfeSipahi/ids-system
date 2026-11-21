@@ -179,7 +179,7 @@ button[disabled], button[disabled]:hover, button[disabled]:active {
   cursor: not-allowed; background: transparent; color: var(--cds-text-disabled); border-color: var(--cds-button-disabled); box-shadow: none;
 }
 button.primary[disabled], button.primary[disabled]:hover { background: var(--cds-button-disabled); border-color: var(--cds-button-disabled); color: var(--cds-text-on-color-disabled); }
-button.small, a.button.small { min-height: 32px; padding: 0 12px; }
+button.small, a.button.small { min-height: 32px; padding: 0 12px; white-space: nowrap; }
 /* In bars whose fields are 32px, so are the buttons, as Carbon pairs them */
 .test-bar > button, .filters button, .mark-bar button { min-height: 32px; padding: 0 12px; }
 button svg.icon, a.button svg.icon { flex: none; }
@@ -572,7 +572,10 @@ textarea.editor {
 .test-run { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 16px; }
 .length-note { display: grid; gap: 8px; justify-items: start; margin-top: 16px; }
 #result.loading { opacity: 0.6; }
-.verdict h2 { font-size: 1.25rem; font-weight: 400; margin-bottom: 8px; }
+.verdict h2 { font-size: 1.25rem; font-weight: 400; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.verdict h2 svg.icon { width: 20px; height: 20px; }
+.verdict h2.is-alert svg.icon { color: var(--cds-support-error); }
+.verdict h2.no-alert svg.icon { color: var(--cds-support-success); }
 table.findings-table td.loc { min-width: 9rem; }
 
 /* Users, your account and the log (docs/development-plan-marks-users.md) */
@@ -683,3 +686,9 @@ table.analysed td.error { color: var(--error); }
 /* A select's text keeps clear of its arrow, whatever padding a bar gives
    its fields. */
 select:not([multiple]):not([size]) { padding-right: 40px; }
+
+/* A link to another page on a line of its own or ending a sentence:
+   Carbon's link with an arrow */
+a.go-link { display: inline-flex; align-items: center; gap: 8px; }
+a.go-link svg.icon { flex: none; }
+.card-head a.go-link { font-size: 0.875rem; }

@@ -96,8 +96,8 @@ Recommendation was 2: the frame decides the whole look; it is cheap to change be
 | 1. Files, script, theme, policy, frame, icons | Done 21 November 2026 |
 | 2. Lists and tables | Done 21 November 2026 |
 | 3. Forms and settings | Done 21 November 2026 |
-| 4. Detail pages | Next |
-| 5. Explanations, loading and empty states, close | Waiting |
+| 4. Detail pages | Done 21 November 2026 |
+| 5. Explanations, loading and empty states, close | Next |
 
 ## 4. Notes from the work
 
@@ -112,3 +112,4 @@ Recommendation was 2: the frame decides the whole look; it is cheap to change be
 9. Stage 3. The fields, selects, check boxes and buttons stay the page's own HTML controls, drawn with Carbon's tokens and measures (app.css), not `cds-text-input` and the like. Carbon's field components keep their input inside their shadow DOM, so a form does not see it: Enter would not submit, `form.elements` would not hold it, `change` would not reach the page from a select, and password managers would not fill it. Carbon's own CSS draws its React components the same way, on HTML controls. What the user sees is Carbon's: a filled field with a bottom border (field-01 on the page, field-02 in a card, their hover colours), a select with Carbon's chevron, Carbon's 16-pixel check box, the tertiary, primary, danger and ghost buttons with Carbon's colours, states and focus ring, a file field whose button is a tertiary button, Carbon's label and helper text. Buttons and fields in a bar are 32 pixels high together.
 10. The select's chevron is an image, the one place an icon can't take the text colour, so `tools/carbonprep` writes `chevron--down-g10.svg` and `chevron--down-g100.svg` from `@carbon/icons` in each theme's icon colour (`-css-icons` in `tools/carbon-fetch.sh`).
 11. Icons on buttons (Y6): add (an application, a user), apply, undo, delete and remove, analyse and stop, export (download), copy. A page that can't load its data, the marks of an alert and the example files of the Test tab say so in Carbon's error notification.
+12. Stage 4. An alert's way back is Carbon's breadcrumb, named after the page its list was on (Alerts, Overview, a rule, a client, an application); its steps to the newer and older record are Carbon's ghost icon buttons with their names as tooltips, as the list's page buttons. A link that leaves a page for another ("Try them in the Test tab", "Try these changes on request files in Analyse files", "Apply it under Settings") ends with Carbon's arrow icon instead of a typed arrow; "Look at the preview and apply" at the head of a card is the same small button as "View all". On a rule's page each application's row opens that application's Rules tab at the rule. The Test tab's verdict has Carbon's status icon: a red error mark for an alert, a green check for none. Small buttons keep their label on one line.

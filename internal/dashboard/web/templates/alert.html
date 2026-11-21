@@ -1,9 +1,9 @@
 {{define "content"}}
 <div class="crumbs">
-  <a href="/alerts" id="back">← Alerts</a>
-  <span class="stepper">
-    <a id="newer" class="button small" hidden>← Newer</a>
-    <a id="older" class="button small" hidden>Older →</a>
+  <cds-breadcrumb class="up"><cds-breadcrumb-item><cds-breadcrumb-link href="/alerts" id="back">Alerts</cds-breadcrumb-link></cds-breadcrumb-item></cds-breadcrumb>
+  <span class="stepper page-buttons">
+    <cds-button id="newer" kind="ghost" size="sm" tooltip-text="Newer record" tooltip-position="bottom" hidden>{{slotIcon "chevron--left" "icon"}}</cds-button>
+    <cds-button id="older" kind="ghost" size="sm" tooltip-text="Older record" tooltip-alignment="end" tooltip-position="bottom" hidden>{{slotIcon "chevron--right" "icon"}}</cds-button>
   </span>
 </div>
 <div id="view" class="stack"></div>

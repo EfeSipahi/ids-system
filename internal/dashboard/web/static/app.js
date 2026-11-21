@@ -79,16 +79,22 @@
   // goHead is the head of the › column.
   const goHead = () => el("th", { class: "go" });
 
+  // goLink is a link that leaves the page for another, in a sentence or
+  // on a line of its own: Carbon's link with an arrow at its end.
+  function goLink(href, text) {
+    return el("a", { class: "go-link", href }, text, icon("arrow--right"));
+  }
+
   // pageButtons are the two buttons of a list of pages, as Carbon's
   // pagination has them: icons, with their names as tooltips.
   function pageButtons(page, pages, go, newer = "Newer", older = "Older") {
-    const b = (label, name, off, to) => el("cds-button", {
-      kind: "ghost", size: "sm", "tooltip-text": label, "tooltip-position": "bottom", disabled: off,
+    const b = (label, name, off, to, align) => el("cds-button", {
+      kind: "ghost", size: "sm", "tooltip-text": label, "tooltip-position": "bottom", "tooltip-alignment": align, disabled: off,
       onclick: (e) => { if (!e.currentTarget.disabled) go(to); },
     }, icon(name, "icon"));
     return el("span", { class: "page-buttons" },
       b(newer, "chevron--left", page <= 1, page - 1),
-      b(older, "chevron--right", page >= pages, page + 1));
+      b(older, "chevron--right", page >= pages, page + 1, "end"));
   }
 
   // viewAll is the small button at the right of a card's head that opens
@@ -945,7 +951,7 @@
       el("div", { class: "inline-form" }, formRow("Name", newName), formRow("Hosts", newHosts), formRow("Paths", newPaths),
         el("button", { type: "button", class: "small", onclick: async () => {
           const ch = await addChange("global", { kind: "add_app", name: newName.value.trim(), hosts: lines(newHosts.value), paths: lines(newPaths.value) }, addNotice);
-          if (ch) { append(addNotice.firstChild, [" ", el("a", { href: "/settings" }, "Apply it under Settings →")]); newName.value = newHosts.value = newPaths.value = ""; }
+          if (ch) { append(addNotice.firstChild, [" ", goLink("/settings", "Apply it under Settings")]); newName.value = newHosts.value = newPaths.value = ""; }
         } }, "Add the application, pending", icon("add"))));
     const run = every(async () => {
       const range = period.value;
@@ -1623,7 +1629,7 @@
       replace(el("div", { class: "stack" },
         !p.configured ? banner("warning", "Changes are off.", "The dashboard does not know the IDS's configuration; name it as ids_config in the dashboard's configuration file.") : null,
         objects.length ? objects.map(([object, items]) => card(null,
-          el("div", { class: "card-head" }, el("h2", {}, `For ${reachName(object)}`), el("a", { href: link(object) }, "Look at the preview and apply →")),
+          el("div", { class: "card-head" }, el("h2", {}, `For ${reachName(object)}`), viewAll(link(object), "Look at the preview and apply")),
           el("ul", { class: "changes" }, items.map((ch) => el("li", {},
             el("div", { class: "what" }, ch.what, ch.proposal ? el("span", { class: "badge proposal" }, "Proposed") : null),
             el("div", { class: "sub" }, `${ch.proposal ? "Proposed" : "Added"} by ${ch.user}, ${ago(ch.time)}` + (ch.reason ? ". Reason: " + ch.reason : ""))))))) :
@@ -1695,7 +1701,7 @@
           listTable(pv.examples, { verdict: true, apps: object === "global" })) : null,
         pv.untested.length ? el("div", {}, el("div", { class: "sub" }, "What the records can't tell"),
           el("ul", { class: "plain" }, pv.untested.map((t) => el("li", { class: "muted" }, t))),
-          analyst ? el("p", {}, el("a", { href: "/analyse?" + query({ try: object }) }, "Try these changes on request files in Analyse files →")) : null) : null);
+          analyst ? el("p", {}, goLink("/analyse?" + query({ try: object }), "Try these changes on request files in Analyse files")) : null) : null);
     };
     const draw = (c, pv) => {
       if (!c.configured || !c.items.length) {
@@ -1845,17 +1851,20 @@
           el("p", { class: "muted" }, "Its status for each application, at that application's paranoia level and with its exceptions. An application's own exception is changed on that application's Rules tab."),
           everyApp,
           el("div", { class: "table-wrap" }, el("table", { class: "wide" },
-            el("thead", {}, el("tr", {}, [["Application", ""], ["Level", ""], ["Status", ""], ["Reason", ""], ["Records", "num"], ["False positives", "num"]].map(([h, c]) => el("th", { class: c }, h)))),
+            el("thead", {}, el("tr", {}, [["Application", ""], ["Level", ""], ["Status", ""], ["Reason", ""], ["Records", "num"], ["False positives", "num"]].map(([h, c]) => el("th", { class: c }, h)), goHead())),
             el("tbody", {}, p.statuses.map((st) => {
               const none = st.application === "none";
-              return el("tr", {},
-                el("td", {}, none ? "Requests of no application" : el("a", { href: appLink(st.application, "rules") + "?" + query({ q: id }) }, st.application),
+              const page = none ? null : appLink(st.application, "rules") + "?" + query({ q: id });
+              const cells = [
+                el("td", {}, none ? "Requests of no application" : el("a", { class: "row-link", href: page }, st.application),
                   !st.running ? el("div", { class: "sub" }, "not in the running configuration") : null),
                 el("td", {}, String(st.level)),
                 el("td", { class: "wrap" }, ruleBadge(st), st.skips ? el("div", { class: "sub" }, "Skips " + st.skips.join(", ")) : null),
                 el("td", { class: "wrap" }, st.reason || "–", st.no_effect ? el("div", { class: "sub" }, "No effect now: " + st.no_effect) : null),
                 el("td", { class: "num" }, count(st.fired, alerts({ app: st.application }))),
-                el("td", { class: "num" }, count(st.false_positives, alerts({ app: st.application, review: "false_positive" }))));
+                el("td", { class: "num" }, count(st.false_positives, alerts({ app: st.application, review: "false_positive" })))];
+              // A row opens the application's Rules tab at this rule.
+              return none ? el("tr", {}, cells, el("td", { class: "go" })) : linkedRow(page, null, cells);
             }))))),
         headedCard("Records over time", p.fired ? viewAll(alerts({}), "View all records") : null,
           el("div", { class: "legend" },
@@ -1868,7 +1877,7 @@
           card("Client IP addresses", toplist(p.top_ips, (i) => i.key, (i) => alerts({ ip: i.key })))) : null,
         card("The rule as written",
           p.text ? el("pre", { class: "block rule-text" }, p.text) : el("p", { class: "muted" }, "Its text can't be shown: " + p.text_error + "."),
-          analyst && p.test_file ? el("p", {}, "CRS has tests for this rule. ", el("a", { href: "/test?" + query({ file: p.test_file }) }, "Try them in the Test tab →")) : null)));
+          analyst && p.test_file ? el("p", {}, "CRS has tests for this rule. ", goLink("/test?" + query({ file: p.test_file }), "Try them in the Test tab")) : null)));
     });
     period.onChange(() => {
       history.replaceState(null, "", location.pathname + "?" + query({ range: period.value }));
@@ -2087,9 +2096,11 @@
     let list = null;
     try { list = JSON.parse(stored("sessionStorage", "ids.list") || "null"); } catch (e) { list = null; }
     if (list && Array.isArray(list.ids) && typeof list.url === "string" && list.url.startsWith("/") && !list.url.startsWith("//") && list.ids.includes(id)) {
+      // The breadcrumb names the page the list is on.
       back.href = list.url;
-      if (list.url.startsWith("/alerts")) back.textContent = "← Back to the list";
-      else back.textContent = "← Back";
+      const from = list.url.split("?")[0].split("/").map((x) => { try { return decodeURIComponent(x); } catch (e) { return x; } });
+      back.textContent = from[1] === "alerts" ? "Alerts" : from[1] === "" ? "Overview" : from[1] === "rules" && from[2] ? "Rule " + from[2]
+        : (from[1] === "clients" || from[1] === "applications") && from[2] ? from[2] : "Back";
       const i = list.ids.indexOf(id);
       const step = (a, other) => {
         if (!other) return;
@@ -2474,7 +2485,7 @@
           `${nf.format(counts.runs)} run, ${are(counts.above)} above the level and skipped, ${are(counts.excluded)} excluded` +
           (counts.off ? `, ${are(counts.off)} off for the application` : "") + ". " +
           `Showing ${nf.format(shownCount)}; fired counts ${data.app ? "this application's records only" : "every record"}. From the run that started ${fmtTime(data.time)}.`),
-        chosen && !fixed ? el("p", {}, el("a", { href: appLink(chosen.name, "rules") }, `${chosen.name}'s own page →`)) : null,
+        chosen && !fixed ? el("p", {}, goLink(appLink(chosen.name, "rules"), `${chosen.name}'s own page`)) : null,
         chosen ? card(`Exceptions of ${chosen.name}`,
           chosen.exceptions.length ? el("ul", { class: "plain" }, chosen.exceptions.map((ex) => el("li", {},
             el("strong", {}, exceptionText(ex)), ": ", ex.reason,
@@ -2936,7 +2947,7 @@
 
       refill(result,
         el("section", { class: "card verdict" },
-          el("h2", {}, alert ? "Alert" : "No alert"),
+          el("h2", { class: alert ? "is-alert" : "no-alert" }, icon(alert ? "error--filled" : "checkmark--filled"), alert ? "Alert" : "No alert"),
           el("p", { class: "summary" },
             !an.complete ? el("span", { class: "badge incomplete" }, "Incomplete") : null,
             r.alert_by && r.alert_by.length ? el("span", {}, alertBy(r.alert_by)) : null,
