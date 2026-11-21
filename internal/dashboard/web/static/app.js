@@ -47,6 +47,56 @@
     return node;
   }
 
+  // icon draws one of Carbon's icons, 16 pixels, from the set every page
+  // holds (static/carbon/icons.svg); slot puts it into a component's slot.
+  function icon(name, slot) {
+    const node = svg("svg", { class: "icon", width: 16, height: 16, "aria-hidden": "true", focusable: "false" });
+    if (slot) node.setAttribute("slot", slot);
+    const use = svg("use", { href: "#icon-" + name });
+    node.append(use);
+    return node;
+  }
+
+  // Rows that open a page (Y4 of docs/development-plan-dashboard-carbon.md):
+  // the whole row is the link, lights up under the pointer and ends with
+  // a ›. Its first link, in the text colour (class row-link), is the one
+  // the keyboard reaches; a click anywhere else in the row follows it.
+  // Links to other pages (a rule number, a count) and fields keep their
+  // own click.
+  function linkedRow(href, onOpen, ...cells) {
+    return el("tr", {
+      class: "linked",
+      onclick: (e) => {
+        if (e.target.closest("a, button, input, label, select, textarea, [role=button], cds-button, td.pick")) return;
+        if (window.getSelection && String(window.getSelection())) return; // selecting text, not opening
+        if (onOpen) onOpen();
+        if (e.ctrlKey || e.metaKey) window.open(href, "_blank", "noopener");
+        else location.assign(href);
+      },
+    }, cells, el("td", { class: "go" }, icon("chevron--right")));
+  }
+
+  // goHead is the head of the › column.
+  const goHead = () => el("th", { class: "go" });
+
+  // pageButtons are the two buttons of a list of pages, as Carbon's
+  // pagination has them: icons, with their names as tooltips.
+  function pageButtons(page, pages, go, newer = "Newer", older = "Older") {
+    const b = (label, name, off, to) => el("cds-button", {
+      kind: "ghost", size: "sm", "tooltip-text": label, "tooltip-position": "bottom", disabled: off,
+      onclick: (e) => { if (!e.currentTarget.disabled) go(to); },
+    }, icon(name, "icon"));
+    return el("span", { class: "page-buttons" },
+      b(newer, "chevron--left", page <= 1, page - 1),
+      b(older, "chevron--right", page >= pages, page + 1));
+  }
+
+  // viewAll is the small button at the right of a card's head that opens
+  // the full list (Y4).
+  function viewAll(href, label) {
+    return el("cds-button", { kind: "tertiary", size: "sm", href, class: "view-all" }, label || "View all", icon("arrow--right", "icon"));
+  }
+
   // stored and store keep small choices of this browser: the period, the
   // theme, and the list an alert was opened from. Without storage (a
   // private window, blocked site data) the defaults hold.
@@ -431,6 +481,12 @@
     return el("section", { class: "card" }, title ? el("h2", {}, title) : null, ...content);
   }
 
+  // headedCard is a card with an action at the right of its title, such
+  // as viewAll.
+  function headedCard(title, action, ...content) {
+    return el("section", { class: "card" }, el("div", { class: "card-head" }, el("h2", {}, title), action), ...content);
+  }
+
   function kv(pairs) {
     const dl = el("dl", { class: "kv" });
     for (const [k, v] of pairs) {
@@ -686,7 +742,9 @@
     return el("ol", { class: "toplist" }, items.map((it) => {
       const bar = el("div", { class: "bar" });
       bar.style.width = (100 * it.count / maxV).toFixed(1) + "%";
-      const content = [el("div", { class: "row" }, el("span", { class: "name" }, label(it)), el("span", { class: "count" }, nf.format(it.count))), el("div", { class: "track" }, bar)];
+      const content = [el("div", { class: "row" }, el("span", { class: "name" }, label(it)),
+        el("span", { class: "end" }, el("span", { class: "count" }, nf.format(it.count)), href ? el("span", { class: "go" }, icon("chevron--right")) : null)),
+      el("div", { class: "track" }, bar)];
       return el("li", {}, href ? el("a", { href: href(it) }, content) : content);
     }));
   }
@@ -711,6 +769,7 @@
     cols.push(["Request", "", "request"]);
     if (groupsCol) cols.push(["Attack groups", "", "groups"]);
     if (opts.rules) cols.push(["Rules", "", "rules"]);
+    cols.push(["", "go", "go"]);
     const remember = () => store("sessionStorage", "ids.list", JSON.stringify({ url: location.pathname + location.search, ids: rows.map((r) => r.id) }));
     // opts.pick is the set of chosen record IDs, with opts.onPick called
     // when it changes; the head's box chooses the whole page.
@@ -721,19 +780,19 @@
     if (pageBox) pageBox.checked = rows.length > 0 && rows.every((r) => opts.pick.has(r.id));
     return el("div", { class: "table-wrap" }, el("table", { class: "wide rows list" + (opts.status && opts.apps ? " many" : "") + (opts.verdict ? " reviewed" : "") + (opts.pick ? " picking" : "") },
       el("colgroup", {}, cols.map(([, , c]) => el("col", { class: c }))),
-      el("thead", {}, el("tr", {}, cols.map(([h, c]) => el("th", { class: c }, c === "pick" ? pageBox : h)))),
+      el("thead", {}, el("tr", {}, cols.map(([h, c]) => c === "go" ? goHead() : el("th", { class: c }, c === "pick" ? pageBox : h)))),
       el("tbody", {}, rows.map((r) => {
         const link = "/alerts/" + encodeURIComponent(r.id);
         const target = `${r.method} ${r.host || ""}${r.path}`;
         // With the Application column, the application stands for the
         // host, and the cell keeps its room for the path.
         const host = opts.apps && r.application && r.application !== "none" ? "" : r.host || "";
-        return el("tr", { class: "linked", onclick: (e) => { if (e.target.closest("a, input, label") === null) { remember(); location.assign(link); } } },
+        return linkedRow(link, remember,
           opts.pick ? el("td", { class: "pick" }, el("input", {
             type: "checkbox", checked: opts.pick.has(r.id), "aria-label": "Choose the record of " + fmtTime(r.time),
             onchange: (e) => { if (e.target.checked) opts.pick.add(r.id); else opts.pick.delete(r.id); opts.onPick(); },
           })) : null,
-          el("td", {}, el("a", { href: link, onclick: remember }, fmtTime(r.time))),
+          el("td", {}, el("a", { class: "row-link", href: link, onclick: remember }, fmtTime(r.time))),
           el("td", { class: "num" }, r.incomplete ? el("span", { class: "badge incomplete", title: "The analysis could not inspect every part" }, "Incomplete") : null,
             profileBadge(r.profile_kinds), " ", nf.format(r.score)),
           opts.status ? el("td", {}, badge(r, false)) : null,
@@ -835,8 +894,7 @@
             el("span", { class: "key" }, el("span", { class: "swatch partial" }), "Period not over yet")),
           app && !fixed ? el("p", { class: "muted" }, `The records of ${app === "none" ? "requests of no application" : "the application " + app}. The IDS counts the requests it analysed for all applications together, so they are not shown here.`) : null,
           nothing ? el("p", { class: "empty" }, app ? "No records of this application in this period." : "No records in this period. Run the IDS with records, or choose a longer period.") : columns(o, pick, !app)),
-        el("section", { class: "card" },
-          el("div", { class: "card-head" }, el("h2", {}, "Latest alerts"), latest.total ? el("a", { href: alertsLink({}) }, `All ${nf.format(latest.total)} alerts →`) : null),
+        headedCard("Latest alerts", latest.total ? viewAll(alertsLink({}), "View all alerts") : null,
           newest.length ? listTable(newest, { apps: !app && latest.applications.length > 1, verdict: true }) : el("p", { class: "empty" }, "No alerts in this period.")),
         liveInput || o.unknown_applications.length ? el("div", { class: "grid-2" },
           liveInput ? gapsCard(o) : null,
@@ -895,9 +953,11 @@
       if (same(url, p)) return;
       const alerts = (name, extra) => "/alerts?" + query({ range, app: name, ...extra });
       const count = (n, href) => (n ? el("a", { href }, nf.format(n)) : "0");
-      const row = (a, none) => el("tr", {},
-        el("td", {}, none ? el("a", { href: alerts("none", { kind: "all" }) }, "Requests of no application")
-          : el("a", { href: appLink(a.name) }, a.name), !none && !a.running ? el("div", { class: "sub" }, "not in the running configuration") : null),
+      // A row opens the application's page; the one of no application
+      // opens its records.
+      const row = (a, none) => linkedRow(none ? alerts("none", { kind: "all" }) : appLink(a.name), null,
+        el("td", {}, none ? el("a", { class: "row-link", href: alerts("none", { kind: "all" }) }, "Requests of no application")
+          : el("a", { class: "row-link", href: appLink(a.name) }, a.name), !none && !a.running ? el("div", { class: "sub" }, "not in the running configuration") : null),
         el("td", { class: "mono" }, none ? el("span", { class: "muted" }, "every other host and path") : a.hosts.map((h) => el("div", {}, h + (a.paths && a.paths.length ? " " + a.paths.join(", ") : "")))),
         el("td", {}, none ? el("span", { class: "muted" }, "rules only") : a.running ? a.mode : "–"),
         el("td", {}, a.running ? String(a.paranoia_level) : "–"),
@@ -913,10 +973,10 @@
           `Requests of no application run at the default level ${p.default_level}, with the rules only` +
           (p.require_profile ? ", and get a no_profile finding (require_profile)." : ".")),
         p.applications.length ? card(null, el("div", { class: "table-wrap" }, el("table", { class: "wide apps" },
-          el("thead", {}, el("tr", {}, head.map(([h, c]) => el("th", { class: c }, h)))),
+          el("thead", {}, el("tr", {}, head.map(([h, c]) => el("th", { class: c }, h)), goHead())),
           el("tbody", {}, p.applications.map((a) => row(a, false)), row(p.none, true)))))
           : card(null, el("p", { class: "empty" }, "The running configuration has no applications. An application is named with its hosts and a profile file under \"applications\" in the product configuration."),
-            p.none.records ? el("p", {}, el("a", { href: alerts("none", { kind: "all" }) }, `${nf.format(p.none.records)} records of no application in this period →`)) : null),
+            p.none.records ? el("p", { class: "card-foot" }, `${nf.format(p.none.records)} records of no application in this period. `, viewAll(alerts("none", { kind: "all" }), "View them")) : null),
         adminRole ? addForm : null));
     });
     period.onChange(() => {
@@ -1291,16 +1351,16 @@
       replace(el("div", { class: "stack" },
         el("p", { class: "lead muted" }, "Every address that sent a recorded request in this period, the most alerts first. A client's page has everything it sent; it is where blocking an address will start (K4)."),
         card(null, d.rows.length ? [el("div", { class: "table-wrap" }, el("table", { class: "wide" },
-          el("thead", {}, el("tr", {}, [["Client", ""], ["Alerts", "num"], ["Records", "num"], ["First", ""], ["Last", ""], ["Applications", ""], ["Attack groups", ""], ["Marked", ""]].map(([h, c]) => el("th", { class: c }, h)))),
-          el("tbody", {}, d.rows.map((c) => el("tr", {},
-            el("td", { class: "mono" }, el("a", { href: "/clients/" + encodeURIComponent(c.ip) + "?" + query({ range: f.range }) }, c.ip)),
+          el("thead", {}, el("tr", {}, [["Client", ""], ["Alerts", "num"], ["Records", "num"], ["First", ""], ["Last", ""], ["Applications", ""], ["Attack groups", ""], ["Marked", ""]].map(([h, c]) => el("th", { class: c }, h)), goHead())),
+          el("tbody", {}, d.rows.map((c) => { const page = "/clients/" + encodeURIComponent(c.ip) + "?" + query({ range: f.range }); return linkedRow(page, null,
+            el("td", { class: "mono" }, el("a", { class: "row-link", href: page }, c.ip)),
             el("td", { class: "num" }, c.alerts ? el("a", { href: alerts(c.ip, {}) }, nf.format(c.alerts)) : "0"),
             el("td", { class: "num" }, el("a", { href: alerts(c.ip, { kind: "all" }) }, nf.format(c.records))),
             el("td", { class: "nowrap" }, fmtTime(c.first)),
             el("td", { class: "nowrap" }, ago(c.last)),
             el("td", {}, c.applications.map(appName).join(", ")),
             el("td", {}, chips(c.groups, null, 2)),
-            el("td", { class: "nowrap" }, [c.real_attacks ? `${nf.format(c.real_attacks)} real attack` : "", c.false_positives ? `${nf.format(c.false_positives)} false positive` : ""].filter(Boolean).join(", ") || "–")))))),
+            el("td", { class: "nowrap" }, [c.real_attacks ? `${nf.format(c.real_attacks)} real attack` : "", c.false_positives ? `${nf.format(c.false_positives)} false positive` : ""].filter(Boolean).join(", ") || "–")); })))),
           d.total > d.rows.length ? el("p", { class: "muted" }, `The first ${d.rows.length} of ${nf.format(d.total)} addresses.`) : null]
           : el("p", { class: "empty" }, "No recorded request has a client address in this period."))));
     });
@@ -1341,10 +1401,9 @@
           tile("Records", c.records, c.first ? "since " + fmtTime(c.first) : ""),
           tile("Marked real attack", c.verdicts.real_attack || 0, ""),
           tile("Marked false positive", c.verdicts.false_positive || 0, "")),
-        card("Records over time",
+        headedCard("Records over time", c.records ? viewAll(alerts({}), "View all records") : null,
           el("div", { class: "legend" }, el("span", { class: "key" }, el("span", { class: "swatch alerts" }), "Alerts"), el("span", { class: "key" }, el("span", { class: "swatch others" }), "Records below the threshold")),
-          c.records ? columns(c, pick, false) : el("p", { class: "empty" }, "Nothing from this address in this period."),
-          c.records ? el("p", {}, el("a", { href: alerts({}) }, `All ${nf.format(c.records)} records of ${ip} →`)) : null),
+          c.records ? columns(c, pick, false) : el("p", { class: "empty" }, "Nothing from this address in this period."),),
         c.records ? el("div", { class: "grid-2x2" },
           card("Paths", toplist(c.top_paths, (i) => el("span", { class: "mono" }, i.key))),
           card("Rules", toplist(c.top_rules, (i) => [el("strong", {}, i.key), " ", i.label], (i) => "/rules/" + i.key)),
@@ -1797,7 +1856,7 @@
                 el("td", { class: "num" }, count(st.fired, alerts({ app: st.application }))),
                 el("td", { class: "num" }, count(st.false_positives, alerts({ app: st.application, review: "false_positive" }))));
             }))))),
-        card("Records over time",
+        headedCard("Records over time", p.fired ? viewAll(alerts({}), "View all records") : null,
           el("div", { class: "legend" },
             el("span", { class: "key" }, el("span", { class: "swatch alerts" }), "Alerts"),
             el("span", { class: "key" }, el("span", { class: "swatch others" }), "Records below the threshold")),
@@ -1923,7 +1982,7 @@
     const pager = (l, where) => {
       const first = l.total ? (l.page - 1) * pageSize + 1 : 0, lastN = Math.min(l.total, l.page * pageSize);
       const order = form.elements.sort.value === "score" ? "highest score first" : "newest first";
-      const go = (to) => () => {
+      const go = (to) => {
         state.page = to;
         ownChange = true;
         sync();
@@ -1935,9 +1994,8 @@
         el("span", { class: "muted" }, l.total ? `${nf.format(first)}–${nf.format(lastN)} of ${nf.format(l.total)} ${what()} · ${order}` : ""),
         el("span", { class: "grow" }),
         l.pages > 1 ? [
-          el("button", { type: "button", class: "small", disabled: l.page <= 1, onclick: go(l.page - 1) }, "← Newer"),
           el("span", { class: "muted" }, `Page ${l.page} of ${l.pages}`),
-          el("button", { type: "button", class: "small", disabled: l.page >= l.pages, onclick: go(l.page + 1) }, "Older →")] : null);
+          pageButtons(l.page, l.pages, go, "Newer page", "Older page")] : null);
     };
 
     const draw = (l) => {
@@ -2396,10 +2454,10 @@
             (sec.shown.length < sec.rules.length ? ` · ${sec.shown.length} shown` : ""))),
         // The same column widths in every section (app.css, table.rules).
         el("div", { class: "table-wrap" }, el("table", { class: "wide rules" },
-          el("colgroup", {}, ["id", "msg", "line", "phase", "level", "status", "fired", "fp"].map((c) => el("col", { class: c }))),
-          el("thead", {}, el("tr", {}, ["Rule", "Description", "Line", "Phase", "Level", "Status", "Fired", "False positive"].map((h, i) => el("th", { class: i >= 6 ? "num" : "", title: i === 7 ? "Records of this rule in the period that someone marked false positive, also records that are no longer kept" : null }, h)))),
-          el("tbody", {}, sec.shown.map((r) => el("tr", {},
-            el("td", {}, el("a", { href: "/rules/" + r.id + "?" + query({ range: f.range }), title: "This rule's page: where it runs, and what it found" }, String(r.id))),
+          el("colgroup", {}, ["id", "msg", "line", "phase", "level", "status", "fired", "fp", "go"].map((c) => el("col", { class: c }))),
+          el("thead", {}, el("tr", {}, ["Rule", "Description", "Line", "Phase", "Level", "Status", "Fired", "False positive"].map((h, i) => el("th", { class: i >= 6 ? "num" : "", title: i === 7 ? "Records of this rule in the period that someone marked false positive, also records that are no longer kept" : null }, h)), goHead())),
+          el("tbody", {}, sec.shown.map((r) => linkedRow("/rules/" + r.id + "?" + query({ range: f.range }), null,
+            el("td", {}, el("a", { class: "row-link", href: "/rules/" + r.id + "?" + query({ range: f.range }), title: "This rule's page: where it runs, and what it found" }, String(r.id))),
             el("td", { class: "wrap" }, r.msg || el("span", { class: "muted" }, "–")),
             el("td", {}, String(r.line)),
             el("td", {}, String(r.phase)),
@@ -3167,9 +3225,9 @@
       userSel.value = p.users.includes(chosen) ? chosen : "";
       page = p.page;
       history.replaceState(null, "", "/log?" + query({ user: userSel.value, kind: kindSel.value, page: page > 1 ? page : "" }));
-      refill(pager, el("span", { class: "muted" }, `${nf.format(p.total)} ${p.total === 1 ? "entry" : "entries"}, page ${p.page} of ${p.pages}`),
-        el("button", { type: "button", class: "small", disabled: p.page <= 1, onclick: () => { page--; load(); } }, "Newer"),
-        el("button", { type: "button", class: "small", disabled: p.page >= p.pages, onclick: () => { page++; load(); } }, "Older"));
+      refill(pager, el("span", { class: "muted" }, `${nf.format(p.total)} ${p.total === 1 ? "entry" : "entries"}`), el("span", { class: "grow" }),
+        p.pages > 1 ? [el("span", { class: "muted" }, `Page ${p.page} of ${p.pages}`),
+          pageButtons(p.page, p.pages, (to) => { page = to; load(); }, "Newer page", "Older page")] : null);
       refill(table, p.entries.length ? el("div", { class: "table-wrap" }, el("table", {},
         el("thead", {}, el("tr", {}, el("th", {}, "Time"), el("th", {}, "User"), el("th", {}, "Kind"), el("th", {}, "What"))),
         el("tbody", {}, p.entries.map((e) => el("tr", {},

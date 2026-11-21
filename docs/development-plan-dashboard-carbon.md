@@ -94,8 +94,8 @@ Recommendation was 2: the frame decides the whole look; it is cheap to change be
 | --- | --- |
 | Decisions Y1–Y10 | All decided on 21 November 2026 |
 | 1. Files, script, theme, policy, frame, icons | Done 21 November 2026 |
-| 2. Lists and tables | Next |
-| 3. Forms and settings | Waiting |
+| 2. Lists and tables | Done 21 November 2026 |
+| 3. Forms and settings | Next |
 | 4. Detail pages | Waiting |
 | 5. Explanations, loading and empty states, close | Waiting |
 
@@ -106,3 +106,6 @@ Recommendation was 2: the frame decides the whole look; it is cheap to change be
 3. The policy is the one of Y2: `style-src-attr 'unsafe-inline'` added, nothing else. A test checks every directive.
 4. The header is Carbon's, dark in both themes: the menu button, the name, and two actions with Carbon's header panels, the colour theme and the account (name, role, the account page, log out). The side navigation is Carbon's, with an icon per page and the groups' names as before. Carbon's side navigation folds below 1056 pixels; the dashboard's folds below 1312, as the user chose on 21 November 2026, so app.js opens and closes it (Carbon's "fixed" mode) and keeps the header's actions in the tab order while it is open beside the page.
 5. The parts every page uses: the period is Carbon's content switcher, as is "Show" on the alerts list; messages are Carbon's inline notification (low contrast), with the title in its slot so that the browser shows no tooltip of it; Pause is a ghost button; the way up from an application, a rule or a client is Carbon's breadcrumb.
+6. Stage 2. The tables stay HTML tables in Carbon's data table look: Carbon's `cds-table` sets no column widths, and the record lists need fixed ones (a long request is cut short in its cell, not pushing the last column out of the card). A row that opens a page (a record, a client, an application, a rule) is one link: in the text colour, lit up under the pointer, with a › at its end; its first cell's link is the one the keyboard reaches, and a click anywhere else in the row follows it. Ctrl-click opens it in a new tab. Counts and chips that open another list stay blue. Lists whose rows open nothing (Endpoints, Runs, the change log, Users, an application's History) have no ›. The bar lists of the overview, a client and a rule end with a › too.
+7. "All 34 alerts →" is a small Carbon button, "View all alerts", at the right of the card's title; a client and a rule have "View all records" on their "Records over time" card. The pages of the alerts list and the change log turn with Carbon's two page buttons, ‹ and ›, named in their tooltips.
+8. The record lists have 12 pixels between columns instead of 16, and narrower fixed columns, because Carbon's side navigation (256 pixels) is wider than the old one. At 1440 pixels the request keeps about 7rem beside the navigation; it grows with the window, and the whole request is in its tooltip and on the record's page.

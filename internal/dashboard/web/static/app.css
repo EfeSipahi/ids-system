@@ -242,7 +242,9 @@ cds-inline-notification { max-inline-size: none; inline-size: 100%; margin: 0; }
 .card {
   background: var(--layer); padding: 16px; min-width: 0;
 }
-.card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; min-height: 32px; }
+.card-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; margin: 16px 0 0; color: var(--text-2); font-size: 0.875rem; }
+cds-button.view-all { flex: none; }
 .card-head h2 { margin: 0; }
 .card > h1 { font-size: 1.25rem; margin-bottom: 8px; }
 details.card > summary { cursor: pointer; font-weight: 600; }
@@ -288,7 +290,16 @@ td { border-top: 1px solid var(--border-subtle); color: var(--text-2); }
 th { background: var(--layer-accent); color: var(--text); font-weight: 600; white-space: nowrap; height: 40px; vertical-align: middle; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 tbody tr:hover td { background: var(--layer-hover); color: var(--text); }
+/* Rows that open a page (Y4): the whole row is the link, in the text
+   colour, and ends with a › */
 tr.linked { cursor: pointer; }
+a.row-link { color: var(--text); text-decoration: none; }
+a.row-link:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+th.go, td.go { width: 2rem; padding-left: 0; padding-right: 12px; }
+td.go { color: var(--cds-icon-secondary); }
+td.go svg.icon { display: block; margin-left: auto; }
+tr.linked:hover td.go { color: var(--text); }
+table col.go { width: 2rem; }
 td .sub, .sub { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.32px; }
 .wrap { overflow-wrap: anywhere; word-break: break-word; }
 .nowrap { white-space: nowrap; }
@@ -298,7 +309,12 @@ table.rows td { white-space: nowrap; vertical-align: middle; }
 .clip { display: block; max-width: 34rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Record lists: fixed columns; the request takes what is left */
-table.list { table-layout: fixed; min-width: 1000px; }
+table.list { table-layout: fixed; min-width: 1100px; }
+/* The list has many columns: 12 pixels between them, so that the request
+   keeps its room beside the side navigation */
+table.list th, table.list td { padding-left: 12px; padding-right: 12px; }
+table.list th:first-child, table.list td:first-child { padding-left: 16px; }
+table.list th.go, table.list td.go { padding-left: 0; }
 table.list td { overflow: hidden; text-overflow: ellipsis; }
 table.list .clip { max-width: none; }
 table.list col.time { width: 10.5rem; }
@@ -312,8 +328,6 @@ table.list col.app { width: 8.5rem; }
 table.list.many col.score { width: 8rem; }
 table.list.many col.groups { width: 11rem; }
 table.list.many col.rules { width: 8rem; }
-table.list td > a { text-decoration: none; }
-table.list tr:hover td > a, table.list td > a:focus-visible { text-decoration: underline; }
 
 /* Rules: the same columns in every file section */
 table.rules { table-layout: fixed; }
@@ -340,6 +354,8 @@ a.chip:hover { background: var(--layer-selected); color: var(--text); text-decor
 .pager.top { margin-bottom: 16px; }
 .pager.bottom { margin-top: 16px; }
 .pager .grow { flex: 1; }
+.pager:not(.top):not(.bottom) { margin-bottom: 16px; }
+.page-buttons { display: inline-flex; }
 
 /* Key-value lists */
 dl.kv { display: grid; grid-template-columns: minmax(140px, max-content) 1fr; gap: 8px 24px; margin: 0; }
@@ -364,8 +380,12 @@ button.copy:hover { background: var(--layer-hover); color: var(--link-hover); }
 .toplist .count { color: var(--text-2); font-variant-numeric: tabular-nums; }
 .toplist .track { height: 8px; background: var(--layer-accent); }
 .toplist .bar { height: 8px; background: var(--series-1); min-width: 2px; }
-.toplist a { color: var(--text); text-decoration: none; }
-.toplist a:hover .name { text-decoration: underline; }
+.toplist a { color: var(--text); text-decoration: none; display: grid; gap: 4px; padding: 4px 8px; margin: -4px -8px; }
+.toplist a:hover { background: var(--layer-hover); }
+.toplist a:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+.toplist .go { color: var(--cds-icon-secondary); display: inline-flex; align-self: center; }
+.toplist a:hover .go { color: var(--text); }
+.toplist .row .end { display: inline-flex; align-items: center; gap: 4px; flex: none; }
 
 /* Chart */
 .chart { position: relative; }
@@ -510,16 +530,17 @@ td.actions button + button { margin-left: 8px; }
 .mark-bar select, .mark-bar input { height: 32px; padding: 0 12px; font-size: 0.875rem; }
 .mark-bar input[name$="note"] { width: 18rem; max-width: 100%; }
 /* With the Review column (and the boxes for marking), the other columns
-   give up room, so that the request keeps about 12rem at 1440 px. */
-table.list col.pick { width: 2.5rem; }
-table.list col.review { width: 8.25rem; }
-table.list.reviewed col.time { width: 9.5rem; }
+   give up room for the request, which has about 7rem beside the side
+   navigation at 1440 px and grows with the window. */
+table.list col.pick { width: 2.25rem; }
+table.list col.review { width: 8rem; }
+table.list.reviewed col.time { width: 9rem; }
 table.list.reviewed col.score { width: 7.25rem; }
-table.list.reviewed col.client { width: 10.25rem; }
+table.list.reviewed col.client { width: 9.5rem; }
 table.list.reviewed col.app { width: 7.5rem; }
-table.list.reviewed col.groups { width: 10rem; }
-table.list.reviewed col.rules { width: 8.75rem; }
-table.list.reviewed col.status { width: 8.75rem; }
+table.list.reviewed col.groups { width: 9rem; }
+table.list.reviewed col.rules { width: 8rem; }
+table.list.reviewed col.status { width: 8rem; }
 table.list td.pick, table.list th.pick { padding-right: 0; }
 table.list input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var(--interactive); }
 table.rules col.fp { width: 7.5rem; }
