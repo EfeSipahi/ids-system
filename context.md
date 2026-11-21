@@ -46,10 +46,16 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 
 **Navigation panel (21 November 2026):** the pages are in a panel on the left, in groups (Monitor, Rules, System, Administration), folded behind a Menu button below 1312 px; details in the dashboard UI plan, "The side navigation".
 
+**A dashboard that controls the IDS (21 November 2026):** built following [docs/development-plan-dashboard-control.md](docs/development-plan-dashboard-control.md), decisions W1–W26 (main plan sections 11.34 and 11.35), in seven committed stages.
+- Pages per application (Summary, Rules, Profile, Settings, History) and per rule; Settings for every application; Clients, Endpoints, Records, Analyse files, Proposed changes and Dashboard settings.
+- Changes to the IDS wait as pending changes with a preview from the records, are applied as one version that can be undone, and are written into the IDS's own configuration and profiles (`ids_config` in `dashboard.json`); analysts propose, admins apply.
+- `ids-live` reads its configuration every 3 seconds and takes a change without stopping (`-watch`); `scripts/ids-live-ctl` starts and stops it.
+- Each stage's note in the plan lists the choices made that the decisions did not settle; they wait for the user's approval.
+
 **Marks, users with roles and a change log (20 November 2026):** built following [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md), decisions G1–G6 (main plan sections 11.31 and 11.32); the state files are described in [docs/dashboard-state.md](docs/dashboard-state.md).
 - A verdict per alert (not reviewed, real attack, expected, false positive, undetermined) with a note, set on one record, the chosen ones or all that match the list's filter (at most 10,000); a Review column and filter; "not reviewed" on the overview; false positives per rule on the Rules page, also of records that rotated away.
 - Three roles as a ladder: viewer, analyst (also marks and tests), admin (also Users and Log). Users, roles and passwords on the Users page, each change after the admin's password; everyone can change their own password (at least 15 characters).
-- An append-only change log, shown with the logins on the Log page to admins. The dashboard writes only its state folder, never a record or an IDS setting.
+- An append-only change log, shown with the logins on the Log page to admins. Until 21 November the dashboard wrote only its state folder; since then it also writes the IDS's settings (W12) and, on an admin's request, deletes records (W19).
 
 Run it:
 
@@ -61,7 +67,8 @@ go run ./cmd/ids-offline -endpoints -requests FILE                            # 
 go run ./cmd/ids-offline -requests FILE -replay                               # records at the requests' own "time", in time order (a replay)
 go run ./cmd/ids-dashboard -add-user admin                                    # prints the password once; -role viewer|analyst|admin (default admin)
 go run ./cmd/ids-dashboard                                                    # https://127.0.0.1:8443
-go run ./cmd/ids-live -config FILE                                            # needs a live section, or -socket; see docs/copy-format.md, section 6
+go run ./cmd/ids-live -config FILE                                            # needs a live section, or -socket; see docs/copy-format.md, section 6; takes changed settings by itself
+IDS_LIVE_CONFIG=FILE scripts/ids-live-ctl start                               # ids-live in the background: start, stop, restart, status
 lab/lab.sh build && lab/lab.sh equality                                       # the lab: Caddy with ids_copy, ids-live, the CSIC requests; outputs in /tmp/ids-lab
 ```
 

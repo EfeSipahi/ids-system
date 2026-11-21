@@ -327,7 +327,7 @@ Decided by the user on 21 November 2026: 1. Each commit holds one stage's code, 
 | 4. The profile | Done, 21 November 2026 (note 4) |
 | 5. Analyse files | Done, 21 November 2026 (note 5) |
 | 6. Records, the dashboard's settings, views | Done, 21 November 2026 (note 6) |
-| 7. The close | Not started |
+| 7. The close | Done, 21 November 2026 (note 7) |
 
 ## 6. Notes of the night run
 
@@ -418,4 +418,14 @@ Each stage's note says what was built, how it was checked, and the choices made 
       - the Records page does not take the folder's lock to see whether `ids-live` runs, since a program starting in that moment would fail; it says so from `ids-live`'s counts, and a deletion takes the lock when it runs;
       - a full file left without any request record after a deletion is removed;
       - export is open to every role, as every role sees the same records on the pages.
+7. Stage 7, the close.
+   1. Documents: `context.md`, the main plan (sections 11.34 and 11.35), `docs/project-history.md` (4.12), `docs/dashboard-state.md` (the new state files and settings), `docs/records-format.md` (`max_age_days`, a new run inside a file), `docs/copy-format.md` (`-watch`, `ids-live-ctl`), and a note at the top of `docs/dashboard-roadmap.md` on what this plan built and what is left.
+   2. Checks of the whole, as section 4 asks:
+      - `gofmt -l .` empty, `go vet ./...` and `go test ./...` pass;
+      - `go test -race` passes for `record`, `live`, `ids-live`, `ids-offline`, `jsonedit`, `batch`, `config`, `profile` and `dashboard`;
+      - every route as no login, viewer, analyst and admin, in `TestEveryRouteNeedsALogin` and `TestRoutesByRole`;
+      - the IDS's results where nothing changed: CRS 2,916 of 5,072 flagged at level 1 (through the dashboard's Analyse files, `TestAnalyseGivesIDSOfflinesNumbers`); CSIC 96 / 176 at level 1 with `ids-offline` and a temporary records folder; `ids-offline`'s output unchanged by the move of its summary;
+      - a last browser round over every page, as admin (light, 1366 px), analyst (dark, 1920 px) and viewer (light, 1024 px), 62 pages in all: no page wider than the window, no console error, no error on a page;
+      - the user's `records/` folder: back to its 1,905,868 bytes and three runs after the mistake of stage 5, and untouched since; the user's own dashboard and its configuration were not touched.
+   3. Left for the user: the choices listed in notes 1 to 6, for approval; pushing the commits; updating the user's own dashboard (`~/.local/bin/ids-dashboard`) and naming `ids_config` in its `dashboard.json`, which turns changes on there.
 

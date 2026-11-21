@@ -332,12 +332,21 @@ The first step of a dashboard that does more than read. Before deciding, the tea
 How it was checked: every page and answer as no login, viewer, analyst and admin; the last admin can't be removed; a role change ends the user's sessions; no password, temporary or chosen, appears in any file of the state folder; four browser rounds as each role found two layout defects, both fixed.
 
 
+### 4.12. A dashboard that controls the IDS (21 November)
+
+The user asked for everything the command line and the configuration files can do to be done from the dashboard as well, "without confusing its users". An inventory found 18 things the dashboard could not do; 26 decisions (W1–W26, main plan section 11.34) shaped the answer, which was built in seven stages in one run, each with its tests, a browser round and a commit.
+
+1. The organisation: a visible application filter on the pages that show what happened, instead of a hidden selector; a page per application (Summary, Rules, Profile, Settings, History) and per rule; settings for every application on one page; every control names its reach ("Switch off for csic-shop").
+2. Changing safely: changes wait as pending changes per object, with a preview worked out from the records (a record's score is the sum of its findings' weights, which held for all 844 of the user's records), are applied together as one version that keeps the old files, and can be undone byte for byte. Analysts propose, admins apply; the widest changes ask for the password again. The dashboard writes the IDS's own files in place, and `ids-live` takes them within seconds without stopping, starting a new run.
+3. The command line's abilities: request files analysed from the dashboard with `ids-offline`'s numbers (the summary moved to `internal/batch`, used by both); profile suggestions from records and files; a JSON editor for profiles; records exported, deleted and kept for a set age; the dashboard's own settings. What stays on the command line is on purpose: the first admin, recovery, starting the programs, the dashboard's address and certificate, building Caddy.
+4. A mistake: a comparison of `ids-offline` before and after the move wrote records into the user's records folder; it was found and undone the same hour (the plan's note 5.4).
+
 ## 5. How the work was done
 
 ### 5.1. Decisions before code
 
 1. The assistant proposed options in numbered points, each with a reason and a small example; the team chose. Nothing open was treated as decided.
-2. Each decision got an ID and was written down with its date and reason: M (architecture), A (open topics), D (rule-layer plan), K (whole rule part), R and V (records and dashboard), U (dashboard UI), F (application profiles), T (live traffic), S (the test tab), G (marks, roles and the change log). The history is in section 11 of the main plan.
+2. Each decision got an ID and was written down with its date and reason: M (architecture), A (open topics), D (rule-layer plan), K (whole rule part), R and V (records and dashboard), U (dashboard UI), F (application profiles), T (live traffic), S (the test tab), G (marks, roles and the change log), W (a dashboard that controls the IDS). The history is in section 11 of the main plan.
 3. Work was split into plans with a number to reach (tests that must pass), and a report followed each plan. From plan A on, the team asked for one plan at a time with a stop for review. Code was committed and pushed only when the team asked.
 
 ### 5.2. Behaviour taken from a source, never guessed

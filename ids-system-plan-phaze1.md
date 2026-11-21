@@ -1671,6 +1671,21 @@ All five stages of [docs/development-plan-marks-users.md](docs/development-plan-
 
 **Next in the order:** the user's choice: a false positive turned into an exception (with a preview and a history), settings pages, more views, or the response rules (K8) and alerts by webhook and syslog.
 
+### 11.34. A dashboard that controls the IDS — 21 November 2026
+
+The user asked that everything the command line and the configuration files can do be done from the dashboard, without confusing its users. The plan, [docs/development-plan-dashboard-control.md](docs/development-plan-dashboard-control.md), lists 18 things the dashboard could not do and 26 decisions, W1–W26, which the user took one by one on 21 November 2026. In short:
+
+1. Organisation (W1–W6): an application filter on each page that shows what happened, no hidden selector; navigation by what one looks at; one page per application with tabs; the settings for every application on one page; every control names its reach; a rule's page shows its status everywhere and has one control, off for every application.
+2. Changing safely (W7–W13): pending changes per object, applied together as one version; a preview from the records, which says what it can't tell; analysts propose and admins apply; the password again for the widest changes; every version kept, any one undone; the dashboard writes the IDS's own files in place; `ids-live` watches its files and takes a change without stopping.
+3. The command line's abilities (W14–W22): Analyse files; profile suggestions from records and files; forms for the common parts of a profile and a JSON editor for the rest; `ids-live`'s state shown, started and stopped by `scripts/ids-live-ctl`; the `ids_copy` block written for Caddy, not Caddy changed; records exported, deleted and kept for an age; the dashboard's safe settings; what stays on the command line; controlling the system in a later plan.
+4. Views (W23): Clients and Endpoints. Order (W24–W26): seven stages in one run, a commit after each, nothing pushed until the user says so.
+
+### 11.35. The dashboard that controls the IDS built — 21 November 2026
+
+The seven stages were built and committed one by one; each stage's note in the plan says what was built, how it was checked, and the choices the decisions did not settle, which wait for the user's approval. The checks of the whole: `go test ./...`, `go test -race` for the changed packages, every route as no login, viewer, analyst and admin, a browser round per stage. The dashboard's Analyse files gives `ids-offline`'s numbers: 2,916 of 5,072 CRS tests flagged at level 1. `ids-offline`'s output did not change with the move of its summary to `internal/batch`.
+
+Changes to earlier decisions: V2 and C1 of the marks plan ("the dashboard writes only its state folder") end with W12; C6 (how long marks are kept) is settled by W19.
+
 ### 11.33. A replay of request files on their own clock — 20 November 2026
 
 The user asked why the demo records all had the same time: a record carries the moment of its analysis, and `ids-offline` analyses a file in seconds. Of three ways (a replay on the requests' own times; real live traffic over real time; shifting the times of written records), the user chose the first, after asking which part changes: only the time stamped on the records of a replay, not the analysis. No CRS request rule reads the time, and the engine has no time variable.

@@ -33,7 +33,7 @@ type writer struct {
 	maxAge time.Duration
 	// pruned is when old files were last looked for.
 	pruned time.Time
-	now     func() time.Time
+	now    func() time.Time
 
 	f    *os.File
 	size int64

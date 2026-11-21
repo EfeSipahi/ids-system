@@ -42,7 +42,9 @@ func TestRewrite(t *testing.T) {
 		t.Errorf("rotated files left: %v", left)
 	}
 	// Older than 5 November: nothing of b.
-	n, err = Rewrite(dir, func(l Line) bool { return l.Type == TypeRequest && l.Time.Before(time.Date(2026, 11, 5, 0, 0, 0, 0, time.UTC)) })
+	n, err = Rewrite(dir, func(l Line) bool {
+		return l.Type == TypeRequest && l.Time.Before(time.Date(2026, 11, 5, 0, 0, 0, 0, time.UTC))
+	})
 	if err != nil || n != 0 {
 		t.Errorf("%d dropped, %v", n, err)
 	}

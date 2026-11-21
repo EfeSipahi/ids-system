@@ -2,6 +2,8 @@
 
 Written: 21 November 2026, at the user's request, from the conversations of 19–21 November 2026. This is a list to choose from, not a plan: each part gets its own decisions and plan before work starts, as every step of this project has.
 
+Since 21 November 2026, [development-plan-dashboard-control.md](development-plan-dashboard-control.md) builds most of this list: the foundations (2), exceptions (3.1–3.4), applications and their settings (4), the Rules page's page per rule (6.1), the views (7) and 8.1. Still open: a single stricter rule for one application (3.5), own rules (5), search by words (6.2) beyond the Rules page's search, the smaller fixes 8.2–8.5, and controlling the system (9), which W22 keeps for a later plan.
+
 ## 1. Where the dashboard stands
 
 | Part | Since | Plan |
