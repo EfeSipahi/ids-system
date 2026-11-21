@@ -52,6 +52,11 @@ Planned product: a Go core, our own SecLang rule engine running CRS 4.30.0 at a 
 - `ids-live` reads its configuration every 3 seconds and takes a change without stopping (`-watch`); `scripts/ids-live-ctl` starts and stops it.
 - Each stage's note in the plan lists the choices made that the decisions did not settle; they wait for the user's approval.
 
+**The dashboard on IBM Carbon's own components (21 November 2026):** built following [docs/development-plan-dashboard-carbon.md](docs/development-plan-dashboard-carbon.md), decisions Y1–Y10 (main plan sections 11.36 and 11.37), in five committed stages.
+- IBM's Carbon web components 2.68.0, its themes and icons are in `internal/dashboard/web/static/carbon/`, made by `tools/carbon-fetch.sh VERSION` (with `tools/carbonprep`); do not edit them by hand. `carbon.js` loads the components; `app.js` builds the pages with them.
+- Static files are served under `/static/<version>/` and kept by the browser; the policy allows inline style attributes only (`style-src-attr 'unsafe-inline'`).
+- Fields, selects and buttons are HTML controls drawn as Carbon's (app.css); tables are HTML tables in Carbon's look.
+
 **Marks, users with roles and a change log (20 November 2026):** built following [docs/development-plan-marks-users.md](docs/development-plan-marks-users.md), decisions G1–G6 (main plan sections 11.31 and 11.32); the state files are described in [docs/dashboard-state.md](docs/dashboard-state.md).
 - A verdict per alert (not reviewed, real attack, expected, false positive, undetermined) with a note, set on one record, the chosen ones or all that match the list's filter (at most 10,000); a Review column and filter; "not reviewed" on the overview; false positives per rule on the Rules page, also of records that rotated away.
 - Three roles as a ladder: viewer, analyst (also marks and tests), admin (also Users and Log). Users, roles and passwords on the Users page, each change after the admin's password; everyone can change their own password (at least 15 characters).
@@ -93,7 +98,7 @@ Go module `github.com/EfeSipahi/ids-system`. One dependency: `github.com/corazaw
 | `internal/record` | Record files (R1–R7): building and masking request records, `start`, `counts` and `gap` records, the live fields (proxy, connection, TLS, response), rotation, file permissions, cookie hashes, the folder's lock |
 | `internal/copyframe` | The copy frames between a proxy's copier and `ids-live` (`docs/copy-format.md`) |
 | `internal/live` | The live input (A01): the Unix socket, hello frames, a queue with limits, workers, gap counts, the stop; turns a copy into the common request and analyses it as `ids-offline` does |
-| `internal/dashboard` | The dashboard: reader of the record files (also gaps and the live fields), JSON API, pages (embedded HTML, CSS, JS) in the IBM Carbon look with IBM Plex fonts (`web/static/fonts/`, OFL-1.1), users with roles, login, sessions, its own certificate, the test tab (`tester.go`, built-in examples in `web/examples.json`), marks (`marks.go`), the Users, Account and Log pages and the change log (`admin.go`), and the lock of its state folder |
+| `internal/dashboard` | The dashboard: reader of the record files (also gaps and the live fields), JSON API, pages (embedded HTML, CSS, JS) built with IBM Carbon's web components, themes and icons (`web/static/carbon/`, Apache-2.0, made by `tools/carbon-fetch.sh`) and IBM Plex fonts (`web/static/fonts/`, OFL-1.1), users with roles, login, sessions, its own certificate, the test tab (`tester.go`, built-in examples in `web/examples.json`), marks (`marks.go`), the Users, Account and Log pages and the change log (`admin.go`), and the lock of its state folder |
 | `internal/version` | The program version `0.1.0-dev` and the Git revision of the build |
 | `cmd/ids-offline` | Command-line tool: `-config`, `-requests` (file or directory), `-summary`, `-json`, `-show-values`, `-paranoia-level`, `-records DIR`, `-application NAME`, `-endpoints`, `-replay` (records at each request's own `time`, decided 20 November 2026, main plan 11.33) |
 | `cmd/ids-live` | The live input as a service: `-config`, `-socket`, `-records`; stops on SIGTERM. Needs a `live` and a `records` section, or the flags |
@@ -122,7 +127,7 @@ Other files:
 | `testdata/requests/` | Example requests: starter file, all 5,072 converted CRS request tests (`crs/`), examples for file 905, 1,300 generated variants (`generated/`); see its README |
 | `testdata/crs-tests.json`, `testdata/crs-test-setup.conf` | The configuration the CRS tests are written for: the product configuration plus CRS's test setup rule 900005, at level 4 |
 | `testdata/reference/` | What Coraza found for those requests; see its README |
-| `tools/` | Python scripts that generate the test data, and `coraza-reference/`, a separate Go module that runs Coraza. Coraza is not a dependency of the IDS |
+| `tools/` | Python scripts that generate the test data; `coraza-reference/`, a separate Go module that runs Coraza (Coraza is not a dependency of the IDS); `carbon-fetch.sh` and `carbonprep/`, which put IBM Carbon's files into the dashboard |
 | `docs/development-plan-all-request-rules.md` | The plan for all request rules (finished 16 October 2026): plans A to F, with results after each |
 | `docs/development-plan-rule-layer.md` | The earlier plan (finished 11 October), with results per stage in its section 8 |
 | `docs/project-history.md` | What was done and how, 27 September to 19 November 2026, written for the project report |

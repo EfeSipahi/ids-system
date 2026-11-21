@@ -98,6 +98,8 @@
   <cds-button id="pause" kind="ghost" size="sm">Pause</cds-button>
 </div>{{end}}
 
+{{define "about"}}<cds-toggletip class="about" alignment="bottom-start" button-label="About this page"><span slot="body-text" id="about-text">{{.}}</span></cds-toggletip>{{end}}
+
 {{define "notice"}}<div id="notice" class="notice-box" hidden></div>{{end}}
 
 {{define "up"}}<cds-breadcrumb class="up"><cds-breadcrumb-item><cds-breadcrumb-link href="{{.Href}}">{{.Label}}</cds-breadcrumb-link></cds-breadcrumb-item></cds-breadcrumb>{{end}}

@@ -341,6 +341,16 @@ The user asked for everything the command line and the configuration files can d
 3. The command line's abilities: request files analysed from the dashboard with `ids-offline`'s numbers (the summary moved to `internal/batch`, used by both); profile suggestions from records and files; a JSON editor for profiles; records exported, deleted and kept for a set age; the dashboard's own settings. What stays on the command line is on purpose: the first admin, recovery, starting the programs, the dashboard's address and certificate, building Caddy.
 4. A mistake: a comparison of `ids-offline` before and after the move wrote records into the user's records folder; it was found and undone the same hour (the plan's note 5.4).
 
+### 4.13. The dashboard on IBM Carbon's own components (21 November)
+
+The user found the dashboard "a little raw" and chose IBM's component library over fixing what was seen. Ten decisions (Y1–Y10, main plan section 11.36) shaped it; five stages were built in one run, each with its tests, a browser round and a commit.
+
+1. IBM's own files: `tools/carbon-fetch.sh` copies one version of Carbon's web components (84 files for 24 components), its licence, its two themes and 52 icons into the binary, with no Node.js; a small Go program, `tools/carbonprep`, takes the themes and icons out of Carbon's packages. The browser keeps them under a versioned address.
+2. The frame and lists: Carbon's dark header with the theme and account panels and the side navigation with icons; rows of lists are one link with a ›, "View all" a small button, the pages of a list Carbon's page buttons.
+3. Forms: the page's own HTML controls drawn as Carbon's, so that forms, Enter and password managers keep working; icons on the action buttons.
+4. Details: a breadcrumb back from an alert, step buttons, status icons, links with Carbon's arrow; explanations behind Carbon's toggletip beside a page's or a card's title; a skeleton while a page loads.
+5. The policy gained one directive, `style-src-attr 'unsafe-inline'` (Y2), and a test checks all of its directives.
+
 ## 5. How the work was done
 
 ### 5.1. Decisions before code

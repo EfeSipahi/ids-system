@@ -1671,6 +1671,20 @@ All five stages of [docs/development-plan-marks-users.md](docs/development-plan-
 
 **Next in the order:** the user's choice: a false positive turned into an exception (with a preview and a history), settings pages, more views, or the response rules (K8) and alerts by webhook and syslog.
 
+### 11.36. The dashboard on IBM Carbon's own components — 21 November 2026
+
+The user found the dashboard "a little raw": in the Latest alerts card the times looked like links, and so did "All 732 alerts →". Of three ways (fix what is seen, a design audit first, or IBM's component library), the user chose the library. The plan, [docs/development-plan-dashboard-carbon.md](docs/development-plan-dashboard-carbon.md), has ten decisions, Y1–Y10, taken by the user one by one the same day:
+
+1. Y1: Carbon Web Components (`<cds-…>` tags from the dashboard's own JavaScript), not Carbon for React.
+2. Y2: the Content-Security-Policy allows inline style attributes only (`style-src-attr 'unsafe-inline'`), which three of the components write; scripts and style sheets stay as strict as before.
+3. Y3: IBM's ready files of one version, copied into the binary with Carbon's licence by `tools/carbon-fetch.sh VERSION`; no Node.js, no bundler.
+4. Y4–Y8, "your recommendations at all UI decisions": a row of a list is one link with a › at its end and "View all" is a small button; explanations behind an ⓘ with a one-line subtitle; Carbon's icons; the dashboard's own chart kept; Carbon's UI shell with a dark header in both themes.
+5. Y9–Y10: five stages in one run, a commit after each, pushed when the user says so.
+
+### 11.37. The dashboard on Carbon built — 21 November 2026
+
+The five stages were built and committed one by one; the plan's notes 1–14 say what each built and how it was checked. Choices the decisions did not settle, made in the work and waiting for the user's approval: the tables stay HTML tables in Carbon's look, as `cds-table` sets no column widths (note 6); the fields, selects and buttons stay HTML controls drawn with Carbon's tokens and measures, as Carbon's field components hide their input from the page's forms (note 9); the record lists have narrower columns beside Carbon's wider navigation (note 8). The browser keeps the 2.5 MB of Carbon's files under a versioned address, while the pages stay `no-store` (note 2).
+
 ### 11.34. A dashboard that controls the IDS — 21 November 2026
 
 The user asked that everything the command line and the configuration files can do be done from the dashboard, without confusing its users. The plan, [docs/development-plan-dashboard-control.md](docs/development-plan-dashboard-control.md), lists 18 things the dashboard could not do and 26 decisions, W1–W26, which the user took one by one on 21 November 2026. In short:

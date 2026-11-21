@@ -1,7 +1,9 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Change log</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Change log</h1>{{template "about" "Every change made through the dashboard, and every login. Entries are only added, never changed; passwords are never written."}}</div>
+    <p class="subtitle">Every change made through the dashboard, and every login.</p>
+  </div>
 </div>
-<p class="lead muted">Every change made through the dashboard, and every login. Entries are only added, never changed; passwords are never written.</p>
 <div id="view" class="stack"></div>
 {{end}}

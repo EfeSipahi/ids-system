@@ -1,8 +1,10 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Analyse files</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Analyse files</h1><cds-toggletip class="about" alignment="bottom-start" button-label="About this page"><span slot="body-text">Request files analysed by the IDS's own engine, as ids-offline does: a summary per file, whether CRS's test expectations are met, each request's findings.{{if .Admin}} An admin may also write the results into the records.{{end}}</span></cds-toggletip></div>
+    <p class="subtitle">Request files analysed by the IDS's own engine, as ids-offline does.</p>
+  </div>
 </div>
-<p class="lead muted">Request files analysed by the IDS's own engine, as <code>ids-offline</code> does: a summary per file, whether CRS's test expectations are met, each request's findings. {{if .Admin}}An admin may also write the results into the records.{{end}}</p>
 {{template "notice"}}
 <div id="view" class="stack"></div>
 {{end}}

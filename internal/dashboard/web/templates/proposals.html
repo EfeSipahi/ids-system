@@ -1,9 +1,11 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Proposed changes</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Proposed changes</h1>{{template "about" "Changes analysts proposed, waiting for an admin to apply them or turn them down, and changes added but not applied yet. Each is applied on its application's page, or under Settings for every application, with its preview."}}</div>
+    <p class="subtitle">Changes waiting for an admin, and changes added but not applied yet.</p>
+  </div>
   <div class="tools">{{template "live"}}</div>
 </div>
-<p class="lead muted">Changes analysts proposed, waiting for an admin to apply them or turn them down, and changes added but not applied yet. Each is applied on its application's page, or under Settings for every application, with its preview.</p>
 {{template "notice"}}
 <div id="view" class="stack"></div>
 {{end}}

@@ -137,7 +137,9 @@ cds-header:not(:defined), cds-side-nav:not(:defined) { visibility: hidden; }
 @media (max-width: 1311px) { cds-side-nav:not(.ready) { visibility: hidden; } }
 body[data-page="login"] main { max-width: none; }
 body[data-page="login"] .foot { text-align: center; }
-.stack { display: grid; gap: 16px; }
+/* minmax(0, …): a card never grows past the page for a wide select or
+   button; its tables scroll in their own box */
+.stack { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
 .stack.loading { opacity: 0.6; }
 
 /* Page heading: the title, and the period and live sign on the right */
@@ -180,6 +182,8 @@ button[disabled], button[disabled]:hover, button[disabled]:active {
 }
 button.primary[disabled], button.primary[disabled]:hover { background: var(--cds-button-disabled); border-color: var(--cds-button-disabled); color: var(--cds-text-on-color-disabled); }
 button.small, a.button.small { min-height: 32px; padding: 0 12px; white-space: nowrap; }
+/* On a phone a long label wraps instead of widening the page */
+@media (max-width: 671px) { button.small, a.button.small { white-space: normal; max-width: 100%; padding-block: 6px; text-align: start; } }
 /* In bars whose fields are 32px, so are the buttons, as Carbon pairs them */
 .test-bar > button, .filters button, .mark-bar button { min-height: 32px; padding: 0 12px; }
 button svg.icon, a.button svg.icon { flex: none; }
@@ -310,7 +314,7 @@ cds-inline-notification { max-inline-size: none; inline-size: 100%; margin: 0; }
 .card {
   background: var(--layer); padding: 16px; min-width: 0;
 }
-.card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; min-height: 32px; }
+.card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 16px; min-height: 32px; }
 .card-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; margin: 16px 0 0; color: var(--text-2); font-size: 0.875rem; }
 cds-button.view-all { flex: none; }
 .card-head h2 { margin: 0; }
@@ -327,7 +331,11 @@ details.card[open] > summary { margin-bottom: 16px; }
 .tile.hero .value { font-size: 3.375rem; }
 .tile .note { color: var(--muted); font-size: 0.75rem; line-height: 1.33; letter-spacing: 0.32px; }
 
+/* An empty state: Carbon's helper colour, centred in its card */
 .empty { color: var(--text-2); padding: 24px 0; text-align: center; }
+/* The skeleton shown until a page's first data comes */
+.skeleton cds-skeleton-text { display: block; margin-bottom: 8px; }
+.skeleton cds-skeleton-text[type="heading"] { margin-bottom: 16px; }
 .error { color: var(--error); }
 /* A notification's text stays in the text colour; its edge and mark carry the status. */
 .banner.error { color: var(--text); }
@@ -500,7 +508,9 @@ details.table-view summary { cursor: pointer; color: var(--link); font-size: 0.8
 .request-title .method { color: var(--text-2); }
 .summary { color: var(--text-2); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
 .summary > * + *::before { content: "·"; color: var(--muted); margin-right: 12px; }
-.findings { display: grid; gap: 8px; }
+/* minmax(0, …): a finding's wide table scrolls in its box instead of
+   widening the card on a phone */
+.findings { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
 details.finding { border: 1px solid var(--border-subtle); }
 details.finding > summary {
   cursor: pointer; padding: 12px 16px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px;
@@ -540,6 +550,7 @@ details.section > summary .counts { margin-left: auto; font-size: 0.75rem; }
 .login button.primary { justify-content: flex-start; min-height: 48px; }
 .caps { color: var(--text-2); font-size: 0.75rem; margin: -16px 0 0; }
 .caps::before { content: "⚠ "; color: var(--text); }
+.login cds-inline-notification { margin-bottom: 8px; }
 
 @media (max-width: 900px) {
   .grid-2x2 { grid-template-columns: 1fr; }
@@ -652,10 +663,11 @@ table.history td { vertical-align: top; }
 .form-grid > .form-row, .form-grid > .check-row { grid-column: 1; }
 .form-grid > button { grid-column: 2; justify-self: start; }
 /* Carbon's label above a field (label-01) and helper text below it */
-.form-row { display: grid; gap: 8px; min-width: 0; align-content: start; }
+.form-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; min-width: 0; align-content: start; }
 .field-label { font-size: 0.75rem; line-height: 1.33; letter-spacing: 0.32px; color: var(--text-2); }
 .form-row .help { margin-top: -4px; font-size: 0.75rem; line-height: 1.33; letter-spacing: 0.32px; color: var(--cds-text-helper); }
-.form-row select, .form-row input, .form-row textarea { max-width: 36rem; }
+/* A select is as wide as its longest option; 100% keeps it in its box */
+.form-row select, .form-row input, .form-row textarea { max-width: min(36rem, 100%); }
 .check-row { display: flex; gap: 8px; align-items: center; }
 .inline-form { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: end; margin-top: 12px; }
 .inline-form .form-row input { min-width: 12rem; }
@@ -692,3 +704,13 @@ select:not([multiple]):not([size]) { padding-right: 40px; }
 a.go-link { display: inline-flex; align-items: center; gap: 8px; }
 a.go-link svg.icon { flex: none; }
 .card-head a.go-link { font-size: 0.875rem; }
+
+/* A page's title with its ⓘ (Carbon's toggletip) and its one-line
+   subtitle (Y5); a card's title with its ⓘ. */
+.titles { display: grid; gap: 4px; min-width: 0; }
+.title-row { display: flex; align-items: center; gap: 4px; min-width: 0; padding-inline-end: 24px; }
+.subtitle { margin: 0; color: var(--text-2); font-size: 0.875rem; line-height: 1.43; }
+.card-title { margin-bottom: 16px; }
+.card-title h2 { margin: 0; }
+cds-toggletip.about { flex: none; color: var(--cds-icon-secondary); }
+cds-toggletip.about [slot="body-text"] { display: block; max-width: var(--about-width, none); font-size: 0.875rem; line-height: 1.43; letter-spacing: 0.16px; }

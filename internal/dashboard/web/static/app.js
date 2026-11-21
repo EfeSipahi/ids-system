@@ -79,6 +79,51 @@
   // goHead is the head of the › column.
   const goHead = () => el("th", { class: "go" });
 
+  // aboutText sets the text behind the page's ⓘ (the "about" template),
+  // where it depends on the data.
+  function aboutText(text) {
+    const box = document.getElementById("about-text");
+    if (box && box.textContent !== text) box.textContent = text;
+  }
+
+  // about is Carbon's toggletip: an ⓘ beside a title that opens a longer
+  // explanation on a click (Y5).
+  function about(text, label) {
+    return el("cds-toggletip", { class: "about", alignment: "bottom-start", "button-label": label || "About this" },
+      el("span", { slot: "body-text" }, text));
+  }
+
+  // An ⓘ's bubble opens below it and to the right, at most 18rem wide
+  // (Carbon's). Near the window's right edge, as on a phone, it opens to
+  // the side with more room, no wider than that room, so it stays inside
+  // the window. Carbon puts the bubble's edge 26 pixels past the ⓘ's
+  // centre; once it is open (the frame after the click), any rest that
+  // still sticks out is taken off its width.
+  document.addEventListener("click", (e) => {
+    const tip = e.target instanceof Element ? e.target.closest("cds-toggletip.about") : null;
+    if (!tip || tip.open || !tip.shadowRoot) return;
+    const button = tip.shadowRoot.querySelector(".cds--toggletip-button") || tip;
+    const b = button.getBoundingClientRect();
+    const centre = b.left + b.width / 2, edge = document.documentElement.clientWidth - 16;
+    const full = 288, right = edge - centre + 26, left = centre + 26 - 16;
+    const toRight = right >= full || right >= left;
+    tip.alignment = toRight ? "bottom-start" : "bottom-end";
+    const text = tip.querySelector('[slot="body-text"]');
+    tip.style.setProperty("--about-width", Math.min(full, toRight ? right : left) - 32 + "px");
+    requestAnimationFrame(() => {
+      const box = tip.shadowRoot.querySelector(".cds--popover-content");
+      if (!tip.open || !box || !text) return;
+      const r = box.getBoundingClientRect();
+      const over = Math.max(r.right - edge, 16 - r.left, 0);
+      if (over > 0) tip.style.setProperty("--about-width", Math.max(120, text.getBoundingClientRect().width - over) + "px");
+    });
+  }, true);
+
+  // aboutCard is a card with its explanation behind an ⓘ beside its title.
+  function aboutCard(title, text, ...content) {
+    return el("section", { class: "card" }, el("div", { class: "title-row card-title" }, el("h2", {}, title), about(text, "About " + title.toLowerCase())), ...content);
+  }
+
   // goLink is a link that leaves the page for another, in a sentence or
   // on a line of its own: Carbon's link with an arrow at its end.
   function goLink(href, text) {
@@ -946,8 +991,7 @@
     const newName = el("input", { name: "name", placeholder: "shop-2", maxlength: 64, autocomplete: "off", spellcheck: "false" });
     const newHosts = el("input", { name: "hosts", placeholder: "shop.example.com, shop.example.com:8443", autocomplete: "off", spellcheck: "false" });
     const newPaths = el("input", { name: "paths", placeholder: "every path", autocomplete: "off", spellcheck: "false" });
-    const addForm = card("Add an application",
-      el("p", { class: "muted" }, "It starts in monitor mode with a profile that allows every path, at the default level, until its profile is written. The change is pending under Settings for every application, where it is applied with its preview."),
+    const addForm = aboutCard("Add an application", "It starts in monitor mode with a profile that allows every path, at the default level, until its profile is written. The change is pending under Settings for every application, where it is applied with its preview.",
       el("div", { class: "inline-form" }, formRow("Name", newName), formRow("Hosts", newHosts), formRow("Paths", newPaths),
         el("button", { type: "button", class: "small", onclick: async () => {
           const ch = await addChange("global", { kind: "add_app", name: newName.value.trim(), hosts: lines(newHosts.value), paths: lines(newPaths.value) }, addNotice);
@@ -974,11 +1018,12 @@
         el("td", { class: "num" }, count(a.false_positives, alerts(a.name, { kind: "all", review: "false_positive" }))),
         el("td", { class: "nowrap" }, a.last_alert ? ago(a.last_alert) : "–"));
       const head = [["Application", ""], ["Hosts", ""], ["Mode", ""], ["Level", ""], ["Exceptions", "num"], ["Alerts", "num"], ["Not reviewed", "num"], ["False positives", "num"], ["Last alert", ""]];
+      // The page's ⓘ says how requests of no application are analysed.
+      aboutText("Each application has its own profile, paranoia level and rule exceptions, on its own page. " +
+        `Requests of no application run at the default level ${p.default_level}, with the rules only` +
+        (p.require_profile ? ", and get a no_profile finding (require_profile)." : "."));
       replace(el("div", { class: "stack" },
         addNotice,
-        el("p", { class: "lead muted" }, "Each application has its own profile, paranoia level and rule exceptions, on its own page. " +
-          `Requests of no application run at the default level ${p.default_level}, with the rules only` +
-          (p.require_profile ? ", and get a no_profile finding (require_profile)." : ".")),
         p.applications.length ? card(null, el("div", { class: "table-wrap" }, el("table", { class: "wide apps" },
           el("thead", {}, el("tr", {}, head.map(([h, c]) => el("th", { class: c }, h)), goHead())),
           el("tbody", {}, p.applications.map((a) => row(a, false)), row(p.none, true)))))
@@ -1356,7 +1401,6 @@
     listPage("/api/clients", (d, f) => {
       const alerts = (ip, extra) => "/alerts?" + query({ range: f.range, app: f.app, ip, ...extra });
       replace(el("div", { class: "stack" },
-        el("p", { class: "lead muted" }, "Every address that sent a recorded request in this period, the most alerts first. A client's page has everything it sent; it is where blocking an address will start (K4)."),
         card(null, d.rows.length ? [el("div", { class: "table-wrap" }, el("table", { class: "wide" },
           el("thead", {}, el("tr", {}, [["Client", ""], ["Alerts", "num"], ["Records", "num"], ["First", ""], ["Last", ""], ["Applications", ""], ["Attack groups", ""], ["Marked", ""]].map(([h, c]) => el("th", { class: c }, h)), goHead())),
           el("tbody", {}, d.rows.map((c) => { const page = "/clients/" + encodeURIComponent(c.ip) + "?" + query({ range: f.range }); return linkedRow(page, null,
@@ -1376,7 +1420,6 @@
   function endpointsPage() {
     listPage("/api/endpoints", (d, f) => {
       replace(el("div", { class: "stack" },
-        el("p", { class: "lead muted" }, "The paths of recorded requests, the most alerts first, per application: where a site is attacked, or where its false alarms come from."),
         card(null, d.rows.length ? [el("div", { class: "table-wrap" }, el("table", { class: "wide" },
           el("thead", {}, el("tr", {}, [["Request", ""], ["Application", ""], ["Alerts", "num"], ["Records", "num"], ["Clients", "num"], ["Attack groups", ""], ["False positives", "num"], ["Last", ""]].map(([h, c]) => el("th", { class: c }, h)))),
           el("tbody", {}, d.rows.map((e) => el("tr", {},
@@ -1531,6 +1574,7 @@
     every(async () => {
       const p = await api("/api/settings");
       if (same("/api/settings", p)) return;
+      if (p.file) aboutText(`These settings are for every application, from the configuration ${p.file}. An application's own paranoia level, mode and exceptions are on its page and win over these.`);
       if (!p.configured || p.error) {
         replace(card(null, banner("warning", "The settings can't be shown.", p.error)));
         return;
@@ -1573,7 +1617,6 @@
       const frame = num("frame-mb", l.max_frame_mb, ld.max_frame_mb + " MB, the default", 1, 1024);
       const n = (input, fallback) => Number(input.value) || fallback;
       replace(el("div", { class: "stack" }, notice,
-        el("p", { class: "lead muted" }, `These settings are for every application, from the configuration ${p.file}. An application's own paranoia level, mode and exceptions are on its page and win over these.`),
         card("Rule files, for every application", filesTable,
           el("div", { class: "form-actions" }, add("Load the checked rule files for every application", () => ({ kind: "files", files: p.rule_files.filter((f, i) => boxes[i].checked).map((f) => f.path) })))),
         card("Paranoia level",
@@ -1847,8 +1890,7 @@
             ["Marked false positive", count(p.false_positives, alerts({ review: "false_positive" }))],
             ["From the run", fmtTime(p.time)]]))),
         notice,
-        card("Where it runs",
-          el("p", { class: "muted" }, "Its status for each application, at that application's paranoia level and with its exceptions. An application's own exception is changed on that application's Rules tab."),
+        aboutCard("Where it runs", "Its status for each application, at that application's paranoia level and with its exceptions. An application's own exception is changed on that application's Rules tab.",
           everyApp,
           el("div", { class: "table-wrap" }, el("table", { class: "wide" },
             el("thead", {}, el("tr", {}, [["Application", ""], ["Level", ""], ["Status", ""], ["Reason", ""], ["Records", "num"], ["False positives", "num"]].map(([h, c]) => el("th", { class: c }, h)), goHead())),
@@ -2583,9 +2625,8 @@
             `${nf.format(p.above_level_rules)} above level ${level}, ${nf.format(p.excluded_rules)} excluded`)],
           ["Configuration", [el("code", { class: "wrap" }, l.engine.config), copyButton(l.engine.config, "the fingerprint")]]]))
           : card("Running configuration", el("p", { class: "empty" }, "No start record has been read yet.")),
-        p.applications.length ? card("Applications",
-          el("p", { class: "muted" }, "Each application's requests are checked against its profile and run with its own level and rule exceptions. " +
-            (p.require_profile ? "A request of another host gets a no_profile finding (require_profile)." : "A request of another host gets the rules only, at the configuration's level.")),
+        p.applications.length ? aboutCard("Applications", "Each application's requests are checked against its profile and run with its own level and rule exceptions. " +
+            (p.require_profile ? "A request of another host gets a no_profile finding (require_profile)." : "A request of another host gets the rules only, at the configuration's level."),
           el("div", { class: "table-wrap" }, el("table", { class: "wide" },
             el("thead", {}, el("tr", {}, [["Application", ""], ["Hosts", ""], ["Paths", ""], ["Profile", ""], ["Mode", ""], ["Level", ""], ["Exceptions", "num"], ["Notes", ""]].map(([h, c]) => el("th", { class: c }, h)))),
             el("tbody", {}, p.applications.map((a) => el("tr", {},
@@ -2597,7 +2638,7 @@
               el("td", {}, String(a.paranoia_level)),
               el("td", { class: "num" }, el("a", { href: "/rules?" + query({ app: a.name }), title: "The rules and exceptions of this application" }, nf.format(a.exceptions.length))),
               el("td", { class: "wrap sub" }, a.notes && a.notes.length ? a.notes.map((n) => el("div", {}, n)) : "–"))))))) : null,
-        card("Runs", el("p", { class: "muted" }, "Each start of the IDS, newest first. A new configuration fingerprint means the rules or settings changed. Records and alerts count what is still kept."),
+        aboutCard("Runs", "Each start of the IDS, newest first. A new configuration fingerprint means the rules or settings changed. Records and alerts count what is still kept.",
           el("div", { class: "table-wrap" }, el("table", { class: "wide" },
             el("thead", {}, el("tr", {}, [["Started", ""], ["Run", ""], ["Input", ""], ["Rules", ""], ["Level", ""], ["Analysed", "num"], ["Records", "num"], ["Alerts", "num"], ["Configuration", ""]].map(([h, c]) => el("th", { class: c }, h)))),
             el("tbody", {}, runs)))),
@@ -3311,6 +3352,18 @@
       showTheme();
     });
   }
+
+  // Until a page's first data comes, its view shows Carbon's skeleton:
+  // grey lines where the cards will be (stage 5 of
+  // docs/development-plan-dashboard-carbon.md). replace() puts the page
+  // in its place; a fast answer never shows it.
+  function skeleton() {
+    const lines = (n) => Array.from({ length: n }, (_, i) => el("cds-skeleton-text", { width: i === n - 1 ? "60%" : "100%" }));
+    return el("div", { class: "stack skeleton", "aria-busy": "true", role: "status", "aria-label": "Loading" },
+      el("section", { class: "card" }, el("cds-skeleton-text", { type: "heading", width: "30%" }), lines(4)),
+      el("section", { class: "card" }, el("cds-skeleton-text", { type: "heading", width: "25%" }), lines(6)));
+  }
+  if (view && !view.firstChild) setTimeout(() => { if (!drawn && !view.firstChild) view.append(skeleton()); }, 200);
 
   const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, settings: settingsPage, settingshistory: settingsHistoryPage, proposals: proposalsPage, analyse: analysePage, clients: clientsPage, client: clientPage, endpoints: endpointsPage, records: recordsPage, dashsettings: dashSettingsPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
   if (pages[page] && (view || page === "login")) pages[page]();

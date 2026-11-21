@@ -1,6 +1,9 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Endpoints</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Endpoints</h1>{{template "about" "The paths of recorded requests, the most alerts first, per application: where a site is attacked, or where its false alarms come from."}}</div>
+    <p class="subtitle">The paths of recorded requests, the most alerts first, per application.</p>
+  </div>
   <div class="tools">{{template "period"}}{{template "live"}}</div>
 </div>
 <form class="filters" id="filters" autocomplete="off" hidden>

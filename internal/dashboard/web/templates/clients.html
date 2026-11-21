@@ -1,6 +1,9 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Clients</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Clients</h1>{{template "about" "Every address that sent a recorded request in this period, the most alerts first. A client's page has everything it sent; it is where blocking an address will start (K4)."}}</div>
+    <p class="subtitle">Every address that sent a recorded request in this period, the most alerts first.</p>
+  </div>
   <div class="tools">{{template "period"}}{{template "live"}}</div>
 </div>
 <form class="filters" id="filters" autocomplete="off" hidden>

@@ -1,7 +1,9 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Users</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Users</h1>{{template "about" "Viewers read every page; analysts also mark alerts and use the test tab; admins also manage users and see the log. Each change asks for your password again and is written to the log."}}</div>
+    <p class="subtitle">Who can log in, and what each role may do.</p>
+  </div>
 </div>
-<p class="lead muted">Viewers read every page; analysts also mark alerts and use the test tab; admins also manage users and see the log. Each change asks for your password again and is written to the log.</p>
 <div id="view" class="stack"></div>
 {{end}}

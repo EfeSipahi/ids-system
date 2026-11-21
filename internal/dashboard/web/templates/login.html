@@ -3,7 +3,7 @@
   <p class="login-brand"><img src="{{.Static}}/icon.svg" alt="" width="28" height="28">IDS dashboard</p>
   <section class="card">
     <h1>Log in</h1>
-    {{if .Error}}<p class="error" role="alert">{{.Error}}</p>{{end}}
+    {{if .Error}}<cds-inline-notification kind="error" low-contrast hide-close-button role="alert"><span slot="title">Not logged in.</span><span slot="subtitle">{{.Error}}</span></cds-inline-notification>{{end}}
     <form method="post" action="/login" id="login">
       <input type="hidden" name="next" value="{{.Next}}">
       <label>User name <input name="user" value="{{.Name}}" autocomplete="username" required maxlength="64" {{if not .Name}}autofocus{{end}}></label>

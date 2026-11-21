@@ -1,8 +1,10 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Dashboard settings</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Dashboard settings</h1>{{template "about" "The dashboard's own settings that change in normal use. Its address, its certificate files and its folders stay in its configuration file, changed by hand: a mistake there would lock everyone out of this page."}}</div>
+    <p class="subtitle">The dashboard's own settings that change in normal use.</p>
+  </div>
 </div>
-<p class="lead muted">The dashboard's own settings that change in normal use. Its address, its certificate files and its folders stay in its configuration file, changed by hand: a mistake there would lock everyone out of this page.</p>
 {{template "notice"}}
 <div id="view" class="stack"></div>
 {{end}}

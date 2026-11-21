@@ -1,7 +1,9 @@
 {{define "content"}}
 <div class="pagehead">
-  <h1>Test a request</h1>
+  <div class="titles">
+    <div class="title-row"><h1>Test a request</h1>{{template "about" "Write a request as raw HTTP text and see what the IDS finds in it, with its own rules and profiles. Nothing is recorded or sent anywhere."}}</div>
+    <p class="subtitle">See what the IDS finds in a request you write. Nothing is recorded or sent anywhere.</p>
+  </div>
 </div>
-<p class="lead muted">Write a request as raw HTTP text and see what the IDS finds in it, with its own rules and profiles. Nothing is recorded or sent anywhere.</p>
 <div id="view" class="stack"></div>
 {{end}}
