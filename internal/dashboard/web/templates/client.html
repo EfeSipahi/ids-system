@@ -1,0 +1,8 @@
+{{define "content"}}
+<div class="pagehead">
+  <div class="headline"><a class="up" href="/clients">← Clients</a><h1>{{.ID}}</h1></div>
+  <div class="tools">{{template "period"}}{{template "live"}}</div>
+</div>
+{{template "notice"}}
+<div id="view" class="stack"></div>
+{{end}}

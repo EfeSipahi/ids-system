@@ -1,0 +1,13 @@
+{{define "content"}}
+<div class="pagehead">
+  <h1>Clients</h1>
+  <div class="tools">{{template "period"}}{{template "live"}}</div>
+</div>
+<form class="filters" id="filters" autocomplete="off" hidden>
+  <label id="app-field">Application
+    <select name="app" id="app"><option value="">All applications</option></select>
+  </label>
+</form>
+{{template "notice"}}
+<div id="view" class="stack"></div>
+{{end}}

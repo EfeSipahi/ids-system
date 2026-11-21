@@ -44,6 +44,15 @@ func certificate(cfg Config, now time.Time) (cert tls.Certificate, made bool, er
 	certPath := filepath.Join(cfg.StateDir, CertFile)
 	keyPath := filepath.Join(cfg.StateDir, KeyFile)
 	names, ips := certHosts(cfg.Listen)
+	for _, n := range cfg.CertNames {
+		if ip := net.ParseIP(n); ip != nil {
+			if !slices.ContainsFunc(ips, ip.Equal) {
+				ips = append(ips, ip)
+			}
+		} else if !slices.Contains(names, n) {
+			names = append(names, n)
+		}
+	}
 
 	cert, err = tls.LoadX509KeyPair(certPath, keyPath)
 	if err == nil && usable(cert.Leaf, names, ips, now) {

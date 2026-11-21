@@ -702,7 +702,7 @@ func TestLoadConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := Config{Listen: DefaultListen, RecordsDir: filepath.Join(filepath.Dir(dir), "records"), StateDir: "/var/lib/ids", SessionIdleMinutes: DefaultIdleMinutes}
+	want := Config{Listen: DefaultListen, RecordsDir: filepath.Join(filepath.Dir(dir), "records"), StateDir: "/var/lib/ids", SessionIdleMinutes: DefaultIdleMinutes, path: filepath.Join(dir, "dashboard.json")}
 	if !reflect.DeepEqual(cfg, want) {
 		t.Errorf("config = %+v, want %+v", cfg, want)
 	}

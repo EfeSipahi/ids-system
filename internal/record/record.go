@@ -358,6 +358,11 @@ type Config struct {
 	// addition to the built-in ones. A name matches when it contains one
 	// of these, in any case.
 	SecretNames []string `json:"secret_names"`
+	// MaxAgeDays deletes the full files closed more than this many days
+	// ago, when the writer starts a file and once a day; 0 keeps them
+	// until keep_files counts them out (W19 of
+	// docs/development-plan-dashboard-control.md).
+	MaxAgeDays int `json:"max_age_days,omitempty"`
 }
 
 // The defaults for settings that are left out.
@@ -387,6 +392,8 @@ func (c Config) Validate() error {
 		return fmt.Errorf("records: max_file_mb %d must be 1 to 1024", c.MaxFileMB)
 	case c.KeepFiles < 1 || c.KeepFiles > 1000:
 		return fmt.Errorf("records: keep_files %d must be 1 to 1000", c.KeepFiles)
+	case c.MaxAgeDays < 0 || c.MaxAgeDays > 3650:
+		return fmt.Errorf("records: max_age_days %d must be 0 to 3650", c.MaxAgeDays)
 	}
 	for _, name := range c.SecretNames {
 		if strings.TrimSpace(name) == "" {

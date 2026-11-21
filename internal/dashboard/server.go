@@ -13,11 +13,13 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/netip"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	buildversion "github.com/EfeSipahi/ids-system/internal/version"
@@ -43,6 +45,11 @@ type Server struct {
 	control *control
 	disk    diskState
 	analyse *analyser
+	// marksPruned is when the marks' maximum age was last applied.
+	marksPruned time.Time
+	// cert is the certificate served; the settings page may make a new
+	// one (W20).
+	cert atomic.Pointer[tls.Certificate]
 	// lock is the state folder's lock (C4), held while the dashboard runs.
 	lock  *os.File
 	pages map[string]*template.Template
@@ -138,7 +145,7 @@ type pageData struct {
 	Tab string
 }
 
-var pageNames = []string{"overview", "alerts", "alert", "rules", "rule", "applications", "application", "settings", "settingshistory", "proposals", "analyse", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
+var pageNames = []string{"overview", "alerts", "alert", "rules", "rule", "applications", "application", "settings", "settingshistory", "proposals", "analyse", "records", "clients", "client", "endpoints", "dashsettings", "engine", "test", "users", "account", "log", "login", "notfound", "forbidden"}
 
 func (s *Server) loadPages() error {
 	s.pages = map[string]*template.Template{}
@@ -180,6 +187,11 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /applications/{name}/settings", s.requirePage(RoleViewer, s.appPage("settings")))
 	mux.Handle("GET /applications/{name}/profile", s.requirePage(RoleViewer, s.appPage("profile")))
 	mux.Handle("GET /settings", page("settings", "Settings for every application", RoleViewer))
+	mux.Handle("GET /records", page("records", "Records", RoleViewer))
+	mux.Handle("GET /dashboard-settings", page("dashsettings", "Dashboard settings", RoleAdmin))
+	mux.Handle("GET /clients", page("clients", "Clients", RoleViewer))
+	mux.Handle("GET /clients/{ip}", s.requirePage(RoleViewer, s.clientPageHandler))
+	mux.Handle("GET /endpoints", page("endpoints", "Endpoints", RoleViewer))
 	mux.Handle("GET /settings/history", page("settingshistory", "History of the settings for every application", RoleViewer))
 	mux.Handle("GET /proposals", page("proposals", "Proposed changes", RoleAdmin))
 	mux.Handle("GET /engine", page("engine", "Engine and live input", RoleViewer))
@@ -217,6 +229,14 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /api/versions", s.requireAPI(RoleViewer, s.apiVersions))
 	mux.Handle("GET /api/control", s.requireAPI(RoleViewer, s.apiControl))
 	mux.Handle("GET /api/settings", s.requireAPI(RoleViewer, s.apiSettings))
+	mux.Handle("GET /api/records-page", s.requireAPI(RoleViewer, s.apiRecordsPage))
+	mux.Handle("GET /api/dashboard-settings", s.requireAPI(RoleAdmin, s.apiDashboardSettings))
+	mux.Handle("POST /api/dashboard-settings", s.requireAPI(RoleAdmin, s.apiDashboardSettingsPost))
+	mux.Handle("POST /api/records/delete", s.requireAPI(RoleAdmin, s.apiRecordsDelete))
+	mux.Handle("GET /api/export", s.requireAPI(RoleViewer, s.apiExport))
+	mux.Handle("GET /api/clients", s.requireAPI(RoleViewer, s.apiClients))
+	mux.Handle("GET /api/clients/{ip}", s.requireAPI(RoleViewer, s.apiClient))
+	mux.Handle("GET /api/endpoints", s.requireAPI(RoleViewer, s.apiEndpoints))
 	mux.Handle("GET /api/applications/{name}/settings", s.requireAPI(RoleViewer, s.apiAppSettings))
 	mux.Handle("GET /api/applications/{name}/profile", s.requireAPI(RoleViewer, s.apiProfile))
 	mux.Handle("POST /api/applications/{name}/profile/check", s.requireAPI(RoleViewer, s.apiProfileCheck))
@@ -413,6 +433,16 @@ func (s *Server) rulePage(w http.ResponseWriter, r *http.Request, user string) {
 		return
 	}
 	s.render(w, http.StatusOK, "rule", pageData{Title: "Rule " + strconv.Itoa(id), Page: "rule", User: user, ID: strconv.Itoa(id), Poll: pollSeconds})
+}
+
+// clientPageHandler serves one client address's page (W23).
+func (s *Server) clientPageHandler(w http.ResponseWriter, r *http.Request, user string) {
+	ip, err := netip.ParseAddr(r.PathValue("ip"))
+	if err != nil {
+		s.render(w, http.StatusNotFound, "notfound", pageData{Title: "Page not found", Page: "notfound", User: user})
+		return
+	}
+	s.render(w, http.StatusOK, "client", pageData{Title: ip.String(), Page: "client", User: user, ID: ip.String(), Poll: pollSeconds})
 }
 
 // validAppName reports whether name could be an application's name
@@ -612,6 +642,7 @@ func (s *Server) Watch(ctx context.Context) {
 			if err := s.store.refresh(); err != nil {
 				s.log.Printf("reading records: %v", err)
 			}
+			s.pruneMarks()
 		}
 	}
 }
@@ -622,8 +653,10 @@ func (s *Server) Serve(ctx context.Context, ln net.Listener, cert tls.Certificat
 	srv := &http.Server{
 		Handler: s.Handler(),
 		TLSConfig: &tls.Config{
-			MinVersion:   tls.VersionTLS12,
-			Certificates: []tls.Certificate{cert},
+			MinVersion: tls.VersionTLS12,
+			GetCertificate: func(*tls.ClientHelloInfo) (*tls.Certificate, error) {
+				return s.cert.Load(), nil
+			},
 		},
 		ReadHeaderTimeout: 10 * time.Second,
 		ReadTimeout:       30 * time.Second,
@@ -631,6 +664,9 @@ func (s *Server) Serve(ctx context.Context, ln net.Listener, cert tls.Certificat
 		IdleTimeout:       2 * time.Minute,
 		MaxHeaderBytes:    64 << 10,
 		ErrorLog:          s.log,
+	}
+	if s.cert.Load() == nil {
+		s.cert.Store(&cert)
 	}
 	go s.Watch(ctx)
 	done := make(chan error, 1)
@@ -648,7 +684,11 @@ func (s *Server) Serve(ctx context.Context, ln net.Listener, cert tls.Certificat
 // Certificate returns the certificate the dashboard serves, making its own
 // when none is configured. made reports whether a new one was made.
 func (s *Server) Certificate() (tls.Certificate, bool, error) {
-	return certificate(s.cfg, s.now())
+	cert, made, err := certificate(s.cfg, s.now())
+	if err == nil {
+		s.cert.Store(&cert)
+	}
+	return cert, made, err
 }
 
 // Addr is the address the dashboard listens on.

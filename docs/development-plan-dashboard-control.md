@@ -326,7 +326,7 @@ Decided by the user on 21 November 2026: 1. Each commit holds one stage's code, 
 | 3. The changes | Done, 21 November 2026 (note 3) |
 | 4. The profile | Done, 21 November 2026 (note 4) |
 | 5. Analyse files | Done, 21 November 2026 (note 5) |
-| 6. Records, the dashboard's settings, views | Not started |
+| 6. Records, the dashboard's settings, views | Done, 21 November 2026 (note 6) |
 | 7. The close | Not started |
 
 ## 6. Notes of the night run
@@ -404,4 +404,18 @@ Each stage's note says what was built, how it was checked, and the choices made 
       - the result lists the first 2,000 requests one by one; the summary counts all of them;
       - records written from here go to the dashboard's records folder, with the configuration's records settings.
    4. A mistake made during this stage, and undone: to compare `ids-offline`'s output before and after the move, the two programs were run four times with `configs/csic-shop.json`, whose records section names the repository's `records/` folder, without a `-records` folder of their own. They added four runs to the user's records, and the file rotated. The user's records were restored at once: the first 1,905,868 bytes of the rotated file, which are exactly the three runs it held (k27cqvga, lcky5zqy, rxdhe65g), were written back as `records.jsonl`, and the rotated file was removed. The comparison was then made again with temporary records folders.
+6. Stage 6, records, the dashboard's settings, views.
+   1. Built:
+      - System › Records (`/records`, W19): the files and the runs, with each run's oldest and newest record; how long records and marks are kept; export of every record as CSV or JSON Lines, and from the alerts list of what its filters choose; for an admin, with a reason and the password, deleting a run or every record older than a date, written to the change log;
+      - `records.max_age_days`: the program that writes the records deletes the full files closed more than that many days ago, when it starts a file and once a day; set under Settings › Records ("Days kept");
+      - `record.Rewrite`: the files written again without the lines chosen, under the folder's lock, so it refuses while `ids-live` writes;
+      - `marks_max_age_days` in `dashboard.json`: once a day the dashboard drops the marks of alerts older than that, and writes the count to the change log; this settles C6 of the marks plan;
+      - Monitor › Clients (`/clients`) and a page per address (`/clients/{ip}`), and Monitor › Endpoints (`/endpoints`), with the application filter (W23);
+      - Administration › Dashboard settings (`/dashboard-settings`, W20): the idle time, how long marks are kept, the Test tab's configurations and folder, and extra names for the dashboard's own certificate, checked as the dashboard reads them at its start, written to `dashboard.json` with the password, and taken at once; new names make a new certificate, served without a restart. The address, the certificate files and the folders are shown only (W21).
+   2. Checks: `go test ./...` with `TestRecordsPage`, `TestClientsAndEndpoints`, `TestDashboardSettings`, `TestRewrite` and `TestMaxAge`; a browser round as admin and viewer, light and dark.
+   3. Choices made:
+      - who applies the records' age: the program that writes them, since only it may change the folder while it runs; the dashboard applies the marks' age, as the marks are its own;
+      - the Records page does not take the folder's lock to see whether `ids-live` runs, since a program starting in that moment would fail; it says so from `ids-live`'s counts, and a deletion takes the lock when it runs;
+      - a full file left without any request record after a deletion is removed;
+      - export is open to every role, as every role sees the same records on the pages.
 

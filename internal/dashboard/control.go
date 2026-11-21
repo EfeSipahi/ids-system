@@ -94,6 +94,7 @@ type recordSettings struct {
 	KeepFiles    int      `json:"keep_files"`
 	FullRequests bool     `json:"full_requests"`
 	SecretNames  []string `json:"secret_names"`
+	MaxAgeDays   int      `json:"max_age_days"`
 }
 
 // liveSettings are the "live" settings a change may set; the socket is not
@@ -463,6 +464,9 @@ func checkChange(object string, ch *pendingChange) error {
 			return errors.New("give the records settings")
 		}
 		ch.What = fmt.Sprintf("Records: files of %d MB, %d kept, full requests %s, %d extra secret names", ch.Records.MaxFileMB, ch.Records.KeepFiles, onOff(ch.Records.FullRequests), len(ch.Records.SecretNames))
+		if ch.Records.MaxAgeDays > 0 {
+			ch.What += fmt.Sprintf(", full files deleted after %d days", ch.Records.MaxAgeDays)
+		}
 	case kindLive:
 		if ch.Live == nil {
 			return errors.New("give the live input settings")
@@ -876,6 +880,11 @@ func (w *work) applyGlobal(ch pendingChange) error {
 			names = []string{}
 		}
 		rec.Set("secret_names", jsonedit.Must(names))
+		if ch.Records.MaxAgeDays > 0 {
+			rec.Set("max_age_days", jsonedit.Must(ch.Records.MaxAgeDays))
+		} else {
+			rec.Delete("max_age_days")
+		}
 	case kindLive:
 		live := cfg.Get("live")
 		if live == nil {

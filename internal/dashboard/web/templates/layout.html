@@ -32,6 +32,8 @@
       <span class="side-label">Monitor</span>
       <a href="/" {{if eq .Page "overview"}}aria-current="page"{{end}}>Overview</a>
       <a href="/alerts" {{if or (eq .Page "alerts") (eq .Page "alert")}}aria-current="page"{{end}}>Alerts</a>
+      <a href="/clients" {{if or (eq .Page "clients") (eq .Page "client")}}aria-current="page"{{end}}>Clients</a>
+      <a href="/endpoints" {{if eq .Page "endpoints"}}aria-current="page"{{end}}>Endpoints</a>
     </div>
     <div class="side-group">
       <span class="side-label">Applications</span>
@@ -50,12 +52,14 @@
       <span class="side-label">System</span>
       <a href="/settings" {{if or (eq .Page "settings") (eq .Page "settingshistory")}}aria-current="page"{{end}}>Settings</a>
       <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine and live input</a>
+      <a href="/records" {{if eq .Page "records"}}aria-current="page"{{end}}>Records</a>
     </div>
     {{if .Admin}}<div class="side-group">
       <span class="side-label">Administration</span>
       <a href="/proposals" {{if eq .Page "proposals"}}aria-current="page"{{end}}>Proposed changes</a>
       <a href="/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Users</a>
       <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Change log</a>
+      <a href="/dashboard-settings" {{if eq .Page "dashsettings"}}aria-current="page"{{end}}>Dashboard settings</a>
     </div>{{end}}
   </nav>
   <div class="content">

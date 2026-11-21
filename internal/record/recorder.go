@@ -127,6 +127,12 @@ func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Se
 		unlock(lock)
 		return nil, fmt.Errorf("records: %w", err)
 	}
+	w.setLimits(int64(cfg.MaxFileMB)<<20, cfg.KeepFiles, time.Duration(cfg.MaxAgeDays)*24*time.Hour)
+	if err := w.pruneDaily(); err != nil {
+		w.close()
+		unlock(lock)
+		return nil, fmt.Errorf("records: %w", err)
+	}
 	key, err := loadKey(filepath.Join(cfg.Dir, KeyFile))
 	if err != nil {
 		w.close()
@@ -204,7 +210,7 @@ func (r *Recorder) Restart(cfg Config, eng Engine, statuses []engine.RuleStatus,
 	if err := r.flushLocked(now); err != nil {
 		return err
 	}
-	r.w.setLimits(int64(cfg.MaxFileMB)<<20, cfg.KeepFiles)
+	r.w.setLimits(int64(cfg.MaxFileMB)<<20, cfg.KeepFiles, time.Duration(cfg.MaxAgeDays)*24*time.Hour)
 	start.Time = now.UTC()
 	if err := r.w.setHeader(start); err != nil {
 		return fmt.Errorf("records: %w", err)
@@ -297,6 +303,9 @@ func (r *Recorder) AddWith(req *httpmodel.Request, res *engine.Result, prof *pro
 func (r *Recorder) Flush() error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	if err := r.w.pruneDaily(); err != nil {
+		return fmt.Errorf("records: %w", err)
+	}
 	return r.flushLocked(r.now())
 }
 

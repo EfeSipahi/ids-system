@@ -298,3 +298,10 @@ func sessionToken(r *http.Request) string {
 	}
 	return c.Value
 }
+
+// setIdle changes how long a login lasts without use (W20).
+func (a *auth) setIdle(d time.Duration) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.idle = d
+}

@@ -29,6 +29,10 @@ type writer struct {
 	dir     string
 	maxSize int64
 	keep    int
+	// maxAge deletes files closed longer ago; 0 keeps them.
+	maxAge time.Duration
+	// pruned is when old files were last looked for.
+	pruned time.Time
 	now     func() time.Time
 
 	f    *os.File
@@ -95,10 +99,20 @@ func (w *writer) setHeader(v any) error {
 
 // setLimits changes the size at which a file is full and how many files
 // are kept, from the next line on.
-func (w *writer) setLimits(maxSize int64, keep int) {
+func (w *writer) setLimits(maxSize int64, keep int, maxAge time.Duration) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
-	w.maxSize, w.keep = maxSize, keep
+	w.maxSize, w.keep, w.maxAge = maxSize, keep, maxAge
+}
+
+// pruneDaily deletes the files that are too old, at most once a day.
+func (w *writer) pruneDaily() error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if w.maxAge == 0 || w.now().Sub(w.pruned) < 24*time.Hour {
+		return nil
+	}
+	return w.prune()
 }
 
 // write adds v as one line.
@@ -169,11 +183,23 @@ func (w *writer) rotate() error {
 }
 
 // prune deletes the oldest rotated files until keep files are left, the
-// current one included.
+// current one included, and the files closed longer than maxAge ago,
+// whose name holds the time they were closed.
 func (w *writer) prune() error {
+	w.pruned = w.now()
 	rotated, err := RotatedFiles(w.dir)
 	if err != nil {
 		return err
+	}
+	for len(rotated) > 0 && w.maxAge > 0 {
+		closed, err := time.Parse(rotatedLayout, strings.TrimSuffix(strings.TrimPrefix(rotated[0], RotatedPrefix), rotatedSuffix))
+		if err != nil || w.now().Sub(closed) <= w.maxAge {
+			break
+		}
+		if err := os.Remove(filepath.Join(w.dir, rotated[0])); err != nil {
+			return err
+		}
+		rotated = rotated[1:]
 	}
 	for len(rotated) > w.keep-1 {
 		if err := os.Remove(filepath.Join(w.dir, rotated[0])); err != nil {

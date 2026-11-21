@@ -16,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 // Config is the dashboard's configuration file.
@@ -45,6 +46,17 @@ type Config struct {
 	// docs/development-plan-dashboard-control.md). The rule pages read
 	// the rules' text through it. Optional.
 	IDSConfig string `json:"ids_config"`
+	// MarksMaxAgeDays drops, once a day, the marks of alerts older than
+	// this many days; 0 keeps them (W19).
+	MarksMaxAgeDays int `json:"marks_max_age_days"`
+	// CertNames are more names and addresses the dashboard's own
+	// certificate carries, such as one it is reached at through a VPN
+	// (W20).
+	CertNames []string `json:"cert_names"`
+
+	// path is the file the configuration was read from, which the
+	// dashboard's settings page writes (W20).
+	path string
 }
 
 // The defaults for settings that are left out.
@@ -86,6 +98,7 @@ func LoadConfig(path string) (Config, error) {
 	if err := cfg.validate(); err != nil {
 		return Config{}, fmt.Errorf("%s: %w", path, err)
 	}
+	cfg.path = path
 	return cfg, nil
 }
 
@@ -119,6 +132,8 @@ func (c Config) validate() error {
 		return errors.New("tls_cert and tls_key must be given together, or both left empty")
 	case c.SessionIdleMinutes < 1 || c.SessionIdleMinutes > 24*60:
 		return fmt.Errorf("session_idle_minutes %d must be 1 to 1440", c.SessionIdleMinutes)
+	case c.MarksMaxAgeDays < 0 || c.MarksMaxAgeDays > 3650:
+		return fmt.Errorf("marks_max_age_days %d must be 0 to 3650", c.MarksMaxAgeDays)
 	case len(c.TestConfigs) > maxTestConfigs:
 		return fmt.Errorf("test_configs names %d configurations; at most %d", len(c.TestConfigs), maxTestConfigs)
 	}
@@ -127,5 +142,32 @@ func (c Config) validate() error {
 			return fmt.Errorf("test_configs[%d] is empty", i)
 		}
 	}
+	if len(c.CertNames) > 20 {
+		return fmt.Errorf("cert_names names %d; at most 20", len(c.CertNames))
+	}
+	for _, n := range c.CertNames {
+		if net.ParseIP(n) == nil && !validHostName(n) {
+			return fmt.Errorf("cert_names: %q is not a host name or an IP address", n)
+		}
+	}
 	return nil
+}
+
+// validHostName reports whether s is a DNS name: labels of letters,
+// digits and hyphens.
+func validHostName(s string) bool {
+	if s == "" || len(s) > 253 {
+		return false
+	}
+	for _, label := range strings.Split(s, ".") {
+		if label == "" || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {
+			return false
+		}
+		for _, c := range label {
+			if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-') {
+				return false
+			}
+		}
+	}
+	return true
 }

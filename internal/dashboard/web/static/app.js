@@ -1275,6 +1275,197 @@
     load();
   }
 
+  // ---- Monitor › Clients and Endpoints (W23) ----
+
+  // listPage runs a list page with the period and the application filter
+  // (W1); draw turns the answer into the view.
+  function listPage(path, draw) {
+    const form = document.getElementById("filters");
+    let app = new URLSearchParams(location.search).get("app") || "";
+    const address = () => location.pathname + "?" + query({ range: period.value, app });
+    const showApps = appFilter(form, app, (v) => { app = v; history.replaceState(null, "", address()); view.classList.add("loading"); run(); });
+    const run = every(async () => {
+      const url = path + "?" + query({ range: period.value, app });
+      const d = await api(url);
+      showApps(d.applications || []);
+      if (same(url, d)) return;
+      draw(d, { range: period.value, app });
+    });
+    period.onChange(() => { history.replaceState(null, "", address()); view.classList.add("loading"); run(); });
+  }
+
+  function clientsPage() {
+    listPage("/api/clients", (d, f) => {
+      const alerts = (ip, extra) => "/alerts?" + query({ range: f.range, app: f.app, ip, ...extra });
+      replace(el("div", { class: "stack" },
+        el("p", { class: "lead muted" }, "Every address that sent a recorded request in this period, the most alerts first. A client's page has everything it sent; it is where blocking an address will start (K4)."),
+        card(null, d.rows.length ? [el("div", { class: "table-wrap" }, el("table", { class: "wide" },
+          el("thead", {}, el("tr", {}, [["Client", ""], ["Alerts", "num"], ["Records", "num"], ["First", ""], ["Last", ""], ["Applications", ""], ["Attack groups", ""], ["Marked", ""]].map(([h, c]) => el("th", { class: c }, h)))),
+          el("tbody", {}, d.rows.map((c) => el("tr", {},
+            el("td", { class: "mono" }, el("a", { href: "/clients/" + encodeURIComponent(c.ip) + "?" + query({ range: f.range }) }, c.ip)),
+            el("td", { class: "num" }, c.alerts ? el("a", { href: alerts(c.ip, {}) }, nf.format(c.alerts)) : "0"),
+            el("td", { class: "num" }, el("a", { href: alerts(c.ip, { kind: "all" }) }, nf.format(c.records))),
+            el("td", { class: "nowrap" }, fmtTime(c.first)),
+            el("td", { class: "nowrap" }, ago(c.last)),
+            el("td", {}, c.applications.map(appName).join(", ")),
+            el("td", {}, chips(c.groups, null, 2)),
+            el("td", { class: "nowrap" }, [c.real_attacks ? `${nf.format(c.real_attacks)} real attack` : "", c.false_positives ? `${nf.format(c.false_positives)} false positive` : ""].filter(Boolean).join(", ") || "–")))))),
+          d.total > d.rows.length ? el("p", { class: "muted" }, `The first ${d.rows.length} of ${nf.format(d.total)} addresses.`) : null]
+          : el("p", { class: "empty" }, "No recorded request has a client address in this period."))));
+    });
+  }
+
+  function endpointsPage() {
+    listPage("/api/endpoints", (d, f) => {
+      replace(el("div", { class: "stack" },
+        el("p", { class: "lead muted" }, "The paths of recorded requests, the most alerts first, per application: where a site is attacked, or where its false alarms come from."),
+        card(null, d.rows.length ? [el("div", { class: "table-wrap" }, el("table", { class: "wide" },
+          el("thead", {}, el("tr", {}, [["Request", ""], ["Application", ""], ["Alerts", "num"], ["Records", "num"], ["Clients", "num"], ["Attack groups", ""], ["False positives", "num"], ["Last", ""]].map(([h, c]) => el("th", { class: c }, h)))),
+          el("tbody", {}, d.rows.map((e) => el("tr", {},
+            el("td", {}, el("span", { class: "clip", title: e.method + " " + e.path }, el("span", { class: "mono" }, e.method + " "), e.path)),
+            el("td", {}, e.application === "none" ? appName("none") : el("a", { href: appLink(e.application) }, e.application)),
+            el("td", { class: "num" }, nf.format(e.alerts)),
+            el("td", { class: "num" }, nf.format(e.records)),
+            el("td", { class: "num" }, nf.format(e.clients)),
+            el("td", {}, chips(e.groups, null, 2)),
+            el("td", { class: "num" }, nf.format(e.false_positives)),
+            el("td", { class: "nowrap" }, ago(e.last))))))),
+          d.total > d.rows.length ? el("p", { class: "muted" }, `The first ${d.rows.length} of ${nf.format(d.total)}.`) : null]
+          : el("p", { class: "empty" }, "Nothing recorded in this period."))));
+    });
+  }
+
+  function clientPage() {
+    const ip = body.dataset.id;
+    const run = every(async () => {
+      const range = period.value;
+      const url = "/api/clients/" + encodeURIComponent(ip) + "?" + query({ range });
+      const c = await api(url);
+      if (same(url, c)) return;
+      const alerts = (extra) => "/alerts?" + query({ range, ip, kind: "all", ...extra });
+      const pick = (from, to) => location.assign("/alerts?" + query({ kind: "all", ip, from: toDate(from).toISOString(), to: to.toISOString() }));
+      replace(el("div", { class: "stack" },
+        el("div", { class: "tiles" },
+          tile("Alerts", c.alerts, c.last ? "last " + ago(c.last) : "", true),
+          tile("Records", c.records, c.first ? "since " + fmtTime(c.first) : ""),
+          tile("Marked real attack", c.verdicts.real_attack || 0, ""),
+          tile("Marked false positive", c.verdicts.false_positive || 0, "")),
+        card("Records over time",
+          el("div", { class: "legend" }, el("span", { class: "key" }, el("span", { class: "swatch alerts" }), "Alerts"), el("span", { class: "key" }, el("span", { class: "swatch others" }), "Records below the threshold")),
+          c.records ? columns(c, pick, false) : el("p", { class: "empty" }, "Nothing from this address in this period."),
+          c.records ? el("p", {}, el("a", { href: alerts({}) }, `All ${nf.format(c.records)} records of ${ip} →`)) : null),
+        c.records ? el("div", { class: "grid-2x2" },
+          card("Paths", toplist(c.top_paths, (i) => el("span", { class: "mono" }, i.key))),
+          card("Rules", toplist(c.top_rules, (i) => [el("strong", {}, i.key), " ", i.label], (i) => "/rules/" + i.key)),
+          card("Attack groups", toplist(c.top_groups, (i) => i.key, (i) => alerts({ group: i.key }))),
+          card("Applications", toplist(c.applications, (i) => appName(i.key), (i) => alerts({ app: i.key })))) : null,
+        c.user_agents.length ? card("User-Agents", toplist(c.user_agents, (i) => el("span", { class: "mono" }, i.key))) : null));
+    });
+    period.onChange(() => { history.replaceState(null, "", location.pathname + "?" + query({ range: period.value })); view.classList.add("loading"); run(); });
+  }
+
+  // ---- System › Records (W19) ----
+
+  function recordsPage() {
+    const notice = el("div", { "aria-live": "polite" });
+    every(async () => {
+      const p = await api("/api/records-page");
+      if (same("/api/records-page", p)) return;
+      const total = p.files.reduce((n, f) => n + f.size, 0);
+      const runSel = el("select", { name: "run" }, p.runs.map((r) => el("option", { value: r.run }, `${r.run.slice(0, 8)} · ${r.kind} · started ${fmtTime(r.started)} · ${nf.format(r.records)} records`)));
+      const before = el("input", { type: "date", name: "before" });
+      const reason = el("input", { name: "reason", placeholder: "Why? The change log keeps it", maxlength: 1000, autocomplete: "off" });
+      const password = el("input", { type: "password", name: "password", placeholder: "Your password", autocomplete: "current-password" });
+      const del = async (what) => {
+        const label = what.run ? `the run ${what.run.slice(0, 8)}` : `every record older than ${what.before}`;
+        if (!window.confirm(`Delete ${label}? Deleted records can't be brought back.`)) return;
+        try {
+          const a = await send("/api/records/delete", Object.assign({ reason: reason.value.trim(), password: password.value }, what.run ? { run: what.run } : { before: new Date(what.before + "T00:00:00").toISOString() }));
+          password.value = "";
+          refill(notice, banner("success", `${nf.format(a.lines)} lines deleted.`, "The change log keeps the deletion."));
+        } catch (err) {
+          if (err.message !== "login required") refill(notice, banner("error", "Nothing was deleted.", err.message));
+        }
+      };
+      const st = p.settings;
+      replace(el("div", { class: "stack" }, notice,
+        card("Kept now", kv([
+          ["Folder", el("code", {}, p.dir)],
+          ["Files", `${p.files.length}, ${bytes(total)} together`],
+          ["Runs", nf.format(p.runs.length)],
+          ["How long records are kept", st ? `files of ${st.max_file_mb} MB, the newest ${st.keep_files} kept` + (st.max_age_days ? `; full files closed more than ${st.max_age_days} days ago are deleted` : "; no age limit") : "the IDS's configuration is not known to the dashboard"],
+          ["How long marks are kept", p.marks_max_age_days ? `the marks of alerts older than ${p.marks_max_age_days} days are dropped once a day` : `forever: ${nf.format(p.marks)} marked records, each keeping its alert's client address (C6)`]]),
+          el("p", { class: "muted" }, "Records are kept by size and age under Settings for every application, where ids-live applies them; the marks' age is a setting of the dashboard."),
+          el("div", { class: "table-wrap" }, el("table", {},
+            el("thead", {}, el("tr", {}, el("th", {}, "File"), el("th", { class: "num" }, "Size"), el("th", {}, "Last written"))),
+            el("tbody", {}, p.files.map((f) => el("tr", {}, el("td", { class: "mono" }, f.name), el("td", { class: "num" }, bytes(f.size)), el("td", {}, fmtTime(f.modified)))))))),
+        card("Runs", el("div", { class: "table-wrap" }, el("table", { class: "wide" },
+          el("thead", {}, el("tr", {}, [["Run", ""], ["Kind", ""], ["Started", ""], ["Records", "num"], ["Alerts", "num"], ["Oldest record", ""], ["Newest record", ""]].map(([h, c]) => el("th", { class: c }, h)))),
+          el("tbody", {}, p.runs.map((r) => el("tr", {},
+            el("td", { class: "mono" }, r.run.slice(0, 8)),
+            el("td", {}, r.kind),
+            el("td", { class: "nowrap" }, fmtTime(r.started)),
+            el("td", { class: "num" }, nf.format(r.records)),
+            el("td", { class: "num" }, nf.format(r.alerts)),
+            el("td", { class: "nowrap" }, r.oldest ? fmtTime(r.oldest) : "–"),
+            el("td", { class: "nowrap" }, r.newest ? fmtTime(r.newest) : "–"))))))),
+        card("Export", el("p", { class: "muted" }, "Every record kept, or those the alerts list's filters choose, with the Export links there."),
+          el("p", {}, el("a", { class: "button small", href: "/api/export?" + query({ format: "csv", kind: "all", range: "all" }) }, "All records as CSV"), " ",
+            el("a", { class: "button small", href: "/api/export?" + query({ format: "jsonl", kind: "all", range: "all" }) }, "All records as JSON Lines"))),
+        adminRole ? card("Delete records",
+          p.busy ? banner("warning", "ids-live is running.", "It writes the records folder, so nothing can be deleted while it runs: stop it first with scripts/ids-live-ctl stop.") : null,
+          el("p", { class: "muted" }, "Deleting can't be undone. Marks of deleted records stay, with their alert's summary, until their age runs out."),
+          el("div", { class: "form-grid" }, formRow("Reason", reason), formRow("Your password", password)),
+          p.runs.length ? el("div", { class: "inline-form" }, formRow("A run", runSel), el("button", { type: "button", class: "small danger", onclick: () => del({ run: runSel.value }) }, "Delete this run")) : null,
+          el("div", { class: "inline-form" }, formRow("Everything older than", before), el("button", { type: "button", class: "small danger", onclick: () => { if (before.value) del({ before: before.value }); } }, "Delete older records"))) : null));
+    });
+  }
+
+  // ---- Administration › Dashboard settings (W20) ----
+
+  async function dashSettingsPage() {
+    let p;
+    try { p = await api("/api/dashboard-settings"); } catch (err) { if (err.message !== "login required") failed(err); return; }
+    const notice = el("div", { "aria-live": "polite" });
+    const idle = el("input", { type: "number", name: "idle", min: 1, max: 1440, value: p.session_idle_minutes });
+    const marks = el("input", { type: "number", name: "marks", min: 0, max: 3650, value: p.marks_max_age_days || "", placeholder: "forever" });
+    const configs = el("textarea", { name: "configs", rows: 4, spellcheck: "false" }, p.test_configs.join("\n"));
+    const folder = el("input", { name: "folder", value: p.test_requests_dir, spellcheck: "false", placeholder: "none" });
+    const names = el("textarea", { name: "names", rows: 3, spellcheck: "false", placeholder: "none" }, p.cert_names.join("\n"));
+    const reason = el("input", { name: "reason", placeholder: "Why? The change log keeps it", maxlength: 1000, autocomplete: "off" });
+    const password = el("input", { type: "password", name: "password", placeholder: "Your password", autocomplete: "current-password" });
+    const save = el("button", { type: "button", class: "primary", onclick: async () => {
+      try {
+        const a = await send("/api/dashboard-settings", { session_idle_minutes: Number(idle.value), marks_max_age_days: Number(marks.value) || 0,
+          test_configs: lines(configs.value), test_requests_dir: folder.value.trim(), cert_names: lines(names.value), reason: reason.value.trim(), password: password.value });
+        password.value = "";
+        refill(notice, banner("success", "Saved.", `Written to ${a.saved} and taken at once.` + (a.fingerprint ? ` The dashboard made a new certificate with the new names; its fingerprint is ${a.fingerprint}. Browsers ask to trust it again.` : "") +
+          (a.certificate_error ? " The certificate could not be made: " + a.certificate_error : "")));
+      } catch (err) {
+        if (err.message !== "login required") refill(notice, banner("error", "Not saved.", err.message));
+      }
+    } }, "Save the dashboard settings");
+    replace(el("div", { class: "stack" }, notice,
+      card("Settings",
+        el("div", { class: "form-grid analyse-form" },
+          formRow("Idle time, minutes", idle, "A login ends after this long without use."),
+          formRow("Marks kept, days", marks, "The marks of alerts older than this are dropped once a day; each keeps its alert's client address (C6). Empty keeps them."),
+          formRow("Test tab configurations", configs, "Product configurations, one per line; relative paths start at the folder of the configuration file."),
+          formRow("Example folder", folder, "Request files that the Test tab and Analyse files offer."),
+          formRow("Extra certificate names", names, p.own_cert ? "Names and addresses the dashboard's own certificate should carry too, one per line, such as an address it is reached at through a VPN. A new certificate is made at once." : "The dashboard serves certificate files given in its configuration, so it makes no certificate of its own.")),
+        el("div", { class: "form-grid" }, formRow("Reason", reason), formRow("Your password", password)),
+        el("div", { class: "form-actions" }, save)),
+      card("In the configuration file, changed by hand", kv([
+        ["File", el("code", {}, p.file)],
+        ["Address", el("code", {}, p.listen)],
+        ["Certificate", p.own_cert ? ["its own, ", el("code", { class: "wrap" }, p.fingerprint)] : "certificate files of the configuration"],
+        ["Names it carries", p.cert_names_on.join(", ")],
+        ["Records folder", el("code", {}, p.records_dir)],
+        ["State folder", el("code", {}, p.state_dir)],
+        ["The IDS's configuration", p.ids_config ? el("code", {}, p.ids_config) : "not named (ids_config): changes to the IDS are off"]]),
+        el("p", { class: "muted" }, "These stay on the command line on purpose (W21): with a wrong address or certificate, nobody could reach this page to put it right. After changing them, start the dashboard again."))), false);
+  }
+
   // settingsPage is System › Settings: the settings for every application
   // (W4), on one page, each control naming its reach (W5).
   function settingsPage() {
@@ -1316,6 +1507,7 @@
       const keep = r ? num("keep-files", r.keep_files, rd.keep_files + ", the default", 1, 1000) : null;
       const full = r ? el("input", { type: "checkbox", name: "full-requests", checked: r.full_requests, disabled: !can }) : null;
       const secrets = r ? el("input", { name: "secret-names", value: (r.secret_names || []).join(", "), placeholder: "none besides the built-in ones", disabled: !can }) : null;
+      const maxAge = r ? num("max-age", r.max_age_days, "no age limit", 0, 3650) : null;
       // Live input
       const l = p.live, ld = p.live_defaults;
       const workers = num("workers", l.workers, ld.workers + ", the default", 1, 64);
@@ -1348,9 +1540,10 @@
             el("div", { class: "form-grid" },
               formRow("File size, MB", maxFile, "When the current file reaches it, a new one starts."),
               formRow("Files kept", keep, "Older files are deleted, the current one included in the count."),
+              formRow("Days kept", maxAge, "Full files closed longer ago are deleted, once a day; empty for no age limit."),
               el("label", { class: "check-row" }, full, " Full requests: an alert's record keeps every header and the body (more personal data)"),
               formRow("Extra secret names", secrets, "Parameter names whose values are masked, besides password, token, session and the others built in; separated by commas.")),
-            el("div", { class: "form-actions" }, add("Set the records settings", () => ({ kind: "records", records: { max_file_mb: n(maxFile, rd.max_file_mb), keep_files: n(keep, rd.keep_files), full_requests: full.checked, secret_names: lines(secrets.value) } })))]
+            el("div", { class: "form-actions" }, add("Set the records settings", () => ({ kind: "records", records: { max_file_mb: n(maxFile, rd.max_file_mb), keep_files: n(keep, rd.keep_files), full_requests: full.checked, secret_names: lines(secrets.value), max_age_days: Number(maxAge.value) || 0 } })))]
             : el("p", { class: "muted" }, "The configuration has no records section, so it names no records folder; ids-live is then given one with -records.")),
         card("Live input",
           kv([["Socket", l.socket ? el("code", {}, l.socket) : "not in the configuration; ids-live is given one with -socket"]]),
@@ -1762,8 +1955,11 @@
       fresh.hidden = true;
       const ruleLink = (id) => "/alerts?" + query({ ...current(), rule: id });
       showBar();
+      const exportQuery = (format) => "/api/export?" + query({ ...current(), format });
       replace(el("div", { class: "stack" }, markNotice, card(null,
         analyst && l.rows.length ? bar : null,
+        l.rows.length ? el("div", { class: "export-bar" }, el("span", { class: "muted" }, `Export these ${nf.format(l.total)}:`),
+          el("a", { href: exportQuery("csv") }, "CSV"), el("a", { href: exportQuery("jsonl") }, "JSON Lines")) : null,
         l.rows.length ? [pager(l, "top"), listTable(l.rows, {
           status: state.kind === "all", rules: ruleLink, apps: l.applications.length > 1, verdict: true,
           pick: analyst ? picked : null, onPick: showBar,
@@ -3028,6 +3224,6 @@
     });
   }
 
-  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, settings: settingsPage, settingshistory: settingsHistoryPage, proposals: proposalsPage, analyse: analysePage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
+  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, settings: settingsPage, settingshistory: settingsHistoryPage, proposals: proposalsPage, analyse: analysePage, clients: clientsPage, client: clientPage, endpoints: endpointsPage, records: recordsPage, dashsettings: dashSettingsPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
   if (pages[page] && (view || page === "login")) pages[page]();
 })();
