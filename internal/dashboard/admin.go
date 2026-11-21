@@ -58,6 +58,12 @@ type change struct {
 	Filter  string         `json:"filter,omitempty"`
 	IDs     []string       `json:"ids,omitempty"`
 	Before  map[string]int `json:"before,omitempty"`
+	// A change to the IDS (W7–W11): its object, what it does, its
+	// reason, and the version it made.
+	Object  string   `json:"object,omitempty"`
+	What    []string `json:"what,omitempty"`
+	Reason  string   `json:"reason,omitempty"`
+	Version string   `json:"version,omitempty"`
 }
 
 // changeLog appends to the change log. It is only ever appended to (G5).

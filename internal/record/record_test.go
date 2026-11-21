@@ -416,7 +416,7 @@ func TestFilesArePrivateAndKeyIsKept(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	key := r.b.key
+	key := r.state.Load().b.key
 	r.Close()
 	for _, tt := range []struct {
 		name string
@@ -435,7 +435,7 @@ func TestFilesArePrivateAndKeyIsKept(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer r.Close()
-	if !reflect.DeepEqual(r.b.key, key) || len(key) != 32 {
+	if !reflect.DeepEqual(r.state.Load().b.key, key) || len(key) != 32 {
 		t.Error("the key changed between runs")
 	}
 

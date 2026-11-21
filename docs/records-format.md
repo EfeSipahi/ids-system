@@ -41,6 +41,8 @@ The decisions behind it are R1–R7 and V4 (main plan, section 11.22). The code 
 
 ## 3. `start`: one per run
 
+A run usually starts with a program. Since 21 November 2026 `ids-live` also starts a new run, in the same file, when it takes a changed configuration without stopping (W13 of [development-plan-dashboard-control.md](development-plan-dashboard-control.md)): it writes the old run's last `counts` record, then the new run's `start` record with the new `engine.config` fingerprint. A record written in the moment of the switch may still carry the old run's ID after the new `start` record.
+
 Written when `ids-offline` or `ids-live` starts writing records.
 
 | Field | Content |

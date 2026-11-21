@@ -93,6 +93,14 @@ func (w *writer) setHeader(v any) error {
 	return w.append(line)
 }
 
+// setLimits changes the size at which a file is full and how many files
+// are kept, from the next line on.
+func (w *writer) setLimits(maxSize int64, keep int) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.maxSize, w.keep = maxSize, keep
+}
+
 // write adds v as one line.
 func (w *writer) write(v any) error {
 	line, err := marshal(v)

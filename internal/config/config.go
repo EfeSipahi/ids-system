@@ -63,6 +63,15 @@ func Load(path string) (*Product, error) {
 	if err != nil {
 		return nil, err
 	}
+	return Parse(path, raw, os.ReadFile)
+}
+
+// Parse reads a configuration from raw, the content of the file at path,
+// as Load does; readFile reads each profile it names. It lets a caller
+// check a configuration and its profiles before writing them (W12 of
+// docs/development-plan-dashboard-control.md). The fingerprint of such a
+// configuration is that of raw and of the files on disk.
+func Parse(path string, raw []byte, readFile func(string) ([]byte, error)) (*Product, error) {
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
 	p := &Product{raw: raw}
@@ -106,7 +115,11 @@ func Load(path string) (*Product, error) {
 		if !filepath.IsAbs(app.Profile) {
 			app.Profile = filepath.Join(dir, app.Profile)
 		}
-		loaded, err := profile.Load(app.Profile)
+		data, err := readFile(app.Profile)
+		if err != nil {
+			return nil, fmt.Errorf("%s: applications[%d] (%s): %w", path, i, app.Name, err)
+		}
+		loaded, err := profile.Parse(app.Profile, data)
 		if err != nil {
 			return nil, fmt.Errorf("%s: applications[%d] (%s): %w", path, i, app.Name, err)
 		}

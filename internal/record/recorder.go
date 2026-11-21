@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/EfeSipahi/ids-system/internal/engine"
@@ -40,14 +41,13 @@ type Recorder struct {
 	w *writer
 	// lock keeps other writers out of the directory until Close.
 	lock *os.File
-	b    builder
-	// apps holds the builder of each application, whose masker also knows
-	// the profile's secrets (F8). profiled is true when there are
-	// applications.
-	apps     map[*profile.App]builder
-	profiled bool
-	run      string
-	now      func() time.Time
+	// state is the run's: its ID and how its records are built. Restart
+	// replaces it.
+	state atomic.Pointer[runState]
+	dir   string
+	key   []byte
+	input *Input
+	now   func() time.Time
 
 	// live is true for a live input, whose counts records say how many
 	// copiers were connected.
@@ -58,6 +58,17 @@ type Recorder struct {
 	// copiers is how many copiers are connected now, and copiersMax the
 	// most in the period of counts.
 	copiers, copiersMax int
+}
+
+// runState is what the records of one run are built with.
+type runState struct {
+	b builder
+	// apps holds the builder of each application, whose masker also knows
+	// the profile's secrets (F8). profiled is true when there are
+	// applications.
+	apps     map[*profile.App]builder
+	profiled bool
+	run      string
 }
 
 // NewEngine describes the running engine for the records. fingerprint
@@ -123,49 +134,89 @@ func open(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Se
 		return nil, fmt.Errorf("records: %w", err)
 	}
 	r := &Recorder{
-		w:    w,
-		lock: lock,
-		b:    builder{masker: newMasker(cfg.SecretNames, key), full: cfg.FullRequests, engine: eng},
-		run:  newID(),
-		now:  now,
-		live: input != nil && input.Kind == InputLive,
+		w:     w,
+		lock:  lock,
+		dir:   cfg.Dir,
+		key:   key,
+		input: input,
+		now:   now,
+		live:  input != nil && input.Kind == InputLive,
 	}
-	start := Start{Type: TypeStart, Schema: Schema, Run: r.run, Time: now().UTC(), Engine: eng, Rules: []Rule{}, Input: input}
-	if apps != nil && len(apps.Apps()) > 0 {
-		r.profiled = true
-		r.apps = map[*profile.App]builder{}
-		for _, a := range apps.Apps() {
-			b := r.b
-			b.masker = b.masker.forProfile(a.Profile)
-			r.apps[a] = b
-		}
-		start.Applications = result.AppStartups(apps)
-		start.RequireProfile = apps.RequireProfile()
-	}
-	for _, st := range statuses {
-		start.Rules = append(start.Rules, Rule{
-			ID:            st.ID,
-			File:          filepath.Base(st.Pos.File),
-			Line:          st.Pos.Line,
-			Phase:         st.Phase,
-			ParanoiaLevel: st.ParanoiaLevel,
-			Msg:           st.Msg,
-			Active:        st.Active,
-			Reason:        st.Reason,
-		})
-	}
+	st, start := r.prepare(cfg, eng, statuses, apps)
+	start.Time = now().UTC()
 	if err := w.setHeader(start); err != nil {
 		w.close()
 		unlock(lock)
 		return nil, fmt.Errorf("records: %w", err)
 	}
-	r.counts = Counts{Type: TypeCounts, Schema: Schema, Run: r.run, From: start.Time}
+	r.state.Store(st)
+	r.counts = Counts{Type: TypeCounts, Schema: Schema, Run: st.run, From: start.Time}
 	return r, nil
+}
+
+// prepare makes the state and the start record of a new run.
+func (r *Recorder) prepare(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set) (*runState, Start) {
+	st := &runState{b: builder{masker: newMasker(cfg.SecretNames, r.key), full: cfg.FullRequests, engine: eng}, run: newID()}
+	start := Start{Type: TypeStart, Schema: Schema, Run: st.run, Engine: eng, Rules: []Rule{}, Input: r.input}
+	if apps != nil && len(apps.Apps()) > 0 {
+		st.profiled = true
+		st.apps = map[*profile.App]builder{}
+		for _, a := range apps.Apps() {
+			b := st.b
+			b.masker = b.masker.forProfile(a.Profile)
+			st.apps[a] = b
+		}
+		start.Applications = result.AppStartups(apps)
+		start.RequireProfile = apps.RequireProfile()
+	}
+	for _, rs := range statuses {
+		start.Rules = append(start.Rules, Rule{
+			ID:            rs.ID,
+			File:          filepath.Base(rs.Pos.File),
+			Line:          rs.Pos.Line,
+			Phase:         rs.Phase,
+			ParanoiaLevel: rs.ParanoiaLevel,
+			Msg:           rs.Msg,
+			Active:        rs.Active,
+			Reason:        rs.Reason,
+		})
+	}
+	return st, start
+}
+
+// Restart starts a new run in the same files, for new rules and settings
+// (W13 of docs/development-plan-dashboard-control.md): it writes the
+// counts of the old run and the start record of the new one, and the
+// records after it carry the new run's ID. The records folder stays the
+// one Open locked; cfg must name it.
+func (r *Recorder) Restart(cfg Config, eng Engine, statuses []engine.RuleStatus, apps *profile.Set) error {
+	cfg = cfg.WithDefaults()
+	if err := cfg.Validate(); err != nil {
+		return err
+	}
+	if filepath.Clean(cfg.Dir) != filepath.Clean(r.dir) {
+		return fmt.Errorf("records: the folder %s can't change to %s while the IDS runs; start it again", r.dir, cfg.Dir)
+	}
+	st, start := r.prepare(cfg, eng, statuses, apps)
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	now := r.now()
+	if err := r.flushLocked(now); err != nil {
+		return err
+	}
+	r.w.setLimits(int64(cfg.MaxFileMB)<<20, cfg.KeepFiles)
+	start.Time = now.UTC()
+	if err := r.w.setHeader(start); err != nil {
+		return fmt.Errorf("records: %w", err)
+	}
+	r.state.Store(st)
+	r.counts = Counts{Type: TypeCounts, Schema: Schema, Run: st.run, From: start.Time}
+	return nil
 }
 
 // Run returns the ID of this run, which every record of it carries.
 func (r *Recorder) Run() string {
-	return r.run
+	return r.state.Load().run
 }
 
 // Add counts one analysed request and writes its record when it gets one
@@ -192,12 +243,13 @@ type Live struct {
 
 // AddWith is Add for a request of a live input; live may be nil.
 func (r *Recorder) AddWith(req *httpmodel.Request, res *engine.Result, prof *profile.Result, live *Live) error {
-	if r.profiled && prof == nil {
+	st := r.state.Load()
+	if st.profiled && prof == nil {
 		prof = &profile.Result{BodyChecked: req.Status.Body.Complete()}
 	}
-	b := r.b
+	b := st.b
 	if prof != nil && prof.App != nil {
-		if ab, ok := r.apps[prof.App]; ok {
+		if ab, ok := st.apps[prof.App]; ok {
 			b = ab
 		} else {
 			b.masker = b.masker.forProfile(prof.App.Profile)
@@ -207,7 +259,7 @@ func (r *Recorder) AddWith(req *httpmodel.Request, res *engine.Result, prof *pro
 	wanted := Wanted(req, res, prof)
 	var rec Request
 	if wanted {
-		rec = b.build(req, res, prof, live, newID(), r.run, now)
+		rec = b.build(req, res, prof, live, newID(), st.run, now)
 		if err := r.w.write(rec); err != nil {
 			return fmt.Errorf("records: %w", err)
 		}
@@ -257,7 +309,7 @@ func (r *Recorder) flushLocked(now time.Time) error {
 	if err := r.w.write(r.counts); err != nil {
 		return fmt.Errorf("records: %w", err)
 	}
-	r.counts = Counts{Type: TypeCounts, Schema: Schema, Run: r.run, From: r.counts.To}
+	r.counts = Counts{Type: TypeCounts, Schema: Schema, Run: r.counts.Run, From: r.counts.To}
 	r.copiersMax = r.copiers
 	return nil
 }
@@ -275,7 +327,7 @@ func (r *Recorder) SetCopiers(n int) {
 // from and to were not analysed, for reason, and source says who dropped
 // them (GapCopier or GapIDS).
 func (r *Recorder) Gap(from, to time.Time, missed int64, reason, source string) error {
-	g := Gap{Type: TypeGap, Schema: Schema, Run: r.run, From: from.UTC(), To: to.UTC(), Missed: missed, Reason: reason, Source: source}
+	g := Gap{Type: TypeGap, Schema: Schema, Run: r.Run(), From: from.UTC(), To: to.UTC(), Missed: missed, Reason: reason, Source: source}
 	if err := r.w.write(g); err != nil {
 		return fmt.Errorf("records: %w", err)
 	}

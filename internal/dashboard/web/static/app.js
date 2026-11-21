@@ -923,10 +923,142 @@
   }
 
   // applicationPage is one application's page: its Summary tab, the
-  // overview of its records, or its Rules tab (W3).
+  // overview of its records, its Rules tab or its History tab (W3). Its
+  // pending changes are above every tab (W7).
   function applicationPage() {
+    const object = "app:" + body.dataset.app;
+    changesPanel(object, document.getElementById("changes"));
     if (body.dataset.tab === "rules") rulesPage();
+    else if (body.dataset.tab === "history") historyPage(object);
     else overviewPage();
+  }
+
+  // ---- Changes: pending, previewed, applied, undone (W7–W11) ----
+
+  const me = body.dataset.user || "";
+
+  // reachName says whom an object's changes concern (W5).
+  const reachName = (object) => (object === "global" ? "every application" : object.replace(/^app:/, ""));
+
+  // changesPanel shows an object's pending changes in box, with their
+  // preview and, for an admin, the form that applies them. It returns a
+  // function that loads them again, for a page that adds one.
+  function changesPanel(object, box) {
+    if (!box) return () => {};
+    const who = reachName(object);
+    const notice = el("div", { "aria-live": "polite" });
+    const state = { reason: "", password: "", key: "" };
+    const act = async (data, done) => {
+      try {
+        const answer = await send("/api/changes", Object.assign({ object }, data));
+        if (done) done(answer);
+        await load(true);
+        if (live.run) live.run();
+      } catch (err) {
+        if (err.message !== "login required") refill(notice, banner("error", "Not done.", err.message));
+      }
+    };
+    const effects = (pv) => {
+      if (pv.error) return banner("error", "These changes can't be applied as they are.", pv.error);
+      const of = pv.records ? `the ${nf.format(pv.records)} records of ${who === "every application" ? "every application" : who} kept${pv.since ? " since " + fmtTime(pv.since) : ""}` : "";
+      return el("div", { class: "preview stack" },
+        el("h3", {}, "What they would do"),
+        pv.records ? el("p", { class: "muted" }, `Worked out from ${of}: the records keep what each rule found and what it added to the score.`)
+          : el("p", { class: "muted" }, "There are no records to try them on."),
+        pv.real_attacks ? banner("warning", `${nf.format(pv.real_attacks)} ${pv.real_attacks === 1 ? "alert" : "alerts"} marked real attack would no longer be ${pv.real_attacks === 1 ? "an alert" : "alerts"}.`, "They are first in the list below; look at them before applying.") : null,
+        pv.records ? el("ul", { class: "plain effects" },
+          el("li", {}, el("strong", {}, nf.format(pv.alerts_removed)), ` of ${nf.format(pv.alerts)} alerts would no longer be alerts`,
+            pv.alerts_removed ? el("span", { class: "muted" }, ` · ${nf.format(pv.false_positives)} marked false positive, ${nf.format(pv.not_reviewed)} not reviewed`) : null),
+          pv.records_removed ? el("li", {}, el("strong", {}, nf.format(pv.records_removed)), " records would no longer be recorded: no finding would be left") : null,
+          pv.alerts_added ? el("li", {}, el("strong", {}, nf.format(pv.alerts_added)), " records would become alerts") : null) : null,
+        pv.by_rule.length ? el("div", {}, el("div", { class: "sub" }, "Alerts no longer alerts, by the rule that would stop finding them"),
+          el("ul", { class: "plain" }, pv.by_rule.map((i) => el("li", {}, el("a", { href: "/rules/" + i.key }, i.key), " ", i.msg || "", el("span", { class: "muted" }, " · " + nf.format(i.count)))))) : null,
+        pv.examples.length ? el("div", {}, el("div", { class: "sub" }, pv.alerts_removed > pv.examples.length ? `The first ${pv.examples.length} of them` : "They are"),
+          listTable(pv.examples, { verdict: true, apps: object === "global" })) : null,
+        pv.untested.length ? el("div", {}, el("div", { class: "sub" }, "What the records can't tell"),
+          el("ul", { class: "plain" }, pv.untested.map((t) => el("li", { class: "muted" }, t)))) : null);
+    };
+    const draw = (c, pv) => {
+      if (!c.configured || !c.items.length) {
+        refill(box, notice.childNodes.length ? notice : null);
+        return;
+      }
+      const n = c.items.length;
+      const reason = el("input", { name: "reason", value: state.reason, maxlength: 1000, autocomplete: "off", placeholder: "Why? The change log and the version keep it", "aria-label": "Reason",
+        oninput: (e) => { state.reason = e.target.value; } });
+      const password = c.password ? el("input", { type: "password", name: "password", value: state.password, autocomplete: "current-password", placeholder: "Your password", "aria-label": "Your password",
+        oninput: (e) => { state.password = e.target.value; } }) : null;
+      const apply = el("button", { type: "button", class: "primary", disabled: !!pv.error, onclick: () => {
+        if (!state.reason.trim()) { refill(notice, banner("error", "Not applied.", "give a reason: the change log and the version keep it")); reason.focus(); return; }
+        act({ action: "apply", reason: state.reason.trim(), password: state.password }, (a) => {
+          state.reason = state.password = "";
+          refill(notice, banner("success", a.unchanged ? "Applied; no file changed." : `Applied as version ${a.version.id}.`,
+            a.unchanged ? "The files already were as these changes make them." : "ids-live takes it within a few seconds, without stopping; the History tab shows when it runs it."));
+        });
+      } }, `Apply ${n === 1 ? "this change" : "these " + n + " changes"} for ${who}`);
+      refill(box, notice, el("section", { class: "card pending" },
+        el("div", { class: "card-head" }, el("h2", {}, `Pending changes for ${who}`), el("span", { class: "muted" }, `${n} ${n === 1 ? "change" : "changes"}, applied together as one version`)),
+        el("ul", { class: "changes" }, c.items.map((ch) => el("li", {},
+          el("div", { class: "what" }, ch.what, ch.proposal ? el("span", { class: "badge proposal", title: "An analyst proposed it; an admin applies it or turns it down" }, "Proposed") : null),
+          el("div", { class: "sub" }, `${ch.proposal ? "Proposed" : "Added"} by ${ch.user}, ${ago(ch.time)}` + (ch.reason ? ". Reason: " + ch.reason : "")),
+          c.apply || (ch.proposal && ch.user === me) ? el("div", { class: "item-actions" },
+            el("button", { type: "button", class: "small", onclick: () => act({ action: "drop", id: ch.id }) }, ch.proposal && ch.user === me ? "Take back" : "Drop"),
+            c.apply && ch.proposal ? el("button", { type: "button", class: "small", onclick: () => {
+              const why = window.prompt("Why is this proposal turned down? The change log keeps it, for the analyst to read.");
+              if (why && why.trim()) act({ action: "turn_down", id: ch.id, reason: why.trim() });
+            } }, "Turn down") : null) : null))),
+        effects(pv),
+        c.apply ? el("div", { class: "apply-bar" }, reason, password, apply)
+          : el("p", { class: "muted" }, c.propose ? "An admin applies these changes, or turns them down." : "An admin applies these changes.")));
+    };
+    const load = async (force) => {
+      const [c, pv] = await Promise.all([api("/api/changes?" + query({ object })), api("/api/changes/preview?" + query({ object }))]);
+      const key = JSON.stringify([c, pv]);
+      if (!force && key === state.key) return;
+      state.key = key;
+      draw(c, pv);
+    };
+    load(true).catch((err) => { if (err.message !== "login required") refill(box, banner("error", "The pending changes could not be loaded.", err.message)); });
+    // A poll leaves the panel alone while the user types in it.
+    setInterval(() => { if (!live.paused && !box.contains(document.activeElement)) load(false).catch(() => {}); }, poll);
+    return () => load(true);
+  }
+
+  // historyPage lists an object's versions, newest first, each with Undo
+  // for an admin (W11).
+  function historyPage(object) {
+    const notice = el("div", { "aria-live": "polite" });
+    const admin = body.dataset.role === "admin";
+    const run = every(async () => {
+      const url = "/api/versions?" + query({ object });
+      const d = await api(url);
+      if (same(url, d)) return;
+      const undo = async (v) => {
+        if (v.later && !window.confirm(`${v.later} later ${v.later === 1 ? "change" : "changes"} touched the same files; undoing version ${v.id} takes ${v.later === 1 ? "it" : "them"} back too. Add the undo to the pending changes?`)) return;
+        try {
+          await send("/api/changes", { action: "undo", version: v.id });
+          refill(notice, banner("success", `The undo of version ${v.id} is pending.`, "Its preview is above; apply it there."));
+          window.scrollTo(0, 0);
+          location.reload();
+        } catch (err) {
+          if (err.message !== "login required") refill(notice, banner("error", "Not undone.", err.message));
+        }
+      };
+      const stateOf = (v) => v.live ? `ids-live runs it since ${fmtTime(v.live)}` : v.current ? "on disk; ids-live has not run it yet" : "changed by a later change";
+      replace(el("div", { class: "stack" }, notice,
+        d.versions.length ? card(`Changes applied to ${reachName(object)}`, el("div", { class: "table-wrap" }, el("table", { class: "wide history" },
+          el("thead", {}, el("tr", {}, el("th", {}, "Version"), el("th", {}, "Applied"), el("th", {}, "By"), el("th", {}, "What"), el("th", {}, "Reason"), el("th", {}, "State"), admin ? el("th", {}, "") : null)),
+          el("tbody", {}, d.versions.map((v) => el("tr", {},
+            el("td", { class: "mono nowrap" }, v.id),
+            el("td", { class: "nowrap" }, fmtTime(v.time)),
+            el("td", {}, v.user),
+            el("td", { class: "wrap" }, v.undoes ? el("div", {}, `Undoes version ${v.undoes}`) : v.changes.map((c) => el("div", {}, c.what))),
+            el("td", { class: "wrap" }, v.reason),
+            el("td", { class: "wrap" }, stateOf(v)),
+            admin ? el("td", {}, el("button", { type: "button", class: "small", onclick: () => undo(v) }, "Undo")) : null))))))
+          : card(null, el("p", { class: "empty" }, `No change has been applied to ${reachName(object)} from the dashboard yet.`))));
+    });
+    return run;
   }
 
   // ---- One rule (W6) ----
@@ -1632,8 +1764,8 @@
 
   function enginePage() {
     every(async () => {
-      const p = await api("/api/engine");
-      if (same("/api/engine", p)) return;
+      const [p, ctl] = await Promise.all([api("/api/engine"), api("/api/control")]);
+      if (same("/api/engine", { p, ctl })) return;
       const l = p.latest;
       // A replay started when it was replayed; its records carry the
       // requests' own times.
@@ -1656,7 +1788,7 @@
       });
       const level = l ? l.engine.paranoia_level : 0;
       replace(el("div", { class: "stack" },
-        liveInputCard(p),
+        liveInputCard(p, ctl),
         l ? card("Running configuration", kv([
           ["Started", fmtTime(startedAt(l))],
           ["Run", el("code", {}, l.run)],
@@ -1702,16 +1834,21 @@
 
   // liveInputCard is the state of ids-live (W17): whether it runs, what it
   // runs, whether a copier is connected, and what it could not analyse.
-  function liveInputCard(p) {
+  function liveInputCard(p, ctl) {
     const l = p.latest, live = p.live;
+    const start = el("p", { class: "muted" }, "On the server, ids-live is started and stopped with ", el("code", {}, "scripts/ids-live-ctl start"), " and ", el("code", {}, "stop"), " (or a systemd unit). Changes made here need no restart: ids-live reads its configuration again every few seconds.");
+    const disk = ctl && ctl.configured ? kv([
+      ["Configuration", el("code", {}, ctl.file)],
+      ["On disk", ctl.error ? el("span", { class: "error" }, "does not load: " + ctl.error) : el("code", { title: ctl.on_disk }, short(ctl.on_disk, 23))],
+      ["ids-live runs it", ctl.taken ? `yes, since ${fmtTime(ctl.since)}` : ctl.running ? "not yet: it runs an older configuration and takes this one within a few seconds while it runs" : "no live run has been seen"]]) : null;
     if (!live) {
       return card("Live input", el("p", { class: "muted" }, l
         ? `The newest run read ${l.input && l.input.kind === "replay" ? "replayed request files" : "request files"} (ids-offline), so the dashboard can't tell whether ids-live runs. When it runs, its state shows here.`
-        : "No run has been read yet. When ids-live runs, its state shows here."));
+        : "No run has been read yet. When ids-live runs, its state shows here."), disk, start);
     }
     const since = live.last_counts || live.start;
     return card("Live input",
-      live.stale ? banner("error", "ids-live is not running.", `It has written nothing since ${fmtTime(since)} (${ago(since)}); it writes counts every minute while it runs. Start it again on the server.`)
+      live.stale ? banner("error", "ids-live is not running.", `It has written nothing since ${fmtTime(since)} (${ago(since)}); it writes counts every minute while it runs. Start it again on the server: scripts/ids-live-ctl start.`)
         : live.copiers === 0 ? banner("warning", "Running, but no copier is connected.", "No proxy sent copies in the last minute. Check that Caddy runs with ids_copy.") : null,
       kv([
         ["State", live.stale ? "not running" : `running since ${fmtTime(live.start)}`],
@@ -1719,7 +1856,8 @@
         ["Copiers connected", live.copiers === undefined || live.copiers === null ? "not known yet" : nf.format(live.copiers)],
         ["Socket", live.socket ? el("code", {}, live.socket) : ""],
         ["Run", el("code", {}, l.run)],
-        ["Not analysed in the last hour", p.not_analysed_last_hour ? p.not_analysed_by.map((m) => el("div", {}, `${nf.format(m.missed)}: ${gapReason(m)}`)) : "none"]]));
+        ["Not analysed in the last hour", p.not_analysed_last_hour ? p.not_analysed_by.map((m) => el("div", {}, `${nf.format(m.missed)}: ${gapReason(m)}`)) : "none"]]),
+      disk, start);
   }
 
   // ---- Login ----
@@ -2267,6 +2405,8 @@
       ["", "Everything"], ["change", "Changes"], ["login", "Logins"], ["mark", "Marks"],
       ["user_added", "User added"], ["user_removed", "User removed"], ["role_changed", "Role changed"],
       ["password_reset", "Password reset"], ["password_changed", "Own password changed"],
+      ["changes_applied", "IDS changes applied"], ["change_added", "IDS change added"], ["change_proposed", "IDS change proposed"],
+      ["change_dropped", "IDS change dropped"], ["change_turned_down", "IDS proposal turned down"],
     ];
     const userSel = el("select", { name: "user" }, el("option", { value: "" }, "Every user"));
     const kindSel = el("select", { name: "kind" }, kinds.map(([v, t]) => el("option", { value: v }, t)));
@@ -2294,6 +2434,12 @@
           c.filter ? el("div", { class: "sub" }, "All that matched ", el("a", { href: "/alerts?" + c.filter }, c.filter)) : null,
           c.ids && c.ids.length ? el("div", { class: "sub" }, "Records: ", c.ids.slice(0, 10).map((id, i) => [i ? ", " : "", el("a", { href: "/alerts/" + encodeURIComponent(id) }, id.slice(0, 8))]), c.ids.length > 10 ? ` and ${c.ids.length - 10} more` : "") : null,
           c.before ? el("div", { class: "sub" }, "Before: " + Object.entries(c.before).map(([v, n]) => `${nf.format(n)} ${verdictNames[v] || v}`).join(", ")) : null];
+        case "changes_applied": case "change_added": case "change_proposed": case "change_dropped": case "change_turned_down": {
+          const verbs = { changes_applied: "applied changes for", change_added: "added a pending change for", change_proposed: "proposed a change for", change_dropped: "dropped a pending change for", change_turned_down: `turned down a proposal of ${c.target} for` };
+          return [`${verbs[c.action]} ${reachName(c.object)}`, c.version ? el("span", { class: "muted" }, ", version " + c.version) : null,
+            (c.what || []).map((w) => el("div", { class: "sub" }, w)),
+            c.reason ? el("div", { class: "sub" }, "Reason: " + c.reason) : null];
+        }
       }
       return c.action;
     }

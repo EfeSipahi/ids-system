@@ -10,6 +10,15 @@
 // wait in a queue with a size limit, and the ones that do not fit are
 // dropped and counted in gap records (T7, T8).
 //
+// While it runs it reads its configuration, rule files and profiles again
+// every few seconds (-watch). When they changed and load, it takes them
+// without stopping: the next copies are analysed with the new rules, and a
+// new run starts in the records, whose start record carries the new
+// fingerprint (W13 of docs/development-plan-dashboard-control.md). When
+// they don't load, it keeps the ones it runs and says why on standard
+// error. The records folder and the live section take effect at the next
+// start.
+//
 // SIGTERM or SIGINT stops it. It stops reading, analyses what is queued
 // for up to 10 seconds, counts what is left in a gap record, and closes
 // the records.
@@ -29,6 +38,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -55,6 +65,7 @@ func run(args []string, stdout, stderr io.Writer, signals <-chan os.Signal) int 
 	configPath := flags.String("config", "configs/crs-first-engine.json", "product configuration `file`")
 	socket := flags.String("socket", "", "listen on this Unix socket `path`, in place of the one in the configuration")
 	recordsDir := flags.String("records", "", "write records to this `directory`, in place of the one in the configuration")
+	watchEvery := flags.Duration("watch", 3*time.Second, "read the configuration again this often and take a change without stopping; 0 turns it off")
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}
@@ -130,6 +141,13 @@ func run(args []string, stdout, stderr io.Writer, signals <-chan os.Signal) int 
 
 	served := make(chan error, 1)
 	go func() { served <- srv.Serve() }()
+	watchCtx, stopWatching := context.WithCancel(context.Background())
+	defer stopWatching()
+	if *watchEvery > 0 {
+		w := &watcher{path: *configPath, current: fingerprint, live: lc, socket: *socket, recordsDir: rc.Dir, recordsFlag: *recordsDir != "",
+			analyzer: analyzer, recorder: recorder, log: logger, out: stdout}
+		go w.run(watchCtx, *watchEvery)
+	}
 	exit := 0
 	select {
 	case sig := <-signals:
@@ -138,6 +156,7 @@ func run(args []string, stdout, stderr io.Writer, signals <-chan os.Signal) int 
 		logger.Printf("stopping: %v", err)
 		exit = 1
 	}
+	stopWatching()
 	ctx, cancel := context.WithTimeout(context.Background(), drainTime)
 	stats := srv.Shutdown(ctx)
 	cancel()
@@ -148,4 +167,100 @@ func run(args []string, stdout, stderr io.Writer, signals <-chan os.Signal) int 
 	fmt.Fprintf(stdout, "Stopped: %d copies received, %d analysed, %d not analysed (%d with a full queue, %d at the stop), %d whose record could not be written; copiers reported %d not sent\n",
 		stats.Received, stats.Analysed, stats.Dropped+stats.Stopped, stats.Dropped, stats.Stopped, stats.Failed, stats.Missed)
 	return exit
+}
+
+// watcher takes a changed configuration without stopping (W13).
+type watcher struct {
+	path    string
+	current string // the fingerprint ids-live runs
+	live    live.Config
+	socket  string // -socket, which wins over the configuration
+	// recordsDir is the folder the recorder locked; recordsFlag is true
+	// when -records named it.
+	recordsDir  string
+	recordsFlag bool
+	analyzer    *live.Analyzer
+	recorder    *record.Recorder
+	log         *log.Logger
+	out         io.Writer
+	// said is the last problem written, so that it is written once.
+	said string
+}
+
+func (w *watcher) run(ctx context.Context, every time.Duration) {
+	t := time.NewTicker(every)
+	defer t.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+			w.check()
+		}
+	}
+}
+
+// problem writes a problem once, until another one or a success.
+func (w *watcher) problem(format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	if msg != w.said {
+		w.log.Print(msg)
+		w.said = msg
+	}
+}
+
+// check reads the configuration and takes it when it changed and loads.
+func (w *watcher) check() {
+	cfg, err := config.Load(w.path)
+	if err != nil {
+		w.problem("the configuration on disk does not load, so ids-live keeps the one it runs: %v", err)
+		return
+	}
+	fp, err := cfg.Fingerprint(cfg.Level())
+	if err != nil {
+		w.problem("the configuration on disk can't be read, so ids-live keeps the one it runs: %v", err)
+		return
+	}
+	if fp == w.current {
+		w.said = ""
+		return
+	}
+	rules, err := engine.Load(cfg.Config)
+	if err != nil {
+		w.problem("the rules of the changed configuration do not load, so ids-live keeps the ones it runs:\n%v", err)
+		return
+	}
+	apps, err := profile.NewSet(rules, cfg.Applications, cfg.RequireProfile)
+	if err != nil {
+		w.problem("the applications of the changed configuration can't be prepared, so ids-live keeps the ones it runs:\n%v", err)
+		return
+	}
+	rc := record.Config{Dir: w.recordsDir}
+	if cfg.Records != nil {
+		rc = *cfg.Records
+		if w.recordsFlag {
+			rc.Dir = w.recordsDir
+		}
+	}
+	if filepath.Clean(rc.Dir) != filepath.Clean(w.recordsDir) {
+		w.log.Printf("the records folder changed to %s; that takes effect when ids-live starts again, and until then it writes to %s", rc.Dir, w.recordsDir)
+		rc.Dir = w.recordsDir
+	}
+	lc := live.Config{}
+	if cfg.Live != nil {
+		lc = *cfg.Live
+	}
+	if w.socket != "" {
+		lc.Socket = w.socket
+	}
+	if lc.WithDefaults() != w.live {
+		w.log.Printf("the live section changed; it takes effect when ids-live starts again")
+	}
+	if err := w.recorder.Restart(rc, record.NewEngine(rules, fp), rules.Statuses(), apps); err != nil {
+		w.problem("the changed configuration can't be taken, so ids-live keeps the one it runs: %v", err)
+		return
+	}
+	w.analyzer.Use(rules, apps, cfg.Parsing())
+	w.current, w.said = fp, ""
+	fmt.Fprintf(w.out, "Took the changed configuration: run %s, fingerprint %s\n", w.recorder.Run(), fp)
 }

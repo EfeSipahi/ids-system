@@ -582,3 +582,19 @@ nav.tabs a:hover { color: var(--text); text-decoration: none; border-bottom-colo
 nav.tabs a[aria-current="page"] { color: var(--text); font-weight: 600; border-bottom-color: var(--interactive); }
 pre.rule-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 28rem; overflow: auto; }
 table.apps td { vertical-align: top; }
+
+/* Pending changes (W7): the list, the preview, the form that applies */
+.changes-box:empty { display: none; }
+.changes-box { margin-bottom: 16px; }
+ul.changes { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 0; }
+ul.changes li { padding: 12px 0; border-bottom: 1px solid var(--border-subtle); display: grid; gap: 4px; }
+ul.changes .what { font-weight: 600; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.item-actions { display: flex; gap: 8px; margin-top: 4px; }
+.preview { border-left: 3px solid var(--interactive); padding-left: 16px; margin: 8px 0 16px; }
+.preview h3 { margin: 0; font-size: 1rem; }
+.apply-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.apply-bar input[name="reason"] { flex: 1 1 24rem; min-width: 12rem; }
+.apply-bar input[name="password"] { flex: 0 1 14rem; }
+.badge.proposal { font-weight: 400; }
+.badge.proposal::before { background: var(--tag-purple); }
+table.history td { vertical-align: top; }

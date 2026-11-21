@@ -322,7 +322,7 @@ Decided by the user on 21 November 2026: 1. Each commit holds one stage's code, 
 | --- | --- |
 | Decisions W1–W26 | Decided 21 November 2026 |
 | 1. The organisation, showing only | Done, 21 November 2026 (note 1) |
-| 2. The foundations of change | Not started |
+| 2. The foundations of change | Done, 21 November 2026 (note 2) |
 | 3. The changes | Not started |
 | 4. The profile | Not started |
 | 5. Analyse files | Not started |
@@ -347,4 +347,23 @@ Each stage's note says what was built, how it was checked, and the choices made 
       - which run is the newest: a replay's start record carries the time of its first request, so a replay done today of last week's requests counted as an old run. A replay now counts from when it was replayed, on every page; the Engine page's "Started" shows that time too;
       - the rule's page links each application to its Rules tab, filtered to the rule; the controls come in stage 3;
       - "Log" in the navigation is now "Change log", as W2 names it.
+2. Stage 2, the foundations of change.
+   1. Built:
+      - `internal/jsonedit`: a JSON file is changed the way a person would, keeping the order of its keys and the layout `json.MarshalIndent` writes; the shop's configuration and profile come back byte for byte;
+      - `config.Parse` and `profile.Parse`: a configuration and its profiles are read from memory, so a change is checked by the IDS's own readers before anything is written;
+      - pending changes per object (W7), in `pending.json` of the state folder: for an application, a rule off, a rule skipping places, a rule back on, a CRS setting, the mode, the level, hosts, paths, removing it, its whole profile; for every application, the default level, a rule off or back on for all, the rule files, the body limit, `require_profile`, records, the live input, a new application. Each one is tried on the files as they are, with the object's other pending changes, and with the rules loaded, when it is added;
+      - applying (W11, W12): the changes are made on the files as they are then, checked again, the files they replace and write are kept as a version in `versions/` of the state folder, and the IDS's files are written in place, each with one rename, under a lock beside the configuration;
+      - undo: a pending change that gives each file of a version its content from before, with the same preview; it brought the demo profile back byte for byte;
+      - the preview (W8): worked out from the findings of the records, which add up to each record's score (844 of 844 records of the user's on 21 November). A rule off or skipping a place, a lower level or a rule file left out are worked out exactly, and so is a rule back on for the records made before it went off; what records can't show is named;
+      - who may do what (W9): an analyst proposes rule exceptions for an application, and may take back their own proposal; an admin adds any change, applies, drops, and turns a proposal down with a reason; applying for every application asks for the password again (W10). Each step is in the change log;
+      - `ids-live` reads its configuration again every 3 seconds (`-watch`) and takes a change without stopping (W13): the recorder starts a new run in the same files, and the workers switch to the new rules between two copies; a configuration that does not load is reported once and the old one stays;
+      - `scripts/ids-live-ctl`: start, stop, restart, status (W17);
+      - on the pages: the pending changes above every tab of an application's page, with their preview, the warning for alerts marked real attack, and the form that applies them; a History tab with Undo; the Engine page says what is on disk and whether `ids-live` runs it; the change log describes the new entries.
+   2. Checks: `go test ./...`; `go test -race` for `record`, `live`, `ids-live`, `jsonedit` and `dashboard`; new tests in `control_test.go`, `control_api_test.go`, `jsonedit_test.go`, and `TestTakesAChangedConfiguration` of `ids-live`, which sends copies before, during a broken edit and after a change. A browser round on the demo copy with a demo `ids-live` started by `ids-live-ctl`: an analyst proposed two changes, the admin saw their preview (114 alerts no longer alerts, 9 of them marked real attack, listed first), applied them, and `ids-live` ran them within a second; the undo's preview showed 114 records becoming alerts again, and after applying it the profile was the original byte for byte and `ids-live` ran the original fingerprint again.
+   3. Choices made:
+      - the `live` section (workers, queues, frame limit) still takes a restart: the queue and the workers are made when `ids-live` starts. This differs from the answer given under W4, that only the socket needs one;
+      - a file laid out by hand (such as `crs-first-engine.json`, whose exclusions are one line each) keeps its content but gets the standard layout when the dashboard changes it; the version keeps it as it was;
+      - an application added in the dashboard gets a profile that allows every path, in monitor mode, so that it does not fill the records with findings until its profile is written;
+      - the lock against a second editor is a hidden file beside the configuration (`.csic-shop.json.lock`);
+      - one browser round found a bug the Go tests could not: a preview with nothing untested sent `null` for the list, and the panel failed; every list of the answer is now a list, and a test checks it.
 

@@ -73,20 +73,32 @@ type entry struct {
 	app          string
 	profileKinds []string
 	alertBy      []string
-	// ruleLocs are the places each rule matched, each pair once, for the
-	// rule's own page.
-	ruleLocs []ruleLoc
+	// findings are the record's findings, for a rule's page and for the
+	// preview of a change (W8), which works the score out again from
+	// them. threshold is the score at which the rules make an alert, and
+	// profiled is true when the profile found something.
+	findings  []entryFinding
+	threshold int
+	profiled  bool
 
 	file   *recordFile
 	offset int64
 	length int
 }
 
-// ruleLoc is a place a rule matched.
-type ruleLoc struct {
+// entryFinding is one finding of a record: a rule, where it matched, and
+// what it added to the score.
+type entryFinding struct {
 	rule     int
 	location string
+	weight   int
 }
+
+// severityWeights are what a finding of each severity adds to the anomaly
+// score, at CRS's defaults (crs-setup.conf: critical 5, error 4, warning 3,
+// notice 2). The score of every record kept on 21 November 2026 was the
+// sum of its findings' weights.
+var severityWeights = map[string]int{"CRITICAL": 5, "ERROR": 4, "WARNING": 3, "NOTICE": 2}
 
 type countsEntry struct {
 	record.Counts
@@ -297,6 +309,7 @@ func (s *store) add(f *recordFile, offset int64, line []byte) {
 			userAgent:  rec.HTTP.UserAgent,
 			incomplete: !rec.Analysis.Complete,
 			alertBy:    rec.AlertBy,
+			threshold:  rec.Score.Threshold,
 			file:       f,
 			offset:     offset,
 			length:     len(line),
@@ -305,6 +318,7 @@ func (s *store) add(f *recordFile, offset int64, line []byte) {
 			e.app = rec.Application.Name
 		}
 		if rec.Profile != nil {
+			e.profiled = len(rec.Profile.Findings) > 0
 			for _, finding := range rec.Profile.Findings {
 				if !slices.Contains(e.profileKinds, finding.Kind) {
 					e.profileKinds = append(e.profileKinds, finding.Kind)
@@ -319,9 +333,11 @@ func (s *store) add(f *recordFile, offset int64, line []byte) {
 			if !slices.Contains(e.rules, finding.RuleID) {
 				e.rules = append(e.rules, finding.RuleID)
 			}
-			if rl := (ruleLoc{finding.RuleID, finding.Location}); finding.Location != "" && !slices.Contains(e.ruleLocs, rl) {
-				e.ruleLocs = append(e.ruleLocs, rl)
+			f := entryFinding{rule: finding.RuleID, location: finding.Location}
+			if groupOf(finding.RuleID).counts {
+				f.weight = severityWeights[strings.ToUpper(finding.Severity)]
 			}
+			e.findings = append(e.findings, f)
 			g := groupOf(finding.RuleID)
 			if !g.counts {
 				continue

@@ -156,7 +156,7 @@ Added 19 November 2026. The defaults of the queues and of the waits are first va
 | `queue_mb` | 64 | The same in MiB, 1–16,384 |
 | `max_frame_mb` | 16 | The longest frame it accepts, in MiB (section 3, `max_frame`), 1–1,024 and not more than `queue_mb` |
 
-The flags `-socket` and `-records` replace the configuration's socket and records folder; with them, the configuration needs no `live` or `records` section. SIGTERM or SIGINT stops it: it stops reading, gives the queued copies 10 seconds, and writes what is left as a gap (`IDS stopped`).
+The flags `-socket` and `-records` replace the configuration's socket and records folder; with them, the configuration needs no `live` or `records` section. Every 3 seconds (`-watch`, 0 turns it off) `ids-live` reads the configuration, its rule files and profiles again; when their fingerprint changed and they load, it takes them without stopping and starts a new run in the records. When they don't load, it keeps what it runs and says why on standard error. The records folder and the `live` section take effect at the next start. `scripts/ids-live-ctl` starts, stops and restarts it. SIGTERM or SIGINT stops it: it stops reading, gives the queued copies 10 seconds, and writes what is left as a gap (`IDS stopped`).
 
 ### 6.2. The Caddy copier
 

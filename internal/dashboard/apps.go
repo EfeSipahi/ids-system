@@ -329,9 +329,9 @@ func (s *store) rule(id int, r timeRange) (rulePage, error) {
 // once.
 func (e *entry) ruleLocations(id int) []string {
 	var out []string
-	for _, rl := range e.ruleLocs {
-		if rl.rule == id && rl.location != "" && !slices.Contains(out, rl.location) {
-			out = append(out, rl.location)
+	for _, f := range e.findings {
+		if f.rule == id && f.location != "" && !slices.Contains(out, f.location) {
+			out = append(out, f.location)
 		}
 	}
 	return out

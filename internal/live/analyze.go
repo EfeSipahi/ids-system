@@ -1,6 +1,8 @@
 package live
 
 import (
+	"sync"
+
 	"github.com/EfeSipahi/ids-system/internal/analysis"
 	"github.com/EfeSipahi/ids-system/internal/copyframe"
 	"github.com/EfeSipahi/ids-system/internal/engine"
@@ -22,14 +24,30 @@ type Analyzer struct {
 	// Parsing are the options for reading each request, such as the body
 	// limit (T3).
 	Parsing httpmodel.Options
+
+	// mu guards Rules, Apps and Parsing, which Use replaces while the
+	// workers run.
+	mu sync.RWMutex
+}
+
+// Use makes the copies analysed from now on use new rules, applications
+// and options (W13 of docs/development-plan-dashboard-control.md). A copy
+// being analysed finishes with the ones it started with.
+func (a *Analyzer) Use(rules *engine.RuleSet, apps *profile.Set, parsing httpmodel.Options) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.Rules, a.Apps, a.Parsing = rules, apps, parsing
 }
 
 // Analyze analyses one copy and records it. The error is the recorder's.
 func (a *Analyzer) Analyze(c *copyframe.Copy) error {
-	req := Request(c, a.Parsing)
+	a.mu.RLock()
+	rules, apps, parsing := a.Rules, a.Apps, a.Parsing
+	a.mu.RUnlock()
+	req := Request(c, parsing)
 	live := NewLive(c)
-	app := a.application(c, req, live)
-	res, prof := analysis.Run(a.Rules, a.Apps, req, app)
+	app := application(apps, c, req, live)
+	res, prof := analysis.Run(rules, apps, req, app)
 	return a.Recorder.AddWith(res.Request, res, prof, live)
 }
 
@@ -37,12 +55,12 @@ func (a *Analyzer) Analyze(c *copyframe.Copy) error {
 // names, or, when it names none, the one of the request's Host and path
 // (F3). A name the configuration does not have gives no application, and
 // is counted in live.
-func (a *Analyzer) application(c *copyframe.Copy, req *httpmodel.Request, live *record.Live) *profile.App {
+func application(apps *profile.Set, c *copyframe.Copy, req *httpmodel.Request, live *record.Live) *profile.App {
 	name := c.Meta.Application
 	if name == "" {
-		return a.Apps.Match(req)
+		return apps.Match(req)
 	}
-	app := a.Apps.ByName(name)
+	app := apps.ByName(name)
 	if app == nil {
 		live.UnknownApplication = name
 	}

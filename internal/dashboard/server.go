@@ -40,6 +40,8 @@ type Server struct {
 	test    *tester
 	changes *changeLog
 	marks   *marks
+	control *control
+	disk    diskState
 	// lock is the state folder's lock (C4), held while the dashboard runs.
 	lock  *os.File
 	pages map[string]*template.Template
@@ -80,6 +82,7 @@ func newServer(cfg Config, logOut io.Writer, now func() time.Time) (*Server, err
 		log:     log.New(logOut, "ids-dashboard: ", log.LstdFlags),
 		changes: &changeLog{path: filepath.Join(cfg.StateDir, ChangesFile)},
 		lock:    lock,
+		control: newControl(cfg.IDSConfig, cfg.StateDir, now),
 	}
 	if s.marks, err = openMarks(filepath.Join(cfg.StateDir, MarksFile)); err != nil {
 		s.Close()
@@ -171,6 +174,7 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /applications", page("applications", "Applications", RoleViewer))
 	mux.Handle("GET /applications/{name}", s.requirePage(RoleViewer, s.appPage("summary")))
 	mux.Handle("GET /applications/{name}/rules", s.requirePage(RoleViewer, s.appPage("rules")))
+	mux.Handle("GET /applications/{name}/history", s.requirePage(RoleViewer, s.appPage("history")))
 	mux.Handle("GET /engine", page("engine", "Engine and live input", RoleViewer))
 	mux.Handle("GET /test", page("test", "Test a request", RoleAnalyst))
 	mux.Handle("GET /users", page("users", "Users", RoleAdmin))
@@ -194,6 +198,12 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("POST /api/account", s.requireAPI(RoleViewer, s.apiAccount))
 	mux.Handle("POST /api/marks", s.requireAPI(RoleAnalyst, s.apiMark))
 	mux.Handle("GET /api/marks/{id}", s.requireAPI(RoleViewer, s.apiMarkHistory))
+	mux.Handle("GET /api/changes", s.requireAPI(RoleViewer, s.apiChanges))
+	mux.Handle("POST /api/changes", s.requireAPI(RoleAnalyst, s.apiChangesPost))
+	mux.Handle("GET /api/changes/preview", s.requireAPI(RoleViewer, s.apiPreview))
+	mux.Handle("GET /api/proposals", s.requireAPI(RoleAdmin, s.apiProposals))
+	mux.Handle("GET /api/versions", s.requireAPI(RoleViewer, s.apiVersions))
+	mux.Handle("GET /api/control", s.requireAPI(RoleViewer, s.apiControl))
 
 	// Everything else needs a login too, so that the dashboard says
 	// nothing about what exists to someone who is not logged in.

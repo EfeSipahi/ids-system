@@ -170,6 +170,12 @@ func Load(path string) (*Profile, error) {
 	if err != nil {
 		return nil, err
 	}
+	return Parse(path, raw)
+}
+
+// Parse reads a profile from raw, the content of the file at path, as Load
+// does. It lets a caller check a profile before writing it.
+func Parse(path string, raw []byte) (*Profile, error) {
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
 	var f fileJSON
