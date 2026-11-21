@@ -47,10 +47,12 @@
     </div>{{end}}
     <div class="side-group">
       <span class="side-label">System</span>
+      <a href="/settings" {{if or (eq .Page "settings") (eq .Page "settingshistory")}}aria-current="page"{{end}}>Settings</a>
       <a href="/engine" {{if eq .Page "engine"}}aria-current="page"{{end}}>Engine and live input</a>
     </div>
     {{if .Admin}}<div class="side-group">
       <span class="side-label">Administration</span>
+      <a href="/proposals" {{if eq .Page "proposals"}}aria-current="page"{{end}}>Proposed changes</a>
       <a href="/users" {{if eq .Page "users"}}aria-current="page"{{end}}>Users</a>
       <a href="/log" {{if eq .Page "log"}}aria-current="page"{{end}}>Change log</a>
     </div>{{end}}

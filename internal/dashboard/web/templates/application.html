@@ -1,11 +1,12 @@
 {{define "content"}}
 <div class="pagehead">
   <div class="headline"><a class="up" href="/applications">← Applications</a><h1>{{.App}}</h1></div>
-  <div class="tools">{{if eq .Tab "rules"}}<span class="tools-label">Fired in</span>{{end}}{{if ne .Tab "history"}}{{template "period"}}{{end}}{{template "live"}}</div>
+  <div class="tools">{{if eq .Tab "rules"}}<span class="tools-label">Fired in</span>{{end}}{{if or (eq .Tab "summary") (eq .Tab "rules")}}{{template "period"}}{{end}}{{template "live"}}</div>
 </div>
 <nav class="tabs" aria-label="Parts of the application {{.App}}">
   <a href="/applications/{{.App}}" {{if eq .Tab "summary"}}aria-current="page"{{end}}>Summary</a>
   <a href="/applications/{{.App}}/rules" {{if eq .Tab "rules"}}aria-current="page"{{end}}>Rules</a>
+  <a href="/applications/{{.App}}/settings" {{if eq .Tab "settings"}}aria-current="page"{{end}}>Settings</a>
   <a href="/applications/{{.App}}/history" {{if eq .Tab "history"}}aria-current="page"{{end}}>History</a>
 </nav>
 <div id="changes" class="stack changes-box"></div>

@@ -598,3 +598,21 @@ ul.changes .what { font-weight: 600; display: flex; flex-wrap: wrap; gap: 8px; a
 .badge.proposal { font-weight: 400; }
 .badge.proposal::before { background: var(--tag-purple); }
 table.history td { vertical-align: top; }
+
+/* Forms of the settings (W3, W4) */
+.form-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px 16px; align-items: end; }
+.form-grid > .form-row, .form-grid > .check-row { grid-column: 1; }
+.form-grid > button { grid-column: 2; justify-self: start; }
+.form-row { display: grid; gap: 4px; min-width: 0; }
+.form-row .help { font-size: 0.75rem; color: var(--text-2); }
+.form-row select, .form-row input, .form-row textarea { max-width: 36rem; }
+.check-row { display: flex; gap: 8px; align-items: center; }
+.inline-form { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: end; margin-top: 12px; }
+.inline-form .form-row input { min-width: 12rem; }
+.form-actions { margin-top: 12px; }
+textarea { font: inherit; font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.875rem; color: var(--text); background: var(--layer-2); border: 0; border-bottom: 1px solid var(--border-strong); padding: 8px 12px; width: 100%; }
+.card textarea, .card input, .card select { background: var(--layer-2); }
+button.danger { color: var(--error); border-color: var(--error); }
+button.danger:hover { background: var(--error); border-color: var(--error); color: #ffffff; }
+tr.editor td { background: var(--layer-2); }
+@media (max-width: 900px) { .form-grid { grid-template-columns: minmax(0, 1fr); } .form-grid > button { grid-column: 1; } }

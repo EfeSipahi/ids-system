@@ -323,7 +323,7 @@ Decided by the user on 21 November 2026: 1. Each commit holds one stage's code, 
 | Decisions W1–W26 | Decided 21 November 2026 |
 | 1. The organisation, showing only | Done, 21 November 2026 (note 1) |
 | 2. The foundations of change | Done, 21 November 2026 (note 2) |
-| 3. The changes | Not started |
+| 3. The changes | Done, 21 November 2026 (note 3) |
 | 4. The profile | Not started |
 | 5. Analyse files | Not started |
 | 6. Records, the dashboard's settings, views | Not started |
@@ -366,4 +366,17 @@ Each stage's note says what was built, how it was checked, and the choices made 
       - an application added in the dashboard gets a profile that allows every path, in monitor mode, so that it does not fill the records with findings until its profile is written;
       - the lock against a second editor is a hidden file beside the configuration (`.csic-shop.json.lock`);
       - one browser round found a bug the Go tests could not: a preview with nothing untested sent `null` for the list, and the panel failed; every list of the answer is now a list, and a test checks it.
+3. Stage 3, the changes.
+   1. Built:
+      - an application's Rules tab: each loaded rule has "Change…", for an analyst or an admin: off for the application, skipping places, or back on, with a reason (W6); an analyst's change is a proposal (W9);
+      - an application's Settings tab (W3): its mode and level, its hosts and paths, its CRS settings (an analyst may propose one), the `ids_copy` block for Caddy with a Copy button (W18), and removing it; every button names its reach, such as "Set the mode for csic-shop" (W5); a viewer sees the same settings without controls;
+      - a rule's page: "Switch off for every application", or "Back on for every application" when the configuration excludes it, for an admin; the pending changes for every application are shown above it;
+      - System › Settings (`/settings`, W4): the rule files, with the ones CRS needs locked on; the default level with how many rules each level runs, and which applications have their own; the rules off for every application, each with "Back on"; the body limit; `require_profile`; records (the folder shown only); the live input (the socket shown only); and a History tab. Applying them asks for the password again (W10);
+      - Applications: "Add an application" for an admin, pending for every application;
+      - Administration › Proposed changes (`/proposals`): every object's pending changes, the proposals marked, each with a link to where it is applied;
+      - the preview names changed CRS settings among what the records can't tell.
+   2. Checks: `go test ./...`, with the new routes in the tests by role and without a login, and `TestSettingsAPI`. A browser round as analyst (a CRS setting proposed from the Settings tab), admin (the mode set, a rule set to skip a place from the Rules tab, the default level set and applied with the password, which `ids-live` took within three seconds, an application added, the proposals page) and viewer (the same pages without controls), light at 1366 px and dark at 1920 px: no page wider than the window. It found one error, fixed: the link added after "Add the application" was written with a wrong call.
+   3. Choices made:
+      - the rule controls sit in each rule's status cell as "Change…", which opens a row below the rule, rather than in a column of their own, so the table keeps its widths;
+      - the rules off for every application that CRS's setup needs off (901320, 901350, 901410, 901450, which the engine does not support) are listed with "Back on" like the others; the check refuses the change with the engine's own message.
 

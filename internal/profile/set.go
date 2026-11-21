@@ -210,6 +210,12 @@ func SettingNames() []string {
 	return sortedKeys(settings)
 }
 
+// SettingKind returns what a setting takes: "text", "flag" (0 or 1) or
+// "number"; "" for a setting a profile may not change.
+func SettingKind(name string) string {
+	return settings[name]
+}
+
 // protected are the CRS files whose rules no exception may touch (5c), with
 // what to tell the user.
 var protected = map[string]string{

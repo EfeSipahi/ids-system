@@ -886,6 +886,17 @@
   // ---- Applications (W1–W3) ----
 
   function applicationsPage() {
+    const addNotice = el("div", { "aria-live": "polite" });
+    const newName = el("input", { name: "name", placeholder: "shop-2", maxlength: 64, autocomplete: "off", spellcheck: "false" });
+    const newHosts = el("input", { name: "hosts", placeholder: "shop.example.com, shop.example.com:8443", autocomplete: "off", spellcheck: "false" });
+    const newPaths = el("input", { name: "paths", placeholder: "every path", autocomplete: "off", spellcheck: "false" });
+    const addForm = card("Add an application",
+      el("p", { class: "muted" }, "It starts in monitor mode with a profile that allows every path, at the default level, until its profile is written. The change is pending under Settings for every application, where it is applied with its preview."),
+      el("div", { class: "inline-form" }, formRow("Name", newName), formRow("Hosts", newHosts), formRow("Paths", newPaths),
+        el("button", { type: "button", class: "small", onclick: async () => {
+          const ch = await addChange("global", { kind: "add_app", name: newName.value.trim(), hosts: lines(newHosts.value), paths: lines(newPaths.value) }, addNotice);
+          if (ch) { append(addNotice.firstChild, [" ", el("a", { href: "/settings" }, "Apply it under Settings →")]); newName.value = newHosts.value = newPaths.value = ""; }
+        } }, "Add the application, pending")));
     const run = every(async () => {
       const range = period.value;
       const url = "/api/applications?" + query({ range });
@@ -906,6 +917,7 @@
         el("td", { class: "nowrap" }, a.last_alert ? ago(a.last_alert) : "–"));
       const head = [["Application", ""], ["Hosts", ""], ["Mode", ""], ["Level", ""], ["Exceptions", "num"], ["Alerts", "num"], ["Not reviewed", "num"], ["False positives", "num"], ["Last alert", ""]];
       replace(el("div", { class: "stack" },
+        addNotice,
         el("p", { class: "lead muted" }, "Each application has its own profile, paranoia level and rule exceptions, on its own page. " +
           `Requests of no application run at the default level ${p.default_level}, with the rules only` +
           (p.require_profile ? ", and get a no_profile finding (require_profile)." : ".")),
@@ -913,7 +925,8 @@
           el("thead", {}, el("tr", {}, head.map(([h, c]) => el("th", { class: c }, h)))),
           el("tbody", {}, p.applications.map((a) => row(a, false)), row(p.none, true)))))
           : card(null, el("p", { class: "empty" }, "The running configuration has no applications. An application is named with its hosts and a profile file under \"applications\" in the product configuration."),
-            p.none.records ? el("p", {}, el("a", { href: alerts("none", { kind: "all" }) }, `${nf.format(p.none.records)} records of no application in this period →`)) : null)));
+            p.none.records ? el("p", {}, el("a", { href: alerts("none", { kind: "all" }) }, `${nf.format(p.none.records)} records of no application in this period →`)) : null),
+        adminRole ? addForm : null));
     });
     period.onChange(() => {
       history.replaceState(null, "", "/applications?" + query({ range: period.value }));
@@ -930,12 +943,208 @@
     changesPanel(object, document.getElementById("changes"));
     if (body.dataset.tab === "rules") rulesPage();
     else if (body.dataset.tab === "history") historyPage(object);
+    else if (body.dataset.tab === "settings") appSettingsTab(object, body.dataset.app);
     else overviewPage();
+  }
+
+  // ---- Settings: one application's (W3), and every application's (W4) ----
+
+  // formRow is a label, its control and a line of help.
+  const formRow = (label, control, help) => el("label", { class: "form-row" }, el("span", { class: "field-label" }, label), control, help ? el("span", { class: "help" }, help) : null);
+  // lines splits a list typed one per line, or with commas.
+  const lines = (text) => text.split(/[\n,]/).map((x) => x.trim()).filter(Boolean);
+
+  function appSettingsTab(object, name) {
+    const notice = el("div", { "aria-live": "polite" });
+    every(async () => {
+      const url = "/api/applications/" + encodeURIComponent(name) + "/settings";
+      const a = await api(url);
+      if (same(url, a)) return;
+      if (!a.configured || a.error) {
+        replace(card(null, banner("warning", "The settings can't be shown.", a.error)));
+        return;
+      }
+      const can = adminRole;
+      const add = (label, make, who) => (who === undefined ? can : who) ? el("button", { type: "button", class: "small", onclick: () => { const ch = make(); if (ch) addChange(object, ch, notice); } }, label) : null;
+      const mode = el("select", { name: "mode", disabled: !can }, ["monitor", "alert"].map((m) => el("option", { value: m }, modeText(m))));
+      mode.value = a.mode;
+      const level = el("select", { name: "level", disabled: !can }, el("option", { value: "0" }, `The default (${a.default_level})`), [1, 2, 3, 4].map((n) => el("option", { value: String(n) }, `Level ${n}`)));
+      level.value = String(a.level);
+      const hosts = el("textarea", { name: "hosts", rows: 3, disabled: !can, spellcheck: "false" }, a.hosts.join("\n"));
+      const paths = el("textarea", { name: "paths", rows: 2, disabled: !can, spellcheck: "false", placeholder: "every path of its hosts" }, a.paths.join("\n"));
+      const crs = a.exceptions.filter((ex) => ex.setting);
+      const rulesExcepted = a.exceptions.filter((ex) => ex.rule).length;
+      const setName = el("select", { name: "setting" }, a.settings.map((st) => el("option", { value: st.name }, `${st.name} (${st.kind === "flag" ? "0 or 1" : st.kind})`)));
+      const setValue = el("input", { name: "value", placeholder: "Its value for " + name, autocomplete: "off", spellcheck: "false" });
+      const setReason = el("input", { name: "setting-reason", placeholder: "Why? It is shown with the setting", maxlength: 1000, autocomplete: "off" });
+      const block = `ids_copy {\n    application ${a.name}\n    socket ${a.socket || "/run/ids/copy.sock"}\n}`;
+      replace(el("div", { class: "stack" }, notice,
+        card(`How ${name}'s requests are analysed`,
+          el("div", { class: "form-grid" },
+            formRow("Mode", mode, "In alert mode a profile finding makes the request an alert; in monitor mode it is recorded only."),
+            add(`Set the mode for ${name}`, () => ({ kind: "mode", mode: mode.value })),
+            formRow("Paranoia level", level, `For ${name} only. The default is set for every application under Settings.`),
+            add(`Set the level for ${name}`, () => ({ kind: "level", level: Number(level.value) }))),
+          el("p", { class: "muted" }, `Rule exceptions: ${rulesExcepted} ${rulesExcepted === 1 ? "rule is" : "rules are"} off or skip places for ${name}; each is changed on `, el("a", { href: appLink(name, "rules") }, "its Rules tab"), ".")),
+        card(`Which requests are ${name}'s`,
+          el("div", { class: "form-grid" },
+            formRow("Hosts", hosts, "The Host values of its requests, one per line, with the port when they carry one."),
+            add(`Set the hosts of ${name}`, () => ({ kind: "hosts", hosts: lines(hosts.value) })),
+            formRow("Paths", paths, "Path prefixes, one per line, for applications that share a host; empty for every path."),
+            add(`Set the paths of ${name}`, () => ({ kind: "paths", paths: lines(paths.value) })))),
+        card(`CRS settings for ${name}`,
+          el("p", { class: "muted" }, `A profile may change some of CRS's settings for its application only, such as the methods it allows or the longest argument. Each needs a reason.`),
+          crs.length ? el("ul", { class: "plain" }, crs.map((ex) => el("li", {}, el("code", {}, `${ex.setting} = "${ex.value}"`), " · ", ex.reason, " ",
+            add("Back to the default for " + name, () => ({ kind: "setting_remove", setting: ex.setting }))))) : el("p", { class: "muted" }, `${name} has CRS's default for every setting.`),
+          analyst ? el("div", { class: "inline-form" }, formRow("Setting", setName), formRow("Value", setValue), formRow("Reason", setReason),
+            add(can ? `Add for ${name}` : `Propose for ${name}`, () => ({ kind: "setting", setting: setName.value, value: setValue.value.trim(), reason: setReason.value.trim() }), true)) : null),
+        card("The proxy's side (Caddy)",
+          el("p", { class: "muted" }, `Caddy's copier says which application each copy belongs to. In the Caddyfile, put this in ${name}'s site block, beside reverse_proxy, and reload Caddy. The dashboard does not change Caddy itself (W18).`),
+          el("pre", { class: "block" }, block), el("div", {}, copyButton(block, "the ids_copy block")),
+          a.socket ? null : el("p", { class: "muted" }, "The configuration has no live socket, so the one shown is an example; use the socket ids-live listens on.")),
+        card(null, kv([["Profile file", el("code", {}, a.profile)]]),
+          el("p", { class: "muted" }, "Its endpoints, parameters, cookies and headers are on the Profile tab, which comes in stage 4 of the plan."),
+          can ? el("button", { type: "button", class: "small danger", onclick: () => {
+            if (window.confirm(`Remove the application ${name}? Once applied, its requests run as requests of no application. Its profile file is kept.`)) addChange(object, { kind: "remove_app" }, notice);
+          } }, `Remove the application ${name}…`) : null)));
+    });
+  }
+
+  // settingsPage is System › Settings: the settings for every application
+  // (W4), on one page, each control naming its reach (W5).
+  function settingsPage() {
+    changesPanel("global", document.getElementById("changes"));
+    const notice = el("div", { "aria-live": "polite" });
+    every(async () => {
+      const p = await api("/api/settings");
+      if (same("/api/settings", p)) return;
+      if (!p.configured || p.error) {
+        replace(card(null, banner("warning", "The settings can't be shown.", p.error)));
+        return;
+      }
+      const can = adminRole;
+      const add = (label, make) => can ? el("button", { type: "button", class: "small", onclick: () => { const ch = make(); if (ch) addChange("global", ch, notice); } }, label) : null;
+      const num = (name, value, help, min, max) => el("input", { name, type: "number", value: value || "", min, max, placeholder: help, disabled: !can, inputmode: "numeric" });
+      // Rule files
+      const boxes = p.rule_files.map((f) => el("input", { type: "checkbox", checked: f.on, disabled: !can || (f.needed && f.on), "aria-label": f.name }));
+      const filesTable = el("div", { class: "table-wrap" }, el("table", { class: "wide" },
+        el("thead", {}, el("tr", {}, el("th", {}, "Loaded"), el("th", {}, "File"), el("th", { class: "num" }, "Rules"), el("th", {}, ""))),
+        el("tbody", {}, p.rule_files.map((f, i) => el("tr", {},
+          el("td", {}, boxes[i]),
+          el("td", { class: "mono" }, f.name),
+          el("td", { class: "num" }, f.on ? nf.format(f.rules) : "–"),
+          el("td", { class: "muted" }, f.needed ? "needed: without it CRS does not work" : ""))))));
+      // Levels
+      const level = el("select", { name: "default-level", disabled: !can }, [1, 2, 3, 4].map((n) => el("option", { value: String(n) }, `Level ${n}`)));
+      level.value = String(p.default_level);
+      const upTo = (n) => Object.entries(p.rules_at_level).filter(([l]) => Number(l) >= 1 && Number(l) <= n).reduce((sum, [, c]) => sum + c, 0);
+      const own = Object.entries(p.own_levels);
+      // Rules off for everyone
+      const exId = el("input", { name: "exclude-rule", inputmode: "numeric", placeholder: "Rule number", size: 10, disabled: !can });
+      const exReason = el("input", { name: "exclude-reason", placeholder: "Why? It is shown on the rule's page", maxlength: 1000, disabled: !can });
+      // Analysis
+      const limit = num("body-limit", p.body_limit ? Math.round(p.body_limit / 1024) : "", `${nf.format(Math.round(p.body_limit_default / 1024))} kB, the default`, 1, Math.floor(p.body_limit_max / 1024));
+      const require = el("input", { type: "checkbox", name: "require-profile", checked: p.require_profile, disabled: !can });
+      // Records
+      const r = p.records, rd = p.records_defaults;
+      const maxFile = r ? num("max-file", r.max_file_mb, rd.max_file_mb + " MB, the default", 1, 1024) : null;
+      const keep = r ? num("keep-files", r.keep_files, rd.keep_files + ", the default", 1, 1000) : null;
+      const full = r ? el("input", { type: "checkbox", name: "full-requests", checked: r.full_requests, disabled: !can }) : null;
+      const secrets = r ? el("input", { name: "secret-names", value: (r.secret_names || []).join(", "), placeholder: "none besides the built-in ones", disabled: !can }) : null;
+      // Live input
+      const l = p.live, ld = p.live_defaults;
+      const workers = num("workers", l.workers, ld.workers + ", the default", 1, 64);
+      const qCopies = num("queue-copies", l.queue_copies, nf.format(ld.queue_copies) + ", the default", 1, 1000000);
+      const qMB = num("queue-mb", l.queue_mb, ld.queue_mb + " MB, the default", 1, 4096);
+      const frame = num("frame-mb", l.max_frame_mb, ld.max_frame_mb + " MB, the default", 1, 1024);
+      const n = (input, fallback) => Number(input.value) || fallback;
+      replace(el("div", { class: "stack" }, notice,
+        el("p", { class: "lead muted" }, `These settings are for every application, from the configuration ${p.file}. An application's own paranoia level, mode and exceptions are on its page and win over these.`),
+        card("Rule files, for every application", filesTable,
+          el("div", { class: "form-actions" }, add("Load the checked rule files for every application", () => ({ kind: "files", files: p.rule_files.filter((f, i) => boxes[i].checked).map((f) => f.path) })))),
+        card("Paranoia level",
+          el("div", { class: "form-grid" },
+            formRow("Default level", level, `For requests of no application, and for applications without their own. Level 1 runs ${nf.format(upTo(1))} rules, 2 runs ${nf.format(upTo(2))}, 3 runs ${nf.format(upTo(3))}, 4 runs ${nf.format(upTo(4))}.`),
+            add("Set the default level (for requests of no application and applications without their own)", () => ({ kind: "default_level", level: Number(level.value) }))),
+          own.length ? el("p", { class: "muted" }, "With a level of their own: " + own.map(([a, v]) => `${a} (${v})`).join(", ") + ".") : el("p", { class: "muted" }, "No application has a level of its own.")),
+        card("Rules off for every application",
+          p.excluded.length ? el("ul", { class: "plain" }, p.excluded.map((ex) => el("li", {}, el("a", { href: "/rules/" + ex.id }, String(ex.id)), ex.msg ? " " + ex.msg : "", el("div", { class: "sub" }, ex.reason),
+            add(`Back on for every application`, () => ({ kind: "include", rule: ex.id }))))) : el("p", { class: "muted" }, "None."),
+          can ? el("div", { class: "inline-form" }, formRow("Rule", exId), formRow("Reason", exReason),
+            add("Switch off for every application", () => ({ kind: "exclude", rule: Number(exId.value), reason: exReason.value.trim() }))) : null),
+        card("Analysis",
+          el("div", { class: "form-grid" },
+            formRow("Body limit, kB", limit, "How much of each request body is inspected; the rest makes the request partly inspected. Empty for the default."),
+            add("Set the body limit for every application", () => ({ kind: "body_limit", number: limit.value ? Number(limit.value) * 1024 : 0 })),
+            el("label", { class: "check-row" }, require, " A request of no application gets a no_profile finding (require_profile)"),
+            add("Set it for every request of no application", () => ({ kind: "require_profile", on: require.checked })))),
+        card("Records",
+          r ? [kv([["Folder", el("code", {}, r.dir)]]), el("p", { class: "muted" }, "The folder stays in the configuration file: the IDS and the dashboard both depend on it."),
+            el("div", { class: "form-grid" },
+              formRow("File size, MB", maxFile, "When the current file reaches it, a new one starts."),
+              formRow("Files kept", keep, "Older files are deleted, the current one included in the count."),
+              el("label", { class: "check-row" }, full, " Full requests: an alert's record keeps every header and the body (more personal data)"),
+              formRow("Extra secret names", secrets, "Parameter names whose values are masked, besides password, token, session and the others built in; separated by commas.")),
+            el("div", { class: "form-actions" }, add("Set the records settings", () => ({ kind: "records", records: { max_file_mb: n(maxFile, rd.max_file_mb), keep_files: n(keep, rd.keep_files), full_requests: full.checked, secret_names: lines(secrets.value) } })))]
+            : el("p", { class: "muted" }, "The configuration has no records section, so it names no records folder; ids-live is then given one with -records.")),
+        card("Live input",
+          kv([["Socket", l.socket ? el("code", {}, l.socket) : "not in the configuration; ids-live is given one with -socket"]]),
+          el("p", { class: "muted" }, "The socket stays in the configuration file: Caddy's side names it too. These settings take effect when ids-live starts again (scripts/ids-live-ctl restart); the queue and the workers are made at its start."),
+          el("div", { class: "form-grid" },
+            formRow("Workers", workers, "Copies analysed at the same time; more take more of the server's CPU."),
+            formRow("Queue, copies", qCopies, "Copies that may wait; past it they are dropped and counted as gaps."),
+            formRow("Queue, MB", qMB, "The same limit in memory."),
+            formRow("Largest copy, MB", frame, "The copier cuts a copy's body to fit.")),
+          el("div", { class: "form-actions" }, add("Set the live input settings", () => ({ kind: "live", live: { workers: n(workers, ld.workers), queue_copies: n(qCopies, ld.queue_copies), queue_mb: n(qMB, ld.queue_mb), max_frame_mb: n(frame, ld.max_frame_mb) } }))))));
+    });
+  }
+
+  function settingsHistoryPage() {
+    changesPanel("global", document.getElementById("changes"));
+    historyPage("global");
+  }
+
+  // proposalsPage lists every object's pending changes for the admins (W9).
+  function proposalsPage() {
+    every(async () => {
+      const p = await api("/api/proposals");
+      if (same("/api/proposals", p)) return;
+      const objects = Object.entries(p.objects).sort(([a], [b]) => (a === "global" ? -1 : b === "global" ? 1 : a.localeCompare(b)));
+      const link = (object) => (object === "global" ? "/settings" : appLink(object.replace(/^app:/, "")));
+      replace(el("div", { class: "stack" },
+        !p.configured ? banner("warning", "Changes are off.", "The dashboard does not know the IDS's configuration; name it as ids_config in the dashboard's configuration file.") : null,
+        objects.length ? objects.map(([object, items]) => card(null,
+          el("div", { class: "card-head" }, el("h2", {}, `For ${reachName(object)}`), el("a", { href: link(object) }, "Look at the preview and apply →")),
+          el("ul", { class: "changes" }, items.map((ch) => el("li", {},
+            el("div", { class: "what" }, ch.what, ch.proposal ? el("span", { class: "badge proposal" }, "Proposed") : null),
+            el("div", { class: "sub" }, `${ch.proposal ? "Proposed" : "Added"} by ${ch.user}, ${ago(ch.time)}` + (ch.reason ? ". Reason: " + ch.reason : ""))))))) :
+          card(null, el("p", { class: "empty" }, "Nothing is pending."))));
+    });
   }
 
   // ---- Changes: pending, previewed, applied, undone (W7–W11) ----
 
   const me = body.dataset.user || "";
+  const adminRole = body.dataset.role === "admin";
+
+  // reloadChanges loads the page's pending changes again, after one of its
+  // controls added one.
+  let reloadChanges = () => Promise.resolve();
+
+  // addChange adds a change to an object's pending changes, or proposes it
+  // for an analyst (W9), and says so in box.
+  async function addChange(object, change, box) {
+    try {
+      const ch = await send("/api/changes", { action: "add", object, change });
+      if (box) refill(box, banner("success", ch.proposal ? "Proposed." : "Added to the pending changes.",
+        `${ch.what}. ` + (ch.proposal ? "An admin applies it or turns it down." : "It is applied with the others, after their preview, at the top of the page.")));
+      await reloadChanges();
+      return ch;
+    } catch (err) {
+      if (err.message !== "login required" && box) refill(box, banner("error", "Not added.", err.message));
+      return null;
+    }
+  }
 
   // reachName says whom an object's changes concern (W5).
   const reachName = (object) => (object === "global" ? "every application" : object.replace(/^app:/, ""));
@@ -1021,7 +1230,8 @@
     load(true).catch((err) => { if (err.message !== "login required") refill(box, banner("error", "The pending changes could not be loaded.", err.message)); });
     // A poll leaves the panel alone while the user types in it.
     setInterval(() => { if (!live.paused && !box.contains(document.activeElement)) load(false).catch(() => {}); }, poll);
-    return () => load(true);
+    reloadChanges = () => load(true);
+    return reloadChanges;
   }
 
   // historyPage lists an object's versions, newest first, each with Undo
@@ -1077,11 +1287,26 @@
 
   function rulePage() {
     const id = body.dataset.id;
+    changesPanel("global", document.getElementById("changes"));
+    const notice = el("div", { "aria-live": "polite" });
     const run = every(async () => {
       const range = period.value;
       const url = "/api/rules/" + encodeURIComponent(id) + "?" + query({ range });
-      const p = await api(url);
-      if (same(url, p)) return;
+      const [p, set] = await Promise.all([api(url), adminRole ? api("/api/settings") : Promise.resolve(null)]);
+      if (same(url, { p, set })) return;
+      // Off for every application, or back on: an admin's change, pending
+      // under Settings for every application.
+      const excluded = set && set.excluded.find((ex) => String(ex.id) === String(id));
+      const protectedRule = /^REQUEST-9(01|49)-/.test(p.rule.file);
+      let everyApp = null;
+      if (set && set.configured && !set.error && !protectedRule) {
+        const reason = el("input", { name: "reason", placeholder: "Why? It is shown on this page", maxlength: 1000, autocomplete: "off" });
+        everyApp = excluded
+          ? el("div", { class: "inline-form" }, el("span", {}, `Off for every application: ${excluded.reason}`),
+            el("button", { type: "button", class: "small", onclick: () => addChange("global", { kind: "include", rule: Number(id) }, notice) }, "Back on for every application"))
+          : p.rule.active ? el("div", { class: "inline-form" }, formRow("Reason", reason),
+            el("button", { type: "button", class: "small", onclick: () => addChange("global", { kind: "exclude", rule: Number(id), reason: reason.value.trim() }, notice) }, "Switch off for every application")) : null;
+      }
       const r = p.rule;
       const alerts = (extra) => "/alerts?" + query({ range, kind: "all", rule: id, ...extra });
       const count = (n, href) => (n ? el("a", { href }, nf.format(n)) : "0");
@@ -1105,8 +1330,10 @@
             ["Alerts among them", count(p.alerts, alerts({ kind: "alerts" }))],
             ["Marked false positive", count(p.false_positives, alerts({ review: "false_positive" }))],
             ["From the run", fmtTime(p.time)]]))),
+        notice,
         card("Where it runs",
-          el("p", { class: "muted" }, "Its status for each application, at that application's paranoia level and with its exceptions. An application's own exception is on that application's Rules tab."),
+          el("p", { class: "muted" }, "Its status for each application, at that application's paranoia level and with its exceptions. An application's own exception is changed on that application's Rules tab."),
+          everyApp,
           el("div", { class: "table-wrap" }, el("table", { class: "wide" },
             el("thead", {}, el("tr", {}, [["Application", ""], ["Level", ""], ["Status", ""], ["Reason", ""], ["Records", "num"], ["False positives", "num"]].map(([h, c]) => el("th", { class: c }, h)))),
             el("tbody", {}, p.statuses.map((st) => {
@@ -1602,6 +1829,38 @@
       r.skips ? el("div", { class: "sub" }, "Skips " + r.skips.join(", ") + ": " + r.exception_reason) : null,
       r.no_effect ? el("div", { class: "sub" }, r.no_effect) : null];
 
+    // On an application's Rules tab, an analyst or admin changes a rule
+    // for that application only (W6): off, skipping places, or back on.
+    const notice = fixed ? el("div", { "aria-live": "polite" }) : null;
+    const editRule = (r, tr) => {
+      const next = tr.nextElementSibling;
+      if (next && next.classList.contains("editor")) { next.remove(); return; }
+      const box = el("div", { "aria-live": "polite" });
+      const excepted = r.off || (r.skips && r.skips.length);
+      const choice = el("select", { name: "what" },
+        !r.off ? el("option", { value: "off" }, `Off for ${fixed}`) : null,
+        el("option", { value: "skip" }, `Skip places for ${fixed}`),
+        excepted ? el("option", { value: "on" }, `Back on for ${fixed}, without exception`) : null);
+      const places = el("input", { name: "places", placeholder: "ARGS:search, REQUEST_COOKIES:session", autocomplete: "off", spellcheck: "false" });
+      const reason = el("input", { name: "reason", placeholder: "Why? It is shown with the exception", maxlength: 1000, autocomplete: "off" });
+      const placesRow = formRow("Places to skip", places), reasonRow = formRow("Reason", reason);
+      const show = () => { placesRow.hidden = choice.value !== "skip"; reasonRow.hidden = choice.value === "on"; };
+      choice.addEventListener("change", show);
+      const row = el("tr", { class: "editor" }, el("td", { colspan: 8 },
+        el("div", { class: "inline-form" }, formRow(`Rule ${r.id}`, choice), placesRow, reasonRow,
+          el("button", { type: "button", class: "small primary", onclick: async () => {
+            const change = { kind: { off: "rule_off", skip: "rule_skip", on: "rule_on" }[choice.value], rule: r.id };
+            if (choice.value === "skip") change.targets = lines(places.value);
+            if (choice.value !== "on") change.reason = reason.value.trim();
+            if (await addChange("app:" + fixed, change, box)) { row.remove(); refill(notice, box.firstChild); window.scrollTo({ top: 0, behavior: "smooth" }); }
+          } }, adminRole ? "Add to the pending changes" : "Propose"),
+          el("button", { type: "button", class: "small", onclick: () => row.remove() }, "Cancel")), box));
+      tr.after(row);
+      show();
+      choice.focus();
+    };
+    const changeButton = (r) => fixed && analyst && r.active ? el("button", { type: "button", class: "link", onclick: (e) => editRule(r, e.currentTarget.closest("tr")) }, "Change…") : null;
+
     const statusCell = (r, level, app) => {
       switch (status(r, level)) {
         case "excluded":
@@ -1692,11 +1951,12 @@
             el("td", {}, String(r.line)),
             el("td", {}, String(r.phase)),
             el("td", {}, r.paranoia_level ? String(r.paranoia_level) : "–"),
-            el("td", { class: "wrap" }, statusCell(r, level, appLabel)),
+            el("td", { class: "wrap" }, statusCell(r, level, appLabel), changeButton(r)),
             el("td", { class: "num" }, r.fired ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range, app: data.app }) }, nf.format(r.fired)) : "0"),
             el("td", { class: "num" }, r.false_positives ? el("a", { href: "/alerts?" + query({ kind: "all", rule: r.id, range: f.range, app: data.app, review: "false_positive" }) }, nf.format(r.false_positives)) : "–")))))));
 
       replace(el("div", { class: "stack" },
+        notice,
         el("p", { class: "muted" }, `${nf.format(data.rules.length)} rules of ${data.engine.crs} at paranoia level ${level}` +
           (data.app ? ` for ${data.app === "none" ? "requests of no application" : "the application " + data.app}` : "") + ": " +
           `${nf.format(counts.runs)} run, ${are(counts.above)} above the level and skipped, ${are(counts.excluded)} excluded` +
@@ -2502,6 +2762,6 @@
     });
   }
 
-  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
+  const pages = { overview: overviewPage, alerts: alertsPage, alert: alertPage, rules: rulesPage, rule: rulePage, applications: applicationsPage, application: applicationPage, settings: settingsPage, settingshistory: settingsHistoryPage, proposals: proposalsPage, engine: enginePage, test: testPage, users: usersPage, account: accountPage, log: logPage, login: loginPage };
   if (pages[page] && (view || page === "login")) pages[page]();
 })();

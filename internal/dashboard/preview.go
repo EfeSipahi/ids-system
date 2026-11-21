@@ -60,10 +60,11 @@ const maxExamples = 10
 
 // tuning is what decides whether a rule runs for one application.
 type tuning struct {
-	level int
-	mode  string
-	off   map[int]bool
-	skips map[int][]string
+	level    int
+	mode     string
+	off      map[int]bool
+	skips    map[int][]string
+	settings string // its CRS settings, as text
 }
 
 // state is what decides whether a rule runs, for every application.
@@ -94,7 +95,11 @@ func newState(p *config.Product) *state {
 		if t.level == 0 {
 			t.level = st.level
 		}
+		var settings []string
 		for _, ex := range a.Loaded.Exceptions {
+			if ex.Setting != "" && ex.Value != nil {
+				settings = append(settings, ex.Setting+"="+*ex.Value)
+			}
 			switch {
 			case ex.Rule != 0 && ex.Off:
 				t.off[ex.Rule] = true
@@ -102,6 +107,8 @@ func newState(p *config.Product) *state {
 				t.skips[ex.Rule] = ex.Skip
 			}
 		}
+		sort.Strings(settings)
+		t.settings = strings.Join(settings, "\n")
 		st.apps[a.Name] = t
 		st.hosts[a.Name] = strings.Join(a.Hosts, ",") + " " + strings.Join(a.Paths, ",")
 	}
@@ -344,7 +351,10 @@ func untested(old, now *state, rules map[int]record.Rule) []string {
 		}
 		if old.apps[name] == nil {
 			out = append(out, fmt.Sprintf("%s is a new application: its requests are recorded as no application until it runs, so the records can't tell what its profile will find.", name))
-		} else if old.hosts[name] != now.hosts[name] {
+		} else if old.apps[name].settings != now.apps[name].settings {
+			out = append(out, fmt.Sprintf("The CRS settings of %s change; the records can't tell what the rules would find with them. Try request files with Analyse files.", name))
+		}
+		if old.apps[name] != nil && old.hosts[name] != now.hosts[name] {
 			out = append(out, fmt.Sprintf("The hosts or paths of %s change, and with them which requests are its own; the records can't tell which requests would move.", name))
 		}
 	}

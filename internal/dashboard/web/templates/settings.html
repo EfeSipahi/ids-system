@@ -1,0 +1,13 @@
+{{define "content"}}
+<div class="pagehead">
+  <h1>Settings for every application</h1>
+  <div class="tools">{{template "live"}}</div>
+</div>
+<nav class="tabs" aria-label="Settings for every application">
+  <a href="/settings" aria-current="page">Settings</a>
+  <a href="/settings/history">History</a>
+</nav>
+<div id="changes" class="stack changes-box"></div>
+{{template "notice"}}
+<div id="view" class="stack"></div>
+{{end}}

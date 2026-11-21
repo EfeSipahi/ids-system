@@ -275,3 +275,52 @@ func TestChangesNeedTheConfiguration(t *testing.T) {
 		t.Error("a pending file was written")
 	}
 }
+
+// W3, W4: the settings pages show the settings as written, with the
+// files beside the loaded rule files.
+func TestSettingsAPI(t *testing.T) {
+	d, sessions, _ := controlDashboard(t)
+	admin := sessions[RoleAdmin]
+	var p settingsPage
+	decode(t, d.do("GET", "/api/settings", nil, admin), &p)
+	if !p.Configured || p.Error != "" || p.File != "csic-shop.json" || p.DefaultLevel != 1 || len(p.Excluded) != 4 || p.Records == nil || p.Records.KeepFiles != 10 {
+		t.Fatalf("settings: %+v", p)
+	}
+	on, off := 0, 0
+	for _, f := range p.RuleFiles {
+		if f.On {
+			on++
+		} else {
+			off++
+		}
+		if f.Name == "REQUEST-949-BLOCKING-EVALUATION.conf" && !f.Needed {
+			t.Error("949 is not needed")
+		}
+	}
+	// The shop loads every request rule file of CRS 4.30.0.
+	if on != 19 || off != 0 || p.RuleFiles[0].Name != "crs-setup.conf.example" {
+		t.Errorf("rule files: %d on, %d off, first %s", on, off, p.RuleFiles[0].Name)
+	}
+	if p.OwnLevels["csic-shop"] != 2 || p.LiveDefaults.Workers != 2 {
+		t.Errorf("levels %v, live defaults %+v", p.OwnLevels, p.LiveDefaults)
+	}
+	var a appSettings
+	decode(t, d.do("GET", "/api/applications/csic-shop/settings", nil, sessions[RoleAnalyst]), &a)
+	if a.Error != "" || a.Mode != "monitor" || a.Level != 2 || len(a.Hosts) != 1 || a.Profile != "../profiles/csic-shop.json" || len(a.Exceptions) != 3 || len(a.Settings) < 10 {
+		t.Errorf("app settings: %+v", a)
+	}
+	if w := d.do("GET", "/api/applications/nothing/settings", nil, admin); w.Code != http.StatusNotFound {
+		t.Errorf("unknown application: %d", w.Code)
+	}
+	// A rule file switched off: the others load, as written.
+	var files []string
+	for _, f := range p.RuleFiles {
+		if f.On && f.Name != "REQUEST-944-APPLICATION-ATTACK-JAVA.conf" {
+			files = append(files, f.Path)
+		}
+	}
+	ch := pendingChange{Kind: kindFiles, Files: files}
+	if w := d.postJSON("/api/changes", changeRequest{Action: "add", Object: "global", Change: &ch}, admin); w.Code != 200 {
+		t.Errorf("files: %d %s", w.Code, w.Body)
+	}
+}
