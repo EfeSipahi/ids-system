@@ -1755,7 +1755,8 @@
           listTable(pv.examples, { verdict: true, apps: object === "global" })) : null,
         pv.untested.length ? el("div", {}, el("div", { class: "sub" }, "What the records can't tell"),
           el("ul", { class: "plain" }, pv.untested.map((t) => el("li", { class: "muted" }, t))),
-          analyst ? el("p", {}, goLink("/analyse?" + query({ try: object }), "Try these changes on request files in Analyse files")) : null) : null);
+          analyst ? el("p", { class: "inline-form" }, goLink("/test?" + query({ pending: object }), "Try a request with them in the Test tab"),
+            goLink("/analyse?" + query({ try: object }), "Try them on request files in Analyse files")) : null) : null);
     };
     const draw = (c, pv) => {
       if (!c.configured || !c.items.length) {
@@ -2975,7 +2976,7 @@
     }
     if (!info.enabled) {
       replace(card("The test tab is off",
-        el("p", {}, "List the product configurations it may analyse with under test_configs in the dashboard's configuration file, and start the dashboard again. For example, in configs/dashboard.json:"),
+        el("p", {}, "Name the IDS's configuration as ids_config, or list the product configurations it may analyse with under test_configs, in the dashboard's configuration file, and start the dashboard again. For example, in configs/dashboard.json:"),
         el("pre", { class: "block" }, '"test_configs": ["crs-first-engine.json", "csic-shop.json", "../testdata/crs-tests.json"],\n"test_requests_dir": "../testdata/requests/crs"'),
         el("p", { class: "muted" }, "Paths start at the folder of the dashboard's configuration file.")));
       return;
@@ -3011,7 +3012,13 @@
 
     // The settings of a test.
     const configSel = el("select", { name: "config" }, configs.map((c) =>
-      option(String(c.index), c.error ? `${c.name} · can't be loaded` : `${c.name} · level ${c.paranoia_level}${c.newest ? " · the IDS's rules" : ""}`)));
+      option(String(c.index), (c.error ? `${c.name} · can't be loaded` : `${c.name} · level ${c.paranoia_level}${c.newest ? " · the IDS's rules" : ""}`) + (c.ids ? " · the IDS's own" : ""))));
+    // The pending changes a test with the IDS's configuration may run with
+    // (N8 of docs/development-plan-own-rules.md), one object at a time, as
+    // they are applied.
+    const pendingSel = el("select", { name: "pending" }, option("", "As on disk"),
+      info.pending.map((o) => option(o.object, `With the pending changes ${o.object === "global" ? "for every application" : "of " + o.reach} (${o.count})`)));
+    const pendingField = el("label", {}, "Changes", pendingSel);
     const levelSel = el("select", { name: "level" });
     const appSel = el("select", { name: "application" });
     const client = el("input", { name: "client", placeholder: "none", autocomplete: "off", spellcheck: "false", inputmode: "text" });
@@ -3019,8 +3026,17 @@
       option("0", "\\n, as typed"), option("1", "\\r\\n, as multipart needs"));
     const configNote = el("p", { class: "muted config-note" });
 
-    const saved = recall("config");
-    if (saved !== null && configs.some((c) => String(c.index) === saved)) configSel.value = saved;
+    // The configuration is remembered by its name, as the IDS's own comes
+    // first when the dashboard knows it.
+    const saved = configs.find((c) => c.name === recall("config"));
+    if (saved) configSel.value = String(saved.index);
+    // The preview of pending changes links here with them.
+    const askedPending = new URLSearchParams(location.search).get("pending");
+    const idsConfig = configs.find((c) => c.ids);
+    if (askedPending && idsConfig && info.pending.some((o) => o.object === askedPending)) {
+      configSel.value = String(idsConfig.index);
+      pendingSel.value = askedPending;
+    }
 
     function current() {
       return configs[Number(configSel.value)] || configs[0];
@@ -3036,8 +3052,12 @@
       refill(appSel, option("", "By Host and path"), c.applications.map((a) => option(a, a)));
       appSel.value = c.applications.includes(app) ? app : "";
       appSel.disabled = c.applications.length === 0;
+      pendingField.hidden = !c.ids || !info.pending.length;
+      if (pendingField.hidden) pendingSel.value = "";
+      const withPending = info.pending.find((o) => o.object === pendingSel.value);
       refill(configNote,
         c.error ? el("span", { class: "error" }, "This configuration can't be loaded: " + c.error)
+          : withPending ? `The IDS's configuration with the pending changes ${withPending.object === "global" ? "for every application" : "of " + withPending.reach}, built as they would be applied; nothing is written.`
           : [c.newest ? "These are the rules of the IDS's newest run." : "These are not the rules of the IDS's newest run: its configuration, a rule file, a profile or the level differs.",
             " Fingerprint ", el("code", {}, short(c.fingerprint, 23))]);
       crsHint();
@@ -3057,7 +3077,7 @@
     }
 
     function changed() {
-      remember("config", configSel.value);
+      remember("config", current().name);
       fillChoices();
     }
 
@@ -3114,6 +3134,7 @@
       if (ex) load(ex, true);
     });
     configSel.addEventListener("change", changed);
+    pendingSel.addEventListener("change", fillChoices);
     text.addEventListener("input", () => { measure(); lengthNote.hidden = true; });
     text.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
@@ -3133,6 +3154,7 @@
       const q = query({
         config: configSel.value, level: levelSel.value === "0" ? "" : levelSel.value,
         application: appSel.value, client: client.value.trim(), crlf: crlfSel.value === "1" ? "1" : "",
+        pending: pendingField.hidden ? "" : pendingSel.value,
       });
       const forced = appSel.value;
       let res, data;
@@ -3193,6 +3215,7 @@
       const attack = findings.filter((f) => !scoring(f.rule_id));
       const scores = findings.filter((f) => scoring(f.rule_id));
       const matched = new Set(findings.map((f) => f.rule_id));
+      const ruleCount = new Set(attack.map((f) => f.rule_id)).size;
       const hitGroups = [...new Set(attack.map((f) => groupOf(f.rule_id)))];
       const alert = !!s.exceeded || (r.alert_by || []).length > 0;
       const app = r.application, prof = r.profile;
@@ -3238,11 +3261,15 @@
             hitGroups.length ? el("span", {}, hitGroups.join(", ")) : el("span", {}, "no rule matched"),
             prof && prof.findings.length ? profileBadge([...new Set(prof.findings.map((f) => f.kind))]) : null,
             el("span", {}, `${a.config.name}, level ${a.paranoia_level}`),
+            a.pending ? el("span", {}, `with ${a.pending.changes.length} pending ${a.pending.changes.length === 1 ? "change" : "changes"}`) : null,
             app ? el("span", {}, "application " + appName(app.name)) : null,
             el("span", { title: "How long the rules and the profile took" }, `${a.ms.toFixed(2)} ms`))),
         expectCard,
+        a.pending ? card(`With the pending changes ${a.pending.object === "global" ? "for every application" : "of " + a.pending.reach}`,
+          el("p", { class: "muted" }, "Not applied yet: the IDS does not run them. The configuration was built with them for this test only."),
+          el("ul", { class: "plain" }, a.pending.changes.map((w) => el("li", {}, w)))) : null,
         el("section", { class: "card" },
-          el("h2", {}, `Rule findings: ${new Set(attack.map((f) => f.rule_id)).size} rules, ${attack.length} ${attack.length === 1 ? "place" : "places"}`),
+          el("h2", {}, `Rule findings: ${ruleCount} ${ruleCount === 1 ? "rule" : "rules"}, ${attack.length} ${attack.length === 1 ? "place" : "places"}`),
           attack.length ? el("div", { class: "table-wrap" }, el("table", { class: "findings-table" },
             el("thead", {}, el("tr", {}, el("th", {}, "Rule"), el("th", {}, "Severity"), el("th", {}, "Message"), el("th", {}, "Where"), el("th", {}, "Matched"), el("th", {}, "Rule data"))),
             el("tbody", {}, attack.map((f) => el("tr", {},
@@ -3301,6 +3328,7 @@
         text,
         el("div", { class: "test-bar settings" },
           field("Configuration", configSel, "wide"),
+          pendingField,
           field("Paranoia level", levelSel),
           field("Application", appSel),
           field("Client address", client),

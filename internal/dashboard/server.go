@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -98,7 +99,7 @@ func newServer(cfg Config, logOut io.Writer, now func() time.Time) (*Server, err
 	}
 	s.store.marks = s.marks
 	s.control.ownUsed = s.store.ownIDs
-	if s.test, err = newTester(cfg.TestConfigs, cfg.TestRequestsDir, now); err != nil {
+	if s.test, err = newTester(cfg.IDSConfig, cfg.TestConfigs, cfg.TestRequestsDir, now); err != nil {
 		s.Close()
 		return nil, err
 	}
@@ -581,7 +582,27 @@ func (s *Server) apiRules(w http.ResponseWriter, r *http.Request) {
 // apiTest gives the test tab its configurations, examples and example
 // files.
 func (s *Server) apiTest(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, s.test.page(s.store.newestConfig()))
+	p := s.test.page(s.store.newestConfig())
+	if s.control.path != "" {
+		if all, err := s.control.allPending(); err == nil {
+			for object, list := range all {
+				if len(list) > 0 && checkObject(object) == nil {
+					p.Pending = append(p.Pending, testPending{Object: object, Reach: reach(object), Count: len(list)})
+				}
+			}
+		}
+	}
+	// The changes for every application first, then the applications'.
+	slices.SortFunc(p.Pending, func(a, b testPending) int {
+		if (a.Object == objectGlobal) != (b.Object == objectGlobal) {
+			if a.Object == objectGlobal {
+				return -1
+			}
+			return 1
+		}
+		return strings.Compare(a.Object, b.Object)
+	})
+	writeJSON(w, http.StatusOK, p)
 }
 
 // apiTestFile gives the requests of one example file of the picker.
@@ -599,7 +620,9 @@ func (s *Server) apiTestFile(w http.ResponseWriter, r *http.Request) {
 
 // apiTestRun runs one test. The body is the request as raw text, at most
 // maxTestText bytes, refused before more is read (C3); the choices are in
-// the query: config, level, application, client and crlf.
+// the query: config, level, application, client, crlf, and pending, the
+// object whose pending changes the test runs with (N8 of
+// docs/development-plan-own-rules.md).
 func (s *Server) apiTestRun(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, maxTestText)
 	text, err := io.ReadAll(r.Body)
@@ -623,6 +646,34 @@ func (s *Server) apiTestRun(w http.ResponseWriter, r *http.Request) {
 				badRequest(w, fmt.Errorf("%s %q is not a number", n.name, v))
 				return
 			}
+		}
+	}
+	if object := q.Get("pending"); object != "" {
+		if err := checkObject(object); err != nil {
+			badRequest(w, err)
+			return
+		}
+		if s.control.path == "" {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": errNoConfig.Error()})
+			return
+		}
+		list, err := s.control.pending(object)
+		if err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return
+		}
+		if len(list) == 0 {
+			writeJSON(w, http.StatusConflict, map[string]string{"error": reach(object) + " has no pending changes; they were applied or dropped"})
+			return
+		}
+		b, err := s.control.build(object, list)
+		if err != nil {
+			writeJSON(w, http.StatusUnprocessableEntity, map[string]string{"error": err.Error()})
+			return
+		}
+		tr.Pending, tr.built = object, b.product
+		for _, ch := range list {
+			tr.changes = append(tr.changes, ch.What)
 		}
 	}
 	answer, err := s.test.run(r.Context(), tr, s.store.newestConfig())

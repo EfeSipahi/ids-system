@@ -140,12 +140,18 @@ func Parse(path string, raw []byte, readFile func(string) ([]byte, error)) (*Pro
 // A change to any of these files changes it, even when the configuration
 // file is the same. A configuration without applications has the same
 // fingerprint as before profiles existed, and one without own rules the
-// same as before own rules existed.
+// same as before own rules existed. The files are read through the
+// configuration's ReadFile, so the configuration of a change that is not
+// written yet has the fingerprint ids-live will compute once it is.
 func (p *Product) Fingerprint(level int) (string, error) {
+	read := p.ReadFile
+	if read == nil {
+		read = os.ReadFile
+	}
 	h := sha256.New()
 	part(h, p.raw)
 	for _, file := range p.Files {
-		data, err := os.ReadFile(file)
+		data, err := read(file)
 		if err != nil {
 			return "", err
 		}
@@ -153,7 +159,7 @@ func (p *Product) Fingerprint(level int) (string, error) {
 		part(h, data)
 	}
 	if p.OwnRules != "" {
-		data, err := os.ReadFile(p.OwnRules)
+		data, err := read(p.OwnRules)
 		if err != nil {
 			return "", err
 		}
@@ -162,7 +168,7 @@ func (p *Product) Fingerprint(level int) (string, error) {
 	}
 	part(h, binary.BigEndian.AppendUint32(nil, uint32(level)))
 	for _, app := range p.Applications {
-		data, err := os.ReadFile(app.Profile)
+		data, err := read(app.Profile)
 		if err != nil {
 			return "", err
 		}

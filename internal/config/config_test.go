@@ -215,8 +215,26 @@ func TestFingerprintOfProfiles(t *testing.T) {
 		t.Error("the same files give another fingerprint")
 	}
 	write(t, dir, "shop.json", `{"endpoints": [{"method": "GET", "path": "/"}], "mode": "alert"}`)
-	if fingerprint(path) == first {
+	changed := fingerprint(path)
+	if changed == first {
 		t.Error("a changed profile file gives the same fingerprint")
+	}
+
+	// The files are read through the configuration's reader, as the
+	// dashboard reads a change before it writes it: the fingerprint is the
+	// one the change will have on disk.
+	raw, _ := os.ReadFile(path)
+	p, err := Parse(path, raw, func(name string) ([]byte, error) {
+		if filepath.Base(name) == "shop.json" {
+			return []byte(`{"endpoints": [{"method": "GET", "path": "/"}]}`), nil
+		}
+		return os.ReadFile(name)
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fp, err := p.Fingerprint(1); err != nil || fp != first {
+		t.Errorf("read through the reader: %s %v, want %s", fp, err, first)
 	}
 }
 

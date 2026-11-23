@@ -126,7 +126,7 @@ func (s *Server) apiDashboardSettingsPost(w http.ResponseWriter, r *http.Request
 			return
 		}
 	}
-	test, err := newTester(next.TestConfigs, next.TestRequestsDir, s.now)
+	test, err := newTester(next.IDSConfig, next.TestConfigs, next.TestRequestsDir, s.now)
 	if err != nil {
 		badRequest(w, err)
 		return

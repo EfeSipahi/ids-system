@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -150,5 +151,19 @@ func TestAnalyseUploadsAndRecords(t *testing.T) {
 	decode(t, d.do("GET", "/api/applications/csic-shop/profile", nil, admin), &p)
 	if len(p.Files) != 1 || p.Files[0] != "mine" {
 		t.Errorf("profile tab files: %+v", p.Files)
+	}
+
+	// N8 of docs/development-plan-own-rules.md: a pending own rule, tried
+	// on these requests, finds what it is written for.
+	own := ownForm{Msg: "The shop's pages", Severity: "CRITICAL", Applications: []string{"csic-shop"},
+		Conditions: []ownCondition{{Place: "REQUEST_FILENAME", Test: "beginsWith", Value: "/tienda1/"}}}
+	if w := d.postJSON("/api/changes", changeRequest{Action: "add", Object: objectGlobal, Change: &pendingChange{Kind: kindOwnRuleAdd, Own: &own}}, admin); w.Code != 200 {
+		t.Fatalf("own rule: %d %s", w.Code, w.Body)
+	}
+	tr = tryResult{}
+	w = d.postJSON("/api/analyse/try", map[string]string{"object": objectGlobal}, admin)
+	decode(t, w, &tr)
+	if w.Code != 200 || tr.Added != 1 || tr.AlertsAfter != 2 || len(tr.Examples) != 1 || tr.Examples[0].Name != "plain" || !slices.Contains(tr.Examples[0].Rules, 1000) {
+		t.Errorf("own rule tried: %d %s", w.Code, w.Body)
 	}
 }

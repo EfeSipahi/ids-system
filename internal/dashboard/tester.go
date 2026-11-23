@@ -50,8 +50,14 @@ const (
 
 // tester runs the tab's tests. It is safe for use by many requests.
 type tester struct {
-	configs  []string // the product configuration files (S2)
-	dir      string   // the folder of example request files (S4), or ""
+	// configs are the product configuration files: the IDS's own first,
+	// when the dashboard knows it, then those of test_configs (S2).
+	configs []string
+	// ids is the index of the IDS's configuration, whose pending changes
+	// a test may run with (N8 of docs/development-plan-own-rules.md), or
+	// -1.
+	ids      int
+	dir      string // the folder of example request files (S4), or ""
 	examples []testExample
 	slots    chan struct{}
 	now      func() time.Time
@@ -61,10 +67,12 @@ type tester struct {
 	clock int64
 }
 
-// setKey names a prepared rule set: a configuration of the list, and the
-// paranoia level the test asked for (0: the configuration's own).
+// setKey names a prepared rule set: a configuration of the list, the
+// paranoia level the test asked for (0: the configuration's own), and the
+// object whose pending changes it has, or "".
 type setKey struct {
 	config, level int
+	pending       string
 }
 
 type ruleSet struct {
@@ -77,8 +85,20 @@ type ruleSet struct {
 	used        int64
 }
 
-func newTester(configs []string, dir string, now func() time.Time) (*tester, error) {
-	t := &tester{configs: configs, dir: dir, slots: make(chan struct{}, maxTests), now: now, sets: map[setKey]*ruleSet{}}
+// newTester makes the tab's tester. ids is the IDS's configuration, or
+// "" when the dashboard does not know it; configs are those of
+// test_configs.
+func newTester(ids string, configs []string, dir string, now func() time.Time) (*tester, error) {
+	t := &tester{ids: -1, dir: dir, slots: make(chan struct{}, maxTests), now: now, sets: map[setKey]*ruleSet{}}
+	if ids != "" {
+		t.ids = 0
+		t.configs = append(t.configs, ids)
+	}
+	for _, c := range configs {
+		if !slices.Contains(t.configs, c) {
+			t.configs = append(t.configs, c)
+		}
+	}
 	f, err := webFiles.Open("web/examples.json")
 	if err != nil {
 		return nil, err
@@ -121,6 +141,9 @@ func newTestExample(ex offline.Example) testExample {
 type testConfig struct {
 	Index int    `json:"index"`
 	Name  string `json:"name"`
+	// IDS is true for the IDS's own configuration, the one ids-live runs
+	// and pending changes change.
+	IDS bool `json:"ids,omitempty"`
 	// Level is the configuration's paranoia level.
 	Level        int      `json:"paranoia_level,omitempty"`
 	Applications []string `json:"applications"`
@@ -147,12 +170,15 @@ type testPage struct {
 	Files      []testFile `json:"files"`
 	FilesError string     `json:"files_error,omitempty"`
 	MaxText    int        `json:"max_text"`
+	// Pending are the objects with pending changes, which a test with the
+	// IDS's configuration may run with (N8).
+	Pending []testPending `json:"pending"`
 }
 
 func (t *tester) page(newest string) testPage {
-	p := testPage{Enabled: len(t.configs) > 0, Configs: []testConfig{}, Examples: t.examples, Files: []testFile{}, MaxText: maxTestText}
+	p := testPage{Enabled: len(t.configs) > 0, Configs: []testConfig{}, Examples: t.examples, Files: []testFile{}, MaxText: maxTestText, Pending: []testPending{}}
 	for i, path := range t.configs {
-		c := testConfig{Index: i, Name: filepath.Base(path), Applications: []string{}}
+		c := testConfig{Index: i, Name: filepath.Base(path), IDS: i == t.ids, Applications: []string{}}
 		cfg, err := config.Load(path)
 		if err == nil {
 			c.Level = cfg.Level()
@@ -257,6 +283,21 @@ type testRequest struct {
 	Client   string
 	BodyCRLF bool
 	Text     string
+	// Pending names the object whose pending changes the test runs with,
+	// or "" for the configuration as it is on disk; built is the IDS's
+	// configuration with them, and changes says what they are.
+	Pending string
+	built   *config.Product
+	changes []string
+}
+
+// testPending is an object with pending changes: on the page, how many it
+// has; in an answer, what they are.
+type testPending struct {
+	Object  string   `json:"object"`
+	Reach   string   `json:"reach"`
+	Count   int      `json:"count,omitempty"`
+	Changes []string `json:"changes,omitempty"`
 }
 
 // testAnswer is what a test found.
@@ -272,6 +313,8 @@ type testAnswer struct {
 	// ContentLength is set when the Content-Length header does not give
 	// the length of the body.
 	ContentLength *lengthNote `json:"content_length,omitempty"`
+	// Pending is set when the test ran with pending changes.
+	Pending *testPending `json:"pending,omitempty"`
 }
 
 // testRead is what the engine read from the request.
@@ -326,6 +369,10 @@ func (t *tester) run(ctx context.Context, tr testRequest, newest string) (testAn
 		return testAnswer{}, badTest("paranoia level %d: give 1 to %d, or 0 for the configuration's", tr.Level, engine.MaxParanoiaLevel)
 	case len(tr.Text) > maxTestText:
 		return testAnswer{}, &testError{status: 413, msg: fmt.Sprintf("the request is longer than %d bytes", maxTestText)}
+	case tr.Pending != "" && tr.Config != t.ids:
+		return testAnswer{}, badTest("pending changes change the IDS's configuration; choose it to run with them")
+	case tr.Pending != "" && tr.built == nil:
+		return testAnswer{}, badTest("the pending changes of %s are not built", tr.Pending)
 	}
 	if tr.Client != "" {
 		addr, err := netip.ParseAddr(tr.Client)
@@ -345,8 +392,11 @@ func (t *tester) run(ctx context.Context, tr testRequest, newest string) (testAn
 	case <-ctx.Done():
 		return testAnswer{}, ctx.Err()
 	}
-	rs, err := t.ruleSet(setKey{tr.Config, tr.Level})
+	rs, err := t.ruleSet(setKey{tr.Config, tr.Level, tr.Pending}, tr.built)
 	if err != nil {
+		if tr.Pending != "" {
+			return testAnswer{}, &testError{status: 422, msg: fmt.Sprintf("the configuration %s with the pending changes of %s can't be loaded: %v", filepath.Base(t.configs[tr.Config]), reach(tr.Pending), err)}
+		}
 		return testAnswer{}, &testError{status: 500, msg: fmt.Sprintf("the configuration %s can't be loaded: %v", filepath.Base(t.configs[tr.Config]), err)}
 	}
 	req := httpmodel.NewWith(rec, rs.parsing)
@@ -364,7 +414,7 @@ func (t *tester) run(ctx context.Context, tr testRequest, newest string) (testAn
 	took := time.Since(start)
 
 	a := testAnswer{
-		Config: testConfig{Index: tr.Config, Name: filepath.Base(t.configs[tr.Config]), Level: rs.level, Applications: []string{},
+		Config: testConfig{Index: tr.Config, Name: filepath.Base(t.configs[tr.Config]), IDS: tr.Config == t.ids, Level: rs.level, Applications: []string{},
 			Fingerprint: rs.fingerprint, Newest: rs.fingerprint == newest},
 		Level:  rs.level,
 		Millis: float64(took.Microseconds()) / 1000,
@@ -378,25 +428,33 @@ func (t *tester) run(ctx context.Context, tr testRequest, newest string) (testAn
 		a.Read.Application = app.Name
 	}
 	a.ContentLength = contentLength(res.Request)
+	if tr.Pending != "" {
+		a.Pending = &testPending{Object: tr.Pending, Reach: reach(tr.Pending), Changes: tr.changes}
+	}
 	return a, nil
 }
 
 // ruleSet returns the prepared rules of a configuration at a level,
-// preparing them when needed (C2).
-func (t *tester) ruleSet(key setKey) (*ruleSet, error) {
+// preparing them when needed (C2). built is the configuration with the
+// pending changes of key.pending; it is built for each test, and its
+// fingerprint tells whether the rules prepared for it before still fit.
+func (t *tester) ruleSet(key setKey, built *config.Product) (*ruleSet, error) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	t.clock++
 	now := t.now()
 	rs := t.sets[key]
-	if rs != nil && now.Sub(rs.checked) < recheckAfter {
+	if built == nil && rs != nil && now.Sub(rs.checked) < recheckAfter {
 		rs.used = t.clock
 		return rs, nil
 	}
-	cfg, err := config.Load(t.configs[key.config])
-	if err != nil {
-		delete(t.sets, key)
-		return nil, err
+	cfg := built
+	if cfg == nil {
+		var err error
+		if cfg, err = config.Load(t.configs[key.config]); err != nil {
+			delete(t.sets, key)
+			return nil, err
+		}
 	}
 	level := key.level
 	if level == 0 {

@@ -35,7 +35,7 @@ var (
 
 func newTestTester(t *testing.T, configs ...string) *tester {
 	t.Helper()
-	tt, err := newTester(configs, crsFolder, time.Now)
+	tt, err := newTester("", configs, crsFolder, time.Now)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -219,7 +219,7 @@ func TestRuleSetsAreKeptAndReloaded(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "product.json")
 	writeConfig(t, path, 1)
 	c := newClock()
-	tt, err := newTester([]string{path}, "", c.now)
+	tt, err := newTester("", []string{path}, "", c.now)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -231,11 +231,11 @@ func TestRuleSetsAreKeptAndReloaded(t *testing.T) {
 	if first.Level != 1 || first.Config.Level != 1 {
 		t.Errorf("level %d, configuration's %d", first.Level, first.Config.Level)
 	}
-	kept := tt.sets[setKey{0, 0}]
+	kept := tt.sets[setKey{0, 0, ""}]
 	if _, err := tt.run(context.Background(), testRequest{Text: text}, first.Config.Fingerprint); err != nil {
 		t.Fatal(err)
 	}
-	if tt.sets[setKey{0, 0}] != kept {
+	if tt.sets[setKey{0, 0, ""}] != kept {
 		t.Error("the rule set was prepared again although nothing changed")
 	}
 
@@ -267,7 +267,7 @@ func TestRuleSetsAreKeptAndReloaded(t *testing.T) {
 	if len(tt.sets) != maxRuleSets {
 		t.Errorf("%d rule sets kept, want %d", len(tt.sets), maxRuleSets)
 	}
-	if _, ok := tt.sets[setKey{0, 0}]; ok {
+	if _, ok := tt.sets[setKey{0, 0, ""}]; ok {
 		t.Error("the least recently used rule set was kept")
 	}
 

@@ -31,8 +31,9 @@ type Config struct {
 	// rule in it must pass the check of own.go.
 	OwnRules string `json:"own_rules,omitempty"`
 
-	// ReadFile reads the own-rules file. Nil reads it from disk; a caller
-	// that checks a file before writing it gives its own (W12 of
+	// ReadFile reads the own-rules file, and the configuration's
+	// fingerprint reads its files through it. Nil reads them from disk; a
+	// caller that checks a file before writing it gives its own (W12 of
 	// docs/development-plan-dashboard-control.md).
 	ReadFile func(path string) ([]byte, error) `json:"-"`
 }

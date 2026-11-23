@@ -2,6 +2,7 @@ package dashboard
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -354,5 +355,99 @@ func TestOwnRulesByRole(t *testing.T) {
 	decode(t, d.do("GET", "/api/changes/preview?object=global", nil, admin), &pv)
 	if pv.Error != "" || len(pv.Untested) != 1 || !strings.HasPrefix(pv.Untested[0], "Own rule 1002 is new") {
 		t.Errorf("preview: %+v", pv)
+	}
+}
+
+// N8: the Test tab runs a request with an object's pending changes, built
+// as they would be applied, so a proposed own rule finds what it is
+// written for before anyone applies it. Nothing is written.
+func TestTestTabWithPendingChanges(t *testing.T) {
+	d, sessions, path := controlDashboard(t)
+	analyst := sessions[RoleAnalyst]
+	var err error
+	if d.srv.test, err = newTester(path, []string{path, crsFirst}, "", d.clock.now); err != nil {
+		t.Fatal(err)
+	}
+	before := read(t, path)
+	page := func() testPage {
+		t.Helper()
+		var p testPage
+		decode(t, d.do("GET", "/api/test", nil, analyst), &p)
+		return p
+	}
+	p := page()
+	if len(p.Configs) != 2 || !p.Configs[0].IDS || p.Configs[0].Name != "csic-shop.json" || p.Configs[1].IDS || len(p.Pending) != 0 {
+		t.Fatalf("the IDS's configuration comes first, once: %+v", p)
+	}
+
+	w := d.postJSON("/api/changes", changeRequest{Action: "add", Object: objectGlobal, Change: &pendingChange{Kind: kindOwnRuleAdd, Own: ptr(adminForm("csic-shop"))}}, analyst)
+	var proposed pendingChange
+	decode(t, w, &proposed)
+	if w.Code != 200 || proposed.Rule != 1000 {
+		t.Fatalf("proposal: %d %s", w.Code, w.Body)
+	}
+	if p := page(); !reflect.DeepEqual(p.Pending, []testPending{{Object: objectGlobal, Reach: "every application", Count: 1}}) {
+		t.Errorf("pending on the page: %+v", p.Pending)
+	}
+
+	test := func(query, client string) (int, testAnswer, string) {
+		t.Helper()
+		r := httptest.NewRequest("POST", "https://127.0.0.1/api/test?"+query+"&client="+client, strings.NewReader("GET /admin HTTP/1.1\nHost: localhost:8080\n"))
+		r.Header.Set("Content-Type", "text/plain; charset=utf-8")
+		r.AddCookie(analyst)
+		rw := httptest.NewRecorder()
+		d.h.ServeHTTP(rw, r)
+		var a testAnswer
+		if rw.Code == 200 {
+			decode(t, rw, &a)
+		}
+		return rw.Code, a, rw.Body.String()
+	}
+	found := func(a testAnswer) bool {
+		for _, f := range a.Result.Findings {
+			if f.RuleID == 1000 {
+				return true
+			}
+		}
+		return false
+	}
+	code, onDisk, body := test("config=0", "203.0.113.5")
+	if code != 200 || found(onDisk) || onDisk.Pending != nil || onDisk.Read.Application != "csic-shop" {
+		t.Fatalf("as on disk: %d %s", code, body)
+	}
+	code, with, body := test("config=0&pending=global", "203.0.113.5")
+	if code != 200 || !found(with) || with.Result.Score.Total < 5 || !with.Result.Score.Exceeded {
+		t.Fatalf("with the pending rule: %d %s", code, body)
+	}
+	if with.Pending == nil || with.Pending.Object != objectGlobal || len(with.Pending.Changes) != 1 || with.Pending.Changes[0] != proposed.What {
+		t.Errorf("the answer's pending changes: %+v", with.Pending)
+	}
+	// Its fingerprint is the one ids-live will have once they are applied.
+	if with.Config.Fingerprint == onDisk.Config.Fingerprint || with.Config.Newest {
+		t.Errorf("fingerprints: %s, %s", with.Config.Fingerprint, onDisk.Config.Fingerprint)
+	}
+	if code, office, body := test("config=0&pending=global", "10.1.2.3"); code != 200 || found(office) {
+		t.Errorf("from the office: %d %s", code, body)
+	}
+
+	for query, want := range map[string]int{
+		"config=1&pending=global":        http.StatusBadRequest, // not the IDS's configuration
+		"config=0&pending=app:csic-shop": http.StatusConflict,   // nothing pending
+		"config=0&pending=app:none":      http.StatusBadRequest,
+		"config=0&pending=everything":    http.StatusBadRequest,
+	} {
+		if code, _, body := test(query, ""); code != want {
+			t.Errorf("%s: %d, want %d: %s", query, code, want, body)
+		}
+	}
+
+	if read(t, path) != before {
+		t.Errorf("a test changed the configuration")
+	}
+	if _, err := os.Stat(filepath.Join(filepath.Dir(path), "..", "own-rules")); !os.IsNotExist(err) {
+		t.Errorf("a test made the own-rules folder: %v", err)
+	}
+	if list, _ := d.srv.control.pending(objectGlobal); len(list) != 1 {
+		t.Errorf("%d pending after the tests", len(list))
 	}
 }
