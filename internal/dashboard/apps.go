@@ -20,6 +20,7 @@ import (
 	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
 	"github.com/EfeSipahi/ids-system/internal/result"
+	"github.com/EfeSipahi/ids-system/internal/seclang"
 )
 
 // appRow is one application of the Applications list, with what its
@@ -175,8 +176,8 @@ type ruleStatus struct {
 	Running bool `json:"running"`
 	Level   int  `json:"level"`
 	// Status is "runs", "above" (its level is above the application's),
-	// "off" (the application's exception), or "excluded" (for every
-	// application).
+	// "off" (the application's exception), "not_for" (an own rule for
+	// other applications), or "excluded" (for every application).
 	Status   string   `json:"status"`
 	Skips    []string `json:"skips,omitempty"`
 	Reason   string   `json:"reason,omitempty"`
@@ -200,6 +201,9 @@ type rulePage struct {
 	// it; TextError says why it is missing.
 	Text      string `json:"text,omitempty"`
 	TextError string `json:"text_error,omitempty"`
+	// Severity is an own rule's severity, read from its text: it sets the
+	// rule's score (N6 of docs/development-plan-own-rules.md).
+	Severity string `json:"severity,omitempty"`
 	// Statuses are its status for each application, then for the
 	// requests of no application.
 	Statuses       []ruleStatus `json:"statuses"`
@@ -218,12 +222,22 @@ type rulePage struct {
 
 var errNoRule = errors.New("no such rule")
 
-// statusFor is a rule's status at level with an application's exception.
-func statusFor(rule record.Rule, level int, ex *profile.ExceptionStatus) ruleStatus {
-	st := ruleStatus{Level: level, Status: "runs"}
+// forApp reports whether rule is for the application app ("none" for
+// requests of no application): every rule is, but an own rule that names
+// other applications only (N5 of docs/development-plan-own-rules.md).
+func forApp(rule record.Rule, app string) bool {
+	return !rule.Own || rule.Applications == nil || slices.Contains(rule.Applications, app)
+}
+
+// statusFor is a rule's status for the application app at level, with the
+// application's exception.
+func statusFor(rule record.Rule, app string, level int, ex *profile.ExceptionStatus) ruleStatus {
+	st := ruleStatus{Application: app, Level: level, Status: "runs"}
 	switch {
 	case !rule.Active:
 		st.Status, st.Reason = "excluded", rule.Reason
+	case !forApp(rule, app):
+		st.Status = "not_for"
 	case ex != nil && ex.Off:
 		st.Status, st.Reason = "off", ex.Reason
 	case rule.ParanoiaLevel > level:
@@ -252,7 +266,7 @@ func (s *store) rule(id int, r timeRange) (rulePage, error) {
 		return rulePage{}, errNoRule
 	}
 	rule := s.rules[st.Run][i]
-	p := rulePage{Range: r, Rule: rule, Group: fileGroup(rule.File), Run: st.Run, Time: st.Time, CRS: st.Engine.CRS, DefaultLevel: st.Engine.ParanoiaLevel, Statuses: []ruleStatus{}}
+	p := rulePage{Range: r, Rule: rule, Group: ruleGroup(rule), Run: st.Run, Time: st.Time, CRS: st.Engine.CRS, DefaultLevel: st.Engine.ParanoiaLevel, Statuses: []ruleStatus{}}
 
 	byApp := map[string]*ruleStatus{}
 	for _, a := range apps.Applications {
@@ -266,12 +280,12 @@ func (s *store) rule(id int, r timeRange) (rulePage, error) {
 		if !a.Running {
 			level = st.Engine.ParanoiaLevel
 		}
-		rs := statusFor(rule, level, ex)
-		rs.Application, rs.Running = a.Name, a.Running
+		rs := statusFor(rule, a.Name, level, ex)
+		rs.Running = a.Running
 		p.Statuses = append(p.Statuses, rs)
 	}
-	none := statusFor(rule, st.Engine.ParanoiaLevel, nil)
-	none.Application, none.Running = profile.NoApplication, true
+	none := statusFor(rule, profile.NoApplication, st.Engine.ParanoiaLevel, nil)
+	none.Running = true
 	p.Statuses = append(p.Statuses, none)
 	for i := range p.Statuses {
 		byApp[p.Statuses[i].Application] = &p.Statuses[i]
@@ -346,7 +360,7 @@ var chainAction = regexp.MustCompile(`(?:^|[",\s])chain(?:[",\s]|$)`)
 // ruleText reads the text of the rule at line of the rule file named file
 // from the first of configs that loads such a file: the rule with its
 // continuation lines, and the rules chained to it. configs are product
-// configuration files; only their "files" are read.
+// configuration files; only their "files" and "own_rules" are read.
 func ruleText(configs []string, file string, line int) (string, error) {
 	if line < 1 {
 		return "", errors.New("the start record gives no line for this rule")
@@ -365,19 +379,25 @@ func ruleText(configs []string, file string, line int) (string, error) {
 }
 
 // ruleFile returns the path of the rule file named file that the
-// configuration at config loads, or "" when it loads none of that name.
+// configuration at config loads, its own-rules file among them, or "" when
+// it loads none of that name.
 func ruleFile(config, file string) (string, error) {
 	data, err := os.ReadFile(config)
 	if err != nil {
 		return "", err
 	}
 	var c struct {
-		Files []string `json:"files"`
+		Files    []string `json:"files"`
+		OwnRules string   `json:"own_rules"`
 	}
 	if err := json.Unmarshal(data, &c); err != nil {
 		return "", err
 	}
-	for _, f := range c.Files {
+	files := c.Files
+	if c.OwnRules != "" {
+		files = append(files, c.OwnRules)
+	}
+	for _, f := range files {
 		if !filepath.IsAbs(f) {
 			f = filepath.Join(filepath.Dir(config), f)
 		}
@@ -455,4 +475,18 @@ func actionsOf(statement string) string {
 		return ""
 	}
 	return statement[start+1 : end]
+}
+
+// textSeverity returns the severity of the first rule of text, upper
+// case, or "" when it has none or can't be read.
+func textSeverity(text string) string {
+	directives, err := seclang.Parse("rule", strings.NewReader(text))
+	if err != nil || len(directives) == 0 {
+		return ""
+	}
+	v := directives[0].ActionValues("severity")
+	if len(v) == 0 {
+		return ""
+	}
+	return strings.ToUpper(v[len(v)-1])
 }

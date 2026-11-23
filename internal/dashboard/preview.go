@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"github.com/EfeSipahi/ids-system/internal/config"
+	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/profile"
 	"github.com/EfeSipahi/ids-system/internal/record"
 )
@@ -76,12 +77,26 @@ type state struct {
 	hosts    map[string]string  // the hosts and paths of each application, as text
 	require  bool
 	limit    int
+	// own are the own rules of the configuration, by id, with the
+	// applications each is for (nil: every request); ownErr says why they
+	// can't be read.
+	own    map[int][]string
+	ownErr error
 }
 
 func newState(p *config.Product) *state {
 	st := &state{files: map[string]bool{}, excluded: map[int]bool{}, level: p.Level(), apps: map[string]*tuning{}, hosts: map[string]string{}, require: p.RequireProfile}
 	for _, f := range p.Files {
 		st.files[filepath.Base(f)] = true
+	}
+	if p.OwnRules != "" {
+		st.files[filepath.Base(p.OwnRules)] = true
+		st.own = map[int][]string{}
+		rules, err := engine.ReadOwnRules(p.Config)
+		st.ownErr = err
+		for _, r := range rules {
+			st.own[r.ID] = r.Applications
+		}
 	}
 	for _, ex := range p.Exclude {
 		st.excluded[ex.ID] = true
@@ -115,12 +130,19 @@ func newState(p *config.Product) *state {
 	return st
 }
 
-// runs reports whether rule runs for an application.
+// runs reports whether rule runs for an application. An own rule runs
+// while the own-rules file has it, for the applications it names.
 func (st *state) runs(rule record.Rule, app string) bool {
 	t := st.apps[app]
 	switch {
 	case t == nil, !st.files[rule.File], st.excluded[rule.ID], t.off[rule.ID]:
 		return false
+	}
+	if rule.Own {
+		apps, ok := st.own[rule.ID]
+		if !ok || apps != nil && !slices.Contains(apps, app) {
+			return false
+		}
 	}
 	return rule.ParanoiaLevel == 0 || rule.ParanoiaLevel <= t.level
 }
@@ -165,6 +187,11 @@ func skipMatches(target, location string) bool {
 func (s *store) previewChanges(object string, before, after *config.Product) preview {
 	p := preview{Object: object, Reach: reach(object), ByRule: []item{}, Examples: []row{}, Untested: []string{}}
 	old, now := newState(before), newState(after)
+	for _, st := range []*state{old, now} {
+		if st.ownErr != nil && p.Error == "" {
+			p.Error = "the own rules can't be read: " + st.ownErr.Error()
+		}
+	}
 	app := objectApp(object)
 
 	s.mu.RLock()

@@ -242,8 +242,19 @@
     943: "Session fixation", 944: "Java attack", 949: "Anomaly score",
   };
   const notAttacks = [901, 905, 949];
-  const attackGroups = Object.entries(groups).filter(([n]) => !notAttacks.includes(Number(n))).map(([, g]) => g).concat("Other");
-  const groupOf = (id) => groups[Math.floor(id / 1000)] || "Other";
+  // Own rules have ids 1,000 to 99,999 (engine.OwnFirstID, OwnLastID; a Go
+  // test checks them) and a group of their own.
+  const ownIDs = [1000, 99999];
+  const ownGroup = "Own rules";
+  const isOwn = (id) => id >= ownIDs[0] && id <= ownIDs[1];
+  const attackGroups = Object.entries(groups).filter(([n]) => !notAttacks.includes(Number(n))).map(([, g]) => g).concat(ownGroup, "Other");
+  const groupOf = (id) => groups[Math.floor(id / 1000)] || (isOwn(id) ? ownGroup : "Other");
+  // The points CRS adds for each severity (REQUEST-901 of CRS 4.30.0), which
+  // an own rule's severity gives it.
+  const severityPoints = { CRITICAL: 5, ERROR: 4, WARNING: 3, NOTICE: 2 };
+  // forWhom says which requests an own rule is for.
+  const forWhom = (apps) => !apps || !apps.length ? "every request" :
+    apps.map((a) => a === "none" ? "requests of no application" : a).join(", ");
   const scoring = (id) => Math.floor(id / 1000) === 949;
 
   // categories names the per-attack scores of CRS after the rule files that
@@ -1837,6 +1848,7 @@
     switch (st.status) {
       case "excluded": return el("span", { class: "badge excluded" }, "Excluded for every application");
       case "off": return el("span", { class: "badge off" }, "Off");
+      case "not_for": return el("span", { class: "badge off", title: "An own rule written for other applications only." }, "Not for it");
       case "above": return el("span", { class: "badge above", title: "Its paranoia level is above the level the rules run at, so the CRS gate rule skips it." }, `Above level ${st.level}`);
       default: return el("span", { class: "badge active" }, "Runs");
     }
@@ -1881,9 +1893,12 @@
             ["Attack group", p.group],
             ["File", el("code", {}, `${r.file}, line ${r.line}`)],
             ["Phase", phases[r.phase] || String(r.phase)],
-            ["Paranoia level", r.paranoia_level ? `${r.paranoia_level}: it runs for applications at level ${r.paranoia_level} or higher` : "none: a setup or scoring rule, which runs at every level"],
-            ["Rule set", p.crs],
-            ["Status", r.active ? "loaded" : "excluded for every application: " + r.reason]])),
+            r.own ? ["Severity", p.severity ? `${p.severity}: adds ${severityPoints[p.severity]} points to the score, as CRS's ${p.severity} rules do` : "its text can't be read"]
+              : ["Paranoia level", r.paranoia_level ? `${r.paranoia_level}: it runs for applications at level ${r.paranoia_level} or higher` : "none: a setup or scoring rule, which runs at every level"],
+            r.own ? ["Paranoia level", "every level: own rules count at level 1, which every application runs"] : null,
+            r.own ? ["For", forWhom(r.applications)] : null,
+            r.own ? ["Rule set", "an own rule, written for this IDS"] : ["Rule set", p.crs],
+            ["Status", r.active ? "loaded" : "excluded for every application: " + r.reason]].filter(Boolean))),
           card("What it found", kv([
             ["Records", count(p.fired, alerts({}))],
             ["Alerts among them", count(p.alerts, alerts({ kind: "alerts" }))],
@@ -2387,7 +2402,7 @@
     const appValue = () => fixed || (form.elements.app ? form.elements.app.value : "");
     let data = null;
     let own = true; // the user changed the filters: sections open as the filters say
-    const status = (r, level) => (!r.active ? "excluded" : r.off ? "off" : (r.paranoia_level || 0) > level ? "above" : "runs");
+    const status = (r, level) => (!r.active ? "excluded" : r.not_for ? "not_for" : r.off ? "off" : (r.paranoia_level || 0) > level ? "above" : "runs");
 
     // An application's exception of the rule, below its status (F9).
     const exceptionNote = (r) => [
@@ -2424,7 +2439,7 @@
       show();
       choice.focus();
     };
-    const changeButton = (r) => fixed && analyst && r.active ? el("button", { type: "button", class: "link", onclick: (e) => editRule(r, e.currentTarget.closest("tr")) }, "Change…") : null;
+    const changeButton = (r) => fixed && analyst && r.active && !r.not_for ? el("button", { type: "button", class: "link", onclick: (e) => editRule(r, e.currentTarget.closest("tr")) }, "Change…") : null;
 
     const statusCell = (r, level, app) => {
       switch (status(r, level)) {
@@ -2432,6 +2447,8 @@
           return [el("span", { class: "badge excluded" }, "Excluded"), el("div", { class: "sub" }, r.reason), exceptionNote(r)];
         case "off":
           return [el("span", { class: "badge off" }, "Off for " + app), el("div", { class: "sub" }, r.exception_reason), exceptionNote(r)];
+        case "not_for":
+          return [el("span", { class: "badge off" }, "Not for " + app), el("div", { class: "sub" }, "An own rule for " + forWhom(r.applications))];
         case "above":
           return [el("span", { class: "badge above", title: `Its paranoia level ${r.paranoia_level} is above the level the rules run at (${level}), so the CRS gate rule skips it.` }, `Above level ${level}`), exceptionNote(r)];
         default:
@@ -2472,11 +2489,12 @@
       const chosen = (data.applications || []).find((a) => a.name === data.app);
       // "Off for the application" only means something for an application.
       form.elements.status.querySelector('option[value="off"]').hidden = !chosen;
+      form.elements.status.querySelector('option[value="not_for"]').hidden = !data.app;
       const appLabel = data.app ? appName(data.app) : "";
-      const counts = { runs: 0, above: 0, excluded: 0, off: 0 };
+      const counts = { runs: 0, above: 0, excluded: 0, off: 0, not_for: 0 };
       for (const r of data.rules) counts[status(r, level)]++;
       const match = (r) =>
-        (f.status === "" || f.status === status(r, level) || (f.status === "fired" && r.fired > 0)) &&
+        (f.status === "" || f.status === status(r, level) || (f.status === "fired" && r.fired > 0) || (f.status === "own" && r.own)) &&
         (f.level === "" || String(r.paranoia_level || 0) === f.level) &&
         (q === "" || String(r.id).includes(q) || r.file.toLowerCase().includes(q) || r.group.toLowerCase().includes(q) || (r.msg || "").toLowerCase().includes(q));
 
@@ -2512,7 +2530,8 @@
           el("thead", {}, el("tr", {}, ["Rule", "Description", "Line", "Phase", "Level", "Status", "Fired", "False positive"].map((h, i) => el("th", { class: i >= 6 ? "num" : "", title: i === 7 ? "Records of this rule in the period that someone marked false positive, also records that are no longer kept" : null }, h)), goHead())),
           el("tbody", {}, sec.shown.map((r) => linkedRow("/rules/" + r.id + "?" + query({ range: f.range }), null,
             el("td", {}, el("a", { class: "row-link", href: "/rules/" + r.id + "?" + query({ range: f.range }), title: "This rule's page: where it runs, and what it found" }, String(r.id))),
-            el("td", { class: "wrap" }, r.msg || el("span", { class: "muted" }, "–")),
+            el("td", { class: "wrap" }, r.msg || el("span", { class: "muted" }, "–"),
+              r.own ? el("div", { class: "sub" }, "Own rule, for " + forWhom(r.applications)) : null),
             el("td", {}, String(r.line)),
             el("td", {}, String(r.phase)),
             el("td", {}, r.paranoia_level ? String(r.paranoia_level) : "–"),
@@ -2525,7 +2544,8 @@
         el("p", { class: "muted" }, `${nf.format(data.rules.length)} rules of ${data.engine.crs} at paranoia level ${level}` +
           (data.app ? ` for ${data.app === "none" ? "requests of no application" : "the application " + data.app}` : "") + ": " +
           `${nf.format(counts.runs)} run, ${are(counts.above)} above the level and skipped, ${are(counts.excluded)} excluded` +
-          (counts.off ? `, ${are(counts.off)} off for the application` : "") + ". " +
+          (counts.off ? `, ${are(counts.off)} off for the application` : "") +
+          (counts.not_for ? `, ${are(counts.not_for)} own rules for other requests` : "") + ". " +
           `Showing ${nf.format(shownCount)}; fired counts ${data.app ? "this application's records only" : "every record"}. From the run that started ${fmtTime(data.time)}.`),
         chosen && !fixed ? el("p", {}, goLink(appLink(chosen.name, "rules"), `${chosen.name}'s own page`)) : null,
         chosen ? card(`Exceptions of ${chosen.name}`,

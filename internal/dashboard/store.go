@@ -15,6 +15,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/EfeSipahi/ids-system/internal/engine"
 	"github.com/EfeSipahi/ids-system/internal/record"
 )
 
@@ -447,11 +448,27 @@ var groups = map[int]group{
 	949: {"Anomaly score", false},
 }
 
+// ownGroup is the group of own rules, whose ids are 1,000 to 99,999
+// (docs/development-plan-own-rules.md, N3).
+const ownGroup = "Own rules"
+
 func groupOf(ruleID int) group {
 	if g, ok := groups[ruleID/1000]; ok {
 		return g
 	}
+	if ruleID >= engine.OwnFirstID && ruleID <= engine.OwnLastID {
+		return group{name: ownGroup, counts: true}
+	}
 	return group{name: "Other", counts: true}
+}
+
+// ruleGroup is the group a rule of a start record is shown in: own rules
+// are in their own, whatever their file is called.
+func ruleGroup(rule record.Rule) string {
+	if rule.Own {
+		return ownGroup
+	}
+	return fileGroup(rule.File)
 }
 
 // groupName is the name shown for a rule file number, such as "SQL

@@ -115,9 +115,9 @@ Work went one stage at a time, with a pause for the user's review after stage 1 
 | Stage | Status |
 | --- | --- |
 | Decisions N1–N8 | All decided on 23 November 2026 |
-| 1. Engine and configuration | Done 23 November 2026, not committed |
-| 2. Dashboard, reading | Next |
-| 3. Dashboard, writing | |
+| 1. Engine and configuration | Done 23 November 2026, commit 773f1a3 |
+| 2. Dashboard, reading | Done 23 November 2026 |
+| 3. Dashboard, writing | Next |
 | 4. Test tab with pending changes | |
 | 5. Close | |
 
@@ -135,3 +135,12 @@ Stage 1, 23 November 2026:
 8. Nothing changed without own rules: the seven runs of section 5, item 2, give the same output before and after, apart from the temporary folder's name and the run id.
 9. The checks: `gofmt`, `go vet ./...` and `go test ./...` pass; `go test -race` passes for `engine` (948 seconds; the default limit of 10 minutes is too short for it with the race detector), `profile`, `analysis`, `config`, `record` and `ids-offline`.
 10. A mistake, corrected: the script of those runs gave `-records` to every run but one, `-json -show-values` with `csic-shop.json`, which wrote two runs (822 records, 411 each) into the user's `records/` folder. They were removed; the file is back to its 1,049 lines and 2,073,205 bytes. The script now gives every run a temporary folder.
+
+Stage 2, 23 November 2026:
+
+1. Own rules have a group of their own, "Own rules", for every id from 1,000 to 99,999 (`groupOf` in `store.go` and `app.js`; a Go test checks that `app.js` has the engine's range). So the Rules page shows the own-rules file as a section named "Own rules", whatever the file is called, and the alerts list can filter by the group.
+2. The Rules page: under an own rule's description, the requests it is for ("Own rule, for shop"). The status filter has "Own rules", and, with an application chosen, "Own rules for other requests": an own rule that names other applications is "Not for blog" there, counted in the line above the table, and has no "Change…" button, since an exception for it would change nothing.
+3. The page per rule: for an own rule, its severity and the points it adds, "every level" for the paranoia level, which requests it is for, and "an own rule" for the rule set. "Where it runs" says "Not for it" for the applications it does not name. The text comes from the configuration's `own_rules` file, like CRS's from `files`, and the severity is read from that text, so the start record does not need it.
+4. The preview: its model of which rules run left out every rule whose file is not in `files`, so it would have counted every own rule's findings as gone with any change. It now reads the own-rules file (`engine.ReadOwnRules`, through the pending files' `ReadFile`): a rule counts while the file has it, for the applications it names. Removing a rule or giving it to another application takes its findings away in the preview; a file that can't be read is the preview's error.
+5. The checks: `gofmt`, `go vet ./...`, `go test ./...`, and `go test -race` on the dashboard (302 seconds).
+6. A browser round in a sandbox (scratch records from `ids-offline` with the example rules and two applications, a dashboard on its own port): the Rules page with each filter, the pages of rules 1000 and 1001, blog's Rules tab, the alerts of the group, and rule 1000 at phone width; no script errors, and no page wider than the window.

@@ -523,6 +523,9 @@ func (s *Server) apiRule(w http.ResponseWriter, r *http.Request) {
 		p.TextError = err.Error()
 	} else {
 		p.Text = text
+		if p.Rule.Own {
+			p.Severity = textSeverity(text)
+		}
 	}
 	p.TestFile = s.test.ruleFile(id)
 	writeJSON(w, http.StatusOK, p)

@@ -639,6 +639,10 @@ type ruleRow struct {
 	// are marked false positive, also those that rotated away (G6).
 	FalsePositives int `json:"false_positives"`
 
+	// NotFor is true when the rule is an own rule for other applications
+	// than the chosen one, so it does not run for it.
+	NotFor bool `json:"not_for,omitempty"`
+
 	// Off and Skips are the chosen application's exception for the rule:
 	// the rule does not run for it, or does not look at these variables.
 	// ExceptionReason is the exception's reason, and NoEffect says why it
@@ -752,7 +756,8 @@ func (s *store) rulesPage(r timeRange, app string) (rulesPage, error) {
 		}
 	}
 	for _, rule := range s.rules[st.Run] {
-		row := ruleRow{Rule: rule, Group: fileGroup(rule.File), Fired: fired[rule.ID], FalsePositives: falsePositives[rule.ID]}
+		row := ruleRow{Rule: rule, Group: ruleGroup(rule), Fired: fired[rule.ID], FalsePositives: falsePositives[rule.ID]}
+		row.NotFor = app != "" && !forApp(rule, app)
 		if ex, ok := exceptions[rule.ID]; ok {
 			row.Off, row.Skips, row.ExceptionReason, row.NoEffect = ex.Off, ex.Skip, ex.Reason, ex.NoEffect
 		}

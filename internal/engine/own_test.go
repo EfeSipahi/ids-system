@@ -214,3 +214,29 @@ func TestOwnRulesReadFile(t *testing.T) {
 		t.Errorf("from disk: %v", err)
 	}
 }
+
+// ReadOwnRules gives each rule once, chains included, with what the
+// dashboard shows.
+func TestReadOwnRules(t *testing.T) {
+	got, err := ReadOwnRules(Config{OwnRules: "../../testdata/own-rules/own-rules.conf"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []OwnRule{
+		{ID: 1000, Line: 9, Msg: "Admin pages reached from outside the office", Severity: "CRITICAL", Applications: []string{"shop"}},
+		{ID: 1001, Severity: "WARNING"},
+		{ID: 1002, Severity: "ERROR", Applications: []string{"none"}},
+	}
+	if len(got) != len(want) {
+		t.Fatalf("%d rules: %+v", len(got), got)
+	}
+	for i, w := range want {
+		g := got[i]
+		if g.ID != w.ID || g.Severity != w.Severity || !slices.Equal(g.Applications, w.Applications) || w.Line != 0 && g.Line != w.Line || w.Msg != "" && g.Msg != w.Msg {
+			t.Errorf("rule %d: %+v", w.ID, g)
+		}
+	}
+	if rules, err := ReadOwnRules(Config{}); rules != nil || err != nil {
+		t.Errorf("without own_rules: %v, %v", rules, err)
+	}
+}

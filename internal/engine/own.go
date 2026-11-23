@@ -215,3 +215,51 @@ func isOwnAppName(s string) bool {
 	}
 	return true
 }
+
+// OwnRule is one rule of an own-rules file, as the dashboard shows it: the
+// id, line, msg and severity of its first SecRule, and the applications it
+// is for (nil: every request).
+type OwnRule struct {
+	ID           int      `json:"id"`
+	Line         int      `json:"line"`
+	Msg          string   `json:"msg"`
+	Severity     string   `json:"severity"`
+	Applications []string `json:"applications,omitempty"`
+}
+
+// ReadOwnRules reads the own-rules file of cfg, through cfg.ReadFile when
+// it is set, and returns its rules in the file's order. It only reads
+// them; Load checks and compiles them. A configuration without own_rules
+// has none.
+func ReadOwnRules(cfg Config) ([]OwnRule, error) {
+	if cfg.OwnRules == "" {
+		return nil, nil
+	}
+	read := cfg.ReadFile
+	if read == nil {
+		read = os.ReadFile
+	}
+	data, err := read(cfg.OwnRules)
+	if err != nil {
+		return nil, fmt.Errorf("own_rules: %w", err)
+	}
+	directives, err := seclang.Parse(cfg.OwnRules, bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	var rules []OwnRule
+	for _, d := range directives {
+		if d.Kind != seclang.KindRule || d.Chained {
+			continue
+		}
+		r := OwnRule{ID: d.ID, Line: d.Pos.Line, Applications: applicationsOf(d)}
+		if v := d.ActionValues("msg"); len(v) > 0 {
+			r.Msg = v[len(v)-1]
+		}
+		if v := d.ActionValues("severity"); len(v) > 0 {
+			r.Severity = strings.ToUpper(v[len(v)-1])
+		}
+		rules = append(rules, r)
+	}
+	return rules, nil
+}
