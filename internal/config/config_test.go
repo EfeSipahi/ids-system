@@ -262,3 +262,55 @@ func TestLiveSection(t *testing.T) {
 		}
 	}
 }
+
+// Own rules (docs/development-plan-own-rules.md): own_rules starts at the
+// configuration's directory, the file is part of the fingerprint, and the
+// rules loader reads it with Parse's readFile, so a caller can check own
+// rules before writing them.
+func TestOwnRules(t *testing.T) {
+	dir := t.TempDir()
+	write(t, dir, "rules.conf", `SecAction "id:1,phase:1,pass,nolog"`)
+	write(t, dir, "own.conf", "# none yet\n")
+	path := write(t, dir, "ids.json", `{"files": ["rules.conf"], "own_rules": "own.conf"}`)
+	p, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.OwnRules != filepath.Join(dir, "own.conf") {
+		t.Errorf("own_rules %q", p.OwnRules)
+	}
+	first, err := p.Fingerprint(1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	plain, err := Load(write(t, dir, "plain.json", `{"files": ["rules.conf"]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fp, _ := plain.Fingerprint(1); fp == first {
+		t.Error("own rules don't change the fingerprint")
+	}
+	write(t, dir, "own.conf", "# one comment more\n# none yet\n")
+	if fp, _ := p.Fingerprint(1); fp == first {
+		t.Error("a changed own-rules file gives the same fingerprint")
+	}
+
+	pending := []byte("# pending\n")
+	read := func(name string) ([]byte, error) {
+		if name == filepath.Join(dir, "own.conf") {
+			return pending, nil
+		}
+		return os.ReadFile(name)
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err = Parse(path, raw, read)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if data, err := p.Config.ReadFile(p.OwnRules); err != nil || string(data) != string(pending) {
+		t.Errorf("ReadFile gives %q, %v", data, err)
+	}
+}

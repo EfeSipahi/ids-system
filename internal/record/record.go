@@ -122,6 +122,11 @@ type Rule struct {
 	Msg    string `json:"msg,omitempty"`
 	Active bool   `json:"active"`
 	Reason string `json:"reason,omitempty"`
+	// Own is true for an own rule (docs/development-plan-own-rules.md),
+	// and Applications are the applications it is for, "none" standing
+	// for requests of no application; left out, it is for every request.
+	Own          bool     `json:"own,omitempty"`
+	Applications []string `json:"applications,omitempty"`
 }
 
 // Request is the record of one request.

@@ -15,7 +15,8 @@ import (
 // level of its application (F5, F11), and then checks req against that
 // application's profile. The caller chooses the application: by the name a
 // proxy gives, by -application, or by Host and path (apps.Match, F3); nil
-// means no application.
+// means no application, for which the own rules that are only for
+// applications are off.
 //
 // The profile result is nil when the configuration has no applications,
 // since then there is no profile layer at all.
@@ -23,6 +24,8 @@ func Run(rules *engine.RuleSet, apps *profile.Set, req *httpmodel.Request, app *
 	var tuning *engine.Tuning
 	if app != nil {
 		tuning = app.Tuning
+	} else if apps != nil {
+		tuning = apps.NoApplicationTuning()
 	}
 	res := rules.EvaluateWith(req, tuning)
 	if apps == nil || len(apps.Apps()) == 0 {

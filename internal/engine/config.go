@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
 // Config says which rule files to load and which rules in them not to run.
@@ -23,6 +24,17 @@ type Config struct {
 	// more rules, which find more attacks and flag more normal requests.
 	// A level includes the rules of the levels below it. Left out, it is 1.
 	ParanoiaLevel int `json:"paranoia_level"`
+
+	// OwnRules is the file of the configuration's own rules, or "" for
+	// none (N2 of docs/development-plan-own-rules.md). It is loaded right
+	// before CRS's REQUEST-949 file, which adds up the score, and every
+	// rule in it must pass the check of own.go.
+	OwnRules string `json:"own_rules,omitempty"`
+
+	// ReadFile reads the own-rules file. Nil reads it from disk; a caller
+	// that checks a file before writing it gives its own (W12 of
+	// docs/development-plan-dashboard-control.md).
+	ReadFile func(path string) ([]byte, error) `json:"-"`
 }
 
 // Level returns the paranoia level, with the default filled in.
@@ -80,6 +92,9 @@ func (c *Config) Prepare(dir string) error {
 			c.Files[i] = filepath.Join(dir, file)
 		}
 	}
+	if c.OwnRules != "" && !filepath.IsAbs(c.OwnRules) {
+		c.OwnRules = filepath.Join(dir, c.OwnRules)
+	}
 	return c.validate()
 }
 
@@ -89,6 +104,9 @@ func (c Config) validate() error {
 	}
 	if level := c.Level(); level < 1 || level > MaxParanoiaLevel {
 		return fmt.Errorf("paranoia level %d is not supported; it must be 1 to %d", c.ParanoiaLevel, MaxParanoiaLevel)
+	}
+	if c.OwnRules != "" && slices.Contains(c.Files, c.OwnRules) {
+		return fmt.Errorf("own_rules %s is also in files; name it only as own_rules, which loads it in its place", c.OwnRules)
 	}
 	seen := map[int]bool{}
 	for _, ex := range c.Exclude {

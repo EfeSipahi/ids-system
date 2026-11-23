@@ -185,6 +185,8 @@ func (r *Recorder) prepare(cfg Config, eng Engine, statuses []engine.RuleStatus,
 			Msg:           rs.Msg,
 			Active:        rs.Active,
 			Reason:        rs.Reason,
+			Own:           rs.Own,
+			Applications:  rs.Applications,
 		})
 	}
 	return st, start

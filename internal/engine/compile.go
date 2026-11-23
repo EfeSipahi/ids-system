@@ -42,12 +42,22 @@ func Load(cfg Config) (*RuleSet, error) {
 		c.excluded[ex.ID] = ex.Reason
 	}
 
+	ownLoaded := false
 	for _, file := range cfg.Files {
+		if cfg.OwnRules != "" && !ownLoaded && isScoringFile(file) {
+			if err := c.addOwnFile(cfg); err != nil {
+				return nil, err
+			}
+			ownLoaded = true
+		}
 		directives, err := seclang.ParseFile(file)
 		if err != nil {
 			return nil, err
 		}
 		c.addFile(directives)
+	}
+	if cfg.OwnRules != "" && !ownLoaded {
+		return nil, fmt.Errorf("own_rules %s: own rules add to CRS's score, so they load right before its REQUEST-949 file, but none of the files is one", cfg.OwnRules)
 	}
 
 	for marker, pos := range c.skipSites {
@@ -109,6 +119,8 @@ type compiler struct {
 	markers   map[string]bool
 	skipSites map[string]seclang.Position // marker -> a rule that jumps to it
 	defaults  map[int]defaults            // phase -> SecDefaultAction in force
+
+	own bool // the own-rules file is being added
 }
 
 // defaults is what a SecDefaultAction gives to the rules of its phase.
@@ -218,6 +230,9 @@ func (c *compiler) addRule(chain []seclang.Directive) {
 	c.ids[first.ID] = first.Pos
 
 	status := RuleStatus{ID: first.ID, Pos: first.Pos, Phase: phaseOf(first), ParanoiaLevel: levelOf(first), Msg: msgOf(first)}
+	if c.own {
+		status.Own, status.Applications = true, applicationsOf(first)
+	}
 	if reason, ok := c.excluded[first.ID]; ok {
 		c.usedExcl[first.ID] = true
 		status.Reason = reason

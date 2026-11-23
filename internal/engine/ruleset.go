@@ -163,6 +163,13 @@ type RuleStatus struct {
 	// given in the configuration for leaving it out.
 	Active bool
 	Reason string
+
+	// Own is true for a rule of the own-rules file (own.go).
+	// Applications are the applications it is for, from its
+	// application/ tags, "none" standing for requests of no application;
+	// nil is every request.
+	Own          bool
+	Applications []string
 }
 
 // Statuses returns one entry for every rule with an id in the loaded files,

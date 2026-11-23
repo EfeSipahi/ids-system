@@ -2,7 +2,7 @@
 // the settings of the parts around it, such as the records.
 //
 // The file is one JSON object. The engine fields ("files", "exclude",
-// "paranoia_level") are at the top, as before; "request_body_limit",
+// "paranoia_level", "own_rules") are at the top, as before; "request_body_limit",
 // "records", "applications", "require_profile" and "live" are optional.
 // Unknown fields are an error, so a misspelled setting cannot be ignored.
 package config
@@ -67,7 +67,8 @@ func Load(path string) (*Product, error) {
 }
 
 // Parse reads a configuration from raw, the content of the file at path,
-// as Load does; readFile reads each profile it names. It lets a caller
+// as Load does; readFile reads each profile it names, and later the
+// own-rules file when the rules are loaded. It lets a caller
 // check a configuration and its profiles before writing them (W12 of
 // docs/development-plan-dashboard-control.md). The fingerprint of such a
 // configuration is that of raw and of the files on disk.
@@ -89,6 +90,8 @@ func Parse(path string, raw []byte, readFile func(string) ([]byte, error)) (*Pro
 	if err := p.Config.Prepare(dir); err != nil {
 		return nil, fmt.Errorf("%s: %w", path, err)
 	}
+	// The rules loader reads the own-rules file as the profiles are read.
+	p.Config.ReadFile = readFile
 	if p.Records != nil {
 		if p.Records.Dir != "" && !filepath.IsAbs(p.Records.Dir) {
 			p.Records.Dir = filepath.Join(dir, p.Records.Dir)
@@ -136,7 +139,8 @@ func Parse(path string, raw []byte, readFile func(string) ([]byte, error)) (*Pro
 // a command-line flag may have changed. It is "sha256:" and 64 hex digits.
 // A change to any of these files changes it, even when the configuration
 // file is the same. A configuration without applications has the same
-// fingerprint as before profiles existed.
+// fingerprint as before profiles existed, and one without own rules the
+// same as before own rules existed.
 func (p *Product) Fingerprint(level int) (string, error) {
 	h := sha256.New()
 	part(h, p.raw)
@@ -146,6 +150,14 @@ func (p *Product) Fingerprint(level int) (string, error) {
 			return "", err
 		}
 		part(h, []byte(filepath.Base(file)))
+		part(h, data)
+	}
+	if p.OwnRules != "" {
+		data, err := os.ReadFile(p.OwnRules)
+		if err != nil {
+			return "", err
+		}
+		part(h, []byte("own_rules"))
 		part(h, data)
 	}
 	part(h, binary.BigEndian.AppendUint32(nil, uint32(level)))

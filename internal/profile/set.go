@@ -65,12 +65,19 @@ type ExceptionStatus struct {
 type Set struct {
 	apps    []*App
 	require bool
+	// none is the tuning of requests of no application, or nil when every
+	// rule runs for them (N5 of docs/development-plan-own-rules.md).
+	none *engine.Tuning
 }
 
 // NewSet prepares the applications for the loaded rules: each profile's
 // exceptions are checked against the rules (F5) and turned into a Tuning.
 // With requireProfile, a request that belongs to no application gets a
 // finding (F7). A Set with no applications checks nothing.
+//
+// An own rule for some applications only (N5 of
+// docs/development-plan-own-rules.md) is off for the others, and for
+// requests of no application unless it names "none".
 func NewSet(rs *engine.RuleSet, configs []AppConfig, requireProfile bool) (*Set, error) {
 	s := &Set{require: requireProfile}
 	names := map[string]bool{}
@@ -120,6 +127,7 @@ func NewSet(rs *engine.RuleSet, configs []AppConfig, requireProfile bool) (*Set,
 		if err != nil {
 			return nil, err
 		}
+		spec.Off = append(spec.Off, ownOff(rs, c.Name)...)
 		tuning, more, err := rs.NewTuning(spec)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", c.Loaded.Path, err)
@@ -128,7 +136,40 @@ func NewSet(rs *engine.RuleSet, configs []AppConfig, requireProfile bool) (*Set,
 		app.Tuning, app.Exceptions, app.Notes = tuning, statuses, notes
 		s.apps = append(s.apps, app)
 	}
+	for _, st := range rs.Statuses() {
+		for _, name := range st.Applications {
+			if st.Own && name != NoApplication && !names[name] {
+				return nil, fmt.Errorf("own rule %d (%s:%d) is for the application %s, which the configuration does not have", st.ID, filepath.Base(st.Pos.File), st.Pos.Line, name)
+			}
+		}
+	}
+	if off := ownOff(rs, NoApplication); len(off) > 0 {
+		none, _, err := rs.NewTuning(engine.TuningSpec{Off: off})
+		if err != nil {
+			return nil, err
+		}
+		s.none = none
+	}
 	return s, nil
+}
+
+// ownOff returns the active own rules that are not for the application
+// name, "none" standing for requests of no application.
+func ownOff(rs *engine.RuleSet, name string) []int {
+	var off []int
+	for _, st := range rs.Statuses() {
+		if st.Own && st.Active && st.Applications != nil && !slices.Contains(st.Applications, name) {
+			off = append(off, st.ID)
+		}
+	}
+	return off
+}
+
+// NoApplicationTuning returns what changes in the rules for requests of no
+// application: the own rules that are only for applications are off. It
+// is nil when every rule runs for them.
+func (s *Set) NoApplicationTuning() *engine.Tuning {
+	return s.none
 }
 
 // Apps returns the applications in the order of the configuration.
