@@ -97,6 +97,7 @@ func newServer(cfg Config, logOut io.Writer, now func() time.Time) (*Server, err
 		return nil, err
 	}
 	s.store.marks = s.marks
+	s.control.ownUsed = s.store.ownIDs
 	if s.test, err = newTester(cfg.TestConfigs, cfg.TestRequestsDir, now); err != nil {
 		s.Close()
 		return nil, err
@@ -226,6 +227,8 @@ func (s *Server) Handler() http.Handler {
 	mux.Handle("GET /api/changes", s.requireAPI(RoleViewer, s.apiChanges))
 	mux.Handle("POST /api/changes", s.requireAPI(RoleAnalyst, s.apiChangesPost))
 	mux.Handle("GET /api/changes/preview", s.requireAPI(RoleViewer, s.apiPreview))
+	mux.Handle("GET /api/own-rules", s.requireAPI(RoleViewer, s.apiOwnRules))
+	mux.Handle("POST /api/own-rules/draft", s.requireAPI(RoleAnalyst, s.apiOwnDraft))
 	mux.Handle("GET /api/proposals", s.requireAPI(RoleAdmin, s.apiProposals))
 	mux.Handle("GET /api/versions", s.requireAPI(RoleViewer, s.apiVersions))
 	mux.Handle("GET /api/control", s.requireAPI(RoleViewer, s.apiControl))

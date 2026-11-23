@@ -75,6 +75,9 @@ const (
 	kindRecords        = "records"         // Records
 	kindLive           = "live"            // Live
 	kindAddApp         = "add_app"         // Name, Hosts, Paths
+	kindOwnRuleAdd     = "own_rule_add"    // Own or Text; Rule is given when it is added
+	kindOwnRuleEdit    = "own_rule_edit"   // Rule; Own or Text
+	kindOwnRuleRemove  = "own_rule_remove" // Rule
 	// For either: the files of a version as they were before it (undo).
 	kindRestore = "restore" // Version
 )
@@ -83,9 +86,27 @@ const (
 // analyst may propose (W9).
 var (
 	appKinds     = []string{kindRuleOff, kindRuleSkip, kindRuleOn, kindSetting, kindSettingRemove, kindMode, kindLevel, kindHosts, kindPaths, kindRemoveApp, kindProfile, kindRestore}
-	globalKinds  = []string{kindDefaultLevel, kindExclude, kindInclude, kindFiles, kindBodyLimit, kindRequireProfile, kindRecords, kindLive, kindAddApp, kindRestore}
+	globalKinds  = []string{kindDefaultLevel, kindExclude, kindInclude, kindFiles, kindBodyLimit, kindRequireProfile, kindRecords, kindLive, kindAddApp, kindOwnRuleAdd, kindOwnRuleEdit, kindOwnRuleRemove, kindRestore}
 	analystKinds = []string{kindRuleOff, kindRuleSkip, kindRuleOn, kindSetting}
+	ownKinds     = []string{kindOwnRuleAdd, kindOwnRuleEdit, kindOwnRuleRemove}
 )
+
+// analystMay reports whether an analyst may propose ch (W9, N7 of
+// docs/development-plan-own-rules.md): a rule exception for an
+// application, or an own rule as the form writes it, or its removal. The
+// text of an own rule is an admin's (N1).
+func analystMay(object string, ch pendingChange) bool {
+	if object != objectGlobal {
+		return slices.Contains(analystKinds, ch.Kind)
+	}
+	switch ch.Kind {
+	case kindOwnRuleAdd, kindOwnRuleEdit:
+		return ch.Own != nil && ch.Text == ""
+	case kindOwnRuleRemove:
+		return true
+	}
+	return false
+}
 
 // recordSettings are the "records" settings a change may set; the folder
 // is not one of them (W4).
@@ -124,6 +145,7 @@ type pendingChange struct {
 	Files    []string        `json:"files,omitempty"`
 	Records  *recordSettings `json:"records,omitempty"`
 	Live     *liveSettings   `json:"live,omitempty"`
+	Own      *ownForm        `json:"own,omitempty"`
 	Name     string          `json:"name,omitempty"`
 	Version  string          `json:"version,omitempty"`
 	Reason   string          `json:"reason,omitempty"`
@@ -182,6 +204,9 @@ type control struct {
 	mu sync.Mutex
 	// loadRules prepares the rules of a configuration; a test may swap it.
 	loadRules func(engine.Config) (*engine.RuleSet, error)
+	// ownUsed returns the own rules' numbers the records know, which a
+	// new rule does not take again (N3); nil for none.
+	ownUsed func() []int
 }
 
 func newControl(path, stateDir string, now func() time.Time) *control {
@@ -281,6 +306,16 @@ const maxPending = 200
 // other pending changes, so a change that can't be applied is refused at
 // once.
 func (c *control) add(object string, ch pendingChange) (pendingChange, error) {
+	return c.addOrTry(object, ch, true)
+}
+
+// try is add without adding: it returns the change as add would add it,
+// or why it can't be. The New rule form shows a rule's text this way.
+func (c *control) try(object string, ch pendingChange) (pendingChange, error) {
+	return c.addOrTry(object, ch, false)
+}
+
+func (c *control) addOrTry(object string, ch pendingChange, write bool) (pendingChange, error) {
 	if c.path == "" {
 		return ch, errNoConfig
 	}
@@ -301,6 +336,11 @@ func (c *control) add(object string, ch pendingChange) (pendingChange, error) {
 	}
 	ch.ID = strings.ToLower(rand.Text()[:12])
 	ch.Time = c.now().UTC()
+	if slices.Contains(ownKinds, ch.Kind) {
+		if err := c.prepareOwn(object, p.Objects[object], &ch); err != nil {
+			return ch, err
+		}
+	}
 	list := append(slices.Clone(p.Objects[object]), ch)
 	b, err := c.build(object, list)
 	if err != nil {
@@ -308,6 +348,9 @@ func (c *control) add(object string, ch pendingChange) (pendingChange, error) {
 	}
 	if err := c.check(b); err != nil {
 		return ch, err
+	}
+	if !write {
+		return ch, nil
 	}
 	p.Objects[object] = list
 	return ch, c.writePending(p)
@@ -480,11 +523,122 @@ func checkChange(object string, ch *pendingChange) error {
 			return errors.New("give 1 to 50 hosts")
 		}
 		ch.What = fmt.Sprintf("Add the application %s for %s, in monitor mode", ch.Name, strings.Join(ch.Hosts, ", "))
+	case kindOwnRuleAdd, kindOwnRuleEdit:
+		if ch.Kind == kindOwnRuleEdit && (ch.Rule < engine.OwnFirstID || ch.Rule > engine.OwnLastID) {
+			return errors.New("give the number of the own rule")
+		}
+		switch {
+		case ch.Own != nil && ch.Text != "":
+			return errors.New("give the rule either with the form or as text, not both")
+		case ch.Own != nil:
+			if err := ch.Own.check(); err != nil {
+				return err
+			}
+		case ch.Text != "":
+			if _, err := oneOwnRule(ch.Text); err != nil {
+				return err
+			}
+		default:
+			return errors.New("give the rule, with the form or as text")
+		}
+	case kindOwnRuleRemove:
+		if ch.Rule < engine.OwnFirstID || ch.Rule > engine.OwnLastID {
+			return errors.New("give the number of the own rule")
+		}
 	case kindRestore:
 		if !validVersionID(ch.Version) {
 			return errors.New("give the version to undo")
 		}
 		ch.What = "Undo version " + ch.Version
+	}
+	return nil
+}
+
+// prepareOwn gives an own-rule change what it needs from the files and the
+// object's other pending changes (list): a new rule its number (N3), a
+// rule of the form its text, and each its What. The rule must be there
+// to be changed or removed, and a new one's number free.
+func (c *control) prepareOwn(object string, list []pendingChange, ch *pendingChange) error {
+	b, err := c.build(object, list)
+	if err != nil {
+		return err
+	}
+	now, err := engine.ReadOwnRules(b.product.Config)
+	if err != nil {
+		return fmt.Errorf("the own rules can't be read: %w", err)
+	}
+	var onDisk []int
+	if p, err := config.Load(c.path); err == nil {
+		rules, _ := engine.ReadOwnRules(p.Config)
+		for _, r := range rules {
+			onDisk = append(onDisk, r.ID)
+		}
+	}
+	var pending, have []int
+	for _, x := range list {
+		if slices.Contains(ownKinds, x.Kind) {
+			pending = append(pending, x.Rule)
+		}
+	}
+	for _, r := range now {
+		have = append(have, r.ID)
+	}
+	// The numbers the records know, and those of every own rule a version
+	// wrote, so that a removed rule's number is not given again.
+	var known []int
+	if c.ownUsed != nil {
+		known = c.ownUsed()
+	}
+	if vs, err := c.versions(objectGlobal); err == nil {
+		for _, v := range vs {
+			for _, x := range v.Items {
+				if slices.Contains(ownKinds, x.Kind) {
+					known = append(known, x.Rule)
+				}
+			}
+		}
+	}
+	next, err := nextOwnID(onDisk, pending, have, known)
+	if err != nil && ch.Kind == kindOwnRuleAdd && ch.Own != nil {
+		return err
+	}
+	if ch.Kind == kindOwnRuleAdd && ch.Own != nil {
+		ch.Rule = next
+	}
+	if ch.Own != nil {
+		if ch.Text, err = ownText(ch.Rule, *ch.Own); err != nil {
+			return err
+		}
+	}
+	i := slices.IndexFunc(now, func(r engine.OwnRule) bool { return r.ID == ch.Rule })
+	var rule engine.OwnRule
+	if ch.Kind != kindOwnRuleRemove {
+		if rule, err = oneOwnRule(ch.Text); err != nil {
+			return err
+		}
+	}
+	switch ch.Kind {
+	case kindOwnRuleAdd:
+		if ch.Own == nil {
+			ch.Rule = rule.ID
+			if slices.Contains(onDisk, rule.ID) || slices.Contains(pending, rule.ID) || slices.Contains(have, rule.ID) || slices.Contains(known, rule.ID) {
+				return fmt.Errorf("rule %d: an own rule has had this number; give the new rule %d", rule.ID, next)
+			}
+		}
+		ch.What = fmt.Sprintf("Own rule %d, %s, for %s: %s", ch.Rule, rule.Severity, forWhom(rule.Applications), rule.Msg)
+	case kindOwnRuleEdit:
+		if i < 0 {
+			return fmt.Errorf("the own rules have no rule %d", ch.Rule)
+		}
+		if rule.ID != ch.Rule {
+			return fmt.Errorf("the text is rule %d, not %d; a rule keeps its number", rule.ID, ch.Rule)
+		}
+		ch.What = fmt.Sprintf("Own rule %d changed: %s, for %s: %s", ch.Rule, rule.Severity, forWhom(rule.Applications), rule.Msg)
+	case kindOwnRuleRemove:
+		if i < 0 {
+			return fmt.Errorf("the own rules have no rule %d", ch.Rule)
+		}
+		ch.What = fmt.Sprintf("Own rule %d removed: %s", ch.Rule, now[i].Msg)
 	}
 	return nil
 }
@@ -897,6 +1051,8 @@ func (w *work) applyGlobal(ch pendingChange) error {
 		live.Set("max_frame_mb", jsonedit.Must(ch.Live.MaxFrameMB))
 	case kindAddApp:
 		return w.addApp(ch)
+	case kindOwnRuleAdd, kindOwnRuleEdit, kindOwnRuleRemove:
+		return w.applyOwn(ch)
 	default:
 		return fmt.Errorf("kind %q is not a change for every application", ch.Kind)
 	}

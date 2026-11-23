@@ -78,10 +78,11 @@ type state struct {
 	require  bool
 	limit    int
 	// own are the own rules of the configuration, by id, with the
-	// applications each is for (nil: every request); ownErr says why they
-	// can't be read.
-	own    map[int][]string
-	ownErr error
+	// applications each is for (nil: every request), and ownText their
+	// text without those; ownErr says why they can't be read.
+	own     map[int][]string
+	ownText map[int]string
+	ownErr  error
 }
 
 func newState(p *config.Product) *state {
@@ -91,11 +92,12 @@ func newState(p *config.Product) *state {
 	}
 	if p.OwnRules != "" {
 		st.files[filepath.Base(p.OwnRules)] = true
-		st.own = map[int][]string{}
+		st.own, st.ownText = map[int][]string{}, map[int]string{}
 		rules, err := engine.ReadOwnRules(p.Config)
 		st.ownErr = err
 		for _, r := range rules {
 			st.own[r.ID] = r.Applications
+			st.ownText[r.ID] = withoutScope(r.Text)
 		}
 	}
 	for _, ex := range p.Exclude {
@@ -319,9 +321,40 @@ func atoi(s string) int {
 	return n
 }
 
+// appTag is an own rule's tag that names an application (N5).
+var appTag = regexp.MustCompile(`tag:'?` + regexp.QuoteMeta(engine.ApplicationTag) + `[^',"]*'?,?`)
+
+// withoutScope is an own rule's text without the tags that say which
+// requests it is for, its spaces and line breaks made one space: two
+// rules with the same text so are the same but for whom they are for,
+// which the preview can work out.
+func withoutScope(text string) string {
+	return strings.Join(strings.Fields(strings.ReplaceAll(appTag.ReplaceAllString(text, ""), "\\\n", " ")), " ")
+}
+
 // untested names what the changes do that the records can't tell.
 func untested(old, now *state, rules map[int]record.Rule) []string {
-	var out []string
+	var out, own []string
+	// Own rules: a new one, or one whose conditions, message or severity
+	// change, finds what the records can't show.
+	var ownNew, ownChanged []int
+	for id, text := range now.ownText {
+		before, ok := old.ownText[id]
+		switch {
+		case !ok:
+			ownNew = append(ownNew, id)
+		case before != text:
+			ownChanged = append(ownChanged, id)
+		}
+	}
+	slices.Sort(ownNew)
+	slices.Sort(ownChanged)
+	for _, id := range ownNew {
+		own = append(own, fmt.Sprintf("Own rule %d is new: the records keep only what rules found, so what it would find can't be told from them. Try it in the Test tab, with the pending changes, or on request files with Analyse files.", id))
+	}
+	for _, id := range ownChanged {
+		own = append(own, fmt.Sprintf("Own rule %d changes: what it would find as it is written now can't be told from the records; they count its old findings above as they are. Try it in the Test tab, with the pending changes.", id))
+	}
 	more := map[string]int{} // rules that would run where they did not, by application
 	for name, t := range now.apps {
 		if old.apps[name] == nil {
@@ -397,7 +430,7 @@ func untested(old, now *state, rules map[int]record.Rule) []string {
 		out = append(out, "Requests of no application would get a no_profile finding, so each of them would be recorded.")
 	}
 	sort.Strings(out[min(len(out), len(names)):])
-	return out
+	return append(out, own...)
 }
 
 func capitalise(s string) string {

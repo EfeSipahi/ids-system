@@ -236,6 +236,12 @@ func TestReadOwnRules(t *testing.T) {
 			t.Errorf("rule %d: %+v", w.ID, g)
 		}
 	}
+	if r := got[0]; r.End != 19 || !strings.HasPrefix(r.Text, `SecRule REQUEST_FILENAME "@beginsWith /admin" \`) || !strings.HasSuffix(r.Text, `"setvar:'tx.inbound_anomaly_score_pl1=+%{tx.critical_anomaly_score}'"`) {
+		t.Errorf("rule 1000: lines %d-%d, text:\n%s", r.Line, r.End, r.Text)
+	}
+	if r := got[2]; r.Line != 34 || r.End != 42 {
+		t.Errorf("rule 1002: lines %d-%d", r.Line, r.End)
+	}
 	if rules, err := ReadOwnRules(Config{}); rules != nil || err != nil {
 		t.Errorf("without own_rules: %v, %v", rules, err)
 	}

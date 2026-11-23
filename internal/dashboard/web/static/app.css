@@ -714,3 +714,18 @@ a.go-link svg.icon { flex: none; }
 .card-title h2 { margin: 0; }
 cds-toggletip.about { flex: none; color: var(--cds-icon-secondary); }
 cds-toggletip.about [slot="body-text"] { display: block; max-width: var(--about-width, none); font-size: 0.875rem; line-height: 1.43; letter-spacing: 0.16px; }
+
+/* Own rules (stage 3 of docs/development-plan-own-rules.md) */
+.own-editor { border-top: 1px solid var(--border-subtle); padding-top: 16px; margin-top: 16px; }
+.own-editor h3 { margin: 0; font-size: 1rem; }
+.own-condition { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.own-condition select { flex: 0 1 auto; max-width: 100%; }
+.own-condition .own-key { flex: 0 1 12rem; min-width: 8rem; }
+.own-condition .own-value { flex: 1 1 16rem; min-width: 10rem; }
+.own-word { min-width: 2rem; color: var(--text-2); font-size: 0.875rem; }
+.own-fields { grid-template-columns: minmax(0, 1fr); }
+fieldset.own-for { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+.own-apps { display: flex; flex-wrap: wrap; gap: 8px 16px; padding-left: 24px; }
+textarea.own-text { white-space: pre; overflow: auto; background: var(--layer-2); }
+.own-controls { display: inline-flex; gap: 8px; }
+.own-box:not(:empty) { margin-top: 16px; }

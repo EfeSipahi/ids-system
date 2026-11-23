@@ -131,8 +131,8 @@ func (s *Server) apiChangesPost(w http.ResponseWriter, r *http.Request) {
 		}
 		ch := *cr.Change
 		ch.User, ch.Proposal, ch.ID, ch.What = user, !admin, "", ""
-		if !admin && (cr.Object == objectGlobal || !slices.Contains(analystKinds, ch.Kind)) {
-			refuse("an analyst may propose a rule exception for an application; other changes need an admin")
+		if !admin && !analystMay(cr.Object, ch) {
+			refuse("an analyst may propose a rule exception for an application, or an own rule written with the form; other changes need an admin")
 			return
 		}
 		ch, err := s.control.add(cr.Object, ch)

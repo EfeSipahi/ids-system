@@ -216,15 +216,18 @@ func isOwnAppName(s string) bool {
 	return true
 }
 
-// OwnRule is one rule of an own-rules file, as the dashboard shows it: the
-// id, line, msg and severity of its first SecRule, and the applications it
-// is for (nil: every request).
+// OwnRule is one rule of an own-rules file, as the dashboard shows and
+// edits it: the id, msg and severity of its first SecRule, the applications
+// it is for (nil: every request), and its text, from its first line to its
+// last (End), the rules chained to it included.
 type OwnRule struct {
 	ID           int      `json:"id"`
 	Line         int      `json:"line"`
+	End          int      `json:"end"`
 	Msg          string   `json:"msg"`
 	Severity     string   `json:"severity"`
 	Applications []string `json:"applications,omitempty"`
+	Text         string   `json:"text"`
 }
 
 // ReadOwnRules reads the own-rules file of cfg, through cfg.ReadFile when
@@ -243,7 +246,14 @@ func ReadOwnRules(cfg Config) ([]OwnRule, error) {
 	if err != nil {
 		return nil, fmt.Errorf("own_rules: %w", err)
 	}
-	directives, err := seclang.Parse(cfg.OwnRules, bytes.NewReader(data))
+	return ParseOwnRules(cfg.OwnRules, data)
+}
+
+// ParseOwnRules reads the rules of an own-rules file's content; name is
+// the file's name in errors. A rule's text ends before the next rule,
+// without the blank lines and comments in between.
+func ParseOwnRules(name string, data []byte) ([]OwnRule, error) {
+	directives, err := seclang.Parse(name, bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
@@ -260,6 +270,22 @@ func ReadOwnRules(cfg Config) ([]OwnRule, error) {
 			r.Severity = strings.ToUpper(v[len(v)-1])
 		}
 		rules = append(rules, r)
+	}
+	lines := strings.Split(strings.TrimRight(string(data), "\n"), "\n")
+	for i := range rules {
+		end := len(lines)
+		if i+1 < len(rules) {
+			end = rules[i+1].Line - 1
+		}
+		for end > rules[i].Line {
+			t := strings.TrimSpace(lines[end-1])
+			if t != "" && !strings.HasPrefix(t, "#") {
+				break
+			}
+			end--
+		}
+		rules[i].End = end
+		rules[i].Text = strings.Join(lines[rules[i].Line-1:end], "\n")
 	}
 	return rules, nil
 }

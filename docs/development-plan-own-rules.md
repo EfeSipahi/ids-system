@@ -116,9 +116,9 @@ Work went one stage at a time, with a pause for the user's review after stage 1 
 | --- | --- |
 | Decisions N1–N8 | All decided on 23 November 2026 |
 | 1. Engine and configuration | Done 23 November 2026, commit 773f1a3 |
-| 2. Dashboard, reading | Done 23 November 2026 |
-| 3. Dashboard, writing | Next |
-| 4. Test tab with pending changes | |
+| 2. Dashboard, reading | Done 23 November 2026, commit 19aea6a |
+| 3. Dashboard, writing | Done 23 November 2026 |
+| 4. Test tab with pending changes | Next |
 | 5. Close | |
 
 ## 7. Notes from the work
@@ -144,3 +144,15 @@ Stage 2, 23 November 2026:
 4. The preview: its model of which rules run left out every rule whose file is not in `files`, so it would have counted every own rule's findings as gone with any change. It now reads the own-rules file (`engine.ReadOwnRules`, through the pending files' `ReadFile`): a rule counts while the file has it, for the applications it names. Removing a rule or giving it to another application takes its findings away in the preview; a file that can't be read is the preview's error.
 5. The checks: `gofmt`, `go vet ./...`, `go test ./...`, and `go test -race` on the dashboard (302 seconds).
 6. A browser round in a sandbox (scratch records from `ids-offline` with the example rules and two applications, a dashboard on its own port): the Rules page with each filter, the pages of rules 1000 and 1001, blog's Rules tab, the alerts of the group, and rule 1000 at phone width; no script errors, and no page wider than the window.
+
+Stage 3, 23 November 2026:
+
+1. Own rules are changes of the configuration, so of the pending changes "for every application" (the global object): `own_rule_add`, `own_rule_edit` and `own_rule_remove` in `control.go`. They are applied with the other global changes as one version, with the password asked again, and an undo restores the files the version changed, like every other change.
+2. The form (N1, `own_rules.go`): up to 10 conditions that must all match, each a place (the path without the query string, the whole URI, the method, a header or cookie by name, an argument with or without a name, the arguments' names, the body, the client address), a test (contains, is, begins with, ends with, one of these words, a regular expression, and, for the client address only, an IP address or range), "not" and "ignore case"; a message; a severity, shown with its points; for every request, or for chosen applications and requests of no application. The dashboard writes it as SecLang in CRS's layout, phase 2 when a condition looks at the body, the score's `setvar` on the last link of the chain, and parses what it wrote before it is used.
+3. A rule is read back into the form only when the form writes exactly its text; any other rule, such as the hand-written ones of `testdata/own-rules`, opens as its text. Admins may edit the text of any own rule; analysts propose with the form only (N7), and a text from an analyst is refused by the server (403), not only hidden. What a text may do is the engine's check of stage 1 (N4): the dashboard builds the configuration with the pending changes and loads it, as for every change, so a refused text gets the engine's own message.
+4. Numbers (N3): a new rule gets the number after the largest one ever used, counting the own-rules file on disk, the pending changes, the own changes of every version and the rules of the kept records. A number is never given twice, so the records of a removed rule never mix with those of a new one.
+5. The first own rule of a configuration sets `own_rules` to `../own-rules/<configuration>.conf`, beside `profiles/`, and makes that file with a short header. If that version is undone, the setting goes and the file stays; a later first rule starts the file again from the header, and its version keeps the old content.
+6. The preview: removing a rule, or giving it to other applications, takes its findings away; a new or changed rule is listed under "What the records can't tell", since the records keep only what rules found, with a pointer to Analyse files and to the Test tab of stage 4.
+7. The pages: the Rules page (not an application's tab) has the pending changes for every application and an "Own rules" card with the rules on disk, a New rule button, and Edit and Remove ("Propose to remove" for an analyst). The page of an own rule has the same Edit and Remove at its end, and no "Switch off for every application", since an own rule is removed instead. Both live outside the part of the page that is redrawn every few seconds, so an open form keeps what was typed.
+8. A browser round in the stage 2 sandbox, with an admin and an analyst: a two-condition rule for the shop shown, added and applied (rule 1003, written as the form showed it); 1003 opened in the form and changed; 1001 opened as text; the page of rule 1000; an analyst's proposal (1004) with the admin's pending change; the analyst's view of a text rule; the form at phone width. No script errors, no page wider than the window. One mistake found and corrected: New rule opened the text view instead of the form.
+9. The checks: `gofmt`, `go vet ./...`, `go test ./...`, and `go test -race` on the dashboard. The user's `records/records.jsonl` is unchanged (1,049 lines, 2,073,205 bytes).

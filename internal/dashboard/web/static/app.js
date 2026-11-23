@@ -1860,6 +1860,25 @@
     const id = body.dataset.id;
     changesPanel("global", document.getElementById("changes"));
     const notice = el("div", { "aria-live": "polite" });
+    // An own rule's Edit and Remove, drawn once, as the rule on disk is.
+    let ownShown = false;
+    const showOwn = async () => {
+      const box = document.getElementById("own");
+      if (!box || !analyst) return;
+      const editor = el("div", {});
+      const said = el("div", { "aria-live": "polite" });
+      try {
+        const info = await api("/api/own-rules");
+        const row = info.rules.find((r) => String(r.id) === String(id));
+        refill(box, card("Change this own rule",
+          row ? el("p", { class: "muted" }, "Edit it, or remove it, as a pending change for every application. " +
+            (row.form ? "" : adminRole ? "The form can't show it, so Edit opens its text." : "The form can't show it; its text is an admin's to edit, and you can propose to remove it."))
+            : el("p", { class: "muted" }, "It is no longer in the own rules on disk; a pending change or a later version took it out."),
+          row ? ownControls(info, row, editor, said, null) : null, said, editor));
+      } catch (err) {
+        if (err.message !== "login required") refill(box, banner("error", "The own rules could not be loaded.", err.message));
+      }
+    };
     const run = every(async () => {
       const range = period.value;
       const url = "/api/rules/" + encodeURIComponent(id) + "?" + query({ range });
@@ -1868,7 +1887,12 @@
       // Off for every application, or back on: an admin's change, pending
       // under Settings for every application.
       const excluded = set && set.excluded.find((ex) => String(ex.id) === String(id));
-      const protectedRule = /^REQUEST-9(01|49)-/.test(p.rule.file);
+      // An own rule is changed or removed instead (stage 3).
+      const protectedRule = /^REQUEST-9(01|49)-/.test(p.rule.file) || p.rule.own;
+      if (p.rule.own && !ownShown) {
+        ownShown = true;
+        showOwn();
+      }
       let everyApp = null;
       if (set && set.configured && !set.error && !protectedRule) {
         const reason = el("input", { name: "reason", placeholder: "Why? It is shown on this page", maxlength: 1000, autocomplete: "off" });
@@ -2393,12 +2417,210 @@
     }
   }
 
+  // ---- Own rules (stage 3 of docs/development-plan-own-rules.md) ----
+
+  // ownEditor is the New rule form (N1): conditions that must all match, a
+  // message, a severity, and the requests the rule is for. It shows the
+  // rule as the dashboard writes it; an admin may edit that text instead,
+  // which the IDS checks as it checks every own rule (N4). start is
+  // { rule, form, text }: rule 0 for a new rule, form null for a rule only
+  // its text can show. close takes the editor away.
+  function ownEditor(info, start, close) {
+    const editing = !!start.rule;
+    const notice = el("div", { "aria-live": "polite" });
+    const f = start.form ? JSON.parse(JSON.stringify(start.form)) :
+      { msg: "", severity: "CRITICAL", applications: [], conditions: [{ place: "REQUEST_FILENAME", test: "beginsWith", value: "" }] };
+    f.applications = f.applications || [];
+    const placeOf = (name) => info.places.find((x) => x.name === name) || info.places[0];
+    const state = { text: editing && !start.form, draft: start.text || "" };
+    const box = el("div", { class: "stack own-editor" });
+
+    const condBox = el("div", { class: "stack" });
+    const drawConds = () => refill(condBox, f.conditions.map((c, i) => {
+      const p = placeOf(c.place);
+      const n = `Condition ${i + 1}`;
+      return el("div", { class: "own-condition" },
+        el("span", { class: "own-word" }, i === 0 ? "If" : "and"),
+        el("select", { "aria-label": n + ": place", onchange: (e) => {
+          c.place = e.target.value;
+          if (!placeOf(c.place).key) c.key = "";
+          if (c.test === "ipMatch" && c.place !== "REMOTE_ADDR") c.test = "contains";
+          drawConds();
+        } }, info.places.map((x) => el("option", { value: x.name, selected: x.name === c.place }, x.label))),
+        p.key ? el("input", { class: "own-key", value: c.key || "", maxlength: 100, autocomplete: "off", spellcheck: "false", "aria-label": n + ": name",
+          placeholder: p.key === "required" ? "Its name" : "Its name, or empty for every one", oninput: (e) => { c.key = e.target.value; } }) : null,
+        el("label", { class: "check-row" }, el("input", { type: "checkbox", checked: !!c.not, onchange: (e) => { c.not = e.target.checked; } }), "not"),
+        el("select", { "aria-label": n + ": test", onchange: (e) => { c.test = e.target.value; if (c.test === "ipMatch") c.ignore_case = false; drawConds(); } },
+          info.tests.filter((t) => t.name !== "ipMatch" || c.place === "REMOTE_ADDR").map((t) => el("option", { value: t.name, selected: t.name === c.test }, t.label))),
+        el("input", { class: "own-value", value: c.value || "", maxlength: 2000, autocomplete: "off", spellcheck: "false", "aria-label": n + ": value",
+          placeholder: c.test === "ipMatch" ? "10.0.0.0/8, 192.0.2.7" : "Value", oninput: (e) => { c.value = e.target.value; } }),
+        c.test !== "ipMatch" ? el("label", { class: "check-row" }, el("input", { type: "checkbox", checked: !!c.ignore_case, onchange: (e) => { c.ignore_case = e.target.checked; } }), "ignore case") : null,
+        f.conditions.length > 1 ? el("button", { type: "button", class: "small", onclick: () => { f.conditions.splice(i, 1); drawConds(); } }, "Remove") : null);
+    }), f.conditions.length < 10 ? el("div", {}, el("button", { type: "button", class: "small", onclick: () => {
+      f.conditions.push({ place: "REQUEST_FILENAME", test: "contains", value: "" });
+      drawConds();
+    } }, "Add a condition", icon("add"))) : null);
+
+    // Every request, or the chosen applications and requests of no
+    // application (N5).
+    const targets = info.applications.concat("none");
+    const every1 = el("input", { type: "radio", name: "own-for", value: "every", checked: !f.applications.length });
+    const chosen1 = el("input", { type: "radio", name: "own-for", value: "chosen", checked: !!f.applications.length });
+    const appBoxes = targets.map((a) => el("label", { class: "check-row" }, el("input", { type: "checkbox", value: a, checked: f.applications.includes(a),
+      onchange: () => { chosen1.checked = true; } }), a === "none" ? "Requests of no application" : a));
+    const forWho = () => chosen1.checked ? appBoxes.map((l) => l.firstChild).filter((b) => b.checked).map((b) => b.value) : [];
+
+    const msg = el("input", { name: "msg", value: f.msg, maxlength: 200, autocomplete: "off", placeholder: "What it found, as each match shows it", oninput: (e) => { f.msg = e.target.value; } });
+    const severity = el("select", { name: "severity", onchange: (e) => { f.severity = e.target.value; } },
+      info.severities.map((sv) => el("option", { value: sv.name, selected: sv.name === (f.severity || "").toUpperCase() },
+        `${sv.name}: ${sv.points} points${sv.points >= 5 ? ", an alert by itself" : ", an alert only with other points"}`)));
+
+    const textArea = el("textarea", { class: "editor own-text", rows: 14, spellcheck: "false", autocomplete: "off", autocapitalize: "off", wrap: "off",
+      "aria-label": "The rule as SecLang text", oninput: (e) => { state.draft = e.target.value; } });
+    const shown = el("div", {});
+    const formNow = () => Object.assign({}, f, { applications: forWho() });
+    const label = analyst && !adminRole ? "Propose" : "Add to the pending changes";
+
+    // The draft: the rule's number and text, or why it can't be added.
+    const draft = async (body) => {
+      try {
+        const d = await send("/api/own-rules/draft", Object.assign({ rule: start.rule || 0 }, body));
+        if (d.error) refill(notice, banner("error", "Not ready.", d.error));
+        else refill(notice);
+        return d;
+      } catch (err) {
+        if (err.message !== "login required") refill(notice, banner("error", "Not ready.", err.message));
+        return null;
+      }
+    };
+    const add = async (change) => {
+      const kind = editing ? "own_rule_edit" : "own_rule_add";
+      const ch = await addChange("global", Object.assign({ kind, rule: start.rule || 0 }, change), notice);
+      if (ch) { close(ch); window.scrollTo({ top: 0, behavior: "smooth" }); }
+    };
+    const cancel = el("button", { type: "button", class: "small", onclick: () => close(null) }, "Cancel");
+
+    const draw = () => {
+      if (state.text) {
+        textArea.value = state.draft;
+        refill(box, el("h3", {}, editing ? `Rule ${start.rule} as text` : "The new rule as text"),
+          el("p", { class: "muted" }, "SecLang, as in CRS's files. The IDS checks it: SecRule only, its number kept, a msg and a severity, and only its severity's score added; no ctl, skipAfter or @pmFromFile."),
+          adminRole ? textArea : el("pre", { class: "block rule-text" }, state.draft),
+          notice,
+          el("div", { class: "inline-form" },
+            adminRole ? el("button", { type: "button", class: "small", onclick: async () => {
+              const d = await draft({ text: state.draft });
+              if (d && !d.error) refill(notice, banner("success", "The text can be added.", d.what + "."));
+            } }, "Check the text") : null,
+            adminRole ? el("button", { type: "button", class: "small primary", onclick: () => add({ text: state.draft }) }, "Add to the pending changes") : null,
+            start.form || !editing ? el("button", { type: "button", class: "small", onclick: () => { state.text = false; draw(); } }, "Back to the form") : null,
+            cancel),
+          !adminRole ? el("p", { class: "muted" }, "This rule is written as text, which an admin edits; you can propose to remove it.") : null);
+        return;
+      }
+      drawConds();
+      refill(box, el("h3", {}, editing ? `Change rule ${start.rule}` : "New rule"),
+        el("p", { class: "muted" }, "When every condition matches, the rule adds its severity's points to the request's score; 5 makes an alert. It only detects: switching other rules off is what exceptions do."),
+        condBox,
+        el("div", { class: "form-grid own-fields" },
+          formRow("Message", msg, "Shown with every match, on the alert and in the records"),
+          formRow("Severity", severity)),
+        el("fieldset", { class: "own-for" }, el("legend", { class: "field-label" }, "For"),
+          el("label", { class: "check-row" }, every1, "Every request"),
+          el("label", { class: "check-row" }, chosen1, "Only:"), el("div", { class: "own-apps" }, appBoxes)),
+        shown, notice,
+        el("div", { class: "inline-form" },
+          el("button", { type: "button", class: "small", onclick: async () => {
+            const d = await draft({ own: formNow() });
+            if (d && d.text) refill(shown, el("div", { class: "sub" }, `Rule ${d.rule}, as the IDS will read it`), el("pre", { class: "block rule-text" }, d.text));
+          } }, "Show the rule"),
+          el("button", { type: "button", class: "small primary", onclick: () => add({ own: formNow() }) }, label),
+          adminRole ? el("button", { type: "button", class: "small", onclick: async () => {
+            const d = await draft({ own: formNow() });
+            if (d && d.text) { state.draft = d.text; state.text = true; draw(); }
+          } }, "Edit as text") : null,
+          cancel));
+    };
+    draw();
+    return box;
+  }
+
+  // added says that a change was added or proposed.
+  const added = (ch) => banner("success", ch.proposal ? "Proposed." : "Added to the pending changes.",
+    `${ch.what}. ` + (ch.proposal ? "An admin applies it or turns it down." : "It is applied with the others, after their preview, at the top of the page."));
+
+  // ownControls are an own rule's Edit and Remove, for an analyst or an
+  // admin; the editor opens in box, and notice says what was done.
+  function ownControls(info, row, box, notice, done) {
+    if (!analyst) return null;
+    return el("span", { class: "own-controls" },
+      el("button", { type: "button", class: "small", onclick: () => {
+        refill(notice);
+        refill(box, ownEditor(info, { rule: row.id, form: row.form, text: row.text }, (ch) => {
+          refill(box);
+          if (ch) { refill(notice, added(ch)); if (done) done(); }
+        }));
+        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } }, row.form || adminRole ? "Edit" : "Show the text"),
+      el("button", { type: "button", class: "small", onclick: async () => {
+        refill(box);
+        if (await addChange("global", { kind: "own_rule_remove", rule: row.id }, notice) && done) done();
+      } }, adminRole ? "Remove" : "Propose to remove"));
+  }
+
+  // ownRulesCard is the Rules page's card of own rules: those of the
+  // configuration on disk, which may be newer than the run the list below
+  // is from, and the New rule button.
+  function ownRulesCard(box) {
+    if (!box) return;
+    const editorBox = el("div", {});
+    const notice = el("div", { "aria-live": "polite" });
+    let key = "";
+    const load = async (force) => {
+      const info = await api("/api/own-rules");
+      const k = JSON.stringify(info);
+      if (!force && k === key) return;
+      key = k;
+      const reload = () => load(true).catch(() => {});
+      const rows = info.rules.map((r) => el("tr", {},
+        el("td", {}, el("a", { href: "/rules/" + r.id }, String(r.id))),
+        el("td", { class: "wrap" }, r.msg, el("div", { class: "sub" }, "For " + forWhom(r.applications) + (r.form ? "" : "; written as text"))),
+        el("td", {}, r.severity),
+        el("td", { class: "nowrap" }, ownControls(info, r, editorBox, notice, reload))));
+      const newRule = analyst && info.configured && !info.error ? el("button", { type: "button", class: "small primary", onclick: () => {
+        refill(notice);
+        refill(editorBox, ownEditor(info, { rule: 0, form: null, text: "" }, (ch) => {
+          refill(editorBox);
+          if (ch) { refill(notice, added(ch)); reload(); }
+        }));
+      } }, "New rule", icon("add")) : null;
+      refill(box, headedCard("Own rules", newRule,
+        el("p", { class: "muted" }, "Rules written for this IDS's own sites. Each one only detects: when all its conditions match, it adds its severity's points to the score. Analysts propose them; an admin applies them with the other pending changes for every application, and can undo them."),
+        !info.configured ? el("p", { class: "muted" }, "The dashboard does not know the IDS's configuration; name it as ids_config in the dashboard's configuration file to write own rules.") : null,
+        info.error ? banner("error", "The own rules can't be shown.", info.error) : null,
+        info.configured && !info.error ? (rows.length
+          ? el("div", { class: "table-wrap" }, el("table", { class: "wide own-rules" },
+            el("thead", {}, el("tr", {}, el("th", {}, "Rule"), el("th", {}, "Description"), el("th", {}, "Severity"), el("th", {}, ""))),
+            el("tbody", {}, rows)))
+          : el("p", { class: "empty" }, "No own rule yet.")) : null,
+        info.file ? el("p", { class: "sub" }, `In ${info.file}, as on disk now; the list below is the rules ids-live ran last.`) : null,
+        notice, editorBox));
+    };
+    load(true).catch((err) => { if (err.message !== "login required") refill(box, banner("error", "The own rules could not be loaded.", err.message)); });
+    // A poll leaves the card alone while an editor is open.
+    setInterval(() => { if (!live.paused && !editorBox.childNodes.length) load(false).catch(() => {}); }, poll);
+  }
+
   // ---- Rules ----
 
   function rulesPage() {
     const form = document.getElementById("filters");
     // On an application's Rules tab the application is fixed (W3).
     const fixed = body.dataset.app || "";
+    if (!fixed) {
+      changesPanel("global", document.getElementById("changes"));
+      ownRulesCard(document.getElementById("own"));
+    }
     const appValue = () => fixed || (form.elements.app ? form.elements.app.value : "");
     let data = null;
     let own = true; // the user changed the filters: sections open as the filters say
