@@ -565,7 +565,7 @@ details.section > summary .counts { margin-left: auto; font-size: 0.75rem; }
 .lead { margin: 8px 0 16px; max-width: 80ch; }
 .test-bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; margin-bottom: 16px; }
 .test-bar.settings { margin: 16px 0 8px; }
-.test-bar label { display: grid; gap: 8px; font-size: 0.75rem; color: var(--text-2); letter-spacing: 0.32px; }
+.test-bar label { display: grid; grid-template-columns: minmax(0, auto); gap: 8px; min-width: 0; max-width: 100%; font-size: 0.75rem; color: var(--text-2); letter-spacing: 0.32px; }
 .test-bar select, .test-bar input { height: 32px; padding: 0 12px; font-size: 0.875rem; letter-spacing: 0.16px; max-width: 100%; }
 .test-bar label.wide select { width: 22rem; }
 .test-bar [name="file"] { width: 11rem; }
@@ -573,6 +573,7 @@ details.section > summary .counts { margin-left: auto; font-size: 0.75rem; }
 .test-bar [name="application"] { width: 11rem; }
 .test-bar [name="client"] { width: 11rem; }
 .test-bar [name="crlf"] { width: 13rem; }
+.test-bar [name="pending"] { width: 27rem; }
 textarea.editor {
   display: block; width: 100%; box-sizing: border-box; min-height: 18rem; resize: vertical; margin: 0;
   font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 0.875rem; line-height: 1.43;

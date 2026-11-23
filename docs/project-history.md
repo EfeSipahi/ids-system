@@ -1,7 +1,7 @@
 # Project history: what was done and how
 
-Written: 16 October 2026, for the project report; updated 25 October, 19 and 20 November 2026  
-Covers: 27 September 2026 (ML pilot) to 20 November 2026 (live traffic through Caddy; the dashboard's test tab, marks, users and change log)  
+Written: 16 October 2026, for the project report; updated 25 October, 19, 20 and 23 November 2026  
+Covers: 27 September 2026 (ML pilot) to 23 November 2026 (live traffic through Caddy; the dashboard's test tab, marks, users and change log; a dashboard that controls the IDS; own rules)  
 Sources: the main plan [ids-system-plan-phaze1.md](../ids-system-plan-phaze1.md) (history in section 11), the development plans in this folder, [context.md](../context.md), the git history, and the README of the separate ML project `ids-model`. Every number below comes from one of these or from a run of the code on 16, 23, 24, 25 or 26 October, or 18 or 19 November 2026.
 
 ## 1. The project in short
@@ -77,6 +77,8 @@ What exists on 19 November 2026:
 | 19 November | Stage 8: documents and the full checks | CRS and CSIC numbers unchanged |
 | 19 November | A test tab in the dashboard: a request written by hand, analysed with the IDS's own rules and profiles (S1–S4) | Same answers as `ids-offline` for 5,066 CRS tests and 1,000 CSIC requests |
 | 20 November | Marks on alerts, users with three roles, a change log (G1–G6) | Every route tested as each role; no password in any state file; 10,000 records marked in 27 ms |
+| 21 November | A dashboard that controls the IDS (W1–W26), then built on IBM Carbon's own components (Y1–Y10) | Every route as each role; Analyse files gives `ids-offline`'s 2,916 of 5,072 CRS tests flagged at level 1 |
+| 23 November | Own rules (N1–N8): written with a form in the dashboard, checked to only detect, for chosen applications | Without own rules the same outputs and fingerprints for the CRS tests, the CSIC requests and the attack variants |
 
 ## 4. What was done, step by step
 
@@ -351,12 +353,22 @@ The user found the dashboard "a little raw" and chose IBM's component library ov
 4. Details: a breadcrumb back from an alert, step buttons, status icons, links with Carbon's arrow; explanations behind Carbon's toggletip beside a page's or a card's title; a skeleton while a page loads.
 5. The policy gained one directive, `style-src-attr 'unsafe-inline'` (Y2), and a test checks all of its directives.
 
+### 4.14. Own rules (23 November)
+
+The user asked for a way to write the IDS's own rules, for attacks on their own sites that CRS does not know, such as "admin pages reached from outside the office". Eight decisions (N1–N8, main plan section 11.38) shaped it; five stages were built, the first with a pause for review, the others in one run, each with its tests, a browser round and a commit.
+
+1. The engine: a file of own rules, named by `own_rules` and loaded right before CRS's 949 file, which adds up the score. Before it is compiled, every rule is checked to only detect: a number from 1,000 to 99,999, a message, a severity, and exactly that severity's points added to the score; anything that could switch other rules off or skip them is refused with the file, line and rule named.
+2. Rules for some applications only: each application's list of rules switched off gains the own rules not meant for it, and requests of no application get a list of their own, so the one shared rule set stays (decision F5's option B).
+3. The dashboard: own rules in a group of their own on the Rules page, with the requests each one is for; a form that writes a rule from conditions, a message and a severity, and shows the SecLang; the rules added, changed and removed as pending changes with the preview, versions and undo of the other changes; analysts propose, admins apply.
+4. Trying a rule before it is applied: the Test tab runs a request written by hand with the pending changes, built as they would be applied, and Analyse files' Try runs them on analysed files.
+5. A mistake: a check run in stage 1 wrote two runs into the user's records folder; they were removed the same hour (the plan's stage 1, note 10).
+
 ## 5. How the work was done
 
 ### 5.1. Decisions before code
 
 1. The assistant proposed options in numbered points, each with a reason and a small example; the team chose. Nothing open was treated as decided.
-2. Each decision got an ID and was written down with its date and reason: M (architecture), A (open topics), D (rule-layer plan), K (whole rule part), R and V (records and dashboard), U (dashboard UI), F (application profiles), T (live traffic), S (the test tab), G (marks, roles and the change log), W (a dashboard that controls the IDS). The history is in section 11 of the main plan.
+2. Each decision got an ID and was written down with its date and reason: M (architecture), A (open topics), D (rule-layer plan), K (whole rule part), R and V (records and dashboard), U (dashboard UI), F (application profiles), T (live traffic), S (the test tab), G (marks, roles and the change log), W (a dashboard that controls the IDS), Y (the dashboard on IBM Carbon), N (own rules). The history is in section 11 of the main plan.
 3. Work was split into plans with a number to reach (tests that must pass), and a report followed each plan. From plan A on, the team asked for one plan at a time with a stop for review. Code was committed and pushed only when the team asked.
 
 ### 5.2. Behaviour taken from a source, never guessed

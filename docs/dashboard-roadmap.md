@@ -2,7 +2,7 @@
 
 Written: 21 November 2026, at the user's request, from the conversations of 19–21 November 2026. This is a list to choose from, not a plan: each part gets its own decisions and plan before work starts, as every step of this project has.
 
-Since 21 November 2026, [development-plan-dashboard-control.md](development-plan-dashboard-control.md) builds most of this list: the foundations (2), exceptions (3.1–3.4), applications and their settings (4), the Rules page's page per rule (6.1), the views (7) and 8.1. Still open: a single stricter rule for one application (3.5), own rules (5), search by words (6.2) beyond the Rules page's search, the smaller fixes 8.2–8.5, and controlling the system (9), which W22 keeps for a later plan.
+Since 21 November 2026, [development-plan-dashboard-control.md](development-plan-dashboard-control.md) builds most of this list: the foundations (2), exceptions (3.1–3.4), applications and their settings (4), the Rules page's page per rule (6.1), the views (7) and 8.1. Own rules (5) were built on 23 November 2026 following [development-plan-own-rules.md](development-plan-own-rules.md), decisions N1–N8. Still open: a single stricter rule for one application (3.5), search by words (6.2) beyond the Rules page's search, the smaller fixes 8.2–8.5, and controlling the system (9), which W22 keeps for a later plan.
 
 ## 1. Where the dashboard stands
 
@@ -49,6 +49,8 @@ What the dashboard still can't do: change anything of the IDS. Its exceptions, l
 | 4.5 | Retention | How long records and marks are kept; marks keep a client address after their record rotates away (C6 of the marks plan, open with A09) |
 
 ## 5. Own rules (group 7, first part)
+
+Built on 23 November 2026 ([development-plan-own-rules.md](development-plan-own-rules.md)): 5.1 with a form and a text view (N1), numbers given by the dashboard (N3), for every request or chosen applications (N5); 5.2 with the engine's check (N4), the Test tab and Analyse files' Try with pending changes (N8), and the preview; 5.3 with the own rules not meant for an application switched off for it, on the one shared rule set.
 
 | # | Item | What it gives | Decisions it needs |
 | --- | --- | --- | --- |
@@ -99,7 +101,7 @@ The order the user set on 12 October continues: the response rules (K8) and aler
 | 2 | 2.2 change path, 2.3 reload, 2.4 writing settings, 3.1–3.4 exceptions | The step with the most value: marks already show the false positives; the foundations are built once, with the first thing that uses them |
 | 3 | 4.1–4.3 application settings and profile editor, 6.1–6.3 Rules page | On the same foundations; the rule page is where exceptions and statuses meet |
 | 4 | 7.1–7.3 views | Read only, so low risk; can also be fitted in between |
-| 5 | 5.1–5.3 own rules, 3.5 "on" exceptions | Needs engine decisions |
+| 5 | 5.1–5.3 own rules (built 23 November 2026), 3.5 "on" exceptions | Needs engine decisions |
 | 6 | 4.4–4.5 global settings and retention, section 8 | Smaller pieces |
 | 7 | 9 controlling the system | Last: the most power, the most risk |
 

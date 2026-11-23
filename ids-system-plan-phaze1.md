@@ -1671,6 +1671,33 @@ All five stages of [docs/development-plan-marks-users.md](docs/development-plan-
 
 **Next in the order:** the user's choice: a false positive turned into an exception (with a preview and a history), settings pages, more views, or the response rules (K8) and alerts by webhook and syslog.
 
+### 11.38. Own rules — 23 November 2026
+
+The user asked for "a feature to write our own rules", with a plan first: until then an application could switch CRS's rules off or narrow them, but nobody could add a rule for a site's own attacks. The plan, [docs/development-plan-own-rules.md](docs/development-plan-own-rules.md), has eight decisions, N1–N8, which the user took on 23 November 2026, each the first option, N4 and N6 after an explanation:
+
+1. N1: a form (conditions that must all match, a message, a severity); the dashboard writes the SecLang and shows it; admins may edit the text.
+2. N2: one own-rules file per configuration, named by a new setting, `own_rules`, loaded right before CRS's 949 file.
+3. N3: the dashboard gives the numbers, the next free one from 1,000 to 99,999.
+4. N4: a rule only detects: no `ctl`, no `setvar` but its score, no `skipAfter`, no `@pmFromFile`.
+5. N5: per rule, every request, or chosen applications and requests of no application.
+6. N6: the severity gives the score (5, 4, 3, 2), counted at paranoia level 1, so the rule runs at every level.
+7. N7: analysts propose, admins apply after the preview, with the password again.
+8. N8: the Test tab runs with pending changes; Analyse files' Try too.
+
+Stage 1 was built with a pause for the user's review; then the user said "commit and start the stages auto after every commit", and stages 2 to 5 followed, each committed when done. Nothing is pushed until the user says so.
+
+### 11.39. Own rules built — 23 November 2026
+
+The five stages were built and committed one by one; the plan's notes per stage say what each built and how it was checked. Without own rules nothing changed: the CRS tests, the CSIC requests with `crs-first-engine.json` and `csic-shop.json`, and the attack variants with `lab-site.json` give the same output and the same fingerprints as before. Choices the decisions did not settle, made in the work and waiting for the user's approval:
+
+1. A rule's number is never given twice, also after the rule is removed, so the records of a removed rule never mix with those of a new one (stage 3, note 4).
+2. A rule the form can't write exactly, such as one written by hand, opens as its text; an analyst can only propose to remove it (stage 3, note 3).
+3. If the version that made the own-rules file is undone, the setting goes and the file stays; a later first rule starts it again, and its version keeps the old content (stage 3, note 5).
+4. The Test tab lists the IDS's own configuration first, as Analyse files does, so it is on without `test_configs`, and it remembers the chosen configuration by name; a test runs with the pending changes of one object at a time, as they are applied (stage 4, notes 1 and 2).
+5. The configuration's fingerprint reads its files through the configuration's reader, so a configuration built with pending changes has the fingerprint it will have on disk; for files read from disk nothing changes (stage 4, note 4).
+
+A mistake in stage 1, corrected the same hour: a check run without `-records` wrote two runs into the user's `records/` folder; they were removed, and the script now gives every run a temporary folder (stage 1, note 10).
+
 ### 11.36. The dashboard on IBM Carbon's own components — 21 November 2026
 
 The user found the dashboard "a little raw": in the Latest alerts card the times looked like links, and so did "All 732 alerts →". Of three ways (fix what is seen, a design audit first, or IBM's component library), the user chose the library. The plan, [docs/development-plan-dashboard-carbon.md](docs/development-plan-dashboard-carbon.md), has ten decisions, Y1–Y10, taken by the user one by one the same day:

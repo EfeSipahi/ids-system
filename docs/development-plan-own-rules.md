@@ -118,8 +118,8 @@ Work went one stage at a time, with a pause for the user's review after stage 1 
 | 1. Engine and configuration | Done 23 November 2026, commit 773f1a3 |
 | 2. Dashboard, reading | Done 23 November 2026, commit 19aea6a |
 | 3. Dashboard, writing | Done 23 November 2026, commit 5d12bd0 |
-| 4. Test tab with pending changes | Done 23 November 2026 |
-| 5. Close | Next |
+| 4. Test tab with pending changes | Done 23 November 2026, commit 923e0a4 |
+| 5. Close | Done 23 November 2026 |
 
 ## 7. Notes from the work
 
@@ -167,3 +167,10 @@ Stage 4, 23 November 2026:
 6. In the stage 3 sandbox, as the analyst, with the admin's change of rule 1003 and the analyst's proposed rule 1004 pending: from the preview's link, `GET /debug` on the blog scored 4 with the pending changes (rule 1004, an error) and 0 as on disk; a WPScan request to the shop's `/wp-admin` scored 10 with them (CRS's 913100 and the changed 1003, now critical). No script errors.
 7. A small fix on the way: the Test tab said "1 rules"; it now says "1 rule".
 8. The checks: `gofmt`, `go vet ./...`, `go test ./...`, and `go test -race` on the dashboard (316 seconds) and the configuration. The user's `records/records.jsonl` is unchanged. A first race run, started beside `go test ./...`, failed in `TestAnalyseGivesIDSOfflinesNumbers`, which gives the analysis of 5,072 CRS tests 60 seconds; run alone it passed. That test is slow under the race detector, so a race run of the dashboard is best run alone.
+
+Stage 5, 23 November 2026:
+
+1. The documents: [context.md](../context.md) (what exists, the code and the plans, what is next), the main plan's sections 11.38 (the decisions) and 11.39 (what was built, and the choices waiting for the user's approval), [project-history.md](project-history.md) (the table and section 4.14), and the roadmap's part 5, marked built.
+2. A last browser round in the sandbox, as each role: the Test tab at phone width with the pending changes; the Rules page as a viewer, with no New rule, Edit or Remove; the admin's Proposed changes with an own rule proposed; the pending changes applied with the password (1003 critical, 1004 added), the version undone from the History tab of the settings for every application (1003 a warning again, 1004 gone), each step in the change log; the New rule form in the dark theme, with the message for an empty condition. A rule proposed after the undo got number 1005, not 1004 again. No script errors.
+3. Two defects found and corrected: on a phone the Test tab's "Changes" choice made the page 17 pixels wider than the window, and on a wide screen the choice cut off its count. The Test tab's fields now keep within the card.
+4. The checks: `gofmt`, `go vet ./...`, `go test ./...`. The user's `records/records.jsonl` is unchanged (1,049 lines, 2,073,205 bytes); the user's dashboard and its configuration were not touched, every run used the sandbox.
